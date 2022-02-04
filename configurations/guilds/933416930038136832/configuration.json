@@ -1,0 +1,54 @@
+{
+  "prefix": "t!",
+  "colors": {
+    "success": "#4FFF7C",
+    "error": "#FF5C4F",
+    "main": "#fc00ff",
+    "warning": "#FFD02F"
+  },
+  "behaviour": {
+    "onCommandErrorIgnore": false,
+    "onInsufficientPermissionsIgnore": false,
+    "onUnknownCommandIgnore": true,
+    "autoDeleteCommands": false,
+    "logOnCommandError": true,
+    "logOnInsufficientPermissions": true,
+    "logOnUnknownCommand": false,
+    "logCommandExecutions": "true",
+    "logToChannel": {
+      "status": true,
+      "channel": "934339234016399380",
+      "format": "[&{DISCORDDATE}] &{TEXT}"
+    },
+    "logSaidMessages": true,
+    "logDiscordErrors": true,
+    "onCommandDeniedIgnore": false,
+    "onWarningIgnore": false,
+    "logOnCommandDenied": true,
+    "logOnWarning": false,
+    "sendConfigInEmbed": true
+  },
+  "autokick": {
+    "status": false,
+    "trigger": "none",
+    "logKickedUsers": true,
+    "triggerNeeded": 1,
+    "kickReason": "AutoKicked by &{AppName} | &{TriggerReason} by &{TriggerUserTag}",
+    "rolesToKick": [
+      "934349479241461830"
+    ]
+  },
+  "roleadder": {
+    "status": false,
+    "trigger": "none",
+    "logAddedUsers": true,
+    "addReason": "AutoAdded by &{AppName} | &{TriggerReason} by &{TriggerUserTag}",
+    "rolesToAdd": [
+      "935036404617060423"
+    ],
+    "blacklist": [],
+    "whitelist": [
+      "934137758484664382"
+    ]
+  }
+}

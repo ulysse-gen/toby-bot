@@ -1,0 +1,47 @@
+{
+  "users": {
+    "231461358200291330": {
+      "internalRole.default": true
+    },
+    "344599103713574912": {
+      "internalRole.default": true,
+      "commands.say": true
+    }
+  },
+  "internalRoles": {
+    "default": {
+      "commands.about": true,
+      "commands.changelog": true
+    }
+  },
+  "roles": {
+    "933416930038136832": {
+      "933417069746208828": {
+        "*": true
+      },
+      "933417079443427358": {
+        "*": true
+      },
+      "933417504083157002": {},
+      "933416930038136832": {}
+    }
+  },
+  "channels": {
+    "933416930038136832": {
+      "934339741590110228": {
+        "internalRole.default": true
+      },
+      "933692969977012344": {
+        "internalRole.default": true
+      },
+      "934661041474895923": {
+        "internalRole.default": true
+      }
+    }
+  },
+  "guilds": {
+    "933416930038136832": {
+      "internalRole.default": true
+    }
+  }
+}

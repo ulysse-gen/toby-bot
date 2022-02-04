@@ -1,0 +1,12 @@
+{
+    "users": {},
+    "internalRoles": {
+      "default": {
+        "commands.about": true,
+        "commands.changelog": true
+      }
+    },
+    "roles": {},
+    "channels": {},
+    "guilds": {}
+  }
