@@ -1,0 +1,24 @@
+{
+  "name": "tobybot",
+  "version": "3.0.1",
+  "description": "Toby Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "UlysseLeGenie",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "discord.js": "^13.6.0",
+    "equations": "^1.3.7",
+    "i18n": "^0.13.4",
+    "lodash": "^4.17.21",
+    "mathjs": "^10.1.0",
+    "moment": "^2.29.1",
+    "mysql": "^2.18.1",
+    "pretty-ms": "^7.0.1",
+    "timestring": "^6.0.0",
+    "url-exists": "^1.0.3"
+  }
+}

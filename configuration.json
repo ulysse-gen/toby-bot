@@ -1,0 +1,38 @@
+{
+  "appName": "Toby Bot",
+  "appId": "933936295074480208",
+  "botToken": "",
+  "globalPrefix": "$toby.gg$",
+  "skip": {
+    "guilds": {
+      "719963783677870173": [
+        "926449510375358525"
+      ]
+    }
+  },
+  "presence": {
+    "loop": true,
+    "loopTime": 10000,
+    "loopPresences": [{
+      "status": "dnd",
+      "activities": [{
+        "name": "the waiting game.",
+        "type": "PLAYING"
+      }]
+    }],
+    "defaultPresence": {
+      "status": "online",
+      "activities": [{
+        "name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.",
+        "type": "LISTENING"
+      }]
+    },
+    "shutdownPresence": {
+      "status": "dnd",
+      "activities": [{
+        "name": "Reboot in &{TIME}.",
+        "type": "PLAYING"
+      }]
+    }
+  }
+}
