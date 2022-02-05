@@ -18,7 +18,7 @@ const sqlLogger = require(`./src/classes/sqlLogger`);
 const commandsManager = require(`./src/classes/commandsManager`);
 const permissionsManager = require(`./src/classes/permissionsManager`);
 const configurationManager = require(`./src/classes/configurationManager`);
-const guildsManager = require(`./src/classes/guildsManager`);
+const guildsManager = require(`./src/classes/guildsManager`);;
 const moderationManager = require(`./src/classes/moderationManager`);
 
 //Main Variables
