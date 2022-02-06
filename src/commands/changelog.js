@@ -21,9 +21,7 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `\n- New command \`t!choose <choice1> <choice2> [choice3] .. [choice9999]\` to choose between multiple choices. Can be separated by spaces or comma. (Have to choose, cannot use both)`;
-        embed.description += `\n- New command \`t!rockpaperscissors\` play a rock paper scissors game VS Toby, 3 rounds.`;
-        embed.description += `\n- New command \`t!rolldice\` roll a dice and pick a random number between [1, 6].`;
+        embed.description += `\n- New command \`purge <Amount>\` to bulk delete N messages from a channel, excluding pinned`;
 
         message.reply({
             embeds: [embed],
