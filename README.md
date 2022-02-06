@@ -9,8 +9,6 @@ Things to know about TobyBot to make everything clear:
 # Todo:
 - Implementation of t!lockdown command. > Will prob start it last (aside Auto Moderation ?)
 
-- Implementation of t!purge command. > Will work on it soonish, should be an easy one
-
 - Cleaning up Toby's code to run more efficiently. (adding permissions optitional priority too) > Working on it 
     Make the permission scan all in once not one by one (User, Internal Role, Role, Channel, Guild)
 
