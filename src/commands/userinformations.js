@@ -80,7 +80,7 @@ module.exports = {
         embed.addField(`**Roles** [${userRoles.length}]`, `${(userRoles.length == 0) ? `None` : `<@&${userRoles.join(`> <@&`)}>`}`, false);
         embed.addField(`**Key Permissions**`, `${(userPermissions.length == 0) ? `None` : `${userPermissions.join(', ')}`}`, false);
         embed.addField(`**Acknowledgements**`, `${userAcknowledgements}`, false);
-        if (user.user.id == client.user.id) embed.addField(`**Specification**`, `- Is really nice\n- Is really cool\n- Built by <@231461358200291330>\n- Idea from <@330826518370451457>`, false);
+        /*Custom Specifications for the bot itself*/if (user.user.id == client.user.id) embed.addField(`**Specifications**`, `- Is really nice\n- Is really cool\n- Built by <@231461358200291330>\n- Idea from <@330826518370451457>`, false);
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
 
 

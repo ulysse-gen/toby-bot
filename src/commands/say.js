@@ -167,10 +167,12 @@ module.exports = {
 
             guild.waitingForMessage.data.say[message.author.id].content = `${args.join(' ')}`;
             if (typeof guild.waitingForMessage.data.say[message.author.id].channel == "undefined") guild.waitingForMessage.data.say[message.author.id].channel = message.channel.id;
+            guild.waitingForMessage.data.say[message.author.id].attachments = [];
+            message.attachments.forEach(attachment => guild.waitingForMessage.data.say[message.author.id].attachments.push(attachment));
 
             client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
                 fetchedGuild.channels.fetch(guild.waitingForMessage.data.say[message.author.id].channel).then(fetchedChannel => {
-                    fetchedChannel.send(`${guild.waitingForMessage.data.say[message.author.id].content}`).then(msg => {
+                    fetchedChannel.send({content: (guild.waitingForMessage.data.say[message.author.id].content != "" && guild.waitingForMessage.data.say[message.author.id].content != " ") ? `${guild.waitingForMessage.data.say[message.author.id].content}` : null, files: guild.waitingForMessage.data.say[message.author.id].attachments}).then(msg => {
                         let isAcrossChannel = (fetchedChannel.id != message.channel.id);
                         if (guild.configuration.behaviour.logSaidMessages == true) {
                             if (guild.waitingForMessage.data.say[message.author.id].noLogs) MainLog.log(`${message.author.tag}(${message.author.id}) made me say \`${guild.waitingForMessage.data.say[message.author.id].content}\` in [${guild.waitingForMessage.data.say[message.author.id].channel}@${guild.waitingForMessage.data.say[message.author.id].channel}]`);
@@ -227,6 +229,7 @@ module.exports = {
             }
 
 
+            /* Creating the handler for future messages in the channel */
             if (typeof guild.waitingForMessage.channels == "undefined")guild.waitingForMessage.channels = [];
             if (typeof guild.waitingForMessage.channels[message.channel.id] == "undefined")guild.waitingForMessage.channels[message.channel.id] = [];
             guild.waitingForMessage.channels[message.channel.id][message.author.id] = (message) => {
@@ -235,10 +238,12 @@ module.exports = {
                 } : false;
                 if (typeof guild.waitingForMessage.data.say[message.author.id].channel == "undefined") guild.waitingForMessage.data.say[message.author.id].channel = message.channel.id;
                 guild.waitingForMessage.data.say[message.author.id].content = message.content;
+                guild.waitingForMessage.data.say[message.author.id].attachments = [];
+                message.attachments.forEach(attachment => guild.waitingForMessage.data.say[message.author.id].attachments.push(attachment));
 
                 client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
                     fetchedGuild.channels.fetch((typeof guild.waitingForMessage.data.say[message.author.id].channel == "undefined") ? message.channel.id : guild.waitingForMessage.data.say[message.author.id].channel).then(fetchedChannel => {
-                        fetchedChannel.send(`${guild.waitingForMessage.data.say[message.author.id].content}`).then(msg => {
+                        fetchedChannel.send({content: (guild.waitingForMessage.data.say[message.author.id].content != "" && guild.waitingForMessage.data.say[message.author.id].content != " ") ? `${guild.waitingForMessage.data.say[message.author.id].content}` : null, files: guild.waitingForMessage.data.say[message.author.id].attachments}).then(msg => {
                             let isAcrossChannel = (fetchedChannel.id != message.channel.id);
                             if (guild.configuration.behaviour.logSaidMessages == true) {
                                 if (guild.waitingForMessage.data.say[message.author.id].noLogs) MainLog.log(`${message.author.tag}(${message.author.id}) made me say \`${guild.waitingForMessage.data.say[message.author.id].content}\` in [${guild.waitingForMessage.data.say[message.author.id].channel}@${guild.waitingForMessage.data.say[message.author.id].channel}]`);
