@@ -30,7 +30,7 @@ module.exports = {
             }).catch(e => {
                 return undefined;
             });
-            if (typeof user == "undefined") return {user: {id: args[0]}};
+            if (typeof user == "undefined") user = {user: {id: args[0]}};
         }
         if (args.length == 0) user = await message.channel.guild.members.fetch(message.author.id, {
             cache: false,
@@ -38,7 +38,8 @@ module.exports = {
         }).catch(e => {
             return undefined;
         });
-        
+
+        if (typeof user == "undefined") return utils.sendError(message, guild, `User not found.`);
 
         let embedFields = [];
         let embedPages = [];
@@ -47,9 +48,9 @@ module.exports = {
             color: guild.configuration.colors.main
         });
 
-        if (typeof guild.lastMessages[message.author.id] == "undefined" || guild.lastMessages[message.author.id].length == 0) return utils.sendError(message, guild, `No messages in cache.`);
+        if (typeof guild.lastMessages[user.user.id] == "undefined" || guild.lastMessages[user.user.id].length == 0) return utils.sendError(message, guild, `No messages in cache.`);
     
-        guild.lastMessages[message.author.id].forEach(indMessage => {
+        guild.lastMessages[user.user.id].forEach(indMessage => {
             embedFields.push([`**Message Entry**`, `Content: ${indMessage.content}\nAttachments : ${(indMessage.attachments.length == 0) ? `None` : `[**URL**](${indMessage.attachments.join(`) [**URL**](`)})`}\nSent in : <#${indMessage.channelId}>\nSent at : <t:${moment(indMessage.createdTimestamp).unix()}>`, false]);
         });
 
