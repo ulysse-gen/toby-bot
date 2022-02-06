@@ -7,6 +7,7 @@ const {
 
 
 const Logger = require(`./Logger`);
+const { result } = require('lodash');
 
 //Loggers
 const MainLog = new Logger();
@@ -84,6 +85,7 @@ module.exports = class permissionsManager {
             connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
                 connection.end();
                 if (error) res(false);
+                if (typeof results == "undefined")res(false);
                 delete results[0].numId;
                 delete results[0].guildId;
                 for (let iterator in results[0]) {
@@ -144,12 +146,12 @@ module.exports = class permissionsManager {
         return requestPromise;
     }
 
-    getUserPermissions(userId, isAdmin = false) {
+    async getUserPermissions(userId, isAdmin = false) {
         if (!this.initialized) return {}; //If the permissionManager is not initialized, return an enmpty permission array
         if (typeof this.permissions.users[userId] == "object" && Object.keys(this.permissions.users[userId]).length >= 1) {
             return this.permissions.users[userId]; //Check if user permissions are in cache & if its not empty, return it
         }
-        this.load(); //This only runs if the permissions cached were empty, load from file in case any update have applied to the file & cache it
+        await this.load(); //This only runs if the permissions cached were empty, load from file in case any update have applied to the file & cache it
         if (typeof this.permissions.users[userId] == "object" && Object.keys(this.permissions.users[userId]).length >= 1) {
             return this.permissions.users[userId]; //Check if user permissions are in cache & if its not empty, return it
         }
@@ -163,10 +165,10 @@ module.exports = class permissionsManager {
         return {};
     }
 
-    getInternalRolePermissions(internalRole) {
+    async getInternalRolePermissions(internalRole) {
         if (!this.initialized) return {}; //If the permissionManager is not initialized, return an enmpty permission array
         if (typeof this.permissions.internalRoles[internalRole] == "object" && Object.keys(this.permissions.internalRoles[internalRole]).length >= 1) return this.permissions.internalRoles[internalRole]; //Check if internalRole permissions are in cache & if its not empty, return it                           
-        this.load() //This only runs if the permissions cached were empty, load from file in case any update have applied to the file & cache it
+        await this.load() //This only runs if the permissions cached were empty, load from file in case any update have applied to the file & cache it
         if (typeof this.permissions.internalRoles[internalRole] == "object" && Object.keys(this.permissions.internalRoles[internalRole]).length >= 1) return this.permissions.internalRoles[internalRole]; //Check newly cached data
 
         if (this.guildId == "global") {
@@ -179,7 +181,7 @@ module.exports = class permissionsManager {
         return {};
     }
 
-    getRolePermission(guildId, roleId, isAdmin = false) { //I dont have patience to comment but its the same as the two other just going nested
+    async getRolePermission(guildId, roleId, isAdmin = false) { //I dont have patience to comment but its the same as the two other just going nested
         if (!this.initialized) return {};
         if (typeof this.permissions.roles[guildId] == "object" && Object.keys(this.permissions.roles[guildId]).length >= 1)
             if (typeof this.permissions.roles[guildId][roleId] == "object" && Object.keys(this.permissions.roles[guildId][roleId]).length >= 1) {
@@ -189,7 +191,7 @@ module.exports = class permissionsManager {
                 }
                 return this.permissions.roles[guildId][roleId];
             }
-        this.load();
+        await this.load();
         if (typeof this.permissions.roles[guildId] == "object" && Object.keys(this.permissions.roles[guildId]).length >= 1)
             if (typeof this.permissions.roles[guildId][roleId] == "object" && Object.keys(this.permissions.roles[guildId][roleId]).length >= 1) {
                 if ((isAdmin && this.guildId == "global") && (typeof this.permissions.roles[guildId][roleId]["*"] != "boolean" || this.permissions.roles[guildId][roleId]["*"] != true)) {
@@ -209,11 +211,11 @@ module.exports = class permissionsManager {
         }
     }
 
-    getChannelPermission(guildId, channelId) { //I dont have patience to comment but its the same as the one just above but with channel insteal of role
+    async getChannelPermission(guildId, channelId) { //I dont have patience to comment but its the same as the one just above but with channel insteal of role
         if (!this.initialized) return {};
         if (typeof this.permissions.channels[guildId] == "object" && Object.keys(this.permissions.channels[guildId]).length >= 1)
             if (typeof this.permissions.channels[guildId][channelId] == "object" && Object.keys(this.permissions.channels[guildId][channelId]).length >= 1) return this.permissions.channels[guildId][channelId];
-        this.load();
+        await this.load();
         if (typeof this.permissions.channels[guildId] == "object" && Object.keys(this.permissions.channels[guildId]).length >= 1)
             if (typeof this.permissions.channels[guildId][channelId] == "object" && Object.keys(this.permissions.channels[guildId][channelId]).length >= 1) return this.permissions.channels[guildId][channelId];
 
@@ -228,10 +230,10 @@ module.exports = class permissionsManager {
         return {};
     }
 
-    getGuildPermissions(guildId) { //Same as for user & internal role but with guild instead
+    async getGuildPermissions(guildId) { //Same as for user & internal role but with guild instead
         if (!this.initialized) return {};
         if (typeof this.permissions.guilds[guildId] == "object" && Object.keys(this.permissions.guilds[guildId]).length >= 1) return this.permissions.guilds[guildId];
-        this.load();
+        await this.load();
         if (typeof this.permissions.guilds[guildId] == "object" && Object.keys(this.permissions.guilds[guildId]).length >= 1) return this.permissions.guilds[guildId];
 
         if (this.guildId == "global") {
@@ -246,18 +248,17 @@ module.exports = class permissionsManager {
 
     async userHasPermission(permission, userId, userRoles = undefined, channelId = undefined, guildId = undefined, canReturnNull = false) {
         if (!this.initialized) return false;
-        await this.load();
         let zisse = this; //Just making a link to "this" to access it in nested functions. Yes, in french i read "zisse" as "this"
         if (this.neverAllow.includes(permission)) return false; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
         if (this.neverAllowGuildFocused.includes(permission) && this.guildId == "global") return false; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
-        let userPermissions = this.getUserPermissions(userId); //Call for the user permissions**
+        let userPermissions = await this.getUserPermissions(userId); //Call for the user permissions**
 
         let permissionCheckingPromise = new Promise(async (res, rej) => { //This is a thing to be able to wait for it to process before returning the value, thanks javascript its terrible, allow for async execution tho
             let permissionCheckingPromise_User = new Promise(async (res, rej) => {
                 this.client.guilds.fetch(guildId).then(async fethedGuild => {
                     fethedGuild.members.fetch(userId).then(async fetchedUser => {
                         let isAdmin = await fetchedUser.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true);
-                        let userPermissions = this.getUserPermissions(userId, isAdmin); //Call for the user permissions**
+                        let userPermissions = await this.getUserPermissions(userId, isAdmin); //Call for the user permissions**
                         let isPermissionGranted = await this.isPermissionGranted(userPermissions, permission); //Check if permissions is granted, if yes, return true just below****
                         if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][USER]Permission ${permission} => ${isPermissionGranted}`);
                         res(isPermissionGranted);
@@ -280,7 +281,7 @@ module.exports = class permissionsManager {
                 let control = Object.keys(userPermissions).length;
                 for (const key in userPermissions) {
                     if (key.startsWith(`internalRole.`)) {
-                        let internalRolesPermissions = zisse.getInternalRolePermissions(key.replace(`internalRole.`, ``)); //Same as ** just above
+                        let internalRolesPermissions = await zisse.getInternalRolePermissions(key.replace(`internalRole.`, ``)); //Same as ** just above
                         let isPermissionGranted = await this.isPermissionGranted(internalRolesPermissions, permission); //Same as **** just above
                         if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][INTERNALROLE]Permission ${permission} => ${isPermissionGranted}`);
                         if (isPermissionGranted != null) res(isPermissionGranted);
@@ -302,7 +303,7 @@ module.exports = class permissionsManager {
                         fetchedUser.roles.cache.forEach(async indRole => {
                             let isAdmin = await indRole.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true);
                             if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][ROLE]Role ${indRole.id}@${guildId} (${isAdmin})`);
-                            let rolePermissions = this.getRolePermission(guildId, indRole.id, isAdmin); //Same as ** just above
+                            let rolePermissions = await this.getRolePermission(guildId, indRole.id, isAdmin); //Same as ** just above
                             let isPermissionGranted = await this.isPermissionGranted(rolePermissions, permission); //Same as **** just above
                             if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][ROLE]Permission ${permission} => ${isPermissionGranted}`);
                             if (isPermissionGranted != null) res(isPermissionGranted);
@@ -324,7 +325,7 @@ module.exports = class permissionsManager {
             if (isPermissionGranted_Role != null) res(isPermissionGranted_Role);
 
             if (typeof channelId == "string") {
-                let channelPermissions = this.getChannelPermission(guildId, channelId); //Same as ** just above
+                let channelPermissions = await this.getChannelPermission(guildId, channelId); //Same as ** just above
                 if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][CHANNEL]Begining permission check`);
                 let isPermissionGranted = await this.isPermissionGranted(channelPermissions, permission); //Same as **** just above
                 if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][CHANNEL]Permission => ${isPermissionGranted}`);
@@ -332,7 +333,7 @@ module.exports = class permissionsManager {
             }
 
             if (typeof guildId == "string") {
-                let guildPermissions = this.getGuildPermissions(guildId); //Same as ** just above
+                let guildPermissions = await this.getGuildPermissions(guildId); //Same as ** just above
                 if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][GUILD]Begining permission check`);
                 let isPermissionGranted = await this.isPermissionGranted(guildPermissions, permission); //Same as **** just above
                 if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][GUILD]Permission => ${isPermissionGranted}`);

@@ -21,7 +21,9 @@ module.exports = {
             description: ''
         });
 
-        embed.description = `- Things changed`;
+        embed.description += `- Permissions do not fetch everytime now, should reduce repsonse time & server load`;
+        embed.description += `- Fixed help permission showing`;
+        embed.description += `- Cleaned the code a bit`;
 
         message.reply({
             embeds: [embed],
