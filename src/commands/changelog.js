@@ -22,8 +22,8 @@ module.exports = {
         });
 
         embed.description += `- Permissions do not fetch everytime now, should reduce repsonse time & server load`;
-        embed.description += `- Fixed help permission showing`;
-        embed.description += `- Cleaned the code a bit`;
+        embed.description += `\n- Fixed help permission showing`;
+        embed.description += `\n- Cleaned the code a bit`;
 
         message.reply({
             embeds: [embed],
