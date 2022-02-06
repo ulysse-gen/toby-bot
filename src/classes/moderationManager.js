@@ -129,6 +129,15 @@ module.exports = class moderationManager {
             connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`status\`='active'`, async function (error, results, fields) {
                 connection.end();
                 if (error) res(false);
+                if (typeof results == "undefined"){
+                    MainLog.log(`results is undefined for SELECT * FROM \`moderationLogs\` WHERE \`status\`='active'`);
+                    MainLog.log(`Check for potential issue`);
+                }
+                if (results.length == 0){
+                    MainLog.log(`results length is 0 for SELECT * FROM \`moderationLogs\` WHERE \`status\`='active'`);
+                    MainLog.log(`Check for potential issue`);
+                }
+                if (typeof results == "undefined")res(true);
                 if (results.length <= 0) res(true);
                 let control = results.length;
                 results.forEach(async indPunishments => {
