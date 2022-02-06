@@ -15,8 +15,5 @@ Things to know about TobyBot to make everything clear:
     Make the permission scan all in once not one by one (User, Internal Role, Role, Channel, Guild)
 
 - Implementation of t!russianroulette command. > Will work on it soonish, should be an easy one
-
-- Creation of "simpler" fun commands
-                Such as: t!rolldice, t!flipcoin, t!choose, t!rockpaperscissors, etc. > Already worked on it a bit, will work more on it soonish, should be an easy one
                 
 - Auto Moderation Phase/ Version 4 
