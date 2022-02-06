@@ -21,12 +21,9 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `- TobyBot save the last 25 messages from a user when warning, muting, kicking and banning.`;
-        embed.description += `\n- New command \`t!lastmessages\` to list the last 25 messages of a user.`;
-        embed.description += `\n- New command \`t!punishtranscript <caseId>\` to list the last 25 messages of a user before a punishment (warn, mute, kick, ban).`;
-        embed.description += `\n- \`t!modlogs\` show if a transcript is available for each punishments.`;
-        embed.description += `\n**The bot only cache message when running, restarting it clears the cache.**`;
-        embed.description += `\n**This is still in testing, if this slows the bot in any way, it can be removed.**`;
+        embed.description += `\n- New command \`t!choose <choice1> <choice2> [choice3] .. [choice9999]\` to choose between multiple choices. Can be separated by spaces or comma. (Have to choose, cannot use both)`;
+        embed.description += `\n- New command \`t!rockpaperscissors\` play a rock paper scissors game VS Toby, 3 rounds.`;
+        embed.description += `\n- New command \`t!rolldice\` roll a dice and pick a random number between [1, 6].`;
 
         message.reply({
             embeds: [embed],

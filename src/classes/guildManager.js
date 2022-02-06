@@ -23,7 +23,8 @@ module.exports = class guildManager {
             users: {},
             channels: {},
             data: {
-                say: {}
+                say: {},
+                rockpaperscissors: {}
             }
         }
 

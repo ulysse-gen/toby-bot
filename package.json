@@ -1,6 +1,6 @@
 {
   "name": "tobybot",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "Toby Discord Bot",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "colors": "^1.4.0",
+    "crypto-random": "^1.0.3",
     "discord.js": "^13.6.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
