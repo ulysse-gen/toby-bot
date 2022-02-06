@@ -23,7 +23,7 @@ module.exports = {
             cache: false,
             force: true
         }).catch(e => {
-            return undefined;
+            return {user: {id:punishmentInfos.userId}};
         });
 
         let embedFields = [];
