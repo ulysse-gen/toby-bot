@@ -89,11 +89,11 @@ module.exports = class permissionsManager {
                     MainLog.log(`results is undefined for SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`);
                     MainLog.log(`Check for potential issue`);
                 }
+                if (typeof results == "undefined")res(false);
                 if (results.length == 0){
                     MainLog.log(`results length is 0 for SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`);
                     MainLog.log(`Check for potential issue`);
                 }
-                if (typeof results == "undefined")res(false);
                 if (results.length == 0)res(false);
                 delete results[0].numId;
                 delete results[0].guildId;
