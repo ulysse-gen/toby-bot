@@ -1,15 +1,18 @@
 # toby-bot
 Official Toby Bot repo
 
-#Todo:
+Things to know about TobyBot to make everything clear:
+    - TobyBot cache the last 25 messages of EVERY member of a guild and keep them stored in RAM.
+    - Those message cannot be seen by any other way than the lastmessages command, or by saving them.
+    - Those message are never saved out of the scope of the moderation logs process & the lastmessages command.
+
+# Todo:
 - Implementation of t!lockdown command. > Will prob start it last (aside Auto Moderation ?)
 
 - Implementation of t!purge command. > Will work on it soonish, should be an easy one
 
 - Cleaning up Toby's code to run more efficiently. (adding permissions optitional priority too) > Working on it 
     Make the permission scan all in once not one by one (User, Internal Role, Role, Channel, Guild)
-
-- Transcripts of messages removed from users that are banned via Toby Bot. > Will work on it soonish, should be an easy one
 
 - Implementation of t!russianroulette command. > Will work on it soonish, should be an easy one
 
