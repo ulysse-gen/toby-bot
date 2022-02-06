@@ -28,6 +28,12 @@ module.exports = async function (message) {
     
     if (!guild.initialized)return false;
 
+    if (typeof guild.lastMessages[message.author.id] == "undefined")guild.lastMessages[message.author.id] = [];
+    let lastMessagePush = {channelId: message.channel.id, guildId: message.channel.guild.id, userId: message.author.id, content: message.content, attachments: [], createdTimestamp: message.createdTimestamp};
+    message.attachments.forEach(messageAttachement => lastMessagePush.attachments.push(messageAttachement.url))
+    guild.lastMessages[message.author.id].unshift(lastMessagePush);
+    if (guild.lastMessages[message.author.id].length >= 25)guild.lastMessages[message.author.id].splice(24, guild.lastMessages[message.author.id]-25);
+
     if (message.author.id == client.user.id)return; //Skip if himself
 
     if (message.type == "APPLICATION_COMMAND" || message.author.bot)return; //Skip if its a bot or an app message

@@ -24,13 +24,13 @@ module.exports = class moderationManager {
         if (typeof length == "number") expireDate.add(length, 'seconds');
         expireDate = expireDate.format(`YYYY-MM-DD HH:mm-ss`);
 
-        let values = [guildId, type, userId, moderatorId, reason, expireDate, (typeof length == "number") ? `active` : (typeof length == "boolean") ? (length == false) ? "info" : "indefinite" : "indefinite"];
-        let valueNames = ["guildId", "type", "userId", "moderatorId", "reason", "expires", "status"];
+        let values = [guildId, type, userId, moderatorId, reason, expireDate, (typeof length == "number") ? `active` : (typeof length == "boolean") ? (length == false) ? "info" : "indefinite" : "indefinite", (typeof this.globalGuilds.guilds[guildId].lastMessages[userId] != "undefined" ? JSON.stringify(this.globalGuilds.guilds[guildId].lastMessages[userId]) : "[]")];
+        let valueNames = ["guildId", "type", "userId", "moderatorId", "reason", "expires", "status", "messageHistory"];
 
         let connection = mysql.createConnection(this.sqlConfiguration);
         connection.connect();
         let requestPromise = new Promise((res, rej) => {
-            connection.query(`INSERT INTO \`moderationLogs\` (\`${valueNames.join('`,`')}\`) VALUES (?,?,?,?,?,?,?)`, values, async function (error, results, fields) {
+            connection.query(`INSERT INTO \`moderationLogs\` (\`${valueNames.join('`,`')}\`) VALUES (?,?,?,?,?,?,?,?)`, values, async function (error, results, fields) {
                 connection.end();
                 if (results.affectedRows == 1) {
                     connection = mysql.createConnection(zisse.sqlConfiguration);
@@ -121,6 +121,21 @@ module.exports = class moderationManager {
         return requestResult;
     }
 
+    async getPunishementByCaseId(caseId, guildId) {
+        let connection = mysql.createConnection(this.sqlConfiguration);
+        connection.connect();
+        let requestPromise = new Promise((res, rej) => {
+            connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`numId\`='${caseId}' AND \`guildId\`='${guildId}'`, async function (error, results, fields) {
+                connection.end();
+                if (error) res(false);
+                if (results.length == 0) res(false);
+                res(results[0]);
+            });
+        });
+        let requestResult = await requestPromise;
+        return requestResult;
+    }
+
     async checkForExpired() {
         let zisse = this;
         let connection = mysql.createConnection(this.sqlConfiguration);
@@ -131,10 +146,6 @@ module.exports = class moderationManager {
                 if (error) res(false);
                 if (typeof results == "undefined"){
                     MainLog.log(`results is undefined for SELECT * FROM \`moderationLogs\` WHERE \`status\`='active'`);
-                    MainLog.log(`Check for potential issue`);
-                }
-                if (results.length == 0){
-                    MainLog.log(`results length is 0 for SELECT * FROM \`moderationLogs\` WHERE \`status\`='active'`);
                     MainLog.log(`Check for potential issue`);
                 }
                 if (typeof results == "undefined")res(true);

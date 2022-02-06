@@ -27,6 +27,10 @@ module.exports = class guildManager {
             }
         }
 
+        this.lastMessages = {
+            
+        }
+
         this.logToChannel = {
             initialized: false
         };

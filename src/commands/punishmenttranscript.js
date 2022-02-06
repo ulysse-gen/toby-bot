@@ -1,0 +1,93 @@
+const {
+    MessageEmbed
+} = require(`discord.js`);
+const moment = require("moment");
+
+const utils = require(`../utils`);
+
+module.exports = {
+    name: "punishmenttranscript",
+    description: `Show message transcript from a punishment by case ID.`,
+    aliases: ["punishtranscript", "pt"],
+    permission: `commands.punishmenttranscript`,
+    category: `moderation`,
+    async exec(client, message, args, guild = undefined) {
+        let user = undefined;
+
+        if (args.length ==  0) return utils.sendError(message, guild, `No case ID specified.`);
+
+        let punishmentInfos = await guild.moderationManager.getPunishementByCaseId(args[0], guild.guild.id);
+        if (typeof punishmentInfos == "undefined") return utils.sendError(message, guild, `Could not find punishement.`);
+        if (punishmentInfos == false) return utils.sendError(message, guild, `Could not find punishement.`);
+        user = await message.channel.guild.members.fetch(punishmentInfos.userId, {
+            cache: false,
+            force: true
+        }).catch(e => {
+            return undefined;
+        });
+
+        let embedFields = [];
+        let embedPages = [];
+        let embed = new MessageEmbed({
+            title: `Last messages - ${(typeof user.user.tag != "undefined") ? user.user.tag : user.user.id}`,
+            color: guild.configuration.colors.main,
+            description: `Last messages from <@${user.user.id}> before the ${punishmentInfos.type.toLowerCase()}`
+        });
+
+        let messageHistory;
+        try {
+            messageHistory = JSON.parse(punishmentInfos.messageHistory);
+        }catch (e) {
+            return utils.sendError(message, guild, `An error occured trying to parse the message history.`);
+        }
+
+        if (typeof messageHistory == "undefined" || messageHistory.length == 0) return utils.sendError(message, guild, `No messages saved.`);
+    
+        messageHistory.forEach(indMessage => {
+            embedFields.push([`**Message Entry**`, `Content: ${indMessage.content}\nAttachments : ${(indMessage.attachments.length == 0) ? `None` : `[**URL**](${indMessage.attachments.join(`) [**URL**](`)})`}\nSent in : <#${indMessage.channelId}>\nSent at : <t:${moment(indMessage.createdTimestamp).unix()}>`, false]);
+        });
+
+        embedPages = splitArrayIntoChunksOfLen(embedFields, 10);
+        embed.footer = {
+            text: `Use \`${guild.configuration.prefix}punishmenttranscript <caseId> [page number]\` to search thru pages. [1/${embedPages.length}]`
+        };
+
+        embedFields = embedPages[0];
+        if (args.length == 2) {
+            try {
+                args[1] = parseInt(args[1]);
+            } catch (e) {
+                return utils.sendError(message, guild, `Pages must be selected by numbers.`);
+            }
+            embed.footer = {
+                text: `Use \`${guild.configuration.prefix}punishmenttranscript <caseId> [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
+            };
+            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`);
+            embedFields = embedPages[args[1] - 1];
+        }
+
+        embedFields.forEach(embedField => {
+            embed.addField(embedField[0], embedField[1], embedField[2]);
+        });
+        embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
+
+
+        message.reply({
+            embeds: [embed],
+            failIfNotExists: false
+        }, false).then(msg => {
+            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+        }).catch(e => utils.messageReplyFailLogger(message, guild, e));
+        return true;
+    }
+}
+
+function splitArrayIntoChunksOfLen(arr, len) {
+    var chunks = [],
+        i = 0,
+        n = arr.length;
+    while (i < n) {
+        chunks.push(arr.slice(i, i += len));
+    }
+    return chunks;
+}

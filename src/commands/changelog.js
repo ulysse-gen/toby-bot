@@ -21,9 +21,12 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `- Permissions do not fetch everytime now, should reduce repsonse time & server load`;
-        embed.description += `\n- Fixed help permission showing`;
-        embed.description += `\n- Cleaned the code a bit`;
+        embed.description += `- TobyBot save the last 25 messages from a user when warning, muting, kicking and banning.`;
+        embed.description += `\n- New command \`t!lastmessages\` to list the last 25 messages of a user.`;
+        embed.description += `\n- New command \`t!punishtranscript <caseId>\` to list the last 25 messages of a user before a punishment (warn, mute, kick, ban).`;
+        embed.description += `\n- \`t!modlogs\` show if a transcript is available for each punishments.`;
+        embed.description += `\n**The bot only cache message when running, restarting it clears the cache.**`;
+        embed.description += `\n**This is still in testing, if this slows the bot in any way, it can be removed.**`;
 
         message.reply({
             embeds: [embed],
