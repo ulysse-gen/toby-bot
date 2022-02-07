@@ -14,8 +14,15 @@ Things saved by TobyBot:
 
 - Make the permission scan all in once not one by one (User, Internal Role, Role, Channel, Guild). > Will work on it later, im tired of playing with permissions rn
 
-- Add a permission (optionnal) priority > Will work on it later, im tired of playing with permissions rn
+- Add a permission (optionnal) priority. > Will work on it later, im tired of playing with permissions rn
 
 - Implementation of t!russianroulette command. > Will work on it soonish, should be an easy one
                 
 - Auto Moderation Phase/ Version 4. > Should start working on it soonish, will take some time, may implement slowly
+
+
+
+
+
+/*Random Shit*/
+Join VC: discordVoice.joinVoiceChannel({channelId:'912775305842794517',guildId:'891829347613306960',adapterCreator: guild.guild.voiceAdapterCreator});

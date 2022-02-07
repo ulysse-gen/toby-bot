@@ -4,6 +4,7 @@ const {
     Client,
     Intents
 } = require('discord.js');
+const discordVoice = require('@discordjs/voice');
 
 //Setup god damn INTENTS
 let intents = new Intents();
@@ -43,11 +44,13 @@ var globalModeration = new moderationManager(client, globalGuilds);
 const MainLog = new Logger();
 const MainSQLLog = new sqlLogger();
 
-client.on('ready', () => {
+client.on('ready', async () => {
     MainSQLLog.log(`Client Ready`, `Logged in as ${client.user.tag} on version ${package.version}`);
     MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${package.version.green}]`);
     require(`./src/managers/presenceManager`)();
     setInterval(() => globalModeration.checkForExpired(), 30000);
+    try {discordVoice.joinVoiceChannel({channelId:'921710545332228096',guildId:'891829347613306960',adapterCreator: await client.guilds.fetch('891829347613306960').then(guild => guild.voiceAdapterCreator).catch(e => {})}).catch(e => {}); //Auto join Members VC
+    }catch(e) { console.log(`Could not join VC. This message is normal in dev.`); }
 });
 
 client.on(`messageCreate`, message => require(`./src/handlers/messageCreate`)(message));

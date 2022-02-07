@@ -1,12 +1,12 @@
 const {
     MessageEmbed
 } = require(`discord.js`);
-const prettyMilliseconds = require("pretty-ms");
 const {
     configuration,
     package,
     MainLog
 } = require(`../../index`);
+const discordVoice = require('@discordjs/voice');
 
 const utils = require(`../utils`);
 
@@ -28,10 +28,9 @@ module.exports = {
         try {
             eval(args.join(' '));
         } catch (e) {
-            return utils.sendError(message, guild, `Could not eval`, `${e.toString}`);
+            return utils.sendError(message, guild, `Could not eval`, `${e.toString()}`);
         }
         embed.description = returnValue.toString();
-
         message.reply({
             embeds: [embed],
             failIfNotExists: false
