@@ -19,18 +19,23 @@ module.exports = {
     async exec(client, message, args, guild = undefined) {
         let embed = new MessageEmbed({
             title: `Eval :`,
-            color: guild.configuration.colors.main
+            color: guild.configuration.colors.success
         });
 
-        if (args.length == 0)return utils.sendError(message, guild, `Could not eval`, `Args empty`);
-        if (args[0] == "help")return utils.sendMain(message, guild, `Eval quick help`, `Return variable = \`returnValue\``);
-        let returnValue = `No return value specified`;
-        try {
-            eval(args.join(' '));
-        } catch (e) {
-            return utils.sendError(message, guild, `Could not eval`, `\`\`\`${e.toString()}\`\`\``);
-        }
-        embed.description = ```${returnValue.toString()}```;
+        if (args.length == 0) return utils.sendError(message, guild, `Could not eval`, `Args empty`);
+        if (args[0] == "help") return utils.sendMain(message, guild, `Eval quick help`, `Return variable = \`returnValue\``);
+
+        embed.description = await new Promise(async (res, rej) => {
+            let returnValue = `No return value.`;
+            try {
+                eval(args.join(' '));
+                res(`\`\`\`${returnValue.toString()}\`\`\``);
+            } catch (e) {
+                embed.color = guild.configuration.colors.error;
+                res(`Could not eval : ${e.toString()}`);
+            }
+        });
+
         message.reply({
             embeds: [embed],
             failIfNotExists: false

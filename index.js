@@ -11,7 +11,7 @@ let intents = new Intents();
 intents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS,
     Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-    Intents.FLAGS.DIRECT_MESSAGE_TYPING);
+    Intents.FLAGS.DIRECT_MESSAGE_TYPING, Intents.FLAGS.GUILD_VOICE_STATES);
 
 //Classes Import
 const Logger = require(`./src/classes/Logger`);
@@ -49,8 +49,8 @@ client.on('ready', async () => {
     MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${package.version.green}]`);
     require(`./src/managers/presenceManager`)();
     setInterval(() => globalModeration.checkForExpired(), 30000);
-    try {discordVoice.joinVoiceChannel({channelId:'921710545332228096',guildId:'891829347613306960',adapterCreator: await client.guilds.fetch('891829347613306960').then(guild => guild.voiceAdapterCreator).catch(e => {})}).catch(e => {}); //Auto join Members VC
-    }catch(e) { console.log(`Could not join VC. This message is normal in dev.`); }
+    try {discordVoice.joinVoiceChannel({channelId:'921710545332228096',guildId:'891829347613306960',adapterCreator: await client.guilds.fetch('891829347613306960').then(guild => guild.voiceAdapterCreator), selfMute: false, selfDeaf: false}); //Auto join Members VC
+    }catch(e) { console.log(`Could not join VC. This message is normal in dev. ${e.toString()}`); }
 });
 
 client.on(`messageCreate`, message => require(`./src/handlers/messageCreate`)(message));
