@@ -28,9 +28,9 @@ module.exports = {
         try {
             eval(args.join(' '));
         } catch (e) {
-            return utils.sendError(message, guild, `Could not eval`, `${e.toString()}`);
+            return utils.sendError(message, guild, `Could not eval`, `\`\`\`${e.toString()}\`\`\``);
         }
-        embed.description = returnValue.toString();
+        embed.description = ```${returnValue.toString()}```;
         message.reply({
             embeds: [embed],
             failIfNotExists: false
