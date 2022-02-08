@@ -54,6 +54,7 @@ client.on('ready', async () => {
 });
 
 client.on(`messageCreate`, message => require(`./src/handlers/messageCreate`)(message));
+client.on(`interactionCreate`, interation => require(`./src/handlers/interactionCreate`)(interation));
 
 
 client.on('error', (code) => {

@@ -21,6 +21,7 @@
     "mysql": "^2.18.1",
     "opusscript": "^0.0.8",
     "pretty-ms": "^7.0.1",
+    "randomstring": "^1.2.2",
     "timestring": "^6.0.0",
     "url-exists": "^1.0.3"
   }

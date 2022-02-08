@@ -28,6 +28,14 @@ module.exports = class guildManager {
             }
         }
 
+        this.waitingForInteration = {
+            users: {},
+            channels: {},
+            data: {
+                russianroulette: {}
+            }
+        }
+
         this.lastMessages = {
             
         }
