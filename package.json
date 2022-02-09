@@ -16,6 +16,7 @@
     "crypto-random": "^1.0.3",
     "discord.js": "^13.6.0",
     "ffmpeg-static": "^4.4.1",
+    "heapdump": "^0.3.15",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",

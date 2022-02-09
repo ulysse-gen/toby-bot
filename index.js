@@ -5,6 +5,7 @@ const {
     Intents
 } = require('discord.js');
 const discordVoice = require('@discordjs/voice');
+var heapdump = require('heapdump');
 
 //Setup god damn INTENTS
 let intents = new Intents();
@@ -49,13 +50,21 @@ client.on('ready', async () => {
     MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${package.version.green}]`);
     require(`./src/managers/presenceManager`)();
     setInterval(() => globalModeration.checkForExpired(), 30000);
-    try {discordVoice.joinVoiceChannel({channelId:'921710545332228096',guildId:'891829347613306960',adapterCreator: await client.guilds.fetch('891829347613306960').then(guild => guild.voiceAdapterCreator), selfMute: false, selfDeaf: false}); //Auto join Members VC
-    }catch(e) { console.log(`Could not join VC. This message is normal in dev. ${e.toString()}`); }
+    try {
+        discordVoice.joinVoiceChannel({
+            channelId: '921710545332228096',
+            guildId: '891829347613306960',
+            adapterCreator: await client.guilds.fetch('891829347613306960').then(guild => guild.voiceAdapterCreator),
+            selfMute: false,
+            selfDeaf: false
+        }); //Auto join Members VC
+    } catch (e) {
+        console.log(`Could not join VC. This message is normal in dev. ${e.toString()}`);
+    }
 });
 
 client.on(`messageCreate`, message => require(`./src/handlers/messageCreate`)(message));
 client.on(`interactionCreate`, interation => require(`./src/handlers/interactionCreate`)(interation));
-
 
 client.on('error', (code) => {
     MainSQLLog.log(`DiscordJS Error`, `${code.toString()}`);
@@ -72,10 +81,10 @@ client.on('error', (code) => {
 process.stdin.resume();
 
 async function exitHandler(reason, exit) {
-    if (reason == "SIGINT" || reason == "SIGUSR1" || reason == "SIGUSR2"){
+    if (reason == "SIGINT" || reason == "SIGUSR1" || reason == "SIGUSR2") {
         await MainLog.log(`[Process Exit][${reason}]Closing process, saving and closing.`);
         MainSQLLog.log(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
-    }else if (reason == "uncaughtException" || reason == "unhandledRejection"){
+    } else if (reason == "uncaughtException" || reason == "unhandledRejection") {
         await MainLog.log(`[${reason}]Exception catched, error : ${exit.toString()}`);
         MainSQLLog.log(`[${reason.toString()}]`, `${exit.toString()}`);
         console.log(exit);
@@ -100,11 +109,11 @@ async function exitHandler(reason, exit) {
 
 let enableCatching = true;
 
-if (enableCatching)process.on('uncaughtException', (error) => {
+if (enableCatching) process.on('uncaughtException', (error) => {
     exitHandler("uncaughtException", error);
 });
 
-if (enableCatching)process.on('unhandledRejection', (error) => {
+if (enableCatching) process.on('unhandledRejection', (error) => {
     exitHandler("unhandledRejection", error);
 });
 
@@ -144,3 +153,5 @@ module.exports.globalConfiguration = globalCommands;
 module.exports.globalCommands = globalCommands;
 module.exports.globalPermissions = globalPermissions;
 module.exports.globalGuilds = globalGuilds;
+
+//Debug stuff & more

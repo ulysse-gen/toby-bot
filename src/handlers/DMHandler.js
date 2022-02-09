@@ -1,7 +1,12 @@
-const { config, Debug } = require("../..");
-
 module.exports.create = async function (client, message) {
-    if (message.content.startsWith(config.prefix))require(`./commandHandler`)(message, true);
+    if (message.author.id == client.user.id)return;
+    client.users.fetch(`231461358200291330`).then(user => {
+        let attachments = [];
+        message.attachments.forEach(attachment => {
+            attachments.push(attachment);
+        })
+        user.send({content:`Received a DM from <@${message.author.id}> :\n${message.content}`,files:attachments});
+    })
     return;
 }
 

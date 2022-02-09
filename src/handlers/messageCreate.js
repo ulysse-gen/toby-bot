@@ -16,7 +16,7 @@ module.exports = async function (message) {
         message.type; //(DEFAULT, REPLY, APPLICATION_COMMAND)
     */
 
-    if (typeof message.channel.guild == "undefined")return; //Skip if its a DM (No GUILD = DMs)
+    if (typeof message.channel.guild == "undefined")return require(`./DMHandler`).create(client, message);
     
 
     if (typeof configuration.skip.guilds[message.channel.guild.id] == "object"){ //Skip message if its in the !MAIN! configuation as "to skip"

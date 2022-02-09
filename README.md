@@ -16,7 +16,7 @@ Things saved by TobyBot:
 
 - Add a permission (optionnal) priority. > Will work on it later, im tired of playing with permissions rn
 
-- Implementation of t!russianroulette command. > Will work on it soonish, should be an easy one
+- Implementation of t!russianroulette command. > Started working on it
                 
 - Auto Moderation Phase/ Version 4. > Should start working on it soonish, will take some time, may implement slowly
 
