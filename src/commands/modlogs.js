@@ -51,24 +51,39 @@ module.exports = {
             }
         });
 
-
-
         let makeTheStats = new Promise((res, rej) => {
-            let connection = mysql.createConnection(guild.moderationManager.sqlConfiguration);
-            connection.connect();
-            connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${user.user.id}'`, async function (error, results, fields) {
-                connection.end();
-                if (results.length == 0) {
+            guild.moderationManager.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
                     res(false);
                 }
-                let control = results.length;
-                results.reverse();
-                results.forEach(modAction => {
-                    embedFields.push([`**Case #${modAction.numId}**`, `**Type:** ${modAction.type}\n**User:** <@${user.user.id}>(${user.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(modAction.type == "Mute" && modAction.status == "active") ? `\n**Expires:** <t:${moment(modAction.expires).unix()}>(<t:${moment(modAction.expires).unix()}:R>)` : ``}${(JSON.parse(modAction.messageHistory).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false]);
-                    control--;
-                    if (control <= 0) {
-                        res(true);
+                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${user.user.id}'`, async function (error, results, fields) {
+                    if (results.length == 0) {
+                        try {
+                            connection.release()
+                        } catch (e) {}
+                        res(false);
                     }
+                    let control = results.length;
+                    results.reverse();
+                    results.forEach(modAction => {
+                        embedFields.push([`**Case #${modAction.numId}**`, `**Type:** ${modAction.type}\n**User:** <@${user.user.id}>(${user.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(modAction.type == "Mute" && modAction.status == "active") ? `\n**Expires:** <t:${moment(modAction.expires).unix()}>(<t:${moment(modAction.expires).unix()}:R>)` : ``}${(JSON.parse(modAction.messageHistory).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false]);
+                        control--;
+                        if (control <= 0) {
+                            try {
+                                connection.release()
+                            } catch (e) {}
+                            res(true);
+                        }
+                    });
+                    try {
+                        connection.release()
+                    } catch (e) {}
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }
+                    res(true);
                 });
             });
         });

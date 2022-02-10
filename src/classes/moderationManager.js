@@ -10,7 +10,7 @@ const MainLog = new Logger();
 
 module.exports = class moderationManager {
     constructor(client, globalGuilds, logTable = "logs") {
-        this.sqlConfiguration = require('../../MySQL.json');
+        this.sqlPool = mysql.createPool(require('../../MySQL.json'));
         this.sqlTable = logTable;
         this.client = client;
         this.globalGuilds = globalGuilds;
@@ -27,23 +27,25 @@ module.exports = class moderationManager {
         let values = [guildId, type, userId, moderatorId, reason, expireDate, (typeof length == "number") ? `active` : (typeof length == "boolean") ? (length == false) ? "info" : "indefinite" : "indefinite", (typeof this.globalGuilds.guilds[guildId].lastMessages[userId] != "undefined" ? JSON.stringify(this.globalGuilds.guilds[guildId].lastMessages[userId]) : "[]")];
         let valueNames = ["guildId", "type", "userId", "moderatorId", "reason", "expires", "status", "messageHistory"];
 
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        connection.connect();
-        let requestPromise = new Promise((res, rej) => {
-            connection.query(`INSERT INTO \`moderationLogs\` (\`${valueNames.join('`,`')}\`) VALUES (?,?,?,?,?,?,?,?)`, values, async function (error, results, fields) {
-                connection.end();
-                if (results.affectedRows == 1) {
-                    connection = mysql.createConnection(zisse.sqlConfiguration);
-                    connection.connect();
-                    connection.query(`UPDATE \`moderationLogs\` SET \`status\`='overwritten' WHERE \`userId\`='${userId}' AND \`guildId\`='${guildId}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite') AND NOT \`numId\`='${results.insertId}'`, async function (error, results, fields) {});
-                    connection.end();
-                    res(results.insertId);
+        return await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
                 }
-                if (error) res(false);
+                connection.query(`INSERT INTO \`moderationLogs\` (\`${valueNames.join('`,`')}\`) VALUES (?,?,?,?,?,?,?,?)`, values, async function (error, results, fields) {
+                    if (results.affectedRows == 1) {
+                        connection.query(`UPDATE \`moderationLogs\` SET \`status\`='overwritten' WHERE \`userId\`='${userId}' AND \`guildId\`='${guildId}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite') AND NOT \`numId\`='${results.insertId}'`, async function (error, results, fields) {});
+                        res(results.insertId);
+                    }
+                    try { connection.release() } catch (e) {}
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                    }
+                    res(false);
+                });
             });
         });
-        let requestResult = await requestPromise;
-        return requestResult;
     }
 
     async sendPunishEmbed(message, guild, type, caseId, user, moderatorId, reason, length) {
@@ -107,104 +109,112 @@ module.exports = class moderationManager {
     }
 
     async isUserPunished(userId, guildId, type) {
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        connection.connect();
-        let requestPromise = new Promise((res, rej) => {
-            connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${userId}' AND \`type\`='${type}' AND \`guildId\`='${guildId}' AND (\`status\`='active' OR \`status\`='indefinite')`, async function (error, results, fields) {
-                connection.end();
-                if (error) res(false);
-                if (results.length == 0) res(false);
-                res(true);
+        let zisse = this;
+        return await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
+                }
+                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${userId}' AND \`type\`='${type}' AND \`guildId\`='${guildId}' AND (\`status\`='active' OR \`status\`='indefinite')`, async function (error, results, fields) {
+                    if (results.length == 0) {
+                        try { connection.release() } catch (e) {}
+                        res(false);
+                    }
+                    try { connection.release() } catch (e) {}
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }
+                    res(true);
+                });
             });
         });
-        let requestResult = await requestPromise;
-        return requestResult;
     }
 
     async getPunishementByCaseId(caseId, guildId) {
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        connection.connect();
-        let requestPromise = new Promise((res, rej) => {
-            connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`numId\`='${caseId}' AND \`guildId\`='${guildId}'`, async function (error, results, fields) {
-                connection.end();
-                if (error) res(false);
-                if (results.length == 0) res(false);
-                res(results[0]);
+        let zisse = this;
+        return await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
+                }
+                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`numId\`='${caseId}' AND \`guildId\`='${guildId}'`, async function (error, results, fields) {
+                    if (results.length == 0) {
+                        try { connection.release() } catch (e) {}
+                        res(false);
+                    }
+                    try { connection.release() } catch (e) {}
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }
+                    res(results[0]);
+                });
             });
         });
-        let requestResult = await requestPromise;
-        return requestResult;
     }
 
     async checkForExpired() {
         let zisse = this;
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        connection.connect();
-        let requestPromise = new Promise(async (res, rej) => {
-            connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`status\`='active'`, async function (error, results, fields) {
-                connection.end();
-                if (error) res(false);
-                if (typeof results == "undefined"){
-                    MainLog.log(`results is undefined for SELECT * FROM \`moderationLogs\` WHERE \`status\`='active'`);
-                    MainLog.log(`Check for potential issue`);
+        return await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
                 }
-                if (typeof results == "undefined")res(true);
-                if (results.length <= 0) res(true);
-                let control = results.length;
-                results.forEach(async indPunishments => {
-                    if (moment(indPunishments.expires).isBefore(moment())) {
-                        await zisse.client.guilds.fetch(indPunishments.guildId).then(async fetchedGuild => {
-                            if (indPunishments.type == "Ban") {
-                                await fetchedGuild.bans.remove(indPunishments.userId, `Punishment expire. (Was banned for ${indPunishments.reason})`).then(async () => {
-                                    connection = mysql.createConnection(zisse.sqlConfiguration);
-                                    connection.connect();
-                                    connection.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`, async function (error, results, fields) {});
-                                    connection.end();
-                                    MainLog.log(`Unbanned ${(await zisse.client.users.fetch(indPunishments.userId)).tag}(${indPunishments.userId}). Punishment expired`);
-                                }).catch(e => {
-                                    if (e.toString() == "DiscordAPIError: Unknown Member") {
-                                        connection = mysql.createConnection(zisse.sqlConfiguration);
-                                        connection.connect();
+                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`status\`='active'`, async function (error, results, fields) {
+                    let control = results.length;
+                    if (typeof results != "undefined" || results.length != 0) results.forEach(async indPunishments => {
+                        if (moment(indPunishments.expires).isBefore(moment())) {
+                            await zisse.client.guilds.fetch(indPunishments.guildId).then(async fetchedGuild => {
+                                if (indPunishments.type == "Ban") {
+                                    await fetchedGuild.bans.remove(indPunishments.userId, `Punishment expire. (Was banned for ${indPunishments.reason})`).then(async () => {
                                         connection.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`, async function (error, results, fields) {});
-                                        connection.end();
-                                        MainLog.log(`Member ${indPunishments.userId} left, expiring punishment. ${e.toString()}`);
-                                    } else {
-                                        MainLog.log(`Could not unban ${indPunishments.userId}. ${e.toString()}`);
-                                    }
-                                });
-                            }
-                            if (indPunishments.type == "Mute" && typeof zisse.globalGuilds.guilds[indPunishments.guildId] != "undefined") {
-                                let muteRole = zisse.globalGuilds.guilds[indPunishments.guildId].configuration.moderation.muteRole;
-                                await fetchedGuild.roles.fetch(muteRole).then(async fetchedRole => {
-                                    await fetchedGuild.members.fetch(indPunishments.userId).then(async fetchedMember => {
-                                        await fetchedMember.roles.remove(fetchedRole, `Punishment expire. (Was muted for ${indPunishments.reason})`).then(async () => {
-                                            connection = mysql.createConnection(zisse.sqlConfiguration);
-                                            connection.connect();
-                                            connection.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`, async function (error, results, fields) {});
-                                            connection.end();
-                                            MainLog.log(`Unmuted ${(fetchedMember.user.tag)}(${indPunishments.userId}). Punishment expired`);
-                                        }).catch(e => console.log(`moderationManager.js could not unmute ${indPunishments.userId} (${e.toString()})`));
+                                        MainLog.log(`Unbanned ${(await zisse.client.users.fetch(indPunishments.userId)).tag}(${indPunishments.userId}). Punishment expired`);
                                     }).catch(e => {
                                         if (e.toString() == "DiscordAPIError: Unknown Member") {
-                                            connection = mysql.createConnection(zisse.sqlConfiguration);
-                                            connection.connect();
                                             connection.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`, async function (error, results, fields) {});
-                                            connection.end();
                                             MainLog.log(`Member ${indPunishments.userId} left, expiring punishment. ${e.toString()}`);
                                         } else {
-                                            MainLog.log(`Could not unmute ${indPunishments.userId}. ${e.toString()}`);
+                                            MainLog.log(`Could not unban ${indPunishments.userId}. ${e.toString()}`);
                                         }
                                     });
-                                }).catch(e => console.log(`moderationManager.js could not fetch role for ${indPunishments.userId} (${e.toString()})`));
-                            }
-                        }).catch(e => console.log(`moderationManager.js could not fetch guild ${zisse.globalGuilds.guilds[indPunishments.guildId]} (${e.toString()})`));
+                                }
+                                if (indPunishments.type == "Mute" && typeof zisse.globalGuilds.guilds[indPunishments.guildId] != "undefined") {
+                                    let muteRole = zisse.globalGuilds.guilds[indPunishments.guildId].configuration.moderation.muteRole;
+                                    await fetchedGuild.roles.fetch(muteRole).then(async fetchedRole => {
+                                        await fetchedGuild.members.fetch(indPunishments.userId).then(async fetchedMember => {
+                                            await fetchedMember.roles.remove(fetchedRole, `Punishment expire. (Was muted for ${indPunishments.reason})`).then(async () => {
+                                                connection.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`, async function (error, results, fields) {});
+                                                MainLog.log(`Unmuted ${(fetchedMember.user.tag)}(${indPunishments.userId}). Punishment expired`);
+                                            }).catch(e => console.log(`moderationManager.js could not unmute ${indPunishments.userId} (${e.toString()})`));
+                                        }).catch(e => {
+                                            if (e.toString() == "DiscordAPIError: Unknown Member") {
+                                                connection.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`, async function (error, results, fields) {});
+                                                MainLog.log(`Member ${indPunishments.userId} left, expiring punishment. ${e.toString()}`);
+                                            } else {
+                                                MainLog.log(`Could not unmute ${indPunishments.userId}. ${e.toString()}`);
+                                            }
+                                        });
+                                    }).catch(e => console.log(`moderationManager.js could not fetch role for ${indPunishments.userId} (${e.toString()})`));
+                                }
+                            }).catch(e => console.log(`moderationManager.js could not fetch guild ${zisse.globalGuilds.guilds[indPunishments.guildId]} (${e.toString()})`));
+                        }
+                        control++;
+                        if (control <= 0) {
+                            res(true);
+                        }
+                    });
+                    try { connection.release() } catch (e) {}
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
                     }
-                    control++;
-                    if (control <= 0) res(true);
+                    res(true);
                 });
             });
         });
-        let requestResult = await requestPromise;
-        return requestResult;
     }
 }

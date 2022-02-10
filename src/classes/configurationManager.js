@@ -10,10 +10,11 @@ const MainLog = new Logger();
 module.exports = class configuationManager {
     constructor(client, sqlConfiguration, fallbackFile, sqlTable = `guildsConfigurations`, sqlWhere = `\`numId\` = 1`, guildId = undefined) {
         this.client = client;
-        this.sqlConfiguration = require('../../MySQL.json');
+        this.sqlPool = mysql.createPool(require('../../MySQL.json'));
         this.sqlTable = sqlTable;
         this.sqlWhere = sqlWhere;
         this.guildId = guildId;
+        this.verbose = false;
 
         this.configuration = {};
         this.fallbackFile = fallbackFile;
@@ -24,36 +25,47 @@ module.exports = class configuationManager {
 
     async initialize() {
         let zisse = this;
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        connection.connect();
-        let requestPromise = new Promise((res, rej) => {
-            connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
-                connection.end();
-                if (error) res(false);
-                if (results.length == 1) {
-                    delete results[0].numId;
-                    delete results[0].guildId;
-                    for (let iterator in results[0]) {
-                        try {
-                            let jsonFormat = JSON.parse(results[0][iterator]);
-                            zisse.configuration[iterator] = jsonFormat;
-                        } catch (e) {
-                            zisse.configuration[iterator] = results[0][iterator];
-                        }
-                    }
-                    res(true);
-                } else if (typeof zisse.guildId != "undefined") {
-                    connection.query(`INSERT INTO ${zisse.sqlTable} (\`guildId\`) VALUES ('${zisse.guildId}')`, async function (error, results, fields) {
-                        connection.end();
-                        if (error) res(false);
-                        if (results.affectedRows != 1) console.log(`configurationManager SQL error, afftected 0 rows`);
-                        res(true);
-                    });
-                    res(true);
+        if (this.verbose)MainLog.log(`Initializing configuration`);
+        let requestResult = await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (this.verbose)MainLog.log(`Connected to SQL`);
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
                 }
+                if (this.verbose)MainLog.log(`Fecthing configuration`);
+                connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
+                    if (typeof results != "undefined" && results.length == 1) {
+                        if (this.verbose)MainLog.log(`Configuration fetched.`);
+                        delete results[0].numId;
+                        delete results[0].guildId;
+                        for (let iterator in results[0]) {
+                            try {
+                                let jsonFormat = JSON.parse(results[0][iterator]);
+                                zisse.configuration[iterator] = jsonFormat;
+                            } catch (e) {
+                                zisse.configuration[iterator] = results[0][iterator];
+                            }
+                        }
+                        try { connection.release() } catch (e) {}
+                        res(true);
+                    } else if (typeof zisse.guildId != "undefined") {
+                        if (this.verbose)MainLog.log(`Configuration non existant, creating entry`);
+                        if (results.affectedRows != 1) ErrorLog.log(`Did not insert for some reason wth. ${error.toString()}`);
+                        try { connection.release() } catch (e) {}
+                        if (error) {
+                            ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                            res(false);
+                        }
+                        res(null);
+                    }
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }
+                });
             });
         });
-        let requestResult = await requestPromise;
         if (requestResult == null) return await this.initialize();
         if (requestResult == false) return false;
         await this.checkForMissingKeys();
@@ -64,32 +76,50 @@ module.exports = class configuationManager {
 
     async load(bypass = false) {
         if ((!this.initialized || this.isSaving) || bypass) return;
+        if (this.verbose)MainLog.log(`Loading configuration`);
         let zisse = this;
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        connection.connect();
-        let requestPromise = new Promise((res, rej) => {
-            connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
-                connection.end();
-                if (error) res(false);
-                delete results[0].numId;
-                delete results[0].guildId;
-                for (let iterator in results[0]) {
-                    try {
-                        let jsonFormat = JSON.parse(results[0][iterator]);
-                        zisse.configuration[iterator] = jsonFormat;
-                    } catch (e) {
-                        zisse.configuration[iterator] = results[0][iterator];
-                    }
+        return await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
                 }
-                res(true);
+                if (this.verbose)MainLog.log(`Connected to SQL`);
+                if (this.verbose)MainLog.log(`Fecthing configuration`);
+                connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
+                    if (this.verbose)MainLog.log(`Configuration fetched.`);
+                    if (typeof results == "object" && results.length != 0) {
+                        delete results[0].numId;
+                        delete results[0].guildId;
+                        for (let iterator in results[0]) {
+                            try {
+                                let jsonFormat = JSON.parse(results[0][iterator]);
+                                zisse.configuration[iterator] = jsonFormat;
+                            } catch (e) {
+                                zisse.configuration[iterator] = results[0][iterator];
+                            }
+                        }
+                        try { connection.release() } catch (e) {}
+                        res(true);
+                    } else {
+                        console.log(error, results, fields)
+                        MainLog.log(`results is undefined or its length is 0 for SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`);
+                        MainLog.log(`Check for potential issue`);
+                        try { connection.release() } catch (e) {}
+                        res(false);
+                    }
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }
+                });
             });
         });
-        await requestPromise;
-        return requestPromise;
     }
 
     async save(bypass = false) {
         if ((!this.initialized || this.isSaving) && !bypass) return;
+        if (this.verbose)MainLog.log(`Saving configuration.`);
         let zisse = this;
         this.isSaving = true;
         let configurationToPush = this.configuration;
@@ -113,23 +143,34 @@ module.exports = class configuationManager {
                 sqlPlaceholders.push(`\`${iterator}\`=?`);
             }
         }
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        let requestPromise = new Promise((res, rej) => {
-            connection.query(`${sqlString.replace(`&[SQLVALUESTOSET]`, sqlPlaceholders.join(','))}`, sqlValues, async function (error, results, fields) {
-                connection.end();
-                if (error) res(false);
-                if (typeof results.affectedRows == "number" && results.affectedRows == 0) res(null);
-                res(true);
+        let requestResult = await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
+                }
+                if (this.verbose)MainLog.log(`Connected to SQL`);
+                if (this.verbose)MainLog.log(`Pushing configuration`);
+                connection.query(`${sqlString.replace(`&[SQLVALUESTOSET]`, sqlPlaceholders.join(','))}`, sqlValues, async function (error, results, fields) {
+                    if (typeof results.affectedRows == "number" && results.affectedRows == 0) {
+                        try { connection.release() } catch (e) {}
+                        res(false);
+                    }
+                    try { connection.release() } catch (e) {}
+                    res(true);
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }
+                });
             });
-            
         });
-        let requestResult = await requestPromise;
         if (requestResult == null) {
             await this.initialize();
             await this.save();
         }
         this.isSaving = false;
-        return requestPromise;
+        return true;
     }
 
     set(path, value) {

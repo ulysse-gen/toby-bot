@@ -37,7 +37,7 @@ module.exports = class guildManager {
         }
 
         this.lastMessages = {
-            
+
         }
 
         this.logToChannel = {
@@ -232,6 +232,38 @@ module.exports = class guildManager {
         return userGotAlert;
     }
 
+    async noteUser(message, userId, reason, time) {
+        let zisse = this;
+        let user = (userId.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
+            cache: false,
+            force: true
+        }).catch(e => {
+            return false;
+        }) : await message.channel.guild.members.fetch({
+            cache: false,
+            force: true
+        }).then(members => members.find(member => member.user.tag === userId));
+        if (typeof user == "undefined") user = await message.channel.guild.members.fetch(userId, {
+            cache: false,
+            force: true
+        }).catch(e => {
+            return undefined;
+        });
+        if (typeof user == "undefined") return {
+            errored: true,
+            reason: `User not found.`
+        };
+        if (typeof reason == "undefined" || reason == "" || reason.replaceAll(' ', '') == "") return {
+            errored: true,
+            reason: `No reason specified.`
+        };
+        //Here warn the player & log in in sql
+        let caseId = await zisse.moderationManager.log(message.guild.id, `Note`, user.user.id, message.author.id, reason, (time != 0) ? time : false);
+        await zisse.moderationManager.sendPunishEmbed(message, zisse, `Note`, caseId, user, message.author.id, reason, false);
+        MainLog.log(`${message.author.tag}(${message.author.id}) noted ${user.user.tag}(${user.user.id}) for ${reason} in ${this.guild.id}`);
+        return true;
+    }
+
     async muteUser(message, userId, reason, time) {
         let zisse = this;
         let user = (userId.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
@@ -309,14 +341,23 @@ module.exports = class guildManager {
         };
         let result = await this.guild.bans.remove(userId, `Unbanned by ${message.author.tag}(${message.author.id}) for ${reason}`).then(async () => {
             if (isSQLBanned) {
-                let connection = mysql.createConnection(this.moderationManager.sqlConfiguration);
-                connection.connect();
-                connection.query(`UPDATE \`moderationLogs\` SET \`status\`='unbanned', \`updaterId\`='${message.author.id}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`userId\`='${userId}' AND \`guildId\`='${this.guild.id}' AND \`type\`='Ban' AND (\`status\`='active' OR \`status\`='indefinite')`, async function (error, results, fields) {});
-                MainLog.log(`${message.author.tag}(${message.author.id}) unbanned (${userId}) for '${reason}' from ${this.guild.id}`);
-                connection.end();
-                return {
-                    errored: false
-                };
+                zisse.sqlPool.getConnection((err, connection) => {
+                    if (err) {
+                        ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                        return {
+                            errored: true,
+                            reason: err
+                        };
+                    }
+                    connection.query(`UPDATE \`moderationLogs\` SET \`status\`='unbanned', \`updaterId\`='${message.author.id}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`userId\`='${userId}' AND \`guildId\`='${this.guild.id}' AND \`type\`='Ban' AND (\`status\`='active' OR \`status\`='indefinite')`, async function (error, results, fields) {});
+                    MainLog.log(`${message.author.tag}(${message.author.id}) unbanned (${userId}) for '${reason}' from ${this.guild.id}`);
+                    try {
+                        connection.release()
+                    } catch (e) {}
+                    return {
+                        errored: false
+                    };
+                });
             }
         }).catch(e => {
             return {
@@ -355,14 +396,34 @@ module.exports = class guildManager {
         let isSQLMuted = await this.moderationManager.isUserPunished(user, this.guild.id, `Mute`);
         let result = await this.guild.roles.fetch(this.configuration.moderation.muteRole).then(async fetchedRole => {
             return await user.roles.remove(fetchedRole, `Unmuted by ${message.author.tag}(${message.author.id}) for ${reason}`).then(async () => {
-                let connection = mysql.createConnection(this.moderationManager.sqlConfiguration);
-                connection.connect();
-                connection.query(`UPDATE \`moderationLogs\` SET \`status\`='unmuted', \`updaterId\`='${message.author.id}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`userId\`='${user.user.id}' AND \`guildId\`='${this.guild.id}' AND \`type\`='Mute' AND (\`status\`='active' OR \`status\`='indefinite')`, async function (error, results, fields) {});
-                MainLog.log(`${message.author.tag}(${message.author.id}) unmuted ${user.user.tag}(${user.user.id}) for '${reason}' from ${this.guild.id}`);
-                connection.end();
-                return {errored: false}
-            }).catch(e => {return {errored: true, reason: e}});
-        }).catch(e => {return {errored: true, reason: e}});
+                return await new Promise((res, rej) => {
+                    zisse.sqlPool.getConnection((err, connection) => {
+                        if (err) {
+                            ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                            res({
+                                errored: true,
+                                reason: err.toString()
+                            });
+                        }
+                        connection.query(`UPDATE \`moderationLogs\` SET \`status\`='unmuted', \`updaterId\`='${message.author.id}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`userId\`='${user.user.id}' AND \`guildId\`='${this.guild.id}' AND \`type\`='Mute' AND (\`status\`='active' OR \`status\`='indefinite')`, async function (error, results, fields) {});
+                        MainLog.log(`${message.author.tag}(${message.author.id}) unmuted ${user.user.tag}(${user.user.id}) for '${reason}' from ${this.guild.id}`);
+                        res({
+                            errored: false
+                        });
+                    });
+                });
+            }).catch(e => {
+                return {
+                    errored: true,
+                    reason: e
+                }
+            });
+        }).catch(e => {
+            return {
+                errored: true,
+                reason: e
+            }
+        });
         return result;
     }
 }

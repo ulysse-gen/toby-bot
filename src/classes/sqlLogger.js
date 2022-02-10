@@ -1,8 +1,12 @@
 const mysql = require('mysql');
 
+const Logger = require(`./Logger`);
+//Loggers
+const MainLog = new Logger();
+const ErrorLog = new Logger(`./logs/error.log`);
 module.exports = class sqlLogger {
     constructor(logTable = "logs") {
-        this.sqlConfiguration = require('../../MySQL.json');
+        this.sqlPool = mysql.createPool(require('../../MySQL.json'));
         this.sqlTable = logTable;
     }
 
@@ -35,16 +39,23 @@ module.exports = class sqlLogger {
             valueNames.push("messageId");
             valuesPlaceHolders.push("?");
         }
-
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        connection.connect();
-        let requestPromise = new Promise((res, rej) => {
-            connection.query(`INSERT INTO ${zisse.sqlTable} (\`${valueNames.join('`,`')}\`) VALUES (${valuesPlaceHolders.join(', ')})`, values, async function (error, results, fields) {
-                connection.end();
-                if (error) res(false);
+        await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
+                }
+                connection.query(`INSERT INTO ${zisse.sqlTable} (\`${valueNames.join('`,`')}\`) VALUES (${valuesPlaceHolders.join(', ')})`, values, async function (error, results, fields) {
+                    if (results.affectedRows != 1) ErrorLog.log(`Did not insert for some reason wth. ${error.toString()}`);
+                    try { connection.release() } catch (e) {}
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }
+                    res(true);
+                });
             });
         });
-        await requestPromise;
         return true;
     }
 }

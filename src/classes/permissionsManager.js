@@ -7,15 +7,18 @@ const {
 
 
 const Logger = require(`./Logger`);
-const { result } = require('lodash');
+const {
+    result
+} = require('lodash');
 
 //Loggers
 const MainLog = new Logger();
+const ErrorLog = new Logger(`./logs/error.log`);
 
 module.exports = class permissionsManager {
     constructor(client, sqlConfiguration, fallbackFile, sqlTable = `guildsPermissions`, sqlWhere = `\`numId\` = 1`, guildId = undefined) {
         this.client = client;
-        this.sqlConfiguration = require('../../MySQL.json');
+        this.sqlPool = mysql.createPool(require('../../MySQL.json'));
         this.sqlTable = sqlTable;
         this.sqlWhere = sqlWhere;
         this.guildId = guildId;
@@ -45,34 +48,43 @@ module.exports = class permissionsManager {
 
     async initialize() {
         let zisse = this;
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        connection.connect();
-        let requestPromise = new Promise((res, rej) => {
-            connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
-                connection.end();
-                if (error) res(false);
-                if (results.length == 1) {
-                    delete results[0].numId;
-                    delete results[0].guildId;
-                    for (let iterator in results[0]) {
-                        try {
-                            let jsonFormat = JSON.parse(results[0][iterator]);
-                            zisse.permissions[iterator] = jsonFormat;
-                        } catch (e) {
-                            zisse.permissions[iterator] = results[0][iterator];
-                        }
-                    }
-                    res(true);
-                } else if (typeof zisse.guildId != "undefined") {
-                    connection.query(`INSERT INTO ${zisse.sqlTable} (\`guildId\`) VALUES ('${zisse.guildId}')`, async function (error, results, fields) {
-                        if (error) res(false);
-                        if (results.affectedRows != 1) console.log(`premissionsManager SQL error, afftected 0 rows`);
-                        res(true);
-                    });
+        let requestResult = await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
                 }
+                connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
+                    if (typeof result != "undefined" && results.length == 1) {
+                        delete results[0].numId;
+                        delete results[0].guildId;
+                        for (let iterator in results[0]) {
+                            try {
+                                zisse.permissions[iterator] = JSON.parse(results[0][iterator]);
+                            } catch (e) {
+                                zisse.permissions[iterator] = results[0][iterator];
+                            }
+                        }
+                        try { connection.release() } catch (e) {}
+                        res(true);
+                    } else if (typeof zisse.guildId != "undefined") {
+                        connection.query(`INSERT INTO ${zisse.sqlTable} (\`guildId\`) VALUES ('${zisse.guildId}')`, async function (error, results, fields) {
+                            if (results.affectedRows != 1) ErrorLog.log(`Did not insert for some reason wth. ${error.toString()}`);
+                            try { connection.release() } catch (e) {}
+                            if (error) {
+                                ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                                res(false);
+                            }
+                            res(null);
+                        });
+                    }
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }
+                });
             });
         });
-        let requestResult = await requestPromise;
         if (requestResult == null) return await this.initialize();
         if (requestResult == false) return false;
         await this.checkForMissingKeys();
@@ -84,37 +96,40 @@ module.exports = class permissionsManager {
     async load(bypass = false) {
         if ((!this.initialized || this.isSaving) || bypass) return;
         let zisse = this;
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        connection.connect();
-        let requestPromise = new Promise((res, rej) => {
-            connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
-                connection.end();
-                if (error) res(false);
-                if (typeof results == "undefined"){
-                    MainLog.log(`results is undefined for SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`);
-                    MainLog.log(`Check for potential issue`);
+        return await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
                 }
-                if (typeof results == "undefined")res(false);
-                if (results.length == 0){
-                    MainLog.log(`results length is 0 for SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`);
-                    MainLog.log(`Check for potential issue`);
-                }
-                if (results.length == 0)res(false);
-                delete results[0].numId;
-                delete results[0].guildId;
-                for (let iterator in results[0]) {
-                    try {
-                        let jsonFormat = JSON.parse(results[0][iterator]);
-                        zisse.permissions[iterator] = jsonFormat;
-                    } catch (e) {
-                        zisse.permissions[iterator] = results[0][iterator];
+                connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
+                    if (typeof results == "object" && results.length != 0) {
+                        delete results[0].numId;
+                        delete results[0].guildId;
+                        for (let iterator in results[0]) {
+                            try {
+                                let jsonFormat = JSON.parse(results[0][iterator]);
+                                zisse.permissions[iterator] = jsonFormat;
+                            } catch (e) {
+                                zisse.permissions[iterator] = results[0][iterator];
+                            }
+                        }
+                        try { connection.release() } catch (e) {}
+                        res(true);
+                    } else {
+                        console.log(error, results, fields)
+                        MainLog.log(`results is undefined or its length is 0 for SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`);
+                        MainLog.log(`Check for potential issue`);
+                        try { connection.release() } catch (e) {}
+                        res(false);
                     }
-                }
-                res(true);
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }
+                });
             });
         });
-        await requestPromise;
-        return requestPromise;
     }
 
     async save(bypass = false) {
@@ -142,16 +157,26 @@ module.exports = class permissionsManager {
                 sqlPlaceholders.push(`\`${iterator}\`=?`);
             }
         }
-        let connection = mysql.createConnection(this.sqlConfiguration);
-        let requestPromise = new Promise((res, rej) => {
-            connection.query(`${sqlString.replace(`&[SQLVALUESTOSET]`, sqlPlaceholders.join(','))}`, sqlValues, async function (error, results, fields) {
-                connection.end();
-                if (error) res(false);
-                if (typeof results.affectedRows == "number" && results.affectedRows == 0) res(null);
-                res(true);
+        let requestResult = await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
+                }
+                connection.query(`${sqlString.replace(`&[SQLVALUESTOSET]`, sqlPlaceholders.join(','))}`, sqlValues, async function (error, results, fields) {
+                    if (typeof results.affectedRows == "number" && results.affectedRows == 0) {
+                        try { connection.release() } catch (e) {}
+                        res(null);
+                    }
+                    try { connection.release() } catch (e) {}
+                    res(true);
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }
+                });
             });
         });
-        let requestResult = await requestPromise;
         if (requestResult == null) {
             await this.initialize();
             await this.save();

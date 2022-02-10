@@ -75,39 +75,50 @@ module.exports = {
                     warns: 0
                 }
             }
-            let connection = mysql.createConnection(guild.moderationManager.sqlConfiguration);
-            connection.connect();
-            connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`moderatorId\`='${user.user.id}'`, async function (error, results, fields) {
-                connection.end();
-                if (results.length == 0) {
-                    res(stats);
+            guild.moderationManager.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
                 }
-                let control = results.length;
-                results.forEach(modAction => {
-                    if (modAction.type == "Mute") {
-                        if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.mutes++;
-                        if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.mutes++;
-                        stats.allTime.mutes++;
-                    }
-                    if (modAction.type == "Ban") {
-                        if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.bans++;
-                        if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.bans++;
-                        stats.allTime.bans++;
-                    }
-                    if (modAction.type == "Kick") {
-                        if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.kicks++;
-                        if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.kicks++;
-                        stats.allTime.kicks++;
-                    }
-                    if (modAction.type == "Warn") {
-                        if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.warns++;
-                        if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.warns++;
-                        stats.allTime.warns++;
-                    }
-                    control--;
-                    if (control <= 0) {
+                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`moderatorId\`='${user.user.id}'`, async function (error, results, fields) {
+                    if (results.length == 0) {
+                        try { connection.release() } catch (e) {}
                         res(stats);
                     }
+                    let control = results.length;
+                    results.forEach(modAction => {
+                        if (modAction.type == "Mute") {
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.mutes++;
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.mutes++;
+                            stats.allTime.mutes++;
+                        }
+                        if (modAction.type == "Ban") {
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.bans++;
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.bans++;
+                            stats.allTime.bans++;
+                        }
+                        if (modAction.type == "Kick") {
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.kicks++;
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.kicks++;
+                            stats.allTime.kicks++;
+                        }
+                        if (modAction.type == "Warn") {
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.warns++;
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.warns++;
+                            stats.allTime.warns++;
+                        }
+                        control--;
+                        if (control <= 0) {
+                            try { connection.release() } catch (e) {}
+                            res(stats);
+                        }
+                        try { connection.release() } catch (e) {}
+                        if (error) {
+                            ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                            res(stats);
+                        }
+                        res(stats);
+                    });
                 });
             });
         });
@@ -132,6 +143,7 @@ module.exports = {
         if (user.user.id == "280063634477154306")embed.addField(`**Important infos:**`, `Whatever the stats can be, Kilo is still a very bad mod.`, true); //Kilo
         if (user.user.id == "737886546182799401")embed.addField(`**Important infos:**`, `Wait hm.. I’m not a kitten.`, true);   //Flair
         if (user.user.id == "899655742389358612")embed.addField(`**Important infos:**`, `huh?`, true);   //Olle
+        if (user.user.id == "762760262683459654")embed.addField(`**Important infos:**`, `I’m very indecisive so could you make one up for me?`, true);   //Aiko
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
 
         message.reply({

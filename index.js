@@ -43,6 +43,7 @@ var globalModeration = new moderationManager(client, globalGuilds);
 
 //Logs
 const MainLog = new Logger();
+const ErrorLog = new Logger(`./logs/error.log`);
 const MainSQLLog = new sqlLogger();
 
 client.on('ready', async () => {
@@ -82,10 +83,10 @@ process.stdin.resume();
 
 async function exitHandler(reason, exit) {
     if (reason == "SIGINT" || reason == "SIGUSR1" || reason == "SIGUSR2") {
-        await MainLog.log(`[Process Exit][${reason}]Closing process, saving and closing.`);
+        await ErrorLog.log(`[Process Exit][${reason}]Closing process, saving and closing.`);
         MainSQLLog.log(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
     } else if (reason == "uncaughtException" || reason == "unhandledRejection") {
-        await MainLog.log(`[${reason}]Exception catched, error : ${exit.toString()}`);
+        await ErrorLog.log(`[${reason}]Exception catched, error : ${exit.toString()}`);
         MainSQLLog.log(`[${reason.toString()}]`, `${exit.toString()}`);
         console.log(exit);
         return true;
@@ -107,7 +108,7 @@ async function exitHandler(reason, exit) {
     return true;
 }
 
-let enableCatching = true;
+let enableCatching = false;
 
 if (enableCatching) process.on('uncaughtException', (error) => {
     exitHandler("uncaughtException", error);
@@ -142,6 +143,7 @@ module.exports.client = client;
 
 //Loggers:
 module.exports.MainLog = MainLog;
+module.exports.ErrorLog = ErrorLog;
 module.exports.MainSQLLog = MainSQLLog;
 
 //Configurations:
