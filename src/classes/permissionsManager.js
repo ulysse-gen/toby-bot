@@ -177,12 +177,13 @@ module.exports = class permissionsManager {
                 });
             });
         });
+        let req
         if (requestResult == null) {
             await this.initialize();
             await this.save();
         }
         this.isSaving = false;
-        return requestPromise;
+        return true;
     }
 
     async getUserPermissions(userId, isAdmin = false) {

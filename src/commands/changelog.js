@@ -21,7 +21,8 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `\n- New command \`purge <Amount>\` to bulk delete N messages from a channel, excluding pinned`;
+        embed.description += `\n- New command \`note <UserId/@Username/UserTag#0420>\` which is basically a warn without notifying the person`;
+        embed.description += `\n- Switched the whole SQL handling to pools`;
 
         message.reply({
             embeds: [embed],
