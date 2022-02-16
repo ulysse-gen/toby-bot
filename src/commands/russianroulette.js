@@ -35,7 +35,7 @@ module.exports = {
             prize: null,
             winners: 1,
             status: "joining",
-            startTimer: 10000,
+            startTimer: 30000,
             roundTimer: 4000,
             intervals: [],
             timeouts: []
