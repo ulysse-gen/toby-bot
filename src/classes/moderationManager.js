@@ -69,12 +69,12 @@ module.exports = class moderationManager {
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
-        }).catch(e => this.messageReplyFailLogger(message, guild, e));
+            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+        }).catch(e => utils.messageReplyFailLogger(message, guild, e));
         if (typeof guild != "undefined" && guild.configuration.moderation.logToChannel.status && guild.moderationLog.initialized) guild.moderationLog.channel.send({ //Reply to the message that triggerred the error
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
-        }, false).catch(e => this.messageReplyFailLogger(message, guild, e));
+        }, false).catch(e => utils.messageReplyFailLogger(message, guild, e));
         return false;
     }
 
@@ -95,9 +95,9 @@ module.exports = class moderationManager {
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
+            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
         }).catch(e => {
-            this.messageReplyFailLogger(message, guild, e);
+            utils.messageReplyFailLogger(message, guild, e);
             return {
                 errored: true,
                 reason: e

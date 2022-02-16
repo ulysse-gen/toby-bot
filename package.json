@@ -1,6 +1,6 @@
 {
   "name": "tobybot",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Toby Discord Bot",
   "main": "index.js",
   "scripts": {
@@ -9,20 +9,16 @@
   "author": "UlysseLeGenie",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/opus": "^0.5.3",
     "@discordjs/voice": "^0.8.0",
-    "avconv": "^3.1.0",
     "colors": "^1.4.0",
-    "crypto-random": "^1.0.3",
     "discord.js": "^13.6.0",
-    "ffmpeg-static": "^4.4.1",
     "heapdump": "^0.3.15",
+    "i18n": "^0.14.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
-    "opusscript": "^0.0.8",
     "pretty-ms": "^7.0.1",
-    "randomstring": "^1.2.2",
+    "random-number": "^0.0.9",
     "timestring": "^6.0.0",
     "url-exists": "^1.0.3"
   }

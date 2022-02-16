@@ -16,7 +16,8 @@ const utils = require(`../utils`);
 
 module.exports = async function (message, guild = undefined) {
     let args = message.content.split(' ');
-    args = args.filter(function(e) { return e !== '' })
+    args = args.filter(function(e) { return e !== '' });
+    args = args.map(e => {if (typeof e == "string")return e.trim()});
     let cmd = args.shift(args);
     if (cmd.startsWith(configuration.globalPrefix))cmd = cmd.replace(configuration.globalPrefix, '');
     if (typeof guild != "undefined" && cmd.startsWith(guild.configuration.prefix))cmd = cmd.replace(guild.configuration.prefix, '');

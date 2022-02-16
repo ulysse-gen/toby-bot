@@ -1,4 +1,4 @@
-const Random = require('crypto-random');
+var rn = require("random-number");
 const {
     MessageEmbed
 } = require(`discord.js`);
@@ -17,7 +17,11 @@ module.exports = {
     async exec(client, message, args, guild = undefined) {
         let possibilities = ["rock", "paper", "scissors"];
         if (typeof guild.waitingForMessage.data.rockpaperscissors[message.author.id] == "undefined") guild.waitingForMessage.data.rockpaperscissors[message.author.id] = {
-            gonnaPlay: possibilities[Random.range(0, possibilities.length - 1)],
+            gonnaPlay: possibilities[rn({
+                min: 0,
+                max: possibilities.length - 1,
+                integer: true
+            })],
             rounds: 3,
             results: []
         };
@@ -43,8 +47,13 @@ module.exports = {
             if (typeof guild.waitingForMessage.channels[message.channel.id] == "undefined") guild.waitingForMessage.channels[message.channel.id] = [];
             guild.waitingForMessage.channels[message.channel.id][message.author.id] = (message) => {
                 let possibilities = ["rock", "paper", "scissors"];
-                if (!possibilities.includes(message.content))return utils.sendError(message, guild, `Wrong play.`, `Possibilities are (case sensitive) : \`rock\`, \`paper\`, \`scissors\``);
+                if (!possibilities.includes(message.content)) return utils.sendError(message, guild, `Wrong play.`, `Possibilities are (case sensitive) : \`rock\`, \`paper\`, \`scissors\``);
                 if (message.content.startsWith(configuration.globalPrefix) || message.content.startsWith(guild.configuration.prefix)) return false;
+                guild.waitingForMessage.data.rockpaperscissors[message.author.id].gonnaPlay = possibilities[rn({
+                    min: 0,
+                    max: possibilities.length - 1,
+                    integer: true
+                })];
                 let playerPlayed = message.content;
                 let botPlayed = guild.waitingForMessage.data.rockpaperscissors[message.author.id].gonnaPlay;
                 message.channel.send(botPlayed);
@@ -102,10 +111,21 @@ module.exports = {
                 }
 
                 if (guild.waitingForMessage.data.rockpaperscissors[message.author.id].results.length == guild.waitingForMessage.data.rockpaperscissors[message.author.id].rounds) {
-                    let wins = {bot: 0, player: 0};
+                    let wins = {
+                        bot: 0,
+                        player: 0
+                    };
                     let round = guild.waitingForMessage.data.rockpaperscissors[message.author.id].rounds;
                     let embedFields = [];
-                    guild.waitingForMessage.data.rockpaperscissors[message.author.id].results.forEach(result => {if (result.wins == true){wins.bot++;}else if (result.wins == false) {wins.player++;}round--; embedFields.push([`Round ${round}`, `I played **${result.bot}**\nYou played **${result.player}**\nWinner: ${(result.wins == true) ? `**Me**` : (result.wins == false) ? `**You**` : `**None**`}`, false])});
+                    guild.waitingForMessage.data.rockpaperscissors[message.author.id].results.forEach(result => {
+                        if (result.wins == true) {
+                            wins.bot++;
+                        } else if (result.wins == false) {
+                            wins.player++;
+                        }
+                        round--;
+                        embedFields.push([`Round ${round}`, `I played **${result.bot}**\nYou played **${result.player}**\nWinner: ${(result.wins == true) ? `**Me**` : (result.wins == false) ? `**You**` : `**None**`}`, false])
+                    });
                     utils.sendMain(message, guild, `${(wins.bot == wins.player) ? `Its a draw` : (wins.bot > wins.player) ? `I won` : `You won` }`, undefined, undefined, undefined, embedFields);
                     clearPending(guild, message);
                     return true;

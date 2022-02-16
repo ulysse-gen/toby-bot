@@ -1,4 +1,4 @@
-const Random = require('crypto-random');
+var rn = require("random-number");
 
 const utils = require(`../utils`);
 
@@ -17,7 +17,7 @@ module.exports = {
         message.reply(`https://media.discordapp.net/attachments/936578361302614018/937817970170806292/flip_coin.gif`, false).then(msg => {
             if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             setTimeout(() => {
-                msg.edit(`${headOrTails[Random.range(0, headOrTails.length-1)]}`).catch(e => {
+                msg.edit(`${headOrTails[rn({min: 0, max: headOrTails.length - 1, integer: true})]}`).catch(e => {
                     console.log(`Could not edit message ${e}`);
                 })
             }, 2500);

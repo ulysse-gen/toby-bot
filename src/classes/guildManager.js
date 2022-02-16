@@ -341,7 +341,7 @@ module.exports = class guildManager {
         };
         let result = await this.guild.bans.remove(userId, `Unbanned by ${message.author.tag}(${message.author.id}) for ${reason}`).then(async () => {
             if (isSQLBanned) {
-                zisse.sqlPool.getConnection((err, connection) => {
+                zisse.moderationManager.sqlPool.getConnection((err, connection) => {
                     if (err) {
                         ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
                         return {
@@ -397,7 +397,7 @@ module.exports = class guildManager {
         let result = await this.guild.roles.fetch(this.configuration.moderation.muteRole).then(async fetchedRole => {
             return await user.roles.remove(fetchedRole, `Unmuted by ${message.author.tag}(${message.author.id}) for ${reason}`).then(async () => {
                 return await new Promise((res, rej) => {
-                    zisse.sqlPool.getConnection((err, connection) => {
+                    zisse.moderationManager.sqlPool.getConnection((err, connection) => {
                         if (err) {
                             ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
                             res({

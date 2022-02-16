@@ -17,11 +17,16 @@ module.exports = async function (message) {
     */
 
     if (typeof message.channel.guild == "undefined")return require(`./DMHandler`).create(client, message);
-    
 
     if (typeof configuration.skip.guilds[message.channel.guild.id] == "object"){ //Skip message if its in the !MAIN! configuation as "to skip"
         if (configuration.skip.guilds[message.channel.guild.id].length == 1 && configuration.skip.guilds[message.channel.guild.id][0] == "*")return;
         if (configuration.skip.guilds[message.channel.guild.id].includes(message.channel.id))return;
+    }
+
+    if (message.content.toLowerCase().includes(`tobybot`) || message.content.toLowerCase().includes(`toby bot`) || message.content.toLowerCase().includes(`933695613294501888`)){
+        try {
+            message.react(`👀`);
+        }catch(e){}
     }
 
     let guild = await globalGuilds.getGuild(message.channel.guild);

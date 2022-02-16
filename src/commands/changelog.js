@@ -21,8 +21,7 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `\n- New command \`note <UserId/@Username/UserTag#0420>\` which is basically a warn without notifying the person`;
-        embed.description += `\n- Switched the whole SQL handling to pools`;
+        embed.description += `- Lot of stuff ngl`;
 
         message.reply({
             embeds: [embed],

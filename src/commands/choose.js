@@ -1,4 +1,4 @@
-const Random = require('crypto-random');
+var rn = require("random-number");
 
 const utils = require(`../utils`);
 
@@ -13,12 +13,12 @@ module.exports = {
 
         message.reply(`Lemme think a bit..`, false).then(msg => {
             if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
-            let rollOccur = Random.range(3, 4);
+            let rollOccur = rn({min: 3, max: 4, integer: true});
             let rollInterval = setInterval(() => {
-                if (rollOccur != 0)msg.edit(`Lemme think a bit.. **${possibilities[Random.range(0, possibilities.length-1)]}**`).catch(e => {
+                if (rollOccur != 0)msg.edit(`Lemme think a bit.. **${possibilities[rn({min: 0, max: possibilities.length-1, integer: true})]}**`).catch(e => {
                     console.log(`Could not edit message ${e}`);
                 });
-                if (rollOccur == 0)msg.edit(`Okay, after some thinking ill stick with **${possibilities[Random.range(0, possibilities.length-1)]}**`).catch(e => {
+                if (rollOccur == 0)msg.edit(`Okay, after some thinking ill stick with **${possibilities[rn({min: 0, max: possibilities.length-1, integer: true})]}**`).catch(e => {
                     console.log(`Could not edit message ${e}`);
                 });
                 rollOccur--;

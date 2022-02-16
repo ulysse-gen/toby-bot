@@ -77,10 +77,12 @@ module.exports = {
 
         embed.addField(`**Joined**`, `<t:${moment(user.joinedTimestamp).unix()}>`, true);
         embed.addField(`**Registered**`, `<t:${moment(user.user.createdTimestamp).unix()}>`, true);
-        embed.addField(`**Roles** [${userRoles.length}]`, `${(userRoles.length == 0) ? `None` : `<@&${userRoles.join(`> <@&`)}>`}`, false);
+        embed.addField(`**Roles** [${userRoles.length}]`, `${(userRoles.length == 0) ? `None` : (userRoles.join(`> <@&`).length > 1024) ? `Too many roles to show.` : `<@&${userRoles.join(`> <@&`)}>`}`, false);
         embed.addField(`**Key Permissions**`, `${(userPermissions.length == 0) ? `None` : `${userPermissions.join(', ')}`}`, false);
         embed.addField(`**Acknowledgements**`, `${userAcknowledgements}`, false);
         /*Custom Specifications for the bot itself*/if (user.user.id == client.user.id) embed.addField(`**Specifications**`, `- Is really nice\n- Is really cool\n- Built by <@231461358200291330>\n- Idea from <@330826518370451457>`, false);
+        /*Custom Specifications for the bot itself*/if (user.user.id == client.user.id) embed.addField(`**Specifications**`, `- Is really nice\n- Is really cool\n- Idea for <@330826518370451457>`, false);
+        /*Custom Specifications for the bot itself*/if (user.user.id == client.user.id) embed.addField(`**Specifications**`, `- Is really nice\n- Is really cool\n- Built <@231461358200291330>`, false);
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
 
 
