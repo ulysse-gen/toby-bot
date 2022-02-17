@@ -10,13 +10,9 @@ Things saved by TobyBot:
 # Todo:
 - Implementation of t!lockdown command. > Will look into it, may take a little bit to get the whole thing in my mind
 
-- Cleaning up Toby's code to run more efficiently. > Constantly working on it when changing bit of codes here and there
-
 - Make the permission scan all in once not one by one (User, Internal Role, Role, Channel, Guild). > Will work on it later, im tired of playing with permissions rn
 
 - Add a permission (optionnal) priority. > Will work on it later, im tired of playing with permissions rn
-
-- Implementation of t!russianroulette command. > Started working on it
                 
 - Auto Moderation Phase/ Version 4. > Should start working on it soonish, will take some time, may implement slowly
 
