@@ -6,6 +6,7 @@ const Logger = require(`./Logger`);
 
 //Loggers
 const MainLog = new Logger();
+const ErrorLog = new Logger(`./logs/error.log`);
 
 module.exports = class configuationManager {
     constructor(client, sqlConfiguration, fallbackFile, sqlTable = `guildsConfigurations`, sqlWhere = `\`numId\` = 1`, guildId = undefined) {

@@ -7,6 +7,7 @@ const Logger = require(`../classes/Logger`);
 
 //Loggers
 const MainLog = new Logger();
+const ErrorLog = new Logger(`./logs/error.log`);
 
 module.exports = class moderationManager {
     constructor(client, globalGuilds, logTable = "logs") {
@@ -69,12 +70,12 @@ module.exports = class moderationManager {
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
-        }).catch(e => utils.messageReplyFailLogger(message, guild, e));
+            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
+        }).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         if (typeof guild != "undefined" && guild.configuration.moderation.logToChannel.status && guild.moderationLog.initialized) guild.moderationLog.channel.send({ //Reply to the message that triggerred the error
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
-        }, false).catch(e => utils.messageReplyFailLogger(message, guild, e));
+        }, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         return false;
     }
 
@@ -95,9 +96,9 @@ module.exports = class moderationManager {
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         }).catch(e => {
-            utils.messageReplyFailLogger(message, guild, e);
+            ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`)
             return {
                 errored: true,
                 reason: e

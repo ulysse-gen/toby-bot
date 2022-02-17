@@ -108,7 +108,7 @@ async function exitHandler(reason, exit) {
     return true;
 }
 
-let enableCatching = false;
+let enableCatching = true;
 
 if (enableCatching) process.on('uncaughtException', (error) => {
     exitHandler("uncaughtException", error);
