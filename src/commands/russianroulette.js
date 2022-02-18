@@ -34,7 +34,7 @@ module.exports = {
                 key: "muted1min",
                 run: async (user) => {
                     message.channel.send(`Enjoy your 1 minute mute <@${user.id}> :smiling_face_with_3_hearts:`);
-                    return await guild.muteUser(message, user.id, `Won the Russian Roulette`, 1 * 60);
+                    return await guild.muteUser(message, user.id, `[RR Auto] Won the Russian Roulette`, 1 * 60);
                 }
             },
             muted5min: {
@@ -42,7 +42,7 @@ module.exports = {
                 key: "muted5min",
                 run: async (user) => {
                     message.channel.send(`Enjoy your 5 minutes mute <@${user.id}> :smiling_face_with_3_hearts:`);
-                    return await guild.muteUser(message, user.id, `Won the Russian Roulette`, 5 * 60);
+                    return await guild.muteUser(message, user.id, `[RR Auto]Won the Russian Roulette`, 5 * 60);
                 }
             },
             muted10min: {
@@ -50,7 +50,7 @@ module.exports = {
                 key: "muted10min",
                 run: async (user) => {
                     message.channel.send(`Enjoy your 10 minutes mute <@${user.id}> :smiling_face_with_3_hearts:`);
-                    return await guild.muteUser(message, user.id, `Won the Russian Roulette`, 10 * 60);
+                    return await guild.muteUser(message, user.id, `[RR Auto]Won the Russian Roulette`, 10 * 60);
                 }
             }
         }
@@ -104,7 +104,7 @@ module.exports = {
                             guild.waitingForInteration.data.russianroulette[message.channel.id].prize = premadePrizes[prize].name;
                             guild.waitingForInteration.data.russianroulette[message.channel.id].prizeObject = premadePrizes[prize];
                         } else {
-                            guild.waitingForInteration.data.russianroulette[message.channel.id].prize = prize.replace('_', ' ');
+                            guild.waitingForInteration.data.russianroulette[message.channel.id].prize = prize.replaceAll('_', ' ');
                         }
                         args = args.filter(arrayItem => arrayItem !== invividualArgument);
                     } catch (e) {}
