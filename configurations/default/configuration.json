@@ -53,6 +53,10 @@
       "status": false,
       "channel": "none"
     },
+    "autoModerationChannel": {
+      "status": false,
+      "channel": "none"
+    },
     "kickNeedReason": true,
     "banNeedReason": true,
     "muteNeedReason": true,

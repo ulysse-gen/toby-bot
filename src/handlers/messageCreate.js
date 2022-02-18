@@ -33,6 +33,8 @@ module.exports = async function (message) {
     
     if (!guild.initialized)return false;
 
+    require(`./chatModeration`)(message, guild); //Same but if thats with guild prefix
+
     if (typeof guild.lastMessages[message.author.id] == "undefined")guild.lastMessages[message.author.id] = [];
     let lastMessagePush = {channelId: message.channel.id, guildId: message.channel.guild.id, userId: message.author.id, content: message.content, attachments: [], createdTimestamp: message.createdTimestamp};
     message.attachments.forEach(messageAttachement => lastMessagePush.attachments.push(messageAttachement.url))

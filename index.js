@@ -44,6 +44,7 @@ var globalModeration = new moderationManager(client, globalGuilds);
 //Logs
 const MainLog = new Logger();
 const ErrorLog = new Logger(`./logs/error.log`);
+const AutoModLog = new Logger(`./logs/autoMod.log`);
 const MainSQLLog = new sqlLogger();
 
 client.on('ready', async () => {
@@ -144,6 +145,7 @@ module.exports.client = client;
 //Loggers:
 module.exports.MainLog = MainLog;
 module.exports.ErrorLog = ErrorLog;
+module.exports.AutoModLog = AutoModLog;
 module.exports.MainSQLLog = MainSQLLog;
 
 //Configurations:

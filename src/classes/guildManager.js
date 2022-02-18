@@ -46,6 +46,9 @@ module.exports = class guildManager {
         this.moderationLog = {
             initialized: false
         };
+        this.autoModerationLog = {
+            initialized: false
+        };
         this.initialized = false;
     }
 
@@ -66,6 +69,7 @@ module.exports = class guildManager {
         this.initialized = true;
         await this.initChannelLogging();
         await this.initModerationLogging();
+        await this.initAutoModerationLogging();
         return true;
     }
 
@@ -92,6 +96,20 @@ module.exports = class guildManager {
                 this.moderationLog.initialized = true;
             }).catch(e => {
                 console.log(`Could not get moderation logging channel for guild [${this.configuration.moderation.logToChannel.channel}][${e.toString()}]`)
+            });
+        } catch (e) {}
+        return true;
+    }
+
+    async initAutoModerationLogging() {
+        if (!this.initialized || !this.configuration.moderation.autoModerationChannel.status || this.configuration.moderation.autoModerationChannel.channel == "none") return false;
+        var zisse = this;
+        try {
+            await this.guild.channels.fetch(this.configuration.moderation.autoModerationChannel.channel).then(channel => {
+                this.autoModerationLog.channel = channel;
+                this.autoModerationLog.initialized = true;
+            }).catch(e => {
+                console.log(`Could not get auto moderation logging channel for guild [${this.configuration.moderation.autoModerationChannel.channel}][${e.toString()}]`)
             });
         } catch (e) {}
         return true;
@@ -149,7 +167,9 @@ module.exports = class guildManager {
                 reason: e
             };
         });
-        return result;
+        return {
+            errored: false
+        };
     }
 
     async banUser(message, userId, reason, time) {
@@ -194,7 +214,9 @@ module.exports = class guildManager {
                 reason: e
             };
         });
-        return result;
+        return {
+            errored: false
+        };
     }
 
     async warnUser(message, userId, reason, time) {
@@ -261,7 +283,9 @@ module.exports = class guildManager {
         let caseId = await zisse.moderationManager.log(message.guild.id, `Note`, user.user.id, message.author.id, reason, (time != 0) ? time : false);
         await zisse.moderationManager.sendPunishEmbed(message, zisse, `Note`, caseId, user, message.author.id, reason, false);
         MainLog.log(`${message.author.tag}(${message.author.id}) noted ${user.user.tag}(${user.user.id}) for ${reason} in ${this.guild.id}`);
-        return true;
+        return {
+            errored: false
+        };
     }
 
     async muteUser(message, userId, reason, time) {
@@ -310,7 +334,9 @@ module.exports = class guildManager {
                 reason: e
             };
         });
-        return result;
+        return {
+            errored: false
+        };
     }
 
     async unbanUser(message, userId, reason) {
@@ -365,7 +391,9 @@ module.exports = class guildManager {
                 reason: e
             }
         });
-        return result;
+        return {
+            errored: false
+        };
     }
 
     async unmuteUser(message, userId, reason) {
@@ -424,6 +452,8 @@ module.exports = class guildManager {
                 reason: e
             }
         });
-        return result;
+        return {
+            errored: false
+        };
     }
 }

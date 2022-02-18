@@ -310,6 +310,90 @@ module.exports = {
                         await guild.initModerationLogging();
                     }
                 },
+                autoModerationLogToChannelStatus: {
+                    title: `Log auto moderation to channel`,
+                    description: `Enable the auto moderation logging to channel`,
+                    configName: `logAutoModerationToChannel`,
+                    path: `moderation.autoModerationChannel.status`,
+                    checkerFunction: async (newValue) => {
+                        if (newValue == true && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
+                            break: true,
+                            title: "Set the auto moderation logging channel before enabling.",
+                            description: `Use \`${guild.configuration.prefix}conf set autoModerationLogToChannelStatus <#ChannelId>\` to enable !`
+                        };
+                        let GuildAndChannelCheck = new Promise((res, rej) => {
+                            client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
+                                fetchedGuild.channels.fetch(guild.configuration.moderation.logToChannel.channel).then(channel => {
+                                    res({
+                                        break: false
+                                    });
+                                }).catch(e => {
+                                    if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                    res({
+                                        break: true,
+                                        title: "Failed to enable",
+                                        description: `Could not fetch the channel set as auto moderation logging channel. Fix permissions or update it using \`${guild.configuration.prefix}conf set channelToLogAutoModerationTo <#ChannelId>\``
+                                    });
+                                });
+                            }).catch(e => {
+                                if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                res({
+                                    break: true,
+                                    title: "Error",
+                                    description: "Could not find the guild."
+                                });
+                            });
+                        });
+                        let GuildAndChannelCheckResult = await GuildAndChannelCheck;
+                        return GuildAndChannelCheckResult;
+                    },
+                    runAfter: async (newValue) => {
+                        await guild.initModerationLogging();
+                    }
+                },
+                autoModerationLogToChannelChannel: {
+                    title: `Channel to log auto moderation to`,
+                    description: `Choose what channel you want the bot to log auto moderation to`,
+                    configName: `channelToLogAutoModerationTo`,
+                    path: `moderation.autoModerationChannel.channel`,
+                    checkerFunction: async (newValue) => {
+                        if (newValue == true && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
+                            break: true,
+                            title: "Set the auto moderation logging channel before enabling.",
+                            description: `Use \`${guild.configuration.prefix}conf set channelToLogAutoModerationTo <#ChannelId>\` to enable !`
+                        };
+                        if (newValue.startsWith(`<#`)) newValue = newValue.replace('<#', '').slice(0, -1);
+                        let GuildAndChannelCheck = new Promise((res, rej) => {
+                            client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
+                                fetchedGuild.channels.fetch(newValue).then(channel => {
+                                    res({
+                                        break: false,
+                                        adjustValue: newValue
+                                    });
+                                }).catch(e => {
+                                    if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                    res({
+                                        break: true,
+                                        title: "Failed to enable",
+                                        description: `Could not fetch the channel set as auto moderation logging channel. Fix permissions or update it using \`${guild.configuration.prefix}conf set channelToLogAutoModerationTo <#ChannelId>\``
+                                    });
+                                });
+                            }).catch(e => {
+                                if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                res({
+                                    break: true,
+                                    title: "Error",
+                                    description: "Could not find the guild."
+                                });
+                            });
+                        });
+                        let GuildAndChannelCheckResult = await GuildAndChannelCheck;
+                        return GuildAndChannelCheckResult;
+                    },
+                    runAfter: async (newValue) => {
+                        await guild.initModerationLogging();
+                    }
+                },
                 moderationKickNeedReason: {
                     title: `Kick need reason`,
                     description: `Should the kicks need a reason ?`,

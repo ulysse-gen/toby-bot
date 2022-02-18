@@ -15,6 +15,13 @@ module.exports = class moderationManager {
         this.sqlTable = logTable;
         this.client = client;
         this.globalGuilds = globalGuilds;
+
+        this.auto = {
+            status: true,
+            violationsArray: [],
+            type: `logonly`, //logonly, punishonly, logandpunish
+            punish: `none` //none, delete, warn, strike(soon), mute, kick, ban
+        }
     }
 
     async log(guildId, type, userId, moderatorId, reason, length) {
@@ -39,7 +46,9 @@ module.exports = class moderationManager {
                         connection.query(`UPDATE \`moderationLogs\` SET \`status\`='overwritten' WHERE \`userId\`='${userId}' AND \`guildId\`='${guildId}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite') AND NOT \`numId\`='${results.insertId}'`, async function (error, results, fields) {});
                         res(results.insertId);
                     }
-                    try { connection.release() } catch (e) {}
+                    try {
+                        connection.release()
+                    } catch (e) {}
                     if (error) {
                         ErrorLog.log(`An error occured during the query. ${error.toString()}`);
                     }
@@ -73,6 +82,34 @@ module.exports = class moderationManager {
             if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         }).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         if (typeof guild != "undefined" && guild.configuration.moderation.logToChannel.status && guild.moderationLog.initialized) guild.moderationLog.channel.send({ //Reply to the message that triggerred the error
+            embeds: [embed],
+            failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
+        }, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
+        return false;
+    }
+
+    async sendAutoModEmbed(message, guild, trigger, check, user, reason) {
+        reason = reason.filter(function (e) {
+            return (typeof e != "undefined" && e !== '')
+        });
+        reason = reason.map(e => {
+            if (typeof e == "string") return e.trim()
+        });
+        let expireDate = moment();
+        if (typeof length == "number") expireDate.add(length, 'seconds');
+        let embed = new MessageEmbed({
+            color: guild.configuration.colors.main,
+            author: {
+                name: user.user.tag,
+                iconURL: `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}.webp?size=64`
+            }
+        });
+        embed.addField(`**Trigger**`, `${trigger}`, true);
+        embed.addField(`**Check**`, `${check}`, true);
+        embed.addField(`**User**`, `<@${user.user.id}>`, true);
+        embed.addField(`**Detected**`, `||${reason.join(`||, ||`)}||`, true);
+        embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
+        if (typeof guild != "undefined" && guild.configuration.moderation.autoModerationChannel.status && guild.autoModerationLog.initialized) guild.autoModerationLog.channel.send({ //Reply to the message that triggerred the error
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
@@ -119,10 +156,14 @@ module.exports = class moderationManager {
                 }
                 connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${userId}' AND \`type\`='${type}' AND \`guildId\`='${guildId}' AND (\`status\`='active' OR \`status\`='indefinite')`, async function (error, results, fields) {
                     if (results.length == 0) {
-                        try { connection.release() } catch (e) {}
+                        try {
+                            connection.release()
+                        } catch (e) {}
                         res(false);
                     }
-                    try { connection.release() } catch (e) {}
+                    try {
+                        connection.release()
+                    } catch (e) {}
                     if (error) {
                         ErrorLog.log(`An error occured during the query. ${error.toString()}`);
                         res(false);
@@ -143,10 +184,14 @@ module.exports = class moderationManager {
                 }
                 connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`numId\`='${caseId}' AND \`guildId\`='${guildId}'`, async function (error, results, fields) {
                     if (results.length == 0) {
-                        try { connection.release() } catch (e) {}
+                        try {
+                            connection.release()
+                        } catch (e) {}
                         res(false);
                     }
-                    try { connection.release() } catch (e) {}
+                    try {
+                        connection.release()
+                    } catch (e) {}
                     if (error) {
                         ErrorLog.log(`An error occured during the query. ${error.toString()}`);
                         res(false);
@@ -208,7 +253,9 @@ module.exports = class moderationManager {
                             res(true);
                         }
                     });
-                    try { connection.release() } catch (e) {}
+                    try {
+                        connection.release()
+                    } catch (e) {}
                     if (error) {
                         ErrorLog.log(`An error occured during the query. ${error.toString()}`);
                         res(false);
