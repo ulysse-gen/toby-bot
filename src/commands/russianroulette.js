@@ -85,8 +85,8 @@ module.exports = {
                 }
                 if (invividualArgument.toLowerCase().startsWith("-roundtimer:")) {
                     try {
-                        let time = timestring(invividualArgument.replace('-roundtimer:', ``));
-                        guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer = (time > guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer) ? time : guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer;
+                        let time = parseInt(invividualArgument.replace('-roundtimer:', ``));
+                        guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer = (time*1000 > guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer) ? time*1000 : guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer;
                         args = args.filter(arrayItem => arrayItem !== invividualArgument);
                     } catch (e) {}
                 }

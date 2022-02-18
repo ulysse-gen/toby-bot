@@ -34,7 +34,7 @@ module.exports = async function (message, guild = undefined) {
     let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
     let hasGuildPermission = await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
     let hasPermission = (hasGlobalPermission == null) ? hasGuildPermission : hasGlobalPermission;
-    //if (hasPermission == true) return true;
+    if (hasPermission == true) return true;
 
     let violations = [];
 
@@ -64,45 +64,45 @@ module.exports = async function (message, guild = undefined) {
         });
         
         if (violations.some(e => (e.check == `custom` && e.trigger == `N-Word`))){
-            guild.moderationManager.sendAutoModEmbed(message, guild, `N-Word`, `custom`, user, violations.map(e => {if (e.trigger == "N-Word")return e.value}))
+            guild.moderationManager.sendAutoModEmbed(message, guild, `N-Word`, `custom`, user, violations.map(e => {if (e.trigger == "N-Word" && typeof e.value != "undefined")return e.value}))
             violationsArray.push(`N-Word`);
-            AutoModLog.log(`Message containing N-Word content (${violations.map(e => {if (e.trigger == "N-Word")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
+            AutoModLog.log(`Message containing N-Word content (${violations.map(e => {if (e.trigger == "N-Word" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
             return true;
         }
         if (violations.some(e => (e.check == `custom` && e.trigger == `F-Slur`))){
-            guild.moderationManager.sendAutoModEmbed(message, guild, `F-Slur`, `custom`, user, violations.map(e => {if (e.trigger == "F-Slur")return e.value}))
+            guild.moderationManager.sendAutoModEmbed(message, guild, `F-Slur`, `custom`, user, violations.map(e => {if (e.trigger == "F-Slur" && typeof e.value != "undefined")return e.value}))
             violationsArray.push(`F-Slur`);
-            AutoModLog.log(`Message containing F-Slur content (${violations.map(e => {if (e.trigger == "F-Slur")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
+            AutoModLog.log(`Message containing F-Slur content (${violations.map(e => {if (e.trigger == "F-Slur" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
             return true;
         }
         if (violations.some(e => (e.check == `custom` && e.trigger == `H-Related`))){
-            guild.moderationManager.sendAutoModEmbed(message, guild, `H-Related`, `custom`, user, violations.map(e => {if (e.trigger == "H-Related")return e.value}))
+            guild.moderationManager.sendAutoModEmbed(message, guild, `H-Related`, `custom`, user, violations.map(e => {if (e.trigger == "H-Related" && typeof e.value != "undefined")return e.value}))
             violationsArray.push(`H-Related`);
-            AutoModLog.log(`Message containing H-Related content (${violations.map(e => {if (e.trigger == "H-Related")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
+            AutoModLog.log(`Message containing H-Related content (${violations.map(e => {if (e.trigger == "H-Related" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
             return true;
         }
         if (violations.some(e => (e.check == `custom` && e.trigger == `Sexual`))){
-            guild.moderationManager.sendAutoModEmbed(message, guild, `Sexual`, `custom`, user, violations.map(e => {if (e.trigger == "Sexual")return e.value}))
+            guild.moderationManager.sendAutoModEmbed(message, guild, `Sexual`, `custom`, user, violations.map(e => {if (e.trigger == "Sexual" && typeof e.value != "undefined")return e.value}))
             violationsArray.push(`Sexual`);
-            AutoModLog.log(`Message containing Sexual content (${violations.map(e => {if (e.trigger == "Sexual")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
+            AutoModLog.log(`Message containing Sexual content (${violations.map(e => {if (e.trigger == "Sexual" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
             return true;
         }
         if (violations.some(e => (e.check == `custom` && e.trigger == `Profanity`))){
-            guild.moderationManager.sendAutoModEmbed(message, guild, `Profanity`, `custom`, user, violations.map(e => {if (e.trigger == "Profanity")return e.value}))
+            guild.moderationManager.sendAutoModEmbed(message, guild, `Profanity`, `custom`, user, violations.map(e => {if (e.trigger == "Profanity" && typeof e.value != "undefined")return e.value}))
             violationsArray.push(`Profanity`);
-            AutoModLog.log(`Message containing Profanity content (${violations.map(e => {if (e.trigger == "Profanity")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
+            AutoModLog.log(`Message containing Profanity content (${violations.map(e => {if (e.trigger == "Profanity" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
             return true;
         }
         if (violations.some(e => (e.check == `linkify` && e.trigger == `url`))){
-            guild.moderationManager.sendAutoModEmbed(message, guild, `url`, `linkify`, user, violations.map(e => {if (e.trigger == "url")return e.value}))
+            guild.moderationManager.sendAutoModEmbed(message, guild, `url`, `linkify`, user, violations.map(e => {if (e.trigger == "url" && typeof e.value != "undefined")return e.value}))
             violationsArray.push(`URL`);
-            AutoModLog.log(`Message containing URL content (${violations.map(e => {if (e.trigger == "url")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
+            AutoModLog.log(`Message containing URL content (${violations.map(e => {if (e.trigger == "url" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
             return true;
         }
         if (violations.some(e => (e.check == `linkify` && e.trigger == `email`))){
-            guild.moderationManager.sendAutoModEmbed(message, guild, `email`, `linkify`, user, violations.map(e => {if (e.trigger == "email")return e.value}))
+            guild.moderationManager.sendAutoModEmbed(message, guild, `email`, `linkify`, user, violations.map(e => {if (e.trigger == "email" && typeof e.value != "undefined")return e.value}))
             violationsArray.push(`Email`);
-            AutoModLog.log(`Message containing Email content (${violations.map(e => {if (e.trigger == "email")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
+            AutoModLog.log(`Message containing Email content (${violations.map(e => {if (e.trigger == "email" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
             return true;
         }
     }
@@ -119,7 +119,7 @@ function detectProfanities(message) {
         "F-Slur": ["faggot", "fag"],
         "H-Related": ["hitler", "nazy", "nazi"],
         "Sexual": ["porno", "sex", "ass", "tits", "dick", "pussy", "vagina", "penis", "cock", "anus", "blowjob", "anulingus", "cunnilingus", "sodomy", "sodomize", "cum", "creampie", "deepthroat", "butthole", "bukkake", "boobs", "boner", "masturbating", "masturbate", "masturbation"],
-        "Profanity": []
+        "Profanity": ["ajbfGSGY7FGfpdARHg7GyjmkP$nMT8q&RM3AQJMx"]
     }
     splitters.forEach(splitter => {
         toCheck.push(content.replaceAll(splitter, ``));

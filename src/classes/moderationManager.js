@@ -107,6 +107,7 @@ module.exports = class moderationManager {
         embed.addField(`**Trigger**`, `${trigger}`, true);
         embed.addField(`**Check**`, `${check}`, true);
         embed.addField(`**User**`, `<@${user.user.id}>`, true);
+        embed.addField(`**Channel**`, `<#${message.channel.id}>`, true);
         embed.addField(`**Detected**`, `||${reason.join(`||, ||`)}||`, true);
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
         if (typeof guild != "undefined" && guild.configuration.moderation.autoModerationChannel.status && guild.autoModerationLog.initialized) guild.autoModerationLog.channel.send({ //Reply to the message that triggerred the error
