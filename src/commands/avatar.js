@@ -8,9 +8,12 @@ const utils = require(`../utils`);
 module.exports = {
     name: "avatar",
     description: `Show someone's avatar.`,
+    subcommands: {},
     aliases: ["av"],
     permission: `commands.avatar`,
+    nestedPermissions: {},
     category: `fun`,
+    status: true,
     async exec(client, message, args, guild = undefined) {
         let user = undefined;
 

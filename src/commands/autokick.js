@@ -16,6 +16,54 @@ const Logger = require(`../classes/Logger`);
 module.exports = {
     name: "autokick",
     description: `A tool to kick all members withing a certain scope.`,
+    subcommands: {
+        addrole: {
+            description: "Add a role to the AutoKick",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+        },
+        removerole: {
+            description: "Remove a role from the AutoKick",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+        },
+        addtoblacklist: {
+            description: "Add a role to the AutoKick blacklist",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+        },
+        addfromblacklist: {
+            description: "Add a role from the AutoKick blacklist",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+        },
+        logkickedusers: {
+            description: "Enable or disable the logging of kicked users in the logging channel",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["true","false"],type:"Boolean",optionnal:false}]
+        },
+        prepare: {
+            description: "Fetch the users before triggering the command",
+            type: "String",
+            args: []
+        },
+        trigger: {
+            description: "Trigger the AutoKick",
+            type: "String",
+            args: [{description:"Trigger option", placeholder:["testrun","nuke"],type:"String",optionnal:true}]
+        },
+        clear: {
+            description: "Clear the prepared AutoKick",
+            type: "String",
+            aliases: ["clearpending"],
+            args: []
+        },
+        fixroles: {
+            description: "Deleted glitched roles from the roles lists (#deleted-role)",
+            type: "String",
+            args: []
+        },
+    },
     aliases: ["ak"],
     permission: `commands.autokick`,
     nestedPermissions: {
@@ -24,6 +72,7 @@ module.exports = {
         settings: "commands.autokick.settings"
     },
     category: `administration`,
+    status: true,
     async exec(client, message, args, guild = undefined) {
         let cmd = message.content.replace(args.join(' '), '');
 

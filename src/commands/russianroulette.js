@@ -34,6 +34,11 @@ module.exports = {
                 name: "Muted One Minute",
                 key: "muted1min",
                 run: async (user) => {
+                    let isUserAlreadyMuted = await guild.moderationManager.isUserPunished(user.id, guild.guild.id, 'Mute');
+                    if (isUserAlreadyMuted) {
+                        message.channel.send(`Well <@${user.id}> should have been muted but.. Is already. F`);
+                        return true;
+                    }
                     message.channel.send(`Enjoy your 1 minute mute <@${user.id}> :smiling_face_with_3_hearts:`);
                     return await guild.muteUser(message, user.id, `[RR Auto] Won the Russian Roulette`, 1 * 60);
                 }
@@ -42,6 +47,11 @@ module.exports = {
                 name: "Muted Five Minutes",
                 key: "muted5min",
                 run: async (user) => {
+                    let isUserAlreadyMuted = await guild.moderationManager.isUserPunished(user.id, guild.guild.id, 'Mute');
+                    if (isUserAlreadyMuted) {
+                        message.channel.send(`Well <@${user.id}> should have been muted but.. Is already. F`);
+                        return true;
+                    }
                     message.channel.send(`Enjoy your 5 minutes mute <@${user.id}> :smiling_face_with_3_hearts:`);
                     return await guild.muteUser(message, user.id, `[RR Auto]Won the Russian Roulette`, 5 * 60);
                 }
@@ -50,6 +60,11 @@ module.exports = {
                 name: "Muted Ten Minutes",
                 key: "muted10min",
                 run: async (user) => {
+                    let isUserAlreadyMuted = await guild.moderationManager.isUserPunished(user.id, guild.guild.id, 'Mute');
+                    if (isUserAlreadyMuted) {
+                        message.channel.send(`Well <@${user.id}> should have been muted but.. Is already. F`);
+                        return true;
+                    }
                     message.channel.send(`Enjoy your 10 minutes mute <@${user.id}> :smiling_face_with_3_hearts:`);
                     return await guild.muteUser(message, user.id, `[RR Auto]Won the Russian Roulette`, 10 * 60);
                 }
@@ -103,12 +118,13 @@ module.exports = {
                         args = args.filter(arrayItem => arrayItem !== invividualArgument);
                     } catch (e) {}
                 }
-                if(hasRigPermission)if (invividualArgument.toLowerCase().startsWith("-rigged:")) {
-                    try {
-                        guild.waitingForInteration.data.russianroulette[message.channel.id].cannotDie = invividualArgument.replace('-rigged:', ``).split(',');
-                        args = args.filter(arrayItem => arrayItem !== invividualArgument);
-                    } catch (e) {}
-                }
+                if (hasRigPermission)
+                    if (invividualArgument.toLowerCase().startsWith("-rigged:")) {
+                        try {
+                            guild.waitingForInteration.data.russianroulette[message.channel.id].cannotDie = invividualArgument.replace('-rigged:', ``).split(',');
+                            args = args.filter(arrayItem => arrayItem !== invividualArgument);
+                        } catch (e) {}
+                    }
                 if (invividualArgument.toLowerCase().startsWith("-notriggedatall:")) {
                     try {
                         guild.waitingForInteration.data.russianroulette[message.channel.id].cannotDie = invividualArgument.replace('-notriggedatall:', ``).split(',');
@@ -215,13 +231,6 @@ module.exports = {
                                 MainLog.log(`Could not send message in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
                                 if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             });
-                            if (typeof guild.waitingForInteration.data.russianroulette[message.channel.id].prizeObject != "undefined") {
-                                if (typeof guild.waitingForInteration.data.russianroulette[message.channel.id].prizeObject.run == "function") {
-                                    guild.waitingForInteration.data.russianroulette[message.channel.id].alivePlayers.forEach(u => {
-                                        guild.waitingForInteration.data.russianroulette[message.channel.id].prizeObject.run(u);
-                                    });
-                                }
-                            }
                             embed.description = `The **Russian Roulette** is done !\nTotal players **%player_amount%**\nWinner(s) [%player_alive_amount%]: %player_alive_list%\nDead players [%dead_player_amount%]: %dead_player_list%%prize%`
                                 .replaceAll(`%player_amount%`, `${guild.waitingForInteration.data.russianroulette[message.channel.id].players.length}`)
                                 .replaceAll(`%player_list%`, guild.waitingForInteration.data.russianroulette[message.channel.id].players.join(', '))
@@ -231,7 +240,15 @@ module.exports = {
                                 .replaceAll(`%dead_player_list%`, guild.waitingForInteration.data.russianroulette[message.channel.id].deadPlayers.join(', '))
                                 .replaceAll(`%prize%`, (typeof guild.waitingForInteration.data.russianroulette[message.channel.id].prize != "undefined") ? `\nPrize : **${guild.waitingForInteration.data.russianroulette[message.channel.id].prize}**` : ``);
                             guild.waitingForInteration.data.russianroulette[message.channel.id].status = "finished";
+                            if (typeof guild.waitingForInteration.data.russianroulette[message.channel.id].prizeObject != "undefined") {
+                                if (typeof guild.waitingForInteration.data.russianroulette[message.channel.id].prizeObject.run == "function") {
+                                    guild.waitingForInteration.data.russianroulette[message.channel.id].alivePlayers.forEach(u => {
+                                        guild.waitingForInteration.data.russianroulette[message.channel.id].prizeObject.run(u);
+                                    });
+                                }
+                            }
                             clearInterval(guild.waitingForInteration.data.russianroulette[message.channel.id].intervals[playerSelect - 1]);
+                            round();
                             return true;
                         }
                         let youDead = guild.waitingForInteration.data.russianroulette[message.channel.id].alivePlayers[rn({
@@ -280,7 +297,14 @@ module.exports = {
                         embeds: [embed],
                         components: (guild.waitingForInteration.data.russianroulette[message.channel.id].status == "joining") ? [joinButton, cancelButton] : (guild.waitingForInteration.data.russianroulette[message.channel.id].status == "pre-play") ? [joinButton, stopButton] : (guild.waitingForInteration.data.russianroulette[message.channel.id].status == "playing") ? [aliveButton, stopButton] : []
                     }).then(() => {
-                        guild.waitingForInteration.data.russianroulette[message.channel.id].timeouts.push(setTimeout(() => round(), guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer));
+                        guild.waitingForInteration.data.russianroulette[message.channel.id].timeouts.push(setTimeout(() => {
+                            let roundRestartInterval = setInterval(() => {
+                                if (control <= 0) {
+                                    round();
+                                    clearInterval(roundRestartInterval)
+                                }
+                            }, 1000);
+                        }, guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer));
                     }).catch(e => {
                         msg.channel.send(`POV: I couldnt edit the previous message`);
                     });

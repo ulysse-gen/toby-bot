@@ -19,6 +19,64 @@ const Logger = require(`../classes/Logger`);
 module.exports = {
     name: "roleadder",
     description: `A tool to add roles to members with a certain scope`,
+    subcommands: {
+        addrole: {
+            description: "Add a role to the RoleAdded",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+        },
+        removerole: {
+            description: "Remove a role from the RoleAdded",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+        },
+        addtoblacklist: {
+            description: "Add a role to the RoleAdded blacklist",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+        },
+        addfromblacklist: {
+            description: "Add a role from the RoleAdded blacklist",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+        },
+        addtowhitelist: {
+            description: "Add a role to the RoleAdded whitelist",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+        },
+        addfromwhitelist: {
+            description: "Add a role from the RoleAdded whitelist",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+        },
+        logkickedusers: {
+            description: "Enable or disable the logging of added roles users in the logging channel",
+            type: "String",
+            args: [{description:"Guild role", placeholder:["true","false"],type:"Boolean",optionnal:false}]
+        },
+        prepare: {
+            description: "Fetch the users before triggering the command",
+            type: "String",
+            args: []
+        },
+        trigger: {
+            description: "Trigger the RoleAdded",
+            type: "String",
+            args: [{description:"Trigger option", placeholder:["testrun","nuke"],type:"String",optionnal:true}]
+        },
+        clear: {
+            description: "Clear the prepared RoleAdded",
+            type: "String",
+            aliases: ["clearpending"],
+            args: []
+        },
+        fixroles: {
+            description: "Deleted glitched roles from the roles lists (#deleted-role)",
+            type: "String",
+            args: []
+        },
+    },
     aliases: ["ra"],
     permission: `commands.roleadder`,
     nestedPermissions: {

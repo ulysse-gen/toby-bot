@@ -13,9 +13,11 @@ const utils = require(`../utils`);
 module.exports = {
     name: "about",
     description: `Show informations about the bot.`,
+    subcommands: {},
     aliases: [],
     permission: `commands.about`,
     category: `informations`,
+    status: true,
     async exec(client, message, args, guild = undefined) {
         let embed = new MessageEmbed({
             title: `About ${configuration.appName}`,

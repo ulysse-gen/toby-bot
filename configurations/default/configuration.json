@@ -67,5 +67,10 @@
     "sendMuteAlertInDM": false,
     "sendWarningInDM": true,
     "muteRole": "none"
+  },
+  "lockdown": {
+    "status": false,
+    "globalLock": [],
+    "currentlyLocked": []
   }
 }
