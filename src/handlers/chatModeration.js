@@ -30,6 +30,7 @@ Email
 */
 
 module.exports = async function (message, guild = undefined) {
+    return true;
     let permissionToCheck = `chat.fullbypass`;
     let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
     let hasGuildPermission = await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);

@@ -21,7 +21,8 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `- Lot of stuff ngl`;
+        embed.description += `- New \`ben\` command`;
+        embed.description += `\n- New \`russianroulette\` command`;
 
         message.reply({
             embeds: [embed],

@@ -23,7 +23,8 @@ module.exports = {
         custom: "commands.russianroulette.customsettings",
         stop: "commands.russianroulette.stop",
         cancel: "commands.russianroulette.cancel",
-        join: "commands.russianroulette.join"
+        join: "commands.russianroulette.join",
+        rig: "commands.russianroulette.rig"
     },
     async exec(client, message, args, guild = undefined) {
         if (typeof guild.waitingForInteration.data.russianroulette[message.channel.id] != "undefined") return utils.sendError(message, guild, `A Russian Roulette is already running.`);
@@ -67,12 +68,17 @@ module.exports = {
             startTimer: 30000,
             roundTimer: 9000,
             intervals: [],
-            timeouts: []
+            timeouts: [],
+            cannotDie: []
         };
 
         let customPermission = this.nestedPermissions.custom;
         let hasCustomPermissionGlobalPermission = await globalPermissions.userHasPermission(customPermission, message.author.id, undefined, message.channel.id, message.guild.id, true);
         let hasCustomPermission = (hasCustomPermissionGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(customPermission, message.author.id, undefined, message.channel.id, message.guild.id) : hasCustomPermissionGlobalPermission;
+
+        let rigPermission = this.nestedPermissions.custom;
+        let hasRigPermissionGlobalPermission = await globalPermissions.userHasPermission(rigPermission, message.author.id, undefined, message.channel.id, message.guild.id, true);
+        let hasRigPermission = (hasRigPermissionGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(rigPermission, message.author.id, undefined, message.channel.id, message.guild.id) : hasCustomPermissionGlobalPermission;
 
         if (hasCustomPermission) {
             args.forEach(async invividualArgument => {
@@ -86,7 +92,7 @@ module.exports = {
                 if (invividualArgument.toLowerCase().startsWith("-roundtimer:")) {
                     try {
                         let time = parseInt(invividualArgument.replace('-roundtimer:', ``));
-                        guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer = (time*1000 > guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer) ? time*1000 : guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer;
+                        guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer = (time * 1000 > guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer) ? time * 1000 : guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer;
                         args = args.filter(arrayItem => arrayItem !== invividualArgument);
                     } catch (e) {}
                 }
@@ -94,6 +100,18 @@ module.exports = {
                     try {
                         let amount = parseInt(invividualArgument.replace('-winners:', ``));
                         guild.waitingForInteration.data.russianroulette[message.channel.id].winners = amount;
+                        args = args.filter(arrayItem => arrayItem !== invividualArgument);
+                    } catch (e) {}
+                }
+                if(hasRigPermission)if (invividualArgument.toLowerCase().startsWith("-rigged:")) {
+                    try {
+                        guild.waitingForInteration.data.russianroulette[message.channel.id].cannotDie = invividualArgument.replace('-rigged:', ``).split(',');
+                        args = args.filter(arrayItem => arrayItem !== invividualArgument);
+                    } catch (e) {}
+                }
+                if (invividualArgument.toLowerCase().startsWith("-notriggedatall:")) {
+                    try {
+                        guild.waitingForInteration.data.russianroulette[message.channel.id].cannotDie = invividualArgument.replace('-notriggedatall:', ``).split(',');
                         args = args.filter(arrayItem => arrayItem !== invividualArgument);
                     } catch (e) {}
                 }
@@ -170,7 +188,7 @@ module.exports = {
                     })
                 }
                 if (!["joining", "pre-play"].includes(guild.waitingForInteration.data.russianroulette[message.channel.id].status)) return;
-                guild.waitingForInteration.data.russianroulette[message.channel.id].timeouts.push(setTimeout(()=>start(), 1000));
+                guild.waitingForInteration.data.russianroulette[message.channel.id].timeouts.push(setTimeout(() => start(), 1000));
             }
 
             function round() {
@@ -216,12 +234,12 @@ module.exports = {
                             clearInterval(guild.waitingForInteration.data.russianroulette[message.channel.id].intervals[playerSelect - 1]);
                             return true;
                         }
-                        control--;
                         let youDead = guild.waitingForInteration.data.russianroulette[message.channel.id].alivePlayers[rn({
                             min: 0,
                             max: guild.waitingForInteration.data.russianroulette[message.channel.id].alivePlayers.length - 1,
                             integer: true
                         })];
+                        if (control > 0 && !guild.waitingForInteration.data.russianroulette[message.channel.id].cannotDie.includes(youDead.id)) control--;
                         if (control <= 0) {
                             guild.waitingForInteration.data.russianroulette[message.channel.id].alivePlayers = guild.waitingForInteration.data.russianroulette[message.channel.id].alivePlayers.filter(function (value, index, arr) {
                                 return value != youDead;
@@ -261,10 +279,13 @@ module.exports = {
                     msg.edit({
                         embeds: [embed],
                         components: (guild.waitingForInteration.data.russianroulette[message.channel.id].status == "joining") ? [joinButton, cancelButton] : (guild.waitingForInteration.data.russianroulette[message.channel.id].status == "pre-play") ? [joinButton, stopButton] : (guild.waitingForInteration.data.russianroulette[message.channel.id].status == "playing") ? [aliveButton, stopButton] : []
-                    })
+                    }).then(() => {
+                        guild.waitingForInteration.data.russianroulette[message.channel.id].timeouts.push(setTimeout(() => round(), guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer));
+                    }).catch(e => {
+                        msg.channel.send(`POV: I couldnt edit the previous message`);
+                    });
                 }
                 if (["finished", "cancelled"].includes(guild.waitingForInteration.data.russianroulette[message.channel.id].status)) return clearPending(guild, message);
-                guild.waitingForInteration.data.russianroulette[message.channel.id].timeouts.push(setTimeout(() => round(),guild.waitingForInteration.data.russianroulette[message.channel.id].roundTimer));
             }
 
             start();

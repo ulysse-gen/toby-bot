@@ -24,9 +24,10 @@ module.exports = async function (message) {
     }
 
     if (message.content.toLowerCase().includes(`tobybot`) || message.content.toLowerCase().includes(`toby bot`) || message.content.toLowerCase().includes(`933695613294501888`)){
-        try {
-            message.react(`👀`);
-        }catch(e){}
+        message.react(`👀`).catch(e => {});
+        if (message.content.toLowerCase().includes(`ily`) || message.content.toLowerCase().includes(`i love you`)){
+            message.react(`<:meme_reverse:924184793053294623>`).catch(e => {});
+        }
     }
 
     let guild = await globalGuilds.getGuild(message.channel.guild);
