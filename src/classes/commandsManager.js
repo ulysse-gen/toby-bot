@@ -16,6 +16,8 @@ module.exports = class commandsManager {
         this.initialized = false;   //Set the main initialized variable to false
         this.verbose = false;   //To turn on console verbose
 
+        this.cooldowns = {};    //Store the users cooldowns
+
         this.initialize(commandsFolder);    //Initialize the command manager
     }
 

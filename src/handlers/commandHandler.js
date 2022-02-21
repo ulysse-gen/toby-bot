@@ -42,6 +42,20 @@ module.exports = async function (message, guild = undefined) {
 
     let command = globalCommands.fetch(cmd);
 
+    let cooldownPerm = `skipcooldowns.${command.permission}`;
+    let hasSkipCooldownGlobalPerms = await globalPermissions.userHasPermission(cooldownPerm, message.author.id, undefined, message.channel.id, message.guild.id, true);
+    let hasSkipCooldownGuildPerms = await guild.permissionsManager.userHasPermission(cooldownPerm, message.author.id, undefined, message.channel.id, message.guild.id);
+    let hasSkipCooldownPerms = (hasSkipCooldownGlobalPerms == null) ? hasSkipCooldownGuildPerms : hasSkipCooldownGlobalPerms;
+
+    if (command.cooldown != 0 && !hasSkipCooldownPerms)
+        if (typeof globalCommands.cooldowns[message.author.id] != "undefined" && typeof globalCommands.cooldowns[message.author.id][command.name] != "undefined"){
+            return utils.sendUnkownCommand(message, guild, `Cooldown`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Unknown Command].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Cooldown]`);
+        }else {
+            if (typeof globalCommands.cooldowns[message.author.id] == "undefined")globalCommands.cooldowns[message.author.id] = {};
+            globalCommands.cooldowns[message.author.id][command.name] = true;
+            setTimeout(() => {delete globalCommands.cooldowns[message.author.id][command.name];}, command.cooldown*1000)
+        }
+
     if (!command) return utils.sendUnkownCommand(message, guild, `Unknown command`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Unknown Command].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Unknown Command]`);
 
 

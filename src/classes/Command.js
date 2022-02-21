@@ -27,6 +27,7 @@ module.exports = class Command {
         //if (typeof commandData.nestedPermissions != "object") logError(`No nested permissions specified for the command ${commandData.name}`);
         //if (typeof commandData.status != "boolean" || commandData.status == null) logError(`No status specified for the command ${commandData.name}`);
         if (typeof commandData.exec != "function") return returnWithError(`Could not init command ${commandData.name}, no exec function specified.`);
+        //if (typeof commandData.cooldown != "number" || commandData.cooldown <= 0) logError(`No cooldown specified for the command ${commandData.name}`);
         this.name = commandData.name;
         this.description = commandData.description;
         this.category = commandData.category;
@@ -36,6 +37,7 @@ module.exports = class Command {
         this.nestedPermissions = (typeof commandData.nestedPermissions == "object") ? commandData.nestedPermissions : {};
         this.status = (typeof commandData.status == "boolean" || commandData.status != null) ? commandData.nestedPermissions : true;
         this.exec = commandData.exec;
+        this.cooldown = (typeof commandData.cooldown == "number" || commandData.cooldown <= 0) ? commandData.cooldown : 0;
         return;
     }
 }
