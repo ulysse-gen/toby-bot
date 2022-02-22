@@ -8,7 +8,8 @@ const {
     client,
     configuration,
     MainLog,
-    globalGuilds
+    globalGuilds,
+    reload
 } = require(`../../index`);
 
 module.exports = async function (message) {
@@ -35,7 +36,7 @@ module.exports = async function (message) {
         "<:meme_reverse:924184793053294623>": ["ily", "i love you"],
         "🥖": ["baguette", "baget", "baguet", "bread"]
     };
-    let doNotReact = ["react", "reaction", "reply"];
+    let doNotReact = ["react", "reaction", "reply", "emoji", "emote", "eyes", "put", "emoticon"];
 
     if (!doNotReact.some(ind => message.content.toLowerCase().includes(ind)))
         if (reactions["👀"].some(ind => message.content.toLowerCase().includes(ind))) {

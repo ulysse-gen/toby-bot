@@ -14,8 +14,8 @@ module.exports = {
     name: "reloadcommands",
     description: `Reload the bot commands.`,
     subcommands: {},
-    aliases: ["rcmds"],
-    permission: `commands.reloadcommands`,
+    aliases: ["rcmds", "reload"],
+    permission: `commands.reload`,
     category: `informations`,
     status: true,
     async exec(client, message, args, guild = undefined) {
@@ -24,6 +24,12 @@ module.exports = {
             color: guild.configuration.colors.success
         });
         await globalCommands.reload();
+        require(`../../`)
+        delete require.cache[require.resolve(`../../src/handlers/messageCreate`)];
+        delete require.cache[require.resolve(`../../src/handlers/interactionCreate`)];
+        delete require.cache[require.resolve(`../handlers/DMHandler`)];
+        delete require.cache[require.resolve(`../handlers/chatModeration`)];
+        delete require.cache[require.resolve(`../handlers/commandHandler`)];
         embed.addField(`**Commands loaded**`, `${globalCommands.commands.length}`, true);
 
         message.reply({

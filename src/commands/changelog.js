@@ -21,8 +21,8 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `- New \`ben\` command`;
-        embed.description += `\n- New \`russianroulette\` command`;
+        embed.description += `- Improved Toby Reactions`;
+        embed.description += `\n- Added reload`;
 
         message.reply({
             embeds: [embed],
