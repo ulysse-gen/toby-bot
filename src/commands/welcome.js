@@ -18,7 +18,8 @@ module.exports = {
     permission: `commands.welcome`,
     category: `fun`,
     status: true,
-    cooldown: 10,
+    cooldown: 300,
+    globalcooldown: 250,
     async exec(client, message, args, guild = undefined) {
         let embed = new MessageEmbed({
             title: (message.mentions.members.size != 0) ? `Hi there ${message.mentions.members.first().user.username}#${message.mentions.members.first().user.discriminator} !` : `Hi there !`,
@@ -27,7 +28,7 @@ module.exports = {
         });
         embed.addField(`**📌 First of all, go read**`, `<#892106114865438721>`, true);
         embed.addField(`**📌 Make sure you get some**`, `<#907859717886447626>`, true);
-        embed.addField(`**📌 If you want, you can also get**`, `<#920245689718542407>`, true);
+        embed.addField(`**📌 You can also get**`, `<#920163211074994186>`, true);
         embed.addField(`**📌 And introduce yourself in**`, `<#944074797468487680>`, true);
 
         message.reply({

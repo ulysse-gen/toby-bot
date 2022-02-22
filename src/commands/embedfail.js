@@ -18,6 +18,8 @@ module.exports = {
         tag: `commands.embedfail.tag`
     },
     category: `fun`,
+    cooldown: 300,
+    globalcooldown: 250,
     async exec(client, message, args, guild = undefined) {
         let images = [
             "https://tenor.com/view/epic-embed-fail-embed-embed-fail-sammyclassicsonicfan-bv0j-gif-22247411",

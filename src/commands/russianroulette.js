@@ -183,7 +183,7 @@ module.exports = {
             components: [joinButton, cancelButton],
             failIfNotExists: false
         }, false).then(async msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
+            message.delete().catch(e => {
                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
                 if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
             });

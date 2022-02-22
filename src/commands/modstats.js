@@ -145,6 +145,7 @@ module.exports = {
         if (user.user.id == "899655742389358612")embed.addField(`**Important infos:**`, `huh?`, true);   //Olle
         if (user.user.id == "762760262683459654")embed.addField(`**Important infos:**`, `I’m very indecisive so could you make one up for me?`, true);   //Aiko
         if (user.user.id == "913934813524799490")embed.addField(`**Important infos:**`, `The original sebs badge creator.`, true);   //Sebs
+        if (user.user.id == "408726936286658561")embed.addField(`**Important infos:**`, `<:teddy_bear:945443955263303750>`, true);   //bassie
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
 
         message.reply({

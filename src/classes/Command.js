@@ -16,7 +16,8 @@ module.exports = class Command {
         this.init(command);
     }
 
-    init(command) {
+    async init(command) {
+        delete require.cache[require.resolve(`../commands${command}`)];
         let commandData = require(`../commands${command}`);
         if (typeof commandData.name != "string" || commandData.name == "") return returnWithError(`Could not init command, no name specified.`);
         if (typeof commandData.description != "string" || commandData.description == "") return returnWithError(`Could not init command ${commandData.name}, no description specified.`);
@@ -28,6 +29,7 @@ module.exports = class Command {
         //if (typeof commandData.status != "boolean" || commandData.status == null) logError(`No status specified for the command ${commandData.name}`);
         if (typeof commandData.exec != "function") return returnWithError(`Could not init command ${commandData.name}, no exec function specified.`);
         //if (typeof commandData.cooldown != "number" || commandData.cooldown <= 0) logError(`No cooldown specified for the command ${commandData.name}`);
+        //if (typeof commandData.globalCooldown != "number" || commandData.globalCooldown <= 0) logError(`No global cooldown specified for the command ${commandData.name}`);
         this.name = commandData.name;
         this.description = commandData.description;
         this.category = commandData.category;
@@ -38,6 +40,7 @@ module.exports = class Command {
         this.status = (typeof commandData.status == "boolean" || commandData.status != null) ? commandData.nestedPermissions : true;
         this.exec = commandData.exec;
         this.cooldown = (typeof commandData.cooldown == "number" || commandData.cooldown <= 0) ? commandData.cooldown : 0;
+        this.globalCooldown = (typeof commandData.globalCooldown == "number" || commandData.globalCooldown <= 0) ? commandData.globalCooldown : 0;
         return;
     }
 }
