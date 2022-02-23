@@ -24,7 +24,6 @@ module.exports = {
             color: guild.configuration.colors.success
         });
         await globalCommands.reload();
-        require(`../../`)
         delete require.cache[require.resolve(`../../src/handlers/messageCreate`)];
         delete require.cache[require.resolve(`../../src/handlers/interactionCreate`)];
         delete require.cache[require.resolve(`../handlers/DMHandler`)];

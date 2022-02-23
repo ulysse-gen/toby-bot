@@ -48,20 +48,19 @@ module.exports = async function (message, guild = undefined) {
     let hasSkipCooldownPerms = (hasSkipCooldownGlobalPerms == null) ? hasSkipCooldownGuildPerms : hasSkipCooldownGlobalPerms;
 
     if (command.globalcooldown != 0 && !hasSkipCooldownPerms)
-        if (typeof globalCommands.cooldowns[message.author.id] != "undefined" && typeof globalCommands.cooldowns[message.author.id][command.name] != "undefined"){
-            return utils.sendUnkownCommand(message, guild, `Cooldown`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Unknown Command].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Cooldown]`);
+        if (typeof globalCommands.globalCooldowns[command.name] != "undefined"){
+            return utils.sendCooldown(message, guild, `Cooldown`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Unknown Command].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Cooldown]`);
         }else {
-            if (typeof globalCommands.cooldowns[command.name] == "undefined")globalCommands.cooldowns[command.name] = true;
-            globalCommands.cooldowns[command.name] = true;
-            setTimeout(() => {delete globalCommands.globalCooldowns[command.name];}, command.globalcooldown*1000)
+            if (typeof globalCommands.globalCooldowns[command.name] == "undefined")globalCommands.globalCooldowns[command.name] = true;
+            setTimeout(() => {delete globalCommands.globalCooldowns[command.name];}, command.globalCooldown*1000)
         }
     if (command.cooldown != 0 && !hasSkipCooldownPerms)
         if (typeof globalCommands.cooldowns[message.author.id] != "undefined" && typeof globalCommands.cooldowns[message.author.id][command.name] != "undefined"){
-            return utils.sendUnkownCommand(message, guild, `Cooldown`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Unknown Command].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Cooldown]`);
+            return utils.sendCooldown(message, guild, `Cooldown`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Unknown Command].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Cooldown]`);
         }else {
             if (typeof globalCommands.cooldowns[message.author.id] == "undefined")globalCommands.cooldowns[message.author.id] = {};
             globalCommands.cooldowns[message.author.id][command.name] = true;
-            setTimeout(() => {delete globalCommands.cooldowns[message.author.id][command.name];}, command.cooldown*1000)
+            setTimeout(() => {delete globalCommands.cooldowns[message.author.id][command.name];}, command.globalCooldown*1000)
         }
 
     if (!command) return utils.sendUnkownCommand(message, guild, `Unknown command`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Unknown Command].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Unknown Command]`);

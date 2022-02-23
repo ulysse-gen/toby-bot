@@ -17,6 +17,7 @@ module.exports = class commandsManager {
         this.verbose = false; //To turn on console verbose
 
         this.cooldowns = {}; //Store the users cooldowns
+        this.globalCooldowns = {}; //Store the global cooldowns
 
         this.initialize(commandsFolder); //Initialize the command manager
     }
