@@ -75,9 +75,9 @@ module.exports = async function (message, guild = undefined) {
 
     MainSQLLog.log(`Command Execution`, `${message.content}`, guild.guild.id, message.channel.id, message.author.id, message.id); //Only runs if the thing on top was true, logs into console
     MainLog.log(`${message.author.tag}(${message.author.id}) executed '${cmd}' in [${message.channel.id}@${message.channel.guild.id}].`);
-    let commandResult = await command.exec(client, message, args, guild);
+    //let commandResult = await command.exec(client, message, args, guild);
     try {
-        //let commandResult = await command.exec(client, message, args, guild);
+        let commandResult = await command.exec(client, message, args, guild);
         if (typeof commandResult != "undefined") {
             if (typeof commandResult == "object")
                 if (typeof guild != "undefined" && guild.configuration.behaviour.logCommandExecutions)
