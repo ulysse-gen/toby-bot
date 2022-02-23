@@ -28,7 +28,7 @@ module.exports = class guildManager {
             }
         }
 
-        this.waitingForInteration = {
+        this.waitingForInteraction = {
             users: {},
             channels: {},
             data: {

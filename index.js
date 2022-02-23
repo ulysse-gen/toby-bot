@@ -66,7 +66,7 @@ client.on('ready', async () => {
 });
 
 client.on(`messageCreate`, message => require(`./src/handlers/messageCreate`)(message));
-client.on(`interactionCreate`, interation => require(`./src/handlers/interactionCreate`)(interation));
+client.on(`interactionCreate`, interaction => require(`./src/handlers/interactionCreate`)(interaction));
 
 client.on('error', (code) => {
     MainSQLLog.log(`DiscordJS Error`, `${code.toString()}`);
