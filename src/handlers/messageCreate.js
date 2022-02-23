@@ -60,9 +60,11 @@ module.exports = async function (message) {
         userId: message.author.id,
         content: message.content,
         attachments: [],
+        stickers: [],
         createdTimestamp: message.createdTimestamp
     };
-    message.attachments.forEach(messageAttachement => lastMessagePush.attachments.push(messageAttachement.url))
+    message.attachments.forEach(messageAttachement => lastMessagePush.attachments.push(messageAttachement.url));
+    message.stickers.forEach(messageSticker => lastMessagePush.stickers.push(messageSticker.url));
     guild.lastMessages[message.author.id].unshift(lastMessagePush);
     if (guild.lastMessages[message.author.id].length >= 25) guild.lastMessages[message.author.id].splice(24, guild.lastMessages[message.author.id] - 25);
 

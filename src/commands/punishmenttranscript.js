@@ -44,7 +44,7 @@ module.exports = {
         if (typeof messageHistory == "undefined" || messageHistory.length == 0) return utils.sendError(message, guild, `No messages saved.`);
     
         messageHistory.forEach(indMessage => {
-            embedFields.push([`**Message Entry**`, `Content: ${indMessage.content}\nAttachments : ${(indMessage.attachments.length == 0) ? `None` : `[**URL**](${indMessage.attachments.join(`) [**URL**](`)})`}\nSent in : <#${indMessage.channelId}>\nSent at : <t:${moment(indMessage.createdTimestamp).unix()}>`, false]);
+            embedFields.push([`**Message Entry**`, `Content: ${indMessage.content}\nAttachments : ${(indMessage.attachments.length == 0) ? `None` : `[**URL**](${indMessage.attachments.join(`) [**URL**](`)})`}\nStickers : ${(typeof indMessage.stickers == "undefined" || indMessage.stickers.length == 0) ? `None` : `[**URL**](${indMessage.stickers.join(`) [**URL**](`)})`}\nSent in : <#${indMessage.channelId}>\nSent at : <t:${moment(indMessage.createdTimestamp).unix()}>`, false]);
         });
 
         embedPages = splitArrayIntoChunksOfLen(embedFields, 10);

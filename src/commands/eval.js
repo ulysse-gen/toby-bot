@@ -28,7 +28,7 @@ module.exports = {
         embed.description = await new Promise(async (res, rej) => {
             let returnValue = `No return value.`;
             try {
-                eval(args.join(' '));
+                returnValue = eval(args.join(' '));
                 res(`\`\`\`${returnValue.toString()}\`\`\``);
             } catch (e) {
                 embed.color = guild.configuration.colors.error;
