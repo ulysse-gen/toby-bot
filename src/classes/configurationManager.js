@@ -51,14 +51,15 @@ module.exports = class configuationManager {
                         try { connection.release() } catch (e) {}
                         res(true);
                     } else if (typeof zisse.guildId != "undefined") {
-                        if (this.verbose)MainLog.log(`Configuration non existant, creating entry`);
-                        if (results.affectedRows != 1) ErrorLog.log(`Did not insert for some reason wth. ${error.toString()}`);
-                        try { connection.release() } catch (e) {}
-                        if (error) {
-                            ErrorLog.log(`An error occured during the query. ${error.toString()}`);
-                            res(false);
-                        }
-                        res(null);
+                        connection.query(`INSERT INTO ${zisse.sqlTable} (\`guildId\`) VALUES ('${zisse.guildId}')`, async function (error, results, fields) {
+                            if (results.affectedRows != 1) ErrorLog.log(`Did not insert for some reason wth. ${error.toString()}`);
+                            try { connection.release() } catch (e) {}
+                            if (error) {
+                                ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                                res(false);
+                            }
+                            res(null);
+                        });
                     }
                     if (error) {
                         ErrorLog.log(`An error occured during the query. ${error.toString()}`);
@@ -202,8 +203,9 @@ async function mergeRecursive(obj1, obj2) {
                 obj1[p] = await mergeRecursive(obj1[p], obj2[p]);
             } else {
                 if (typeof obj1[p] == "undefined") MainLog.log(`Creating missing config key [${p}] as [${obj2[p]}].`);
+                //if (typeof obj1[p] != typeof obj2[p]) MainLog.log(`Wat key [${p}] as [${obj2[p]}].`);
                 if (typeof obj1[p] != typeof obj2[p]) obj1[p] = obj2[p];
-                //if (typeof obj1[p] != "undefined")obj1[p] = obj2[p];
+                if (typeof obj1[p] == "undefined")obj1[p] = obj2[p];
             }
         } catch (e) {
             //MainLog.log(`Creating missing config key [${p}] as [${obj2[p]}].`);

@@ -14,7 +14,7 @@ module.exports = {
     async exec(client, message, args, guild = undefined) {
         let user = undefined;
 
-        if (args.length ==  0) return utils.sendError(message, guild, `No case ID specified.`);
+        if (args.length == 0) return utils.sendError(message, guild, `No case ID specified.`);
 
         let punishmentInfos = await guild.moderationManager.getPunishementByCaseId(args[0], guild.guild.id);
         if (typeof punishmentInfos == "undefined") return utils.sendError(message, guild, `Could not find punishement.`);
@@ -23,7 +23,11 @@ module.exports = {
             cache: false,
             force: true
         }).catch(e => {
-            return {user: {id:punishmentInfos.userId}};
+            return {
+                user: {
+                    id: punishmentInfos.userId
+                }
+            };
         });
 
         let embedFields = [];
@@ -37,14 +41,16 @@ module.exports = {
         let messageHistory;
         try {
             messageHistory = JSON.parse(punishmentInfos.messageHistory);
-        }catch (e) {
+        } catch (e) {
             return utils.sendError(message, guild, `An error occured trying to parse the message history.`);
         }
 
         if (typeof messageHistory == "undefined" || messageHistory.length == 0) return utils.sendError(message, guild, `No messages saved.`);
-    
+
         messageHistory.forEach(indMessage => {
-            embedFields.push([`**Message Entry**`, `Content: ${indMessage.content}\nAttachments : ${(indMessage.attachments.length == 0) ? `None` : `[**URL**](${indMessage.attachments.join(`) [**URL**](`)})`}\nStickers : ${(typeof indMessage.stickers == "undefined" || indMessage.stickers.length == 0) ? `None` : `[**URL**](${indMessage.stickers.join(`) [**URL**](`)})`}\nSent in : <#${indMessage.channelId}>\nSent at : <t:${moment(indMessage.createdTimestamp).unix()}>`, false]);
+            let fieldBody = `Content: ${indMessage.content}\nAttachments : ${(indMessage.attachments.length == 0) ? `None` : `[**URL**](${indMessage.attachments.join(`) [**URL**](`)})`}\nStickers : ${(typeof indMessage.stickers == "undefined" || indMessage.stickers.length == 0) ? `None` : `[**URL**](${indMessage.stickers.join(`) [**URL**](`)})`}\nSent in : <#${indMessage.channelId}>\nSent at : <t:${moment(indMessage.createdTimestamp).unix()}>`;
+            if (fieldBody.length > 1024) fieldBody = `Content: ${indMessage.content.trimEllip(1021-fieldBody.replace(indMessage.content, ``).length)}\nAttachments : ${(indMessage.attachments.length == 0) ? `None` : `[**URL**](${indMessage.attachments.join(`) [**URL**](`)})`}\nStickers : ${(typeof indMessage.stickers == "undefined" || indMessage.stickers.length == 0) ? `None` : `[**URL**](${indMessage.stickers.join(`) [**URL**](`)})`}\nSent in : <#${indMessage.channelId}>\nSent at : <t:${moment(indMessage.createdTimestamp).unix()}>`;
+            embedFields.push([`**Message Entry**`, `${fieldBody}`, false]);
         });
 
         embedPages = splitArrayIntoChunksOfLen(embedFields, 10);

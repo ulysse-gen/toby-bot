@@ -130,21 +130,7 @@ module.exports = class guildManager {
 
     async kickUser(message, userId, reason) {
         let zisse = this;
-        let user = (userId.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return false;
-        }) : await message.channel.guild.members.fetch({
-            cache: false,
-            force: true
-        }).then(members => members.find(member => member.user.tag === userId));
-        if (typeof user == "undefined") user = await message.channel.guild.members.fetch(userId, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return undefined;
-        });
+        let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
             errored: true,
             reason: `User not found.`
@@ -174,21 +160,7 @@ module.exports = class guildManager {
 
     async banUser(message, userId, reason, time) {
         let zisse = this;
-        let user = (userId.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return false;
-        }) : await message.channel.guild.members.fetch({
-            cache: false,
-            force: true
-        }).then(members => members.find(member => member.user.tag === userId));
-        if (typeof user == "undefined") user = await message.channel.guild.members.fetch(userId, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return undefined;
-        });
+        let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
             errored: true,
             reason: `User not found.`
@@ -221,21 +193,7 @@ module.exports = class guildManager {
 
     async warnUser(message, userId, reason, time) {
         let zisse = this;
-        let user = (userId.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return false;
-        }) : await message.channel.guild.members.fetch({
-            cache: false,
-            force: true
-        }).then(members => members.find(member => member.user.tag === userId));
-        if (typeof user == "undefined") user = await message.channel.guild.members.fetch(userId, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return undefined;
-        });
+        let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
             errored: true,
             reason: `User not found.`
@@ -256,21 +214,7 @@ module.exports = class guildManager {
 
     async noteUser(message, userId, reason, time) {
         let zisse = this;
-        let user = (userId.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return false;
-        }) : await message.channel.guild.members.fetch({
-            cache: false,
-            force: true
-        }).then(members => members.find(member => member.user.tag === userId));
-        if (typeof user == "undefined") user = await message.channel.guild.members.fetch(userId, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return undefined;
-        });
+        let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
             errored: true,
             reason: `User not found.`
@@ -290,21 +234,7 @@ module.exports = class guildManager {
 
     async muteUser(message, userId, reason, time) {
         let zisse = this;
-        let user = (userId.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return false;
-        }) : await message.channel.guild.members.fetch({
-            cache: false,
-            force: true
-        }).then(members => members.find(member => member.user.tag === userId));
-        if (typeof user == "undefined") user = await message.channel.guild.members.fetch(userId, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return undefined;
-        });
+        let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
             errored: true,
             reason: `User not found.`
@@ -398,21 +328,7 @@ module.exports = class guildManager {
 
     async unmuteUser(message, userId, reason) {
         let zisse = this;
-        let user = (userId.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return false;
-        }) : await message.channel.guild.members.fetch({
-            cache: false,
-            force: true
-        }).then(members => members.find(member => member.user.tag === userId));
-        if (typeof user == "undefined") user = await message.channel.guild.members.fetch(userId, {
-            cache: false,
-            force: true
-        }).catch(e => {
-            return undefined;
-        });
+        let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
             errored: true,
             reason: `User not found.`
@@ -455,5 +371,24 @@ module.exports = class guildManager {
         return {
             errored: false
         };
+    }
+
+    async grabUser(message, userString) {
+        let user =  (userString.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
+            cache: false,
+            force: true
+        }).catch(e => {
+            return undefined;
+        }) : await message.channel.guild.members.fetch({
+            cache: false,
+            force: true
+        }).then(members => members.find(member => member.user.tag === userString));
+        if (typeof user == "undefined") user = await message.channel.guild.members.fetch(userString, {
+            cache: false,
+            force: true
+        }).catch(e => {
+            return undefined;
+        });
+        return user;
     }
 }

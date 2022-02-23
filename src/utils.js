@@ -282,3 +282,7 @@ exports.waitForInit = async (initVar) => {
     });
     return await waitForVarPromise;
 }
+
+String.prototype.trimEllip = function (length) {
+    return this.length > length ? this.substring(0, length) + "..." : this;
+}

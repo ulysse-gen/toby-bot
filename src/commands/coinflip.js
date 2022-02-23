@@ -8,6 +8,8 @@ module.exports = {
     aliases: ["flip", "flipacoin", "cf"],
     permission: `commands.coinflip`,
     category: `fun`,
+    cooldown: 300,
+    globalCooldown: 250,
     async exec(client, message, args, guild = undefined) {
         let headOrTails = [
             "https://cdn.discordapp.com/attachments/936578361302614018/937820858616008734/heads_ccexpress.png",

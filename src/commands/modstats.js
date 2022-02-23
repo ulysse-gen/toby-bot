@@ -3,6 +3,7 @@ const {
 } = require(`discord.js`);
 const mysql = require("mysql");
 const moment = require("moment");
+const urlExists = require('url-exists');
 const {
     configuration
 } = require(`../../index`);
@@ -43,12 +44,20 @@ module.exports = {
             return undefined;
         });
 
+        let userPFP = await new Promise((res, rej) => {
+            if (typeof user.user.avatar == "undefined")res(`https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`)
+            let baseOfUrl = (user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
+            urlExists(`${baseOfUrl}.gif`, function (err, exists) {
+                res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
+            });
+        });
+
         let embed = new MessageEmbed({
             title: `Moderation Statistics`,
             color: guild.configuration.colors.main,
             author: {
                 name: user.user.tag,
-                iconURL: `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}.webp?size=64`
+                iconURL: `${userPFP}?size=64`
             }
         });
 

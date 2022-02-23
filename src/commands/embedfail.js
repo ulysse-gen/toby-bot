@@ -19,7 +19,7 @@ module.exports = {
     },
     category: `fun`,
     cooldown: 300,
-    globalCooldown: 250,
+    globalCooldown: 120,
     async exec(client, message, args, guild = undefined) {
         let images = [
             "https://tenor.com/view/epic-embed-fail-embed-embed-fail-sammyclassicsonicfan-bv0j-gif-22247411",

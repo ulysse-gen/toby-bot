@@ -8,6 +8,8 @@ module.exports = {
     aliases: ["roll", "rolladice", "rd"],
     permission: `commands.rolldice`,
     category: `fun`,
+    cooldown: 300,
+    globalCooldown: 250,
     async exec(client, message, args, guild = undefined) {
         let diceFaces = [
             "xxxxxxxxxxxxxxxx1",

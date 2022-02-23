@@ -2,6 +2,7 @@ const {
     MessageEmbed
 } = require(`discord.js`);
 const mysql = require("mysql");
+const urlExists = require('url-exists');
 const moment = require("moment");
 
 const utils = require(`../utils`);
@@ -16,28 +17,22 @@ module.exports = {
         let user = undefined;
 
         if (args.length != 0) {
-            user = (args[0].startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
-                cache: false,
-                force: true
-            }).catch(e => {
-                return undefined;
-            }) : await message.channel.guild.members.fetch({
-                cache: false,
-                force: true
-            }).then(members => members.find(member => member.user.tag === args[0]));
-            if (typeof user == "undefined") user = await message.channel.guild.members.fetch(args[0], {
-                cache: false,
-                force: true
-            }).catch(e => {
-                return undefined;
-            });
-            if (typeof user == "undefined") return utils.sendError(message, guild, `Could not get user data`, `User not found`);
+            user = await guild.grabUser(message, args[0]);
+            if (typeof user == "undefined") user = {id: args[0], user: {id: args[0], tag: `Unknown#Tag`}};
         }
         if (args.length == 0) user = await message.channel.guild.members.fetch(message.author.id, {
             cache: false,
             force: true
         }).catch(e => {
             return undefined;
+        });
+
+        let userPFP = await new Promise((res, rej) => {
+            if (typeof user.user.avatar == "undefined")res(`https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`)
+            let baseOfUrl = (user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
+            urlExists(`${baseOfUrl}.gif`, function (err, exists) {
+                res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
+            });
         });
 
         let embedFields = [];
@@ -47,7 +42,7 @@ module.exports = {
             color: guild.configuration.colors.main,
             author: {
                 name: user.user.tag,
-                iconURL: `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}.webp?size=64`
+                iconURL: `${userPFP}?size=64`
             }
         });
 
