@@ -16,7 +16,7 @@ const MainLog = new Logger();
 const ErrorLog = new Logger(`./logs/error.log`);
 
 module.exports = class permissionsManager {
-    constructor(client, sqlConfiguration, fallbackFile, sqlTable = `guildsPermissions`, sqlWhere = `\`numId\` = 1`, guildId = undefined) {
+    constructor(client, sqlConfiguration, fallbackFile, sqlTable = `guildsPermissions`, sqlWhere = `\`numId\` = 1`, guildId = 'global') {
         this.client = client;
         this.sqlPool = mysql.createPool(require('../../MySQL.json'));
         this.sqlTable = sqlTable;
@@ -66,12 +66,16 @@ module.exports = class permissionsManager {
                                 zisse.permissions[iterator] = results[0][iterator];
                             }
                         }
-                        try { connection.release() } catch (e) {}
+                        try {
+                            connection.release()
+                        } catch (e) {}
                         res(true);
                     } else if (typeof zisse.guildId != "undefined") {
                         connection.query(`INSERT INTO ${zisse.sqlTable} (\`guildId\`) VALUES ('${zisse.guildId}')`, async function (error, results, fields) {
                             if (results.affectedRows != 1) ErrorLog.log(`Did not insert for some reason wth. ${error.toString()}`);
-                            try { connection.release() } catch (e) {}
+                            try {
+                                connection.release()
+                            } catch (e) {}
                             if (error) {
                                 ErrorLog.log(`An error occured during the query. ${error.toString()}`);
                                 res(false);
@@ -115,13 +119,17 @@ module.exports = class permissionsManager {
                                 zisse.permissions[iterator] = results[0][iterator];
                             }
                         }
-                        try { connection.release() } catch (e) {}
+                        try {
+                            connection.release()
+                        } catch (e) {}
                         res(true);
                     } else {
                         console.log(error, results, fields)
                         MainLog.log(`results is undefined or its length is 0 for SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`);
                         MainLog.log(`Check for potential issue`);
-                        try { connection.release() } catch (e) {}
+                        try {
+                            connection.release()
+                        } catch (e) {}
                         res(false);
                     }
                     if (error) {
@@ -166,10 +174,14 @@ module.exports = class permissionsManager {
                 }
                 connection.query(`${sqlString.replace(`&[SQLVALUESTOSET]`, sqlPlaceholders.join(','))}`, sqlValues, async function (error, results, fields) {
                     if (typeof results.affectedRows == "number" && results.affectedRows == 0) {
-                        try { connection.release() } catch (e) {}
+                        try {
+                            connection.release()
+                        } catch (e) {}
                         res(null);
                     }
-                    try { connection.release() } catch (e) {}
+                    try {
+                        connection.release()
+                    } catch (e) {}
                     res(true);
                     if (error) {
                         ErrorLog.log(`An error occured during the query. ${error.toString()}`);
@@ -196,9 +208,13 @@ module.exports = class permissionsManager {
         if (typeof this.permissions.users[userId] == "object" && Object.keys(this.permissions.users[userId]).length >= 1) {
             return this.permissions.users[userId]; //Check if user permissions are in cache & if its not empty, return it
         }
-        if (this.guildId == "global") {
+        if (this.guildId != "global" && false) {
             if (typeof this.permissions.users[userId] != "object") this.permissions.users[userId] = {
-                "internalRole.default": true
+                "internalRole.default": {
+                    value: true,
+                    priority: 0,
+                    temporary: false
+                }
             };
             this.save();
             return this.permissions.users[userId]; //Return newly created data
@@ -211,45 +227,45 @@ module.exports = class permissionsManager {
         if (typeof this.permissions.internalRoles[internalRole] == "object" && Object.keys(this.permissions.internalRoles[internalRole]).length >= 1) return this.permissions.internalRoles[internalRole]; //Check if internalRole permissions are in cache & if its not empty, return it                           
         await this.load() //This only runs if the permissions cached were empty, load from file in case any update have applied to the file & cache it
         if (typeof this.permissions.internalRoles[internalRole] == "object" && Object.keys(this.permissions.internalRoles[internalRole]).length >= 1) return this.permissions.internalRoles[internalRole]; //Check newly cached data
-
-        if (this.guildId == "global") {
-            this.permissions.internalRoles[internalRole] = {
-                "*": false
-            }; //This runs if user has no permissions stored, create user perm with default value (empty)                                                                                //Create new perms for internalRole
-            this.save();
-            return this.permissions.internalRoles[internalRole]; //Return newly created data
-        }
         return {};
     }
 
     async getRolePermission(guildId, roleId, isAdmin = false) { //I dont have patience to comment but its the same as the two other just going nested
         if (!this.initialized) return {};
-        if (typeof this.permissions.roles[guildId] == "object" && Object.keys(this.permissions.roles[guildId]).length >= 1)
-            if (typeof this.permissions.roles[guildId][roleId] == "object" && Object.keys(this.permissions.roles[guildId][roleId]).length >= 1) {
-                if ((isAdmin && this.guildId == "global") && (typeof this.permissions.roles[guildId][roleId]["*"] != "boolean" || this.permissions.roles[guildId][roleId]["*"] != true)) {
-                    this.permissions.roles[guildId][roleId]["*"] = true;
-                    this.save();
-                }
-                return this.permissions.roles[guildId][roleId];
+        if (typeof this.permissions.roles[roleId] == "object" && Object.keys(this.permissions.roles[roleId]).length >= 1) {
+            if ((isAdmin && this.guildId != "global") && (typeof this.permissions.roles[roleId]["*"] != "object" || this.permissions.roles[roleId]["*"].value != true)) {
+                this.permissions.roles[roleId]["*"] = {
+                    value: true,
+                    priority: 0,
+                    temporary: false
+                };
+                this.save();
             }
-        await this.load();
-        if (typeof this.permissions.roles[guildId] == "object" && Object.keys(this.permissions.roles[guildId]).length >= 1)
-            if (typeof this.permissions.roles[guildId][roleId] == "object" && Object.keys(this.permissions.roles[guildId][roleId]).length >= 1) {
-                if ((isAdmin && this.guildId == "global") && (typeof this.permissions.roles[guildId][roleId]["*"] != "boolean" || this.permissions.roles[guildId][roleId]["*"] != true)) {
-                    this.permissions.roles[guildId][roleId]["*"] = true;
-                    this.save();
-                }
-            }
-
-        if (this.guildId == "global") {
-            if (typeof this.permissions.roles[guildId] != "object") this.permissions.roles[guildId] = {};
-            if (typeof this.permissions.roles[guildId][roleId] != "object") this.permissions.roles[guildId][roleId] = (isAdmin && this.guildId == "global") ? {
-                "*": true
-            } : {};
-            if ((isAdmin && this.guildId == "global") && (typeof this.permissions.roles[guildId][roleId]["*"] != "boolean" || this.permissions.roles[guildId][roleId]["*"] != true)) this.permissions.roles[guildId][roleId]["*"] = true;
-            this.save();
-            return this.permissions.roles[guildId][roleId];
+            return this.permissions.roles[roleId];
         }
+        await this.load();
+        if (typeof this.permissions.roles[roleId] == "object" && Object.keys(this.permissions.roles[roleId]).length >= 1) {
+            if ((isAdmin && this.guildId != "global") && (typeof this.permissions.roles[roleId]["*"] != "object" || this.permissions.roles[roleId]["*"].value != true)) {
+                this.permissions.roles[roleId]["*"] = {
+                    value: true,
+                    priority: 0,
+                    temporary: false
+                };
+                this.save();
+            }
+        }
+        if (this.guildId != "global") {
+            if (isAdmin && typeof this.permissions.roles[roleId] != "object") this.permissions.roles[roleId] = {
+                "*": {
+                    value: true,
+                    priority: 0,
+                    temporary: false
+                }
+            };
+            this.save();
+            return this.permissions.roles[roleId];
+        }
+        return {};
     }
 
     async getChannelPermission(guildId, channelId) { //I dont have patience to comment but its the same as the one just above but with channel insteal of role
@@ -260,10 +276,14 @@ module.exports = class permissionsManager {
         if (typeof this.permissions.channels[guildId] == "object" && Object.keys(this.permissions.channels[guildId]).length >= 1)
             if (typeof this.permissions.channels[guildId][channelId] == "object" && Object.keys(this.permissions.channels[guildId][channelId]).length >= 1) return this.permissions.channels[guildId][channelId];
 
-        if (this.guildId == "global") {
+        if (this.guildId != "global" && false) {
             if (typeof this.permissions.channels[guildId] != "object") this.permissions.channels[guildId] = {};
             this.permissions.channels[guildId][channelId] = {
-                "internalRole.default": true
+                "internalRole.default": {
+                    value: true,
+                    priority: 0,
+                    temporary: false
+                }
             };
             this.save();
             return this.permissions.channels[guildId][channelId];
@@ -277,9 +297,13 @@ module.exports = class permissionsManager {
         await this.load();
         if (typeof this.permissions.guilds[guildId] == "object" && Object.keys(this.permissions.guilds[guildId]).length >= 1) return this.permissions.guilds[guildId];
 
-        if (this.guildId == "global") {
+        if (this.guildId != "global" && false) {
             this.permissions.guilds[guildId] = {
-                "internalRole.default": true
+                "internalRole.default": {
+                    value: true,
+                    priority: 0,
+                    temporary: false
+                }
             };
             this.save();
             return this.permissions.guilds[guildId];
@@ -290,7 +314,7 @@ module.exports = class permissionsManager {
     async userHasPermission(permission, userId, userRoles = undefined, channelId = undefined, guildId = undefined, canReturnNull = false) {
         if (!this.initialized) return false;
         let zisse = this; //Just making a link to "this" to access it in nested functions. Yes, in french i read "zisse" as "this"
-        if (this.allowDev.includes(permission) && ["231461358200291330"].includes(userId)) return true; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
+        if (this.allowDev.includes(permission) && ["231461358200291330"].includes(userId)) return true; //If the permission is in the "allow dev" & the user that typed the command is dev.. then allow. Seems obvious huh ?
         if (this.neverAllow.includes(permission)) return false; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
         if (this.neverAllowGuildFocused.includes(permission) && this.guildId == "global") return false; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
         let userPermissions = await this.getUserPermissions(userId); //Call for the user permissions**
@@ -393,37 +417,55 @@ module.exports = class permissionsManager {
         if (typeof permissionArray != "object") return null;
         if (Object.keys(permissionArray).length == 0) return null;
         let permissionModified = permission.split('.');
-        permissionModified.pop();
-        let mustCheckNested = [`*`, permission, `${permission}.*`, `${permissionModified.join('.')}.*`];
-        let nestedCheck = permission.split('.');
-        let nestedCheckPass = `${nestedCheck.shift()}`;
-
+        let addThis = `${permissionModified.shift()}.*`;
+        let saveAfter = false;
+        let mustCheckNested = [`*`];
+        permissionModified.forEach(element => {
+            mustCheckNested.push(addThis);
+            addThis = addThis.replace(`.*`, `.${element}.*`);
+        });
+        mustCheckNested.push(permission);
+        mustCheckNested.push(addThis);
         let checkerPromise = new Promise((res, rej) => {
+            if (mustCheckNested.length == 0) res(null);
             let totalResults = [];
-            nestedCheck.forEach(nestedPoss => {
-                mustCheckNested.push(`${nestedCheckPass}.*`)
-                nestedCheckPass += `.${nestedPoss}`;
-            });
             let left = mustCheckNested.length;
             mustCheckNested.forEach(permToCheck => {
-                if (typeof permissionArray[permToCheck] != undefined)
-                    if (typeof permissionArray[permToCheck] == "boolean") {
-                        if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][PERMISSION GRANT]${permToCheck} => ${permissionArray[permToCheck]}`);
-                        totalResults.push(permissionArray[permToCheck]);
+                if (typeof permissionArray[permToCheck] != "undefined") {
+                    if (typeof permissionArray[permToCheck] == "boolean") { //To process the switch to the new permission system
+                        permissionArray[permToCheck] = {
+                            value: permissionArray[permToCheck],
+                            priority: 0,
+                            temporary: false
+                        };
+                        saveAfter = true;
                     }
+                    if (typeof permissionArray[permToCheck] == "object") {
+                        if (typeof permissionArray[permToCheck].value == "boolean") {
+                            if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][PERMISSION GRANT]${permToCheck} => ${permissionArray[permToCheck].value}`);
+                            totalResults.push(permissionArray[permToCheck]);
+                        }
+                    }
+                }
                 left--;
-                if (left == 0) res((totalResults.includes(false) ? false : (totalResults.includes(true) ? true : null)));
+                if (left == 0) {
+                    if (totalResults.length == 0) res(null);
+                    totalResults.sort((indPerm1, indPerm2) => indPerm2.priority - indPerm1.priority);
+                    let finalResults = totalResults.filter(indPerm => indPerm.priority == totalResults[0].priority);
+                    let finalBooleans = finalResults.map(indPerm => indPerm.value);
+                    res((finalBooleans.includes(false) ? false : (finalBooleans.includes(true) ? true : null)));
+                }
             });
         });
+        if (saveAfter) this.save();
         return await checkerPromise;
     }
 
     async checkForMissingKeys() {
         let defaultPermissions = require(this.fallbackFile);
         let currentPermissions = this.permissions;
-        let newPermissions = await mergeRecursive(currentPermissions, defaultPermissions);
-        this.permissions = newPermissions;
-        this.save();
+        this.permissions = await mergeRecursive(currentPermissions, defaultPermissions);
+        await this.save();
         return true;
     }
 }
@@ -446,6 +488,8 @@ function mergeRecursive(obj1, obj2) {
                 obj1[p] = mergeRecursive(obj1[p], obj2[p]);
             } else {
                 if (typeof obj1[p] == "undefined") MainLog.log(`Creating missing perm key [${p}] as [${obj2[p]}].`);
+                //if (typeof obj1[p] != typeof obj2[p]) MainLog.log(`Wat key [${p}] as [${obj2[p]}].`);
+                if (typeof obj1[p] != typeof obj2[p]) obj1[p] = obj2[p];
                 if (typeof obj1[p] == "undefined") obj1[p] = obj2[p];
             }
         } catch (e) {

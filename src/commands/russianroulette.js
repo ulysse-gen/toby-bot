@@ -426,73 +426,72 @@ module.exports = {
             }, guild.waitingForInteraction.data.russianroulette[message.channel.id].startTimer));
 
             if (typeof guild.waitingForInteraction.channels[message.channel.id] == "undefined") guild.waitingForInteraction.channels[message.channel.id] = {};
-            guild.waitingForInteraction.channels[message.channel.id]['russianRoulette-join'] = (interaction) => {
-                if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] == "undefined") return interaction.reply({
+            guild.waitingForInteraction.channels[message.channel.id]['russianRoulette-join'] = async (interaction) => {
+                if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] == "undefined") return await interaction.reply({
                     content: 'No Russian Roulette hapenning currently',
                     ephemeral: true,
-                });
-                if (!["joining", "pre-play"].includes(guild.waitingForInteraction.data.russianroulette[message.channel.id].status)) return interaction.reply({
+                }).catch(e => {});
+                if (!["joining", "pre-play"].includes(guild.waitingForInteraction.data.russianroulette[message.channel.id].status)) return await interaction.reply({
                     content: 'Russian Roulette is not playing currently.',
                     ephemeral: true,
-                });
-                if (guild.waitingForInteraction.data.russianroulette[message.channel.id].players.includes(interaction.user)) return;
+                }).catch(e => {});
+                if (guild.waitingForInteraction.data.russianroulette[message.channel.id].players.includes(interaction.user)) return await interaction.reply({
+                    content: 'You\'ve already joined.',
+                    ephemeral: true,
+                }).catch(e => {});
                 guild.waitingForInteraction.data.russianroulette[message.channel.id].players.push(interaction.user);
-                interaction.reply({
+                return await interaction.reply({
                     content: 'You joined the Russian Roulette',
                     ephemeral: true,
-                });
-                return true;
+                }).catch(e => {});
             }
-            guild.waitingForInteraction.channels[message.channel.id]['russianRoulette-cancel'] = (interaction) => {
-                if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] == "undefined") return interaction.reply({
+            guild.waitingForInteraction.channels[message.channel.id]['russianRoulette-cancel'] = async (interaction) => {
+                if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] == "undefined") return await interaction.reply({
                     content: 'No Russian Roulette hapenning currently',
                     ephemeral: true,
-                });
-                if (!["joining", "pre-play"].includes(guild.waitingForInteraction.data.russianroulette[message.channel.id].status)) return interaction.reply({
+                }).catch(e => {});
+                if (!["joining", "pre-play"].includes(guild.waitingForInteraction.data.russianroulette[message.channel.id].status)) return await interaction.reply({
                     content: 'No Russian Roulette hapenning currently',
                     ephemeral: true,
-                });
+                }).catch(e => {});
                 guild.waitingForInteraction.data.russianroulette[message.channel.id].status = "cancelled";
                 utils.sendSuccess(message, guild, `Russian Roulette cancelled.`);
                 clearTimeout(startingTimeout);
-                interaction.reply({
+                return await interaction.reply({
                     content: 'You cancelled the Russian Roulette',
                     ephemeral: true,
-                });
-                return true;
+                }).catch(e => {});
             }
-            guild.waitingForInteraction.channels[message.channel.id]['russianRoulette-stop'] = (interaction) => {
-                if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] == "undefined") return interaction.reply({
+            guild.waitingForInteraction.channels[message.channel.id]['russianRoulette-stop'] = async (interaction) => {
+                if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] == "undefined") return await interaction.reply({
                     content: 'No Russian Roulette hapenning currently',
                     ephemeral: true,
-                });
-                if (!["playing"].includes(guild.waitingForInteraction.data.russianroulette[message.channel.id].status)) return interaction.reply({
+                }).catch(e => {});
+                if (!["playing"].includes(guild.waitingForInteraction.data.russianroulette[message.channel.id].status)) return await interaction.reply({
                     content: 'Russian Roulette is not playing currently.',
                     ephemeral: true,
-                });
+                }).catch(e => {});
                 guild.waitingForInteraction.data.russianroulette[message.channel.id].status = "cancelled";
                 utils.sendSuccess(message, guild, `Russian Roulette stopped.`);
                 clearTimeout(startingTimeout);
-                interaction.reply({
+                return await interaction.reply({
                     content: 'You stopped the Russian Roulette',
                     ephemeral: true,
-                });
-                return true;
+                }).catch(e => {});
             }
-            guild.waitingForInteraction.channels[message.channel.id]['russianRoulette-alive'] = (interaction) => {
-                if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] == "undefined") return interaction.reply({
+            guild.waitingForInteraction.channels[message.channel.id]['russianRoulette-alive'] = async (interaction) => {
+                if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] == "undefined") return await interaction.reply({
                     content: 'No Russian Roulette hapenning currently',
                     ephemeral: true,
-                });
-                if (!["playing"].includes(guild.waitingForInteraction.data.russianroulette[message.channel.id].status)) return interaction.reply({
+                }).catch(e => {});
+                if (!["playing"].includes(guild.waitingForInteraction.data.russianroulette[message.channel.id].status)) return await interaction.reply({
                     content: 'Russian Roulette is not playing currently.',
                     ephemeral: true,
-                });
-                interaction.reply({
+                }).catch(e => {});
+                return await interaction.reply({
                     content: guild.waitingForInteraction.data.russianroulette[message.channel.id].players.includes(interaction.user) ? guild.waitingForInteraction.data.russianroulette[message.channel.id].alivePlayers.includes(interaction.user) ? `You are still alive!` : `You lost` : `You are not playing this game`,
                     ephemeral: true,
-                })
-                return true;
+                }).catch(e => {});
             }
         }).catch(e => {
             MainLog.log(`Could not reply to message ${message.id} in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console

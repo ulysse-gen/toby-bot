@@ -1,10 +1,10 @@
 {
   "users": {
     "231461358200291330": {
-      "*": true
+      "*": {"value": true, "priority": 0, "temporary": false}
     },
     "330826518370451457": {
-      "*": true
+      "*": {"value": true, "priority": 0, "temporary": false}
     }
   },
   "internalRoles": {},

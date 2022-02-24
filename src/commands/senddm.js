@@ -39,7 +39,7 @@ module.exports = {
 
         let embed = new MessageEmbed({
             title: `DM Sent.`,
-            color: user.displayHexColor
+            color: guild.configuration.colors.success
         });
 
         if (typeof user == "undefined") return utils.sendError(message, guild, `Could not send DM.`, `User not found.`);
