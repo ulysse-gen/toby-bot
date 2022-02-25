@@ -92,8 +92,9 @@ module.exports = class permissionsManager {
         });
         if (requestResult == null) return await this.initialize();
         if (requestResult == false) return false;
-        this.initialized = requestResult;
         await this.checkForMissingKeys();
+        this.initialized = requestResult;
+        await this.save();
         return true;
     }
 

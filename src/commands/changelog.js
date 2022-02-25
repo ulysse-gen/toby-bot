@@ -21,8 +21,7 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `- Improved Toby Reactions`;
-        embed.description += `\n- Added reload`;
+        embed.description += `- Introduced permission priority`;
 
         message.reply({
             embeds: [embed],

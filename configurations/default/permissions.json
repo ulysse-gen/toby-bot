@@ -1,11 +1,6 @@
 {
     "users": {},
-    "internalRoles": {
-      "default": {
-        "commands.about": {"value": true, "priority": 0, "temporary": false},
-        "commands.changelog": {"value": true, "priority": 0, "temporary": false}
-      }
-    },
+    "internalRoles": {},
     "roles": {},
     "channels": {},
     "guilds": {}

@@ -32,6 +32,7 @@ module.exports = {
         }
         if (args[0] == "show" || args[0] == "infos" || args[0] == "list") {
             if (args.length != 2) return utils.sendError(message, guild, `Wrong command synthax`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} show/infos <@User/@Role/userid:UserID/internalRole:internalRole>\``);
+            await guild.permissionsManager.load();
             if (args[1].startsWith("<@!") || args[1].startsWith('userid:')) { //About a user
                 let user = args[1];
                 if (args[1].startsWith("<@!")) user = message.mentions.users.first();
@@ -44,14 +45,17 @@ module.exports = {
             }
             if (args[1].startsWith("<@&") || args[1].startsWith('roleid:')) { //About a role
                 let role = message.mentions.roles.first();
-                if (args[1].startsWith('roleid:')) role = {
-                    id: args[1].replace('roleid:', ''),
-                    guild: {
-                        id: message.channel.guild.id
+                if (args[1].startsWith('roleid:')) role = await guild.guild.roles.fetch(args[1].replace('roleid:', '')).catch(e => {
+                    return {
+                        id: args[1].replace('roleid:', ''),
+                        name: `An error occured fetching the role name`,
+                        guild: {
+                            id: message.channel.guild.id
+                        }
                     }
-                }
-                if (typeof guild.permissionsManager.permissions.roles[role.guild.id] == "object" && typeof guild.permissionsManager.permissions.roles[role.guild.id][role.id] == "object")
-                    return sendPermissions(message, guild, `${role.name}@${message.channel.guild.name}`, guild.permissionsManager.permissions.roles[role.guild.id][role.id]);
+                });
+                if (typeof guild.permissionsManager.permissions.roles[role.id] == "object")
+                    return sendPermissions(message, guild, `${role.name}@${message.channel.guild.name}`, guild.permissionsManager.permissions.roles[role.id]);
                 return sendPermissions(message, guild, `${role.name}@${message.channel.guild.name}`, {
                     "No Permissions": "This scope has nothing specified."
                 });
@@ -98,7 +102,7 @@ module.exports = {
                         };
                         fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.users[userId][permissionName].priority}] ${guild.permissionsManager.permissions.users[userId][permissionName].value}\n`
                     }
-                    embeds.users.fields.push([`User ${userId}`, `${fieldBody.trimEllip(1021)}`, false])
+                    embeds.users.fields.push([`User ${userId}`, `${fieldBody}`, false])
                 }
                 for (const roleName in guild.permissionsManager.permissions.internalRoles) {
                     let fieldBody = ``;
@@ -110,7 +114,7 @@ module.exports = {
                         };
                         fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.internalRoles[roleName][permissionName].priority}] ${guild.permissionsManager.permissions.internalRoles[roleName][permissionName].value}\n`
                     }
-                    embeds.internalRoles.fields.push([`Internal Role ${roleName}`, `${fieldBody.trimEllip(1021)}`, false])
+                    embeds.internalRoles.fields.push([`Internal Role ${roleName}`, `${fieldBody}`, false])
                 }
                 for (const roleId in guild.permissionsManager.permissions.roles) {
                     let fieldBody = ``;
@@ -122,7 +126,7 @@ module.exports = {
                         };
                         fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.roles[roleId][permissionName].priority}] ${guild.permissionsManager.permissions.roles[roleId][permissionName].value}\n`
                     }
-                    embeds.roles.fields.push([`Role ${roleId}`, `${fieldBody.trimEllip(1021)}`, false])
+                    embeds.roles.fields.push([`Role ${roleId}`, `${fieldBody}`, false])
                 }
                 for (const channelId in guild.permissionsManager.permissions.channels) {
                     let fieldBody = ``;
@@ -134,7 +138,7 @@ module.exports = {
                         };
                         fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.channels[channelId][permissionName].priority}] ${guild.permissionsManager.permissions.channels[channelId][permissionName].value}\n`
                     }
-                    embeds.channels.fields.push([`Channel ${channelId}`, `${fieldBody.trimEllip(1021)}`, false])
+                    embeds.channels.fields.push([`Channel ${channelId}`, `${fieldBody}`, false])
                 }
                 for (const guildId in guild.permissionsManager.permissions.guilds) {
                     let fieldBody = ``;
@@ -146,11 +150,11 @@ module.exports = {
                         };
                         fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.guilds[guildId][permissionName].priority}] ${guild.permissionsManager.permissions.guilds[guildId][permissionName].value}\n`
                     }
-                    embeds.guilds.fields.push([`Guild ${guildId}`, `${fieldBody.trimEllip(1021)}`, false])
+                    embeds.guilds.fields.push([`Guild ${guildId}`, `${fieldBody}`, false])
                 }
 
                 let introEmbed = new MessageEmbed({
-                    title: `Permissions set :`,
+                    title: `Permissions list:`,
                     color: guild.configuration.colors.main
                 });
                 let embedsToAdd = [introEmbed];
@@ -187,12 +191,14 @@ module.exports = {
             let embed = new MessageEmbed({
                 title: `Unknown scope`,
                 color: guild.configuration.colors.error,
-                description: `This command must have this synthax : \`${guild.configuration.prefix}${this.name} set <@User/@Role/userid:UserID/internalRole:internalRole> <permission> <value>\``
+                description: `This command must have this synthax : \`${guild.configuration.prefix}${this.name} set <@User/@Role/userid:UserID/internalRole:internalRole> <permission> <value> [priority]\``
             });
             if (args[1].startsWith("<@!") || args[1].startsWith('userid:')) { //About a user
                 let user = args[1];
                 if (args[1].startsWith("<@!")) user = message.mentions.users.first();
-                if (args[1].startsWith('userid:')) user = await client.users.fetch(args[1].replace('userid:', ''));
+                if (args[1].startsWith('userid:')) user = await client.users.fetch(args[1].replace('userid:', '')).catch(e => {
+
+                });
                 embed.title = `Permission set.`;
                 embed.color = guild.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope <@${user.id}>.`;
@@ -206,12 +212,15 @@ module.exports = {
             }
             if (args[1].startsWith("<@&") || args[1].startsWith('roleid:')) { //About a role
                 let role = message.mentions.roles.first();
-                if (args[1].startsWith('roleid:')) role = {
-                    id: args[1].replace('roleid:', ''),
-                    guild: {
-                        id: message.channel.guild.id
+                if (args[1].startsWith('roleid:')) role = await guild.guild.roles.fetch(args[1].replace('roleid:', '')).catch(e => {
+                    return {
+                        id: args[1].replace('roleid:', ''),
+                        name: `An error occured fetching the role name`,
+                        guild: {
+                            id: message.channel.guild.id
+                        }
                     }
-                }
+                });
                 embed.title = `Permission set.`;
                 embed.color = guild.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope <@&${role.id}>.`;
@@ -240,7 +249,7 @@ module.exports = {
                 let guild = args[1].toLowerCase().replace('guild:', '');
                 embed.title = `Permission set.`;
                 embed.color = guild.configuration.colors.main;
-                embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope \`${guild.id}\`.`;
+                embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope \`${guild.id}\` with priority \`${permissionPriority}\`.`;
                 if (typeof guild.permissionsManager.permissions.guild[guild] != "object") guild.permissionsManager.permissions.guild[guild] = {};
                 if (permissionValue != "none") guild.permissionsManager.permissions.guild[guild][permissionName] = {
                     value: permissionValue,
@@ -249,7 +258,7 @@ module.exports = {
                 };
                 if (permissionValue == "none") delete guild.permissionsManager.permissions.guild[guild][permissionName];
             }
-            guild.permissionsManager.save();
+            await guild.permissionsManager.save();
             message.reply({
                 embeds: [embed],
                 failIfNotExists: false
@@ -302,7 +311,7 @@ module.exports = {
                 delete guild.permissionsManager.permissions.internalRoles[internalRole][permissionName];
                 if (Object.keys(guild.permissionsManager.permissions.internalRoles[internalRole]).length == 0) delete guild.permissionsManager.permissions.internalRoles[internalRole];
             }
-            guild.permissionsManager.save();
+            await guild.permissionsManager.save();
             message.reply({
                 embeds: [embed],
                 failIfNotExists: false
