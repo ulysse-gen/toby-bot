@@ -21,7 +21,10 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `- Introduced permission priority`;
+        embed.description += `- Permissions now works with priority`;
+        embed.description += `\n- Russian Roulette is finally fixed`;
+        embed.description += `\n- **Purge command is finally fixed**`;
+        embed.description += `\n- Global permission is fixed`;
 
         message.reply({
             embeds: [embed],

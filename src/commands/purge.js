@@ -1,6 +1,8 @@
 const {
-    MessageEmbed
+    MessageEmbed,
+    Collection
 } = require(`discord.js`);
+const moment = require('moment')
 
 const utils = require(`../utils`);
 
@@ -19,20 +21,27 @@ module.exports = {
             return utils.sendError(message, guild, `Amount must be a number.`);
         }
 
-        let embed = new MessageEmbed({
-            title: `Purging ${amount} messages from the channel`,
-            color: guild.configuration.colors.main
-        });
+        if (amount < 1) return utils.sendError(message, guild, `Amount must be at least 1.`);
+        utils.sendSuccess(message, guild, `Purging channel from ${amount} messages.`);
 
-        message.reply({
-            embeds: [embed],
-            failIfNotExists: false
-        }, false).then(async msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
-            message.channel.bulkDelete((await message.channel.messages.fetch({limit: amount+2})).filter(message => !message.pinned), true).then(() => {
-                return utils.sendSuccess(message, guild, `Bulk deleted ${amount} messages successfully.`);
-            });
-        }).catch(e => utils.messageReplyFailLogger(message, guild, e));
-        return true;
+        let messages = await new Promise(async (res, rej) => {
+            for (let index = Math.ceil((amount / 100)); index > 0; index--) {
+                let fetchedMessages = await await message.channel.messages.fetch({
+                    limit: (index != 1 || amount == 100) ? 100 : amount - (Math.floor((amount / 100)) * 100)
+                }).then(fetchedMessages => {
+                    message.channel.bulkDelete(fetchedMessages.filter(message => !message.pinned), true).catch(e => {
+                        return utils.sendError(message, guild, `Bulk deleted failed.`, `Could not bulk delete messages : ${e.toString()}`);
+                    });
+                    if (index == 1 || fetchedMessages.size == 0 || moment().subtract(14, 'days').isAfter(moment(fetchedMessages.last().createdTimestamp))) {
+                        utils.sendSuccess(message, guild, `Purged channel from ${amount} messages.`);
+                        index = 0;
+                        res(true);
+                    }
+                }).catch(e => res({
+                    error: e.toString()
+                }));
+            }
+        });
+        if (typeof messages == "object" && typeof messages.error == "string") return utils.sendError(message, guild, `Bulk deleted failed.`, `${messages.error}`);
     }
 }
