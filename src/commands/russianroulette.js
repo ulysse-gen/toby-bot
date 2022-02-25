@@ -109,8 +109,6 @@ module.exports = {
                 }
             }
         }
-        
-        if (args.length != 0) return utils.sendError(message, guild, `Unknown argument used`, `Command is \`t!rr [prizes] [-prize:prizeName] [-starttimer:startTimeSeconds] [-winners:winnersAmount]\``);
 
         if (args.length != 0 && args[0].toLowerCase() == "prizes"){
             let embed = new MessageEmbed({
@@ -202,6 +200,11 @@ module.exports = {
                     } catch (e) {}
                 }
             });
+        }
+
+        if (args.length != 0) {
+            clearPending(guild, message);
+            return utils.sendError(message, guild, `Unknown argument used`, `Command is \`t!rr [prizes] [-prize:prizeName] [-starttimer:startTimeSeconds] [-winners:winnersAmount]\``);
         }
 
         let embed = new MessageEmbed({

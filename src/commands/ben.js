@@ -40,10 +40,6 @@ module.exports = {
             reason = args.join(' ');
         }
         let user = await guild.grabUser(message, userToBan);
-        if (typeof user == "undefined") return {
-            errored: true,
-            reason: `User not found.`
-        };
         let userPFP = await new Promise((res, rej) => {
             if (typeof user.user.avatar == "undefined")res(`https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`)
             let baseOfUrl = (user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
@@ -60,7 +56,7 @@ module.exports = {
         });
         embed.addField(`**Case**`, `#69420`, true);
         embed.addField(`**Type**`, `Ben`, true);
-        embed.addField(`**User**`, `<@${user.user.id}>`, true);
+        embed.addField(`**User**`, (typeof user != "undefined") ? `<@${user.user.id}>` : `${userToBan}`, true);
         embed.addField(`**Moderator**`, `<@${message.author.id}>`, true);
         embed.addField(`**Reason**`, `${(typeof reason == "string" && reason.replaceAll(" ", "") != "") ? reason : `No reason specified.`}`, true);
         embed.addField(`**Omg it looks like**`, `You cant spell`, true);
