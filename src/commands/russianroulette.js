@@ -109,6 +109,8 @@ module.exports = {
                 }
             }
         }
+        
+        if (args.length != 0) return utils.sendError(message, guild, `Unknown argument used`, `Command is \`t!rr [prizes] [-prize:prizeName] [-starttimer:startTimeSeconds] [-winners:winnersAmount]\``);
 
         if (args.length != 0 && args[0].toLowerCase() == "prizes"){
             let embed = new MessageEmbed({
@@ -201,8 +203,6 @@ module.exports = {
                 }
             });
         }
-
-        if (args.length != 0) return utils.sendError(message, guild, `Unknown argument used`, `Command is \`t!rr [-prize:prizeName] [-starttimer:startTimeSeconds] [-winners:winnersAmount]\``);
 
         let embed = new MessageEmbed({
             title: `The Russian Roulette will start in ${guild.waitingForInteraction.data.russianroulette[message.channel.id].startTimer/1000} seconds`,
