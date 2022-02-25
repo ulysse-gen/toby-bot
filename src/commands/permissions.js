@@ -31,15 +31,14 @@ module.exports = {
             return true;
         }
         if (args[0] == "show" || args[0] == "infos" || args[0] == "list") {
-            if (args.length != 2) return utils.sendError(message, guild, `Wrong command synthax`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} show/infos <@User/@Role/userid:UserID/internalRole:internalRole>\``);
             await guild.permissionsManager.load();
             if (args[1].startsWith("<@!") || args[1].startsWith('userid:')) { //About a user
                 let user = args[1];
                 if (args[1].startsWith("<@!")) user = message.mentions.users.first();
                 if (args[1].startsWith('userid:')) user = await client.users.fetch(args[1].replace('userid:', ''));
                 if (typeof guild.permissionsManager.permissions.users[user.id] == "object" && Object.keys(guild.permissionsManager.permissions.users[user.id]).length != 0)
-                    return sendPermissions(message, guild, `${user.tag}`, guild.permissionsManager.permissions.users[user.id]);
-                return sendPermissions(message, guild, `${user.tag}`, {
+                    return sendPermissions(message, guild, args, `${user.tag}`, guild.permissionsManager.permissions.users[user.id]);
+                return sendPermissions(message, guild, args, `${user.tag}`, {
                     "No Permissions": "This scope has nothing specified."
                 });
             }
@@ -55,8 +54,8 @@ module.exports = {
                     }
                 });
                 if (typeof guild.permissionsManager.permissions.roles[role.id] == "object")
-                    return sendPermissions(message, guild, `${role.name}@${message.channel.guild.name}`, guild.permissionsManager.permissions.roles[role.id]);
-                return sendPermissions(message, guild, `${role.name}@${message.channel.guild.name}`, {
+                    return sendPermissions(message, guild, args, `${role.name}@${message.channel.guild.name}`, guild.permissionsManager.permissions.roles[role.id]);
+                return sendPermissions(message, guild, args, `${role.name}@${message.channel.guild.name}`, {
                     "No Permissions": "This scope has nothing specified."
                 });
             }
@@ -64,94 +63,75 @@ module.exports = {
                 let role = args[1].toLowerCase().replace('internalrole:', '');
 
                 if (typeof guild.permissionsManager.permissions.internalRoles[role] == "object" && Object.keys(guild.permissionsManager.permissions.internalRoles[role]).length != 0)
-                    return sendPermissions(message, guild, `internalRole.${role}`, guild.permissionsManager.permissions.internalRoles[role]);
-                return sendPermissions(message, guild, `internalRole.${role}@${role.guild.name}`, {
+                    return sendPermissions(message, guild, args, `internalRole.${role}`, guild.permissionsManager.permissions.internalRoles[role]);
+                return sendPermissions(message, guild, args, `internalRole.${role}@${role.guild.name}`, {
                     "No Permissions": "This scope has nothing specified."
                 });
             }
             if (args[1].toLowerCase().startsWith("*")) { //About all
                 let embeds = {
                     users: {
-                        title: `Users permissions :`,
-                        fields: []
+                        title: `**Users permissions :**`,
+                        fields: [],
+                        pages: []
                     },
                     internalRoles: {
-                        title: `InternalRoles permissions :`,
-                        fields: []
+                        title: `**InternalRoles permissions :**`,
+                        fields: [],
+                        pages: []
                     },
                     roles: {
-                        title: `Roles permissions :`,
-                        fields: []
+                        title: `**Roles permissions :**`,
+                        fields: [],
+                        pages: []
                     },
                     channels: {
-                        title: `Channels permissions :`,
-                        fields: []
-                    },
-                    guilds: {
-                        title: `Guilds permissions :`,
-                        fields: []
+                        title: `**Channels permissions :**`,
+                        fields: [],
+                        pages: []
                     }
                 };
-                for (const userId in guild.permissionsManager.permissions.users) {
-                    let fieldBody = ``;
-                    for (const permissionName in guild.permissionsManager.permissions.users[userId]) {
-                        if (typeof guild.permissionsManager.permissions.users[userId][permissionName] == "boolean") guild.permissionsManager.permissions.users[userId][permissionName] = {
-                            value: guild.permissionsManager.permissions.users[userId][permissionName],
-                            priority: 0,
-                            temporary: false
-                        };
-                        fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.users[userId][permissionName].priority}] ${guild.permissionsManager.permissions.users[userId][permissionName].value}\n`
+                for (const unitKey in guild.permissionsManager.permissions){
+                    for (const unit in guild.permissionsManager.permissions[unitKey]){
+                        let fieldBody = ``;
+                        let printedPerms = 0;
+                        for (const permissionName in guild.permissionsManager.permissions[unitKey][unit]) {
+                            printedPerms++;
+                            if (typeof guild.permissionsManager.permissions[unitKey][unit][permissionName] == "boolean") guild.permissionsManager.permissions[unitKey][unit][permissionName] = {
+                                value: guild.permissionsManager.permissions[unitKey][unit][permissionName],
+                                priority: 0,
+                                temporary: false
+                            };
+                            if (printedPerms > 6) {
+                                fieldBody += `***${Object.keys(guild.permissionsManager.permissions[unitKey][unit]).length - 6} more permissions.***`;
+                                break;
+                            }
+                            fieldBody += `\`${permissionName}\`: [**${guild.permissionsManager.permissions[unitKey][unit][permissionName].priority}**] ${guild.permissionsManager.permissions[unitKey][unit][permissionName].value}\n`
+                        }
+                        embeds[unitKey].fields.push([`**${unit}**`, `${fieldBody}`, false]);
                     }
-                    embeds.users.fields.push([`User ${userId}`, `${fieldBody}`, false])
                 }
-                for (const roleName in guild.permissionsManager.permissions.internalRoles) {
-                    let fieldBody = ``;
-                    for (const permissionName in guild.permissionsManager.permissions.internalRoles[roleName]) {
-                        if (typeof guild.permissionsManager.permissions.internalRoles[roleName][permissionName] == "boolean") guild.permissionsManager.permissions.internalRoles[roleName][permissionName] = {
-                            value: guild.permissionsManager.permissions.internalRoles[roleName][permissionName],
-                            priority: 0,
-                            temporary: false
-                        };
-                        fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.internalRoles[roleName][permissionName].priority}] ${guild.permissionsManager.permissions.internalRoles[roleName][permissionName].value}\n`
+
+                embeds.users.pages = splitArrayIntoChunksOfLen(embeds.users.fields, 9);
+                embeds.internalRoles.pages = splitArrayIntoChunksOfLen(embeds.internalRoles.fields, 9);
+                embeds.roles.pages = splitArrayIntoChunksOfLen(embeds.roles.fields, 9);
+                embeds.channels.pages = splitArrayIntoChunksOfLen(embeds.channels.fields, 9);
+
+                let page = 1;
+
+                args.forEach(async invividualArgument => {
+                    if (invividualArgument.toLowerCase().startsWith("-page:")) {
+                        try {
+                            page = parseInt(invividualArgument.replace('-page:', ``));
+                            args = args.filter(arrayItem => arrayItem !== invividualArgument);
+                            if (page < 1) return page = `Page cannot be lower than 1.`;
+                        } catch (e) {
+                            return page = `Pages must be selected by numbers.`;
+                        }
                     }
-                    embeds.internalRoles.fields.push([`Internal Role ${roleName}`, `${fieldBody}`, false])
-                }
-                for (const roleId in guild.permissionsManager.permissions.roles) {
-                    let fieldBody = ``;
-                    for (const permissionName in guild.permissionsManager.permissions.roles[roleId]) {
-                        if (typeof guild.permissionsManager.permissions.roles[roleId][permissionName] == "boolean") guild.permissionsManager.permissions.roles[roleId][permissionName] = {
-                            value: guild.permissionsManager.permissions.roles[roleId][permissionName],
-                            priority: 0,
-                            temporary: false
-                        };
-                        fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.roles[roleId][permissionName].priority}] ${guild.permissionsManager.permissions.roles[roleId][permissionName].value}\n`
-                    }
-                    embeds.roles.fields.push([`Role ${roleId}`, `${fieldBody}`, false])
-                }
-                for (const channelId in guild.permissionsManager.permissions.channels) {
-                    let fieldBody = ``;
-                    for (const permissionName in guild.permissionsManager.permissions.channels[channelId]) {
-                        if (typeof guild.permissionsManager.permissions.channels[channelId][permissionName] == "boolean") guild.permissionsManager.permissions.channels[channelId][permissionName] = {
-                            value: guild.permissionsManager.permissions.channels[channelId][permissionName],
-                            priority: 0,
-                            temporary: false
-                        };
-                        fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.channels[channelId][permissionName].priority}] ${guild.permissionsManager.permissions.channels[channelId][permissionName].value}\n`
-                    }
-                    embeds.channels.fields.push([`Channel ${channelId}`, `${fieldBody}`, false])
-                }
-                for (const guildId in guild.permissionsManager.permissions.guilds) {
-                    let fieldBody = ``;
-                    for (const permissionName in guild.permissionsManager.permissions.guilds[guildId]) {
-                        if (typeof guild.permissionsManager.permissions.guilds[guildId][permissionName] == "boolean") guild.permissionsManager.permissions.guilds[guildId][permissionName] = {
-                            value: guild.permissionsManager.permissions.guilds[guildId][permissionName],
-                            priority: 0,
-                            temporary: false
-                        };
-                        fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.guilds[guildId][permissionName].priority}] ${guild.permissionsManager.permissions.guilds[guildId][permissionName].value}\n`
-                    }
-                    embeds.guilds.fields.push([`Guild ${guildId}`, `${fieldBody}`, false])
-                }
+                });
+
+                if (typeof page == "string") return utils.sendError(message, guild, page);
 
                 let introEmbed = new MessageEmbed({
                     title: `Permissions list:`,
@@ -163,9 +143,12 @@ module.exports = {
                     let permissionEmbed = new MessageEmbed({
                         title: indEmbed.title,
                         color: guild.configuration.colors.main,
-                        description: (indEmbed.fields.length == 0) ? `No permissions defined` : undefined
+                        description: (indEmbed.fields.length == 0) ? `No permissions defined` : undefined,
+                        footer: {
+                            text: `Use \`-page:pageNumber]\` to search thru pages. [${(typeof indEmbed.pages[page-1] != "undefined") ? page : indEmbed.pages.length}/${indEmbed.pages.length}]`
+                        }
                     });
-                    if (indEmbed.fields.length != 0) indEmbed.fields.forEach(indField => permissionEmbed.addField(`${indField[0]}`, `${indField[1]}`, indField[2]));
+                    if (indEmbed.fields.length != 0) indEmbed.pages[(typeof indEmbed.pages[page-1] != "undefined") ? page - 1 : indEmbed.pages.length - 1].forEach(indField => permissionEmbed.addField(`${indField[0]}`, `${indField[1]}`, indField[2]));
                     embedsToAdd.push(permissionEmbed);
                 }
                 return message.reply({
@@ -324,9 +307,12 @@ module.exports = {
     }
 }
 
-function sendPermissions(message, guild, scope, permissions) {
+function sendPermissions(message, guild, args, scope, permissions) {
+    let embedFields = [];
+    let embedPages = [];
+    let page = 1;
     let embed = new MessageEmbed({
-        title: `Permissions for scope ${scope}`,
+        title: `${Object.keys(permissions).length} permissions set for scope ${scope}`,
         color: guild.configuration.colors.main
     });
 
@@ -337,8 +323,37 @@ function sendPermissions(message, guild, scope, permissions) {
             priority: 0,
             temporary: false
         };
-        embed.addField(`**${permission}**`, (typeof permissions[permission] == "string") ? `${permissions[permission]}` : `**[${permissions[permission].priority}]** ${permissions[permission].value}`, true);
+        embedFields.push([`**${permission}**`, (typeof permissions[permission] == "string") ? `${permissions[permission]}` : `**[${permissions[permission].priority}]** ${permissions[permission].value}`, true]);
     }
+
+    embedPages = splitArrayIntoChunksOfLen(embedFields, 9);
+    embed.footer = {
+        text: `Use \`-page:pageNumber]\` to search thru pages. [1/${embedPages.length}]`
+    };
+
+    embedFields = embedPages[0];
+
+    args.forEach(async invividualArgument => {
+        if (invividualArgument.toLowerCase().startsWith("-page:")) {
+            try {
+                page = parseInt(invividualArgument.replace('-page:', ``));
+                args = args.filter(arrayItem => arrayItem !== invividualArgument);
+                if (typeof embedPages[page - 1] == "undefined") return page = `This page does not exist`;
+                embed.footer = {
+                    text: `Use \`${guild.configuration.prefix}help [page number] [category]\` to search thru pages. [${page}/${embedPages.length}]`
+                };
+                embedFields = embedPages[page - 1];
+            } catch (e) {
+                return page = `Pages must be selected by numbers.`;
+            }
+        }
+    });
+
+    if (typeof page == "string") return utils.sendError(message, guild, page);
+
+    embedFields.forEach(embedField => {
+        embed.addField(embedField[0], embedField[1], embedField[2]);
+    });
 
     message.reply({
         embeds: [embed],
@@ -347,4 +362,14 @@ function sendPermissions(message, guild, scope, permissions) {
         if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
     }).catch(e => utils.messageDeleteFailLogger(message, guild, e));
     return true;
+}
+
+function splitArrayIntoChunksOfLen(arr, len) {
+    var chunks = [],
+        i = 0,
+        n = arr.length;
+    while (i < n) {
+        chunks.push(arr.slice(i, i += len));
+    }
+    return chunks;
 }

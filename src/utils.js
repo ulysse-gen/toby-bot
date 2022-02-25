@@ -286,3 +286,23 @@ exports.waitForInit = async (initVar) => {
 String.prototype.trimEllip = function (length) {
     return this.length > length ? this.substring(0, length) + "..." : this;
 }
+
+exports.splitArrayIntoChunksOfLen = function(arr, len) {
+    var chunks = [],
+        i = 0,
+        n = arr.length;
+    while (i < n) {
+        chunks.push(arr.slice(i, i += len));
+    }
+    return chunks;
+}
+
+Array.prototype.splitArrayIntoChunksOfLen = function (arr, len) {
+    var chunks = [],
+        i = 0,
+        n = arr.length;
+    while (i < n) {
+        chunks.push(arr.slice(i, i += len));
+    }
+    return chunks;
+}
