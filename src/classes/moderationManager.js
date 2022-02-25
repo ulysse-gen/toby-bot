@@ -159,6 +159,7 @@ module.exports = class moderationManager {
             if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         }).catch(e => {
             ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`)
+            if (e.code == 50007)message.channel.send(`Could not send message to this user.`);
             return {
                 errored: true,
                 reason: e

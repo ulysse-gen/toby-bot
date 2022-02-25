@@ -309,6 +309,10 @@ module.exports = class permissionsManager {
         if (this.allowDev.includes(permission) && ["231461358200291330"].includes(userId)) return true; //If the permission is in the "allow dev" & the user that typed the command is dev.. then allow. Seems obvious huh ?
         if (this.neverAllow.includes(permission)) return false; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
         if (this.neverAllowGuildFocused.includes(permission) && this.guildId == "global") return false; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
+        let fullPermissions = await new Promise((res, rej) => {
+            res(true)
+        });
+        
         let userPermissions = await this.getUserPermissions(userId); //Call for the user permissions**
 
         let permissionCheckingPromise = new Promise(async (res, rej) => { //This is a thing to be able to wait for it to process before returning the value, thanks javascript its terrible, allow for async execution tho
