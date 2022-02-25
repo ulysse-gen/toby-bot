@@ -13,6 +13,9 @@ module.exports = {
     permission: `commands.permissions`,
     category: `administration`,
     async exec(client, message, args, guild = undefined) {
+        let permissionManager = guild.permissionsManager;
+
+
         if (args.length == 0) {
             let response = "**Global Permission Helper**";
 
@@ -31,13 +34,13 @@ module.exports = {
             return true;
         }
         if (args[0] == "show" || args[0] == "infos" || args[0] == "list") {
-            await guild.permissionsManager.load();
+            await permissionManager.load();
             if (args[1].startsWith("<@!") || args[1].startsWith('userid:')) { //About a user
                 let user = args[1];
                 if (args[1].startsWith("<@!")) user = message.mentions.users.first();
                 if (args[1].startsWith('userid:')) user = await client.users.fetch(args[1].replace('userid:', ''));
-                if (typeof guild.permissionsManager.permissions.users[user.id] == "object" && Object.keys(guild.permissionsManager.permissions.users[user.id]).length != 0)
-                    return sendPermissions(message, guild, args, `${user.tag}`, guild.permissionsManager.permissions.users[user.id]);
+                if (typeof permissionManager.permissions.users[user.id] == "object" && Object.keys(permissionManager.permissions.users[user.id]).length != 0)
+                    return sendPermissions(message, guild, args, `${user.tag}`, permissionManager.permissions.users[user.id]);
                 return sendPermissions(message, guild, args, `${user.tag}`, {
                     "No Permissions": "This scope has nothing specified."
                 });
@@ -53,8 +56,8 @@ module.exports = {
                         }
                     }
                 });
-                if (typeof guild.permissionsManager.permissions.roles[role.id] == "object")
-                    return sendPermissions(message, guild, args, `${role.name}@${message.channel.guild.name}`, guild.permissionsManager.permissions.roles[role.id]);
+                if (typeof permissionManager.permissions.roles[role.id] == "object")
+                    return sendPermissions(message, guild, args, `${role.name}@${message.channel.guild.name}`, permissionManager.permissions.roles[role.id]);
                 return sendPermissions(message, guild, args, `${role.name}@${message.channel.guild.name}`, {
                     "No Permissions": "This scope has nothing specified."
                 });
@@ -62,8 +65,8 @@ module.exports = {
             if (args[1].toLowerCase().startsWith("internalrole")) { //About a role
                 let role = args[1].toLowerCase().replace('internalrole:', '');
 
-                if (typeof guild.permissionsManager.permissions.internalRoles[role] == "object" && Object.keys(guild.permissionsManager.permissions.internalRoles[role]).length != 0)
-                    return sendPermissions(message, guild, args, `internalRole.${role}`, guild.permissionsManager.permissions.internalRoles[role]);
+                if (typeof permissionManager.permissions.internalRoles[role] == "object" && Object.keys(permissionManager.permissions.internalRoles[role]).length != 0)
+                    return sendPermissions(message, guild, args, `internalRole.${role}`, permissionManager.permissions.internalRoles[role]);
                 return sendPermissions(message, guild, args, `internalRole.${role}@${role.guild.name}`, {
                     "No Permissions": "This scope has nothing specified."
                 });
@@ -71,67 +74,86 @@ module.exports = {
             if (args[1].toLowerCase().startsWith("*")) { //About all
                 let embeds = {
                     users: {
-                        title: `**Users permissions :**`,
-                        fields: [],
-                        pages: []
+                        title: `Users permissions :`,
+                        fields: []
                     },
                     internalRoles: {
-                        title: `**InternalRoles permissions :**`,
-                        fields: [],
-                        pages: []
+                        title: `InternalRoles permissions :`,
+                        fields: []
                     },
                     roles: {
-                        title: `**Roles permissions :**`,
-                        fields: [],
-                        pages: []
+                        title: `Roles permissions :`,
+                        fields: []
                     },
                     channels: {
-                        title: `**Channels permissions :**`,
-                        fields: [],
-                        pages: []
+                        title: `Channels permissions :`,
+                        fields: []
+                    },
+                    guilds: {
+                        title: `Guilds permissions :`,
+                        fields: []
                     }
                 };
-                for (const unitKey in guild.permissionsManager.permissions){
-                    for (const unit in guild.permissionsManager.permissions[unitKey]){
-                        let fieldBody = ``;
-                        let printedPerms = 0;
-                        for (const permissionName in guild.permissionsManager.permissions[unitKey][unit]) {
-                            printedPerms++;
-                            if (typeof guild.permissionsManager.permissions[unitKey][unit][permissionName] == "boolean") guild.permissionsManager.permissions[unitKey][unit][permissionName] = {
-                                value: guild.permissionsManager.permissions[unitKey][unit][permissionName],
-                                priority: 0,
-                                temporary: false
-                            };
-                            if (printedPerms > 6) {
-                                fieldBody += `***${Object.keys(guild.permissionsManager.permissions[unitKey][unit]).length - 6} more permissions.***`;
-                                break;
-                            }
-                            fieldBody += `\`${permissionName}\`: [**${guild.permissionsManager.permissions[unitKey][unit][permissionName].priority}**] ${guild.permissionsManager.permissions[unitKey][unit][permissionName].value}\n`
-                        }
-                        embeds[unitKey].fields.push([`**${unit}**`, `${fieldBody}`, false]);
+                for (const userId in permissionManager.permissions.users) {
+                    let fieldBody = ``;
+                    for (const permissionName in permissionManager.permissions.users[userId]) {
+                        if (typeof permissionManager.permissions.users[userId][permissionName] == "boolean") permissionManager.permissions.users[userId][permissionName] = {
+                            value: permissionManager.permissions.users[userId][permissionName],
+                            priority: 0,
+                            temporary: false
+                        };
+                        fieldBody += `**${permissionName}**: [${permissionManager.permissions.users[userId][permissionName].priority}] ${permissionManager.permissions.users[userId][permissionName].value}\n`
                     }
+                    embeds.users.fields.push([`User ${userId}`, `${fieldBody}`, false])
                 }
-
-                embeds.users.pages = splitArrayIntoChunksOfLen(embeds.users.fields, 9);
-                embeds.internalRoles.pages = splitArrayIntoChunksOfLen(embeds.internalRoles.fields, 9);
-                embeds.roles.pages = splitArrayIntoChunksOfLen(embeds.roles.fields, 9);
-                embeds.channels.pages = splitArrayIntoChunksOfLen(embeds.channels.fields, 9);
-
-                let page = 1;
-
-                args.forEach(async invividualArgument => {
-                    if (invividualArgument.toLowerCase().startsWith("-page:")) {
-                        try {
-                            page = parseInt(invividualArgument.replace('-page:', ``));
-                            args = args.filter(arrayItem => arrayItem !== invividualArgument);
-                            if (page < 1) return page = `Page cannot be lower than 1.`;
-                        } catch (e) {
-                            return page = `Pages must be selected by numbers.`;
-                        }
+                for (const roleName in permissionManager.permissions.internalRoles) {
+                    let fieldBody = ``;
+                    for (const permissionName in permissionManager.permissions.internalRoles[roleName]) {
+                        if (typeof permissionManager.permissions.internalRoles[roleName][permissionName] == "boolean") permissionManager.permissions.internalRoles[roleName][permissionName] = {
+                            value: permissionManager.permissions.internalRoles[roleName][permissionName],
+                            priority: 0,
+                            temporary: false
+                        };
+                        fieldBody += `**${permissionName}**: [${permissionManager.permissions.internalRoles[roleName][permissionName].priority}] ${permissionManager.permissions.internalRoles[roleName][permissionName].value}\n`
                     }
-                });
-
-                if (typeof page == "string") return utils.sendError(message, guild, page);
+                    embeds.internalRoles.fields.push([`Internal Role ${roleName}`, `${fieldBody}`, false])
+                }
+                for (const roleId in permissionManager.permissions.roles) {
+                    let fieldBody = ``;
+                    for (const permissionName in permissionManager.permissions.roles[roleId]) {
+                        if (typeof permissionManager.permissions.roles[roleId][permissionName] == "boolean") permissionManager.permissions.roles[roleId][permissionName] = {
+                            value: permissionManager.permissions.roles[roleId][permissionName],
+                            priority: 0,
+                            temporary: false
+                        };
+                        fieldBody += `**${permissionName}**: [${permissionManager.permissions.roles[roleId][permissionName].priority}] ${permissionManager.permissions.roles[roleId][permissionName].value}\n`
+                    }
+                    embeds.roles.fields.push([`Role ${roleId}`, `${fieldBody}`, false])
+                }
+                for (const channelId in permissionManager.permissions.channels) {
+                    let fieldBody = ``;
+                    for (const permissionName in permissionManager.permissions.channels[channelId]) {
+                        if (typeof permissionManager.permissions.channels[channelId][permissionName] == "boolean") permissionManager.permissions.channels[channelId][permissionName] = {
+                            value: permissionManager.permissions.channels[channelId][permissionName],
+                            priority: 0,
+                            temporary: false
+                        };
+                        fieldBody += `**${permissionName}**: [${permissionManager.permissions.channels[channelId][permissionName].priority}] ${permissionManager.permissions.channels[channelId][permissionName].value}\n`
+                    }
+                    embeds.channels.fields.push([`Channel ${channelId}`, `${fieldBody}`, false])
+                }
+                for (const guildId in permissionManager.permissions.guilds) {
+                    let fieldBody = ``;
+                    for (const permissionName in permissionManager.permissions.guilds[guildId]) {
+                        if (typeof permissionManager.permissions.guilds[guildId][permissionName] == "boolean") permissionManager.permissions.guilds[guildId][permissionName] = {
+                            value: permissionManager.permissions.guilds[guildId][permissionName],
+                            priority: 0,
+                            temporary: false
+                        };
+                        fieldBody += `**${permissionName}**: [${permissionManager.permissions.guilds[guildId][permissionName].priority}] ${permissionManager.permissions.guilds[guildId][permissionName].value}\n`
+                    }
+                    embeds.guilds.fields.push([`Guild ${guildId}`, `${fieldBody}`, false])
+                }
 
                 let introEmbed = new MessageEmbed({
                     title: `Permissions list:`,
@@ -143,12 +165,9 @@ module.exports = {
                     let permissionEmbed = new MessageEmbed({
                         title: indEmbed.title,
                         color: guild.configuration.colors.main,
-                        description: (indEmbed.fields.length == 0) ? `No permissions defined` : undefined,
-                        footer: {
-                            text: `Use \`-page:pageNumber]\` to search thru pages. [${(typeof indEmbed.pages[page-1] != "undefined") ? page : indEmbed.pages.length}/${indEmbed.pages.length}]`
-                        }
+                        description: (indEmbed.fields.length == 0) ? `No permissions defined` : undefined
                     });
-                    if (indEmbed.fields.length != 0) indEmbed.pages[(typeof indEmbed.pages[page-1] != "undefined") ? page - 1 : indEmbed.pages.length - 1].forEach(indField => permissionEmbed.addField(`${indField[0]}`, `${indField[1]}`, indField[2]));
+                    if (indEmbed.fields.length != 0) indEmbed.fields.forEach(indField => permissionEmbed.addField(`${indField[0]}`, `${indField[1]}`, indField[2]));
                     embedsToAdd.push(permissionEmbed);
                 }
                 return message.reply({
@@ -185,13 +204,13 @@ module.exports = {
                 embed.title = `Permission set.`;
                 embed.color = guild.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope <@${user.id}>.`;
-                if (typeof guild.permissionsManager.permissions.users[user.id] != "object") guild.permissionsManager.permissions.users[user.id] = {};
-                if (permissionValue != "none") guild.permissionsManager.permissions.users[user.id][permissionName] = {
+                if (typeof permissionManager.permissions.users[user.id] != "object") permissionManager.permissions.users[user.id] = {};
+                if (permissionValue != "none") permissionManager.permissions.users[user.id][permissionName] = {
                     value: permissionValue,
                     priority: permissionPriority,
                     temporary: false
                 };
-                if (permissionValue == "none") delete guild.permissionsManager.permissions.users[user.id][permissionName];
+                if (permissionValue == "none") delete permissionManager.permissions.users[user.id][permissionName];
             }
             if (args[1].startsWith("<@&") || args[1].startsWith('roleid:')) { //About a role
                 let role = message.mentions.roles.first();
@@ -207,41 +226,41 @@ module.exports = {
                 embed.title = `Permission set.`;
                 embed.color = guild.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope <@&${role.id}>.`;
-                if (typeof guild.permissionsManager.permissions.roles[role.id] != "object") guild.permissionsManager.permissions.roles[role.id] = {};
-                if (permissionValue != "none") guild.permissionsManager.permissions.roles[role.id][permissionName] = {
+                if (typeof permissionManager.permissions.roles[role.id] != "object") permissionManager.permissions.roles[role.id] = {};
+                if (permissionValue != "none") permissionManager.permissions.roles[role.id][permissionName] = {
                     value: permissionValue,
                     priority: permissionPriority,
                     temporary: false
                 };
-                if (permissionValue == "none") delete guild.permissionsManager.permissions.roles[role.id][permissionName];
+                if (permissionValue == "none") delete permissionManager.permissions.roles[role.id][permissionName];
             }
             if (args[1].toLowerCase().startsWith("internalrole")) { //About a internalrole
                 let internalrole = args[1].toLowerCase().replace('internalrole:', '');
                 embed.title = `Permission set.`;
                 embed.color = guild.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope \`${internalrole}\`.`;
-                if (typeof guild.permissionsManager.permissions.internalRoles[internalrole] != "object") guild.permissionsManager.permissions.internalRoles[internalrole] = {};
-                if (permissionValue != "none") guild.permissionsManager.permissions.internalRoles[internalrole][permissionName] = {
+                if (typeof permissionManager.permissions.internalRoles[internalrole] != "object") permissionManager.permissions.internalRoles[internalrole] = {};
+                if (permissionValue != "none") permissionManager.permissions.internalRoles[internalrole][permissionName] = {
                     value: permissionValue,
                     priority: permissionPriority,
                     temporary: false
                 };
-                if (permissionValue == "none") delete guild.permissionsManager.permissions.internalRoles[internalrole][permissionName];
+                if (permissionValue == "none") delete permissionManager.permissions.internalRoles[internalrole][permissionName];
             }
             if (args[1].toLowerCase().startsWith("guild")) { //About a guild
                 let guild = args[1].toLowerCase().replace('guild:', '');
                 embed.title = `Permission set.`;
                 embed.color = guild.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope \`${guild.id}\` with priority \`${permissionPriority}\`.`;
-                if (typeof guild.permissionsManager.permissions.guild[guild] != "object") guild.permissionsManager.permissions.guild[guild] = {};
-                if (permissionValue != "none") guild.permissionsManager.permissions.guild[guild][permissionName] = {
+                if (typeof permissionManager.permissions.guild[guild] != "object") permissionManager.permissions.guild[guild] = {};
+                if (permissionValue != "none") permissionManager.permissions.guild[guild][permissionName] = {
                     value: permissionValue,
                     priority: permissionPriority,
                     temporary: false
                 };
-                if (permissionValue == "none") delete guild.permissionsManager.permissions.guild[guild][permissionName];
+                if (permissionValue == "none") delete permissionManager.permissions.guild[guild][permissionName];
             }
-            await guild.permissionsManager.save();
+            await permissionManager.save();
             message.reply({
                 embeds: [embed],
                 failIfNotExists: false
@@ -266,9 +285,9 @@ module.exports = {
                 embed.title = `Permission unset.`;
                 embed.color = guild.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` unset from scope <@${user.id}>.`;
-                if (typeof guild.permissionsManager.permissions.users[user.id] != "object") guild.permissionsManager.permissions.users[user.id] = {};
-                delete guild.permissionsManager.permissions.users[user.id][permissionName];
-                if (Object.keys(guild.permissionsManager.permissions.users[user.id]).length == 0) delete guild.permissionsManager.permissions.users[user.id];
+                if (typeof permissionManager.permissions.users[user.id] != "object") permissionManager.permissions.users[user.id] = {};
+                delete permissionManager.permissions.users[user.id][permissionName];
+                if (Object.keys(permissionManager.permissions.users[user.id]).length == 0) delete permissionManager.permissions.users[user.id];
             }
             if (args[1].startsWith("<@&") || args[1].startsWith('roleid:')) { //About a role
                 let role = message.mentions.roles.first();
@@ -281,20 +300,20 @@ module.exports = {
                 embed.title = `Permission unset.`;
                 embed.color = guild.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` unset from scope <@&${role.id}>.`;
-                if (typeof guild.permissionsManager.permissions.roles[role.id] != "object") guild.permissionsManager.permissions.roles[role.id] = {};
-                delete guild.permissionsManager.permissions.roles[role.id][permissionName];
-                if (Object.keys(guild.permissionsManager.permissions.roles[role.id]).length == 0) delete guild.permissionsManager.permissions.roles[role.id];
+                if (typeof permissionManager.permissions.roles[role.id] != "object") permissionManager.permissions.roles[role.id] = {};
+                delete permissionManager.permissions.roles[role.id][permissionName];
+                if (Object.keys(permissionManager.permissions.roles[role.id]).length == 0) delete permissionManager.permissions.roles[role.id];
             }
             if (args[1].toLowerCase().startsWith("internalrole")) { //About a role
                 let internalRole = args[1].toLowerCase().replace('internalrole:', '');
                 embed.title = `Permission unset.`;
                 embed.color = guild.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` unset from scope \`${internalRole}\`.`;
-                if (typeof guild.permissionsManager.permissions.internalRoles[internalRole] != "object") guild.permissionsManager.permissions.internalRoles[internalRole] = {};
-                delete guild.permissionsManager.permissions.internalRoles[internalRole][permissionName];
-                if (Object.keys(guild.permissionsManager.permissions.internalRoles[internalRole]).length == 0) delete guild.permissionsManager.permissions.internalRoles[internalRole];
+                if (typeof permissionManager.permissions.internalRoles[internalRole] != "object") permissionManager.permissions.internalRoles[internalRole] = {};
+                delete permissionManager.permissions.internalRoles[internalRole][permissionName];
+                if (Object.keys(permissionManager.permissions.internalRoles[internalRole]).length == 0) delete permissionManager.permissions.internalRoles[internalRole];
             }
-            await guild.permissionsManager.save();
+            await permissionManager.save();
             message.reply({
                 embeds: [embed],
                 failIfNotExists: false
