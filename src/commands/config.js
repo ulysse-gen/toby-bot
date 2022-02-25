@@ -80,6 +80,12 @@ module.exports = {
                     configName: `onWarningIgnore`,
                     path: `behaviour.onWarningIgnore`
                 },
+                behaviourOnWarningIgnore: {
+                    title: `Ignore on cooldown`,
+                    description: `Should we ignore cooldowns blocks ? (Or should we reply with a cooldown error)`,
+                    configName: `onCooldownIgnore`,
+                    path: `behaviour.onCooldownIgnore`
+                },
                 behaviourAutoDeleteCommands: {
                     title: `Auto delete commands`,
                     description: `Should we auto delete commands trigger ?`,
@@ -109,6 +115,12 @@ module.exports = {
                     description: `Should the warnings be logged in the log channel ?`,
                     configName: `logOnWarning`,
                     path: `behaviour.logOnWarning`
+                },
+                behaviourLogOnCooldown: {
+                    title: `Log on warning`,
+                    description: `Should the cooldowns be logged in the log channel ?`,
+                    configName: `logOnCooldown`,
+                    path: `behaviour.logOnCooldown`
                 },
                 behaviourLogDiscordErrors: {
                     title: `Log on discord error`,

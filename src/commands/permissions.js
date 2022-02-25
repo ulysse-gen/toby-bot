@@ -98,7 +98,7 @@ module.exports = {
                         };
                         fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.users[userId][permissionName].priority}] ${guild.permissionsManager.permissions.users[userId][permissionName].value}\n`
                     }
-                    embeds.users.fields.push([`User ${userId}`, `${fieldBody}`, false])
+                    embeds.users.fields.push([`User ${userId}`, `${fieldBody.trimEllip(1021)}`, false])
                 }
                 for (const roleName in guild.permissionsManager.permissions.internalRoles) {
                     let fieldBody = ``;
@@ -110,7 +110,7 @@ module.exports = {
                         };
                         fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.internalRoles[roleName][permissionName].priority}] ${guild.permissionsManager.permissions.internalRoles[roleName][permissionName].value}\n`
                     }
-                    embeds.internalRoles.fields.push([`Internal Role ${roleName}`, `${fieldBody}`, false])
+                    embeds.internalRoles.fields.push([`Internal Role ${roleName}`, `${fieldBody.trimEllip(1021)}`, false])
                 }
                 for (const roleId in guild.permissionsManager.permissions.roles) {
                     let fieldBody = ``;
@@ -122,7 +122,7 @@ module.exports = {
                         };
                         fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.roles[roleId][permissionName].priority}] ${guild.permissionsManager.permissions.roles[roleId][permissionName].value}\n`
                     }
-                    embeds.roles.fields.push([`Role ${roleId}`, `${fieldBody}`, false])
+                    embeds.roles.fields.push([`Role ${roleId}`, `${fieldBody.trimEllip(1021)}`, false])
                 }
                 for (const channelId in guild.permissionsManager.permissions.channels) {
                     let fieldBody = ``;
@@ -134,7 +134,7 @@ module.exports = {
                         };
                         fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.channels[channelId][permissionName].priority}] ${guild.permissionsManager.permissions.channels[channelId][permissionName].value}\n`
                     }
-                    embeds.channels.fields.push([`Channel ${channelId}`, `${fieldBody}`, false])
+                    embeds.channels.fields.push([`Channel ${channelId}`, `${fieldBody.trimEllip(1021)}`, false])
                 }
                 for (const guildId in guild.permissionsManager.permissions.guilds) {
                     let fieldBody = ``;
@@ -146,7 +146,7 @@ module.exports = {
                         };
                         fieldBody += `**${permissionName}**: [${guild.permissionsManager.permissions.guilds[guildId][permissionName].priority}] ${guild.permissionsManager.permissions.guilds[guildId][permissionName].value}\n`
                     }
-                    embeds.guilds.fields.push([`Guild ${guildId}`, `${fieldBody}`, false])
+                    embeds.guilds.fields.push([`Guild ${guildId}`, `${fieldBody.trimEllip(1021)}`, false])
                 }
 
                 let introEmbed = new MessageEmbed({
@@ -203,7 +203,6 @@ module.exports = {
                     temporary: false
                 };
                 if (permissionValue == "none") delete guild.permissionsManager.permissions.users[user.id][permissionName];
-                guild.permissionsManager.save();
             }
             if (args[1].startsWith("<@&") || args[1].startsWith('roleid:')) { //About a role
                 let role = message.mentions.roles.first();
@@ -223,7 +222,6 @@ module.exports = {
                     temporary: false
                 };
                 if (permissionValue == "none") delete guild.permissionsManager.permissions.roles[role.id][permissionName];
-                guild.permissionsManager.save();
             }
             if (args[1].toLowerCase().startsWith("internalrole")) { //About a internalrole
                 let internalrole = args[1].toLowerCase().replace('internalrole:', '');
@@ -237,7 +235,6 @@ module.exports = {
                     temporary: false
                 };
                 if (permissionValue == "none") delete guild.permissionsManager.permissions.internalRoles[internalrole][permissionName];
-                guild.permissionsManager.save();
             }
             if (args[1].toLowerCase().startsWith("guild")) { //About a guild
                 let guild = args[1].toLowerCase().replace('guild:', '');
@@ -251,8 +248,8 @@ module.exports = {
                     temporary: false
                 };
                 if (permissionValue == "none") delete guild.permissionsManager.permissions.guild[guild][permissionName];
-                guild.permissionsManager.save();
             }
+            guild.permissionsManager.save();
             message.reply({
                 embeds: [embed],
                 failIfNotExists: false

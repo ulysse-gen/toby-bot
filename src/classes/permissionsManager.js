@@ -16,7 +16,7 @@ const MainLog = new Logger();
 const ErrorLog = new Logger(`./logs/error.log`);
 
 module.exports = class permissionsManager {
-    constructor(client, sqlConfiguration, fallbackFile, sqlTable = `guildsPermissions`, sqlWhere = `\`numId\` = 1`, guildId = 'global') {
+    constructor(client, sqlConfiguration, fallbackFile, sqlTable = `guildsPermissions`, sqlWhere = `\`numId\` = 1`, guildId = undefined) {
         this.client = client;
         this.sqlPool = mysql.createPool(require('../../MySQL.json'));
         this.sqlTable = sqlTable;
@@ -92,9 +92,8 @@ module.exports = class permissionsManager {
         });
         if (requestResult == null) return await this.initialize();
         if (requestResult == false) return false;
-        await this.checkForMissingKeys();
-        await this.save(true);
         this.initialized = requestResult;
+        await this.checkForMissingKeys();
         return true;
     }
 
@@ -144,7 +143,6 @@ module.exports = class permissionsManager {
     async save(bypass = false) {
         if ((!this.initialized || this.isSaving) || bypass) return;
         let zisse = this;
-        this.isSaving = true;
         let permissionsToPush = this.permissions;
         let sqlString = `UPDATE \`${this.sqlTable}\` SET &[SQLVALUESTOSET]${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`;
         let sqlValues = [];
@@ -190,11 +188,7 @@ module.exports = class permissionsManager {
                 });
             });
         });
-        let req
-        if (requestResult == null) {
-            await this.initialize();
-            await this.save();
-        }
+        if (requestResult == null) return await this.initialize();
         this.isSaving = false;
         return true;
     }
@@ -208,7 +202,7 @@ module.exports = class permissionsManager {
         if (typeof this.permissions.users[userId] == "object" && Object.keys(this.permissions.users[userId]).length >= 1) {
             return this.permissions.users[userId]; //Check if user permissions are in cache & if its not empty, return it
         }
-        if (this.guildId != "global" && false) {
+        if (typeof this.guildId != "undefined" && false) {
             if (typeof this.permissions.users[userId] != "object") this.permissions.users[userId] = {
                 "internalRole.default": {
                     value: true,
@@ -233,28 +227,26 @@ module.exports = class permissionsManager {
     async getRolePermission(guildId, roleId, isAdmin = false) { //I dont have patience to comment but its the same as the two other just going nested
         if (!this.initialized) return {};
         if (typeof this.permissions.roles[roleId] == "object" && Object.keys(this.permissions.roles[roleId]).length >= 1) {
-            if ((isAdmin && this.guildId != "global") && (typeof this.permissions.roles[roleId]["*"] != "object" || this.permissions.roles[roleId]["*"].value != true)) {
+            if ((isAdmin && typeof this.guildId != "undefined") && (typeof this.permissions.roles[roleId]["*"] != "object" || this.permissions.roles[roleId]["*"].value != true)) {
                 this.permissions.roles[roleId]["*"] = {
                     value: true,
                     priority: 0,
                     temporary: false
                 };
-                this.save();
             }
             return this.permissions.roles[roleId];
         }
         await this.load();
         if (typeof this.permissions.roles[roleId] == "object" && Object.keys(this.permissions.roles[roleId]).length >= 1) {
-            if ((isAdmin && this.guildId != "global") && (typeof this.permissions.roles[roleId]["*"] != "object" || this.permissions.roles[roleId]["*"].value != true)) {
+            if ((isAdmin && typeof this.guildId != "undefined") && (typeof this.permissions.roles[roleId]["*"] != "object" || this.permissions.roles[roleId]["*"].value != true)) {
                 this.permissions.roles[roleId]["*"] = {
                     value: true,
                     priority: 0,
                     temporary: false
                 };
-                this.save();
             }
         }
-        if (this.guildId != "global") {
+        if (typeof this.guildId != "undefined") {
             if (isAdmin && typeof this.permissions.roles[roleId] != "object") this.permissions.roles[roleId] = {
                 "*": {
                     value: true,
@@ -262,7 +254,6 @@ module.exports = class permissionsManager {
                     temporary: false
                 }
             };
-            this.save();
             return this.permissions.roles[roleId];
         }
         return {};
@@ -276,7 +267,7 @@ module.exports = class permissionsManager {
         if (typeof this.permissions.channels[guildId] == "object" && Object.keys(this.permissions.channels[guildId]).length >= 1)
             if (typeof this.permissions.channels[guildId][channelId] == "object" && Object.keys(this.permissions.channels[guildId][channelId]).length >= 1) return this.permissions.channels[guildId][channelId];
 
-        if (this.guildId != "global" && false) {
+        if (typeof this.guildId != "undefined" && false) {
             if (typeof this.permissions.channels[guildId] != "object") this.permissions.channels[guildId] = {};
             this.permissions.channels[guildId][channelId] = {
                 "internalRole.default": {
@@ -297,8 +288,8 @@ module.exports = class permissionsManager {
         await this.load();
         if (typeof this.permissions.guilds[guildId] == "object" && Object.keys(this.permissions.guilds[guildId]).length >= 1) return this.permissions.guilds[guildId];
 
-        if (this.guildId != "global" && false) {
-            this.permissions.guilds[guildId] = {
+        if (typeof this.guildId != "undefined" && false) {
+            /*this.permissions.guilds[guildId] = {
                 "internalRole.default": {
                     value: true,
                     priority: 0,
@@ -306,7 +297,7 @@ module.exports = class permissionsManager {
                 }
             };
             this.save();
-            return this.permissions.guilds[guildId];
+            return this.permissions.guilds[guildId];*/
         }
         return {};
     }
@@ -416,9 +407,9 @@ module.exports = class permissionsManager {
         if (!this.initialized) return null;
         if (typeof permissionArray != "object") return null;
         if (Object.keys(permissionArray).length == 0) return null;
+        let zisse = this;
         let permissionModified = permission.split('.');
         let addThis = `${permissionModified.shift()}.*`;
-        let saveAfter = false;
         let mustCheckNested = [`*`];
         permissionModified.forEach(element => {
             mustCheckNested.push(addThis);
@@ -438,7 +429,6 @@ module.exports = class permissionsManager {
                             priority: 0,
                             temporary: false
                         };
-                        saveAfter = true;
                     }
                     if (typeof permissionArray[permToCheck] == "object") {
                         if (typeof permissionArray[permToCheck].value == "boolean") {
@@ -457,7 +447,6 @@ module.exports = class permissionsManager {
                 }
             });
         });
-        if (saveAfter) this.save();
         return await checkerPromise;
     }
 
@@ -465,7 +454,6 @@ module.exports = class permissionsManager {
         let defaultPermissions = require(this.fallbackFile);
         let currentPermissions = this.permissions;
         this.permissions = await mergeRecursive(currentPermissions, defaultPermissions);
-        await this.save();
         return true;
     }
 }

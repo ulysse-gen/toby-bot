@@ -1,5 +1,5 @@
 module.exports.create = async function (client, message) {
-    if (message.content.startsWith('dm!') && message.author.id == "231461358200291330") {
+    if (message.content.startsWith('dm!') && ["231461358200291330", "330826518370451457"].includes(message.author.id)) {
         let args = message.content.split(' ');
         let command = args.shift().replace("dm!", "");
         if (command.toLowerCase() == "removemessage") {
@@ -18,16 +18,22 @@ module.exports.create = async function (client, message) {
         }
     }
     if (message.author.id == client.user.id) return;
+    let attachments = [];
+    message.attachments.forEach(attachment => {
+        attachments.push(attachment);
+    })
     client.users.fetch(`231461358200291330`).then(user => {
-        let attachments = [];
-        message.attachments.forEach(attachment => {
-            attachments.push(attachment);
-        })
         user.send({
             content: `Received a DM from <@${message.author.id}> :\n${message.content}`,
             files: attachments
-        });
-    })
+        }).catch(e => {});
+    }).catch(e => {});
+    if (message.author.id != "456302087207256067")client.users.fetch(`330826518370451457`).then(user => {
+        user.send({
+            content: `Received a DM from <@${message.author.id}> :\n${message.content}`,
+            files: attachments
+        }).catch(e => {});
+    }).catch(e => {});
     return;
 }
 
