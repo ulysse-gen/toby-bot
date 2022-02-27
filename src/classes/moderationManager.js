@@ -234,12 +234,17 @@ module.exports = class moderationManager {
                     ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
                     res(false);
                 }
-                connection.query(`UPDATE \`moderationLogs\` SET \`status\`='deleted', \`updaterId\`='${message.author.id}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${caseId} AND guildId='${message.channel.guild.id}' AND status!='deleted'`, async function (error, results, fields) {
+                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`numId\`=${caseId} AND \`guildId\`='${message.channel.guild.id}'`, async function (error, results, fields) {
                     if (error) {
                         ErrorLog.log(`An error occured during the query. ${error.toString()}`);
-                        res(false);
-                    }if (typeof results == "undefined")res(false);
-                    if (results.affectedRows != 1)res(false);
+                        res({error: `An error occured getting the punishment from the database.`});
+                    }if (typeof results == "undefined" || results.length == 0 || results[0].status == "deleted")res({error: `Punishment not found.`});
+                    if ((results[0].type == "Mute" || results[0].type == "Ban") && results[0].status == "active"){
+                        if (moment(results[0].expires).isAfter(moment())) {
+                            res({error:`This punishment isnt expired yet. ${(results[0].type == "Mute") ? `Unmute` : `Unban`} then delete the punishment.`});
+                        }
+                    }
+                    connection.query(`UPDATE \`moderationLogs\` SET \`status\`='deleted', \`updaterId\`='${message.author.id}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${caseId}`, async function (error, results, fields) {});
                     connection.release();
                     res(true);
                 });

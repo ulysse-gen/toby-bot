@@ -21,10 +21,7 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `- Permissions now works with priority`;
-        embed.description += `\n- Russian Roulette is finally fixed`;
-        embed.description += `\n- **Purge command is finally fixed**`;
-        embed.description += `\n- Global permission is fixed`;
+        embed.description += `- New command \`deletepunishment\` to remove punishments from the logs.`;
 
         message.reply({
             embeds: [embed],

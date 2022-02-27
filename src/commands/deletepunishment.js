@@ -14,7 +14,7 @@ module.exports = {
     name: "deletepunishment",
     description: `Delete a punishment from the database.`,
     subcommands: {},
-    aliases: [],
+    aliases: ["deletepunish", "delpunish"],
     permission: `commands.deletepunishment`,
     category: `informations`,
     status: true,
@@ -26,10 +26,12 @@ module.exports = {
         if (args.length == 0)return utils.sendError(message, guild, `Wrong command synthax.`, `Use \`deletepunishment <caseId> [reason]\` to delete a punishment.`)
         let caseId = args.shift();
         let reason = args.join(' ');
-        if (guild.configuration.moderation.deletePunishmentNeedReason && (typeof reason == "undefined" || reason == "" || reason.replaceAll(' ', '') == "")) return utils.sendError(message, guild, `No reason specified.`);
-        if (typeof caseId == "undefined" || caseId == "" || caseId.replaceAll(' ', '') == "") return utils.sendError(message, guild, `No caseId specified.`);
+        if (guild.configuration.moderation.deletePunishmentNeedReason && (typeof reason == "undefined" || reason == "" || reason.replaceAll(' ', '') == "")) return utils.sendError(message, guild, `Could not delete punishment.`, `No reason specified.`);
+        if (typeof caseId == "undefined" || caseId == "" || caseId.replaceAll(' ', '') == "") return utils.sendError(message, guild, `Could not delete punishment.`, `No caseId specified.`);
         let result = await guild.moderationManager.deletePunishment(message, caseId, reason);
-        if (result == false)embed.setTitle(`Could not remove punishment`).setColor(guild.configuration.colors.error);
+        if (typeof result == "object"){
+            embed.setTitle(`Could not delete punishment.`).setDescription(result.error).setColor(guild.configuration.colors.error);
+        }
         message.reply({
             embeds: [embed],
             failIfNotExists: false
