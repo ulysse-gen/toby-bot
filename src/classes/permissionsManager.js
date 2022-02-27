@@ -7,9 +7,7 @@ const {
 
 
 const Logger = require(`./Logger`);
-const {
-    result
-} = require('lodash');
+const _ = require('lodash');
 
 //Loggers
 const MainLog = new Logger();
@@ -50,6 +48,7 @@ module.exports = class permissionsManager {
 
     async initialize() {
         let zisse = this;
+        if (zisse.verbose) MainLog.log(`[Permission Verbose][${(zisse.guildId == "global")}][FULL]Initializing permissions`);
         let requestResult = await new Promise((res, rej) => {
             zisse.sqlPool.getConnection((err, connection) => {
                 if (err) {
@@ -57,7 +56,7 @@ module.exports = class permissionsManager {
                     res(false);
                 }
                 connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
-                    if (typeof result != "undefined" && results.length == 1) {
+                    if (typeof results != "undefined" && results.length == 1) {
                         delete results[0].numId;
                         delete results[0].guildId;
                         for (let iterator in results[0]) {
@@ -310,101 +309,79 @@ module.exports = class permissionsManager {
         if (this.allowDev.includes(permission) && ["231461358200291330"].includes(userId)) return true; //If the permission is in the "allow dev" & the user that typed the command is dev.. then allow. Seems obvious huh ?
         if (this.neverAllow.includes(permission)) return false; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
         if (this.neverAllowGuildFocused.includes(permission) && this.guildId == "global") return false; //If the permission is in the "never allow".. then dont allow. Seems obvious huh ?
-        let fullPermissions = await new Promise((res, rej) => {
-            res(true)
-        });
-        
-        let userPermissions = await this.getUserPermissions(userId); //Call for the user permissions**
-
-        let permissionCheckingPromise = new Promise(async (res, rej) => { //This is a thing to be able to wait for it to process before returning the value, thanks javascript its terrible, allow for async execution tho
-            let permissionCheckingPromise_User = new Promise(async (res, rej) => {
-                this.client.guilds.fetch(guildId).then(async fethedGuild => {
-                    fethedGuild.members.fetch(userId).then(async fetchedUser => {
-                        let isAdmin = await fetchedUser.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true);
-                        let userPermissions = await this.getUserPermissions(userId, isAdmin); //Call for the user permissions**
-                        let isPermissionGranted = await this.isPermissionGranted(userPermissions, permission); //Check if permissions is granted, if yes, return true just below****
-                        if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][USER]Permission ${permission} => ${isPermissionGranted}`);
-                        res(isPermissionGranted);
-                    }).catch(e => {
-                        MainLog.log(`Could not fetch user ${userId} Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch user ${userId} Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
-                    });
-                }).catch(e => {
-                    MainLog.log(`Could not fetch guild ${guildId} Error : ${e}`.red); //Logging in file & console
-                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch guild ${guildId} Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
-                });
+        let guildUser = await this.client.guilds.fetch(guildId).then(async fethedGuild => {
+            return await fethedGuild.members.fetch(userId).then(fetchedUser => {
+                return fetchedUser;
+            }).catch(e => {
+                MainLog.log(`Could not fetch user ${userId} Error : ${e}`.red); //Logging in file & console
+                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch user ${userId} Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                return undefined;
             });
-            if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][USER]Begining permission check`);
-            let isPermissionGranted_User = await permissionCheckingPromise_User; //Exec the nested "thing to be able to wait for it to process before returning the value"
-            if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][USER]Permission => ${isPermissionGranted_User}`);
-            if (isPermissionGranted_User != null) res(isPermissionGranted_User);
+        }).catch(e => {
+            MainLog.log(`Could not fetch guild ${guildId} Error : ${e}`.red); //Logging in file & console
+            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch guild ${guildId} Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+            return undefined;
+        });
+        if (typeof guildUser == "undefined") return false;
+        let isAdmin = await guildUser.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true);
 
-            let permissionCheckingPromise_InternalRole = new Promise(async (res, rej) => { //What i am doing here is aweful, honnestly its terrible (nested "thing to be able to wait for it to process before returning the value")
-                if (Object.keys(userPermissions).length == 0) res(null);
-                let control = Object.keys(userPermissions).length;
-                for (const key in userPermissions) {
+        let fullPermissions = await new Promise(async (res, rej) => {
+            let permissionsGot = [];
+            if (zisse.verbose) MainLog.log(`[Permission Verbose][${(zisse.guildId == "global")}][FULL]Scanning for permissions`);
+            if (zisse.verbose) MainLog.log(`[Permission Verbose][${(zisse.guildId == "global")}][FULL]Scanning for user permissions`);
+            permissionsGot.push(await zisse.getUserPermissions(userId, isAdmin));
+            if (zisse.verbose) MainLog.log(`[Permission Verbose][${(zisse.guildId == "global")}][FULL]Scanning for internalRole permissions`);
+            await new Promise(async (res, rej) => { //What i am doing here is aweful, honnestly its terrible (nested "thing to be able to wait for it to process before returning the value")
+                if (Object.keys(permissionsGot[0]).length == 0) res(true);
+                let control = Object.keys(permissionsGot[0]).length;
+                for (const key in permissionsGot[0]) {
                     if (key.startsWith(`internalRole.`)) {
-                        let internalRolesPermissions = await zisse.getInternalRolePermissions(key.replace(`internalRole.`, ``)); //Same as ** just above
-                        let isPermissionGranted = await this.isPermissionGranted(internalRolesPermissions, permission); //Same as **** just above
-                        if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][INTERNALROLE]Permission ${permission} => ${isPermissionGranted}`);
-                        if (isPermissionGranted != null) res(isPermissionGranted);
+                        if (zisse.verbose) MainLog.log(`[Permission Verbose][${(zisse.guildId == "global")}][FULL]Scanning for ${key} permissions`);
+                        permissionsGot.push(await zisse.getInternalRolePermissions(key.replace(`internalRole.`, ``)));
                     }
                     control--;
-                    if (control == 0) res(null);
+                    if (control == 0) res(true);
                 }
             });
-            if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][INTERNALROLE]Begining permission check`);
-            let isPermissionGranted_InternalRole = await permissionCheckingPromise_InternalRole; //Exec the nested "thing to be able to wait for it to process before returning the value"
-            if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][INTERNALROLE]Permission => ${isPermissionGranted_InternalRole}`);
-            if (isPermissionGranted_InternalRole != null) res(isPermissionGranted_InternalRole);
-
-            let permissionCheckingPromise_Role = new Promise(async (res, rej) => { //What i am doing here is aweful, honnestly its terrible (nested "thing to be able to wait for it to process before returning the value")
-                if ([typeof userId, typeof guildId].includes("undefined")) res(null);
-                this.client.guilds.fetch(guildId).then(fethedGuild => {
-                    fethedGuild.members.fetch(userId).then(fetchedUser => {
-                        let control = fetchedUser.roles.cache.size;
-                        fetchedUser.roles.cache.forEach(async indRole => {
-                            let isAdmin = await indRole.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true);
-                            if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][ROLE]Role ${indRole.id}@${guildId} (${isAdmin})`);
-                            let rolePermissions = await this.getRolePermission(guildId, indRole.id, isAdmin); //Same as ** just above
-                            let isPermissionGranted = await this.isPermissionGranted(rolePermissions, permission); //Same as **** just above
-                            if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][ROLE]Permission ${permission} => ${isPermissionGranted}`);
-                            if (isPermissionGranted != null) res(isPermissionGranted);
-                            control--;
-                            if (control == 0) res(null);
-                        });
-                    }).catch(e => {
-                        MainLog.log(`Could not fetch user ${userId} Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch user ${userId} Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
-                    });
-                }).catch(e => {
-                    MainLog.log(`Could not fetch guild ${guildId} Error : ${e}`.red); //Logging in file & console
-                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch guild ${guildId} Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+            if (zisse.verbose) MainLog.log(`[Permission Verbose][${(zisse.guildId == "global")}][FULL]Scanning for role permissions`);
+            await new Promise(async (res, rej) => { //What i am doing here is aweful, honnestly its terrible (nested "thing to be able to wait for it to process before returning the value")
+                let control = guildUser.roles.cache.size;
+                guildUser.roles.cache.forEach(async indRole => {
+                    if (zisse.verbose) MainLog.log(`[Permission Verbose][${(zisse.guildId == "global")}][FULL]Scanning for role ${indRole.id}@${guildId} (${isAdmin}) permissions`);
+                    permissionsGot.push(await zisse.getRolePermission(guildId, indRole.id, isAdmin));
+                    control--;
+                    if (control == 0) res(true);
                 });
             });
-            if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][ROLE]Begining permission check`);
-            let isPermissionGranted_Role = await permissionCheckingPromise_Role; //Exec the nested "thing to be able to wait for it to process before returning the value"
-            if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][ROLE]Permission => ${isPermissionGranted_Role}`);
-            if (isPermissionGranted_Role != null) res(isPermissionGranted_Role);
-
-            if (typeof channelId == "string") {
-                let channelPermissions = await this.getChannelPermission(guildId, channelId); //Same as ** just above
-                if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][CHANNEL]Begining permission check`);
-                let isPermissionGranted = await this.isPermissionGranted(channelPermissions, permission); //Same as **** just above
-                if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][CHANNEL]Permission => ${isPermissionGranted}`);
-                if (isPermissionGranted != null) res(isPermissionGranted);
-            }
-
-            if (typeof guildId == "string") {
-                let guildPermissions = await this.getGuildPermissions(guildId); //Same as ** just above
-                if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][GUILD]Begining permission check`);
-                let isPermissionGranted = await this.isPermissionGranted(guildPermissions, permission); //Same as **** just above
-                if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][GUILD]Permission => ${isPermissionGranted}`);
-                if (isPermissionGranted != null) res(isPermissionGranted);
-            }
-            res((canReturnNull) ? null : false);
+            if (typeof channelId == "string") permissionsGot.push(await zisse.getChannelPermission(guildId, channelId));
+            if (typeof channelId == "string") permissionsGot.push(await zisse.getGuildPermissions(guildId));
+            res(permissionsGot)
         });
-        let isPermissionGranted = await permissionCheckingPromise; //Wait for the promise ("thing to be able to wait for it to process before returning the value") to resolve
+        if (zisse.verbose) MainLog.log(`[Permission Verbose][${(zisse.guildId == "global")}][FULL]Grabbed permissions`);
+        if (zisse.verbose) MainLog.log(`[Permission Verbose][${(zisse.guildId == "global")}][FULL]Checking for permission grant`);
+        let isPermissionGranted = await new Promise(async (res, rej) => { //This is a thing to be able to wait for it to process before returning the value, thanks javascript its terrible, allow for async execution tho
+            let finalPermissionArray = {};
+            let control = fullPermissions.length;
+            if (control == 0)res((canReturnNull) ? null : false);
+            fullPermissions.forEach(async element => {
+                _.mergeWith(finalPermissionArray, element, (val1, val2) => {
+                    if (typeof val1 == "undefined") {
+                        if (typeof val2 == "undefined") return undefined;
+                        if (typeof val2 != "undefined") return val2;
+                    }
+                    if (typeof val2 == "undefined") {
+                        if (typeof val1 == "undefined") return undefined;
+                        if (typeof val1 != "undefined") return val1;
+                    }
+                    return (val1.priority >= val2.priority) ? val1 : val2;
+                });
+                control--;
+                if (control == 0) {
+                    let isPermissionGranted = await zisse.isPermissionGranted(finalPermissionArray, permission);
+                    res((isPermissionGranted == true) ? true : (canReturnNull) ? null : false);
+                }
+            });
+        });
         return isPermissionGranted;
     }
 

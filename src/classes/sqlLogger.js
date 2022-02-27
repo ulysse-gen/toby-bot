@@ -10,7 +10,7 @@ module.exports = class sqlLogger {
         this.sqlTable = logTable;
     }
 
-    async log(type = 'none', content, guildId = undefined, channelId = undefined, userId = undefined, messageId = undefined) {
+    async log(type = 'none', content, guildId = undefined, channelId = undefined, userId = undefined, messageId = undefined, stats = undefined) {
         let zisse = this;
         if (typeof type != "string") return false;
         if (typeof content != "string") return false;
@@ -37,6 +37,11 @@ module.exports = class sqlLogger {
         if (typeof messageId != "undefined") {
             values.push(messageId);
             valueNames.push("messageId");
+            valuesPlaceHolders.push("?");
+        }
+        if (typeof stats != "undefined") {
+            values.push(JSON.stringify(stats));
+            valueNames.push("stats");
             valuesPlaceHolders.push("?");
         }
         await new Promise((res, rej) => {

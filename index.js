@@ -1,5 +1,6 @@
 //NodeJS Modules Imports
 const colors = require(`colors`);
+const moment = require(`moment`);
 const {
     Client,
     Intents
@@ -65,7 +66,17 @@ client.on('ready', async () => {
     }
 });
 
-client.on(`messageCreate`, message => require(`./src/handlers/messageCreate`)(message));
+client.on(`messageCreate`, async message => {
+    await require(`./src/handlers/messageCreate`)(message);
+    if (typeof this.executionTimes[message.id] != "undefined") {
+        if (typeof this.executionTimes[message.id].commandExecuted != "undefined") {
+            MainSQLLog.log(`Command Execution`, `${message.content}`, message.channel.guild.id, message.channel.id, message.author.id, message.id, this.executionTimes[message.id]); //Only runs if the thing on top was true, logs into console
+            console.log(`Command execution took ${this.executionTimes[message.id].commandExecuted.diff(this.executionTimes[message.id].messageCreate)}ms`);
+        }else {
+            delete this.executionTimes[message.id];
+        }
+    }
+});
 client.on(`interactionCreate`, interaction => require(`./src/handlers/interactionCreate`)(interaction));
 
 client.on('error', (code) => {
@@ -160,3 +171,4 @@ module.exports.globalGuilds = globalGuilds;
 
 //Debug stuff & more
 module.exports.reload = false;
+module.exports.executionTimes = {};

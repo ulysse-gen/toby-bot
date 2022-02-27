@@ -2,6 +2,7 @@ const {
     MessageEmbed
 } = require(`discord.js`);
 const colors = require(`colors`);
+const moment = require(`moment`);
 
 const {
     client,
@@ -9,12 +10,14 @@ const {
     MainLog,
     MainSQLLog,
     globalPermissions,
-    globalCommands
+    globalCommands,
+    executionTimes
 } = require(`../../index`);
 
 const utils = require(`../utils`);
 
 module.exports = async function (message, guild = undefined) {
+    executionTimes[message.id].commandHandler = moment();
     let args = message.content.split(' ');
     args = args.filter(function(e) { return e !== '' });
     args = args.map(e => {if (typeof e == "string")return e.trim()});
@@ -40,21 +43,34 @@ module.exports = async function (message, guild = undefined) {
         return utils.sendDenied(message, guild, `Lockdown`, `The bot is on lockdown. No commands can be executed.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][LOCKDOWN]`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${message.content}\` in <#${message.channel.id}>(${message.channel.id}). [LOCKDOWN]`);
     }
 
+    executionTimes[message.id].fetchingCommand = moment();
     let command = globalCommands.fetch(cmd);
+    executionTimes[message.id].fetchedCommand = moment();
 
     if (!command) return utils.sendUnkownCommand(message, guild, `Unknown command`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Unknown Command].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Unknown Command]`);
 
+    executionTimes[message.id].gettingCommandPermission = moment();
     let permissionToCheck = command.permission;
+    executionTimes[message.id].gettingCommandGlobalPermission = moment();
     let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
+    executionTimes[message.id].gotCommandGlobalPermission = moment();
+    executionTimes[message.id].gettingCommandGuildPermission = moment();
     let hasGuildPermission = await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id);
+    executionTimes[message.id].gotCommandGuildPermission = moment();
     let hasPermission = (hasGlobalPermission == null) ? hasGuildPermission : hasGlobalPermission;
+    executionTimes[message.id].gotPermission = moment();
     if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
 
-
+    executionTimes[message.id].gettingCooldownPermission = moment();
     let cooldownPerm = `skipcooldowns.${command.permission}`;
+    executionTimes[message.id].gettingCooldownGlobalPermission = moment();
     let hasSkipCooldownGlobalPerms = await globalPermissions.userHasPermission(cooldownPerm, message.author.id, undefined, message.channel.id, message.guild.id, true);
+    executionTimes[message.id].gotCooldownGlobalPermission = moment();
+    executionTimes[message.id].gettingCooldownGuildPermission = moment();
     let hasSkipCooldownGuildPerms = await guild.permissionsManager.userHasPermission(cooldownPerm, message.author.id, undefined, message.channel.id, message.guild.id);
+    executionTimes[message.id].gotCooldownGuildPermission = moment();
     let hasSkipCooldownPerms = (hasSkipCooldownGlobalPerms == null) ? hasSkipCooldownGuildPerms : hasSkipCooldownGlobalPerms;
+    executionTimes[message.id].gotCooldownPermission = moment();
 
     if (command.globalcooldown != 0 && !hasSkipCooldownPerms)
         if (typeof globalCommands.globalCooldowns[command.name] != "undefined"){
@@ -72,13 +88,15 @@ module.exports = async function (message, guild = undefined) {
             setTimeout(() => {delete globalCommands.cooldowns[message.author.id][command.name];}, command.globalCooldown*1000)
         }
 
+    executionTimes[message.id].typingSent = moment();
     message.channel.sendTyping();
 
-    MainSQLLog.log(`Command Execution`, `${message.content}`, guild.guild.id, message.channel.id, message.author.id, message.id); //Only runs if the thing on top was true, logs into console
     MainLog.log(`${message.author.tag}(${message.author.id}) executed '${cmd}' in [${message.channel.id}@${message.channel.guild.id}].`);
     //let commandResult = await command.exec(client, message, args, guild);
     try {
+        executionTimes[message.id].executingCommand = moment();
         let commandResult = await command.exec(client, message, args, guild);
+        executionTimes[message.id].commandExecuted = moment();
         if (typeof commandResult != "undefined") {
             if (typeof commandResult == "object")
                 if (typeof guild != "undefined" && guild.configuration.behaviour.logCommandExecutions)

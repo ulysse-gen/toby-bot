@@ -2,6 +2,7 @@ const {
     MessageEmbed
 } = require(`discord.js`);
 const colors = require(`colors`);
+const moment = require(`moment`);
 const linkify = require('linkifyjs');
 const antiProfanity = require('anti-profanity');
 const removeAccents = require(`remove-accents`);
@@ -13,6 +14,7 @@ const {
     AutoModLog,
     MainSQLLog,
     globalPermissions,
+    executionTimes
 } = require(`../../index`);
 
 const utils = require(`../utils`);
@@ -30,6 +32,7 @@ Email
 */
 
 module.exports = async function (message, guild = undefined) {
+    executionTimes[message.id].chatModeration = moment();
     return true;
     let permissionToCheck = `chat.fullbypass`;
     let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);

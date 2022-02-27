@@ -2,6 +2,7 @@ const {
     MessageEmbed
 } = require(`discord.js`);
 const colors = require(`colors`);
+const moment = require(`moment`);
 
 //Import needs from index
 const {
@@ -9,10 +10,14 @@ const {
     configuration,
     MainLog,
     globalGuilds,
-    reload
+    reload,
+    executionTimes
 } = require(`../../index`);
 
 module.exports = async function (message) {
+    executionTimes[message.id] = {
+        messageCreate: moment()
+    }
     /*
         Interesting things : 
         message.channelId;
@@ -47,7 +52,10 @@ module.exports = async function (message) {
             }
         }
 
+        
+    executionTimes[message.id].gettingGuild = moment();
     let guild = await globalGuilds.getGuild(message.channel.guild);
+    executionTimes[message.id].gotGuild = moment();
 
     if (!guild.initialized) return false;
 
