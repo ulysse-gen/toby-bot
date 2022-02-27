@@ -71,7 +71,7 @@ client.on(`messageCreate`, async message => {
     if (typeof this.executionTimes[message.id] != "undefined") {
         if (typeof this.executionTimes[message.id].commandExecuted != "undefined") {
             MainSQLLog.log(`Command Execution`, `${message.content}`, message.channel.guild.id, message.channel.id, message.author.id, message.id, this.executionTimes[message.id]); //Only runs if the thing on top was true, logs into console
-            console.log(`Command execution took ${this.executionTimes[message.id].commandExecuted.diff(this.executionTimes[message.id].messageCreate)}ms`);
+            //console.log(`Command execution took ${this.executionTimes[message.id].commandExecuted.diff(this.executionTimes[message.id].messageCreate)}ms`);
         }else {
             delete this.executionTimes[message.id];
         }

@@ -34,9 +34,9 @@ module.exports = {
             if (typeof executionTimes[key].gettingCommandPermission != "undefined" && typeof executionTimes[key].gotPermission != "undefined")commandExecutionsStats.permissionGrabbing.push(executionTimes[key].gotPermission.diff(executionTimes[key].gettingCommandPermission));
             if (typeof executionTimes[key].executingCommand != "undefined" && typeof executionTimes[key].commandExecuted != "undefined")commandExecutionsStats.execution.push(executionTimes[key].commandExecuted.diff(executionTimes[key].executingCommand));
         }
-        embed.addField(`**Full command execution**`, `${(commandExecutionsStats.fullExecution.length == 0) ? `No stats yet` : `${ArrayAvg(commandExecutionsStats.fullExecution)}ms`}`, true);
-        embed.addField(`**Permission grabbing**`, `${(commandExecutionsStats.permissionGrabbing.length == 0) ? `No stats yet` : `${ArrayAvg(commandExecutionsStats.permissionGrabbing)}ms`}`, true);
-        embed.addField(`**Command execution**`, `${(commandExecutionsStats.execution.length == 0) ? `No stats yet` : `${ArrayAvg(commandExecutionsStats.execution)}ms`}`, true);
+        embed.addField(`**Full command execution**`, `${(commandExecutionsStats.fullExecution.length == 0) ? `No stats yet` : `${(ArrayAvg(commandExecutionsStats.fullExecution)).toFixed(2)}ms`}`, true);
+        embed.addField(`**Permission grabbing**`, `${(commandExecutionsStats.permissionGrabbing.length == 0) ? `No stats yet` : `${(ArrayAvg(commandExecutionsStats.permissionGrabbing).toFixed(2))}ms`}`, true);
+        embed.addField(`**Command execution**`, `${(commandExecutionsStats.execution.length == 0) ? `No stats yet` : `${(ArrayAvg(commandExecutionsStats.execution)).toFixed(2)}ms`}`, true);
         embed.addField(`**Latency**`, `${Date.now() - message.createdTimestamp}ms`, true);
         embed.addField(`**API Latency**`, `${Math.round(client.ws.ping)}ms`, true);
 
