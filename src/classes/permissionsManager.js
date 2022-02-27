@@ -43,7 +43,8 @@ module.exports = class permissionsManager {
         this.neverAllowGuildFocused = [
             "commands.globalpermissions",
             "commands.globalconfiguration",
-            "commands.reloadcommands"
+            "commands.reloadcommands",
+            "commands.senddm"
         ]
     }
 

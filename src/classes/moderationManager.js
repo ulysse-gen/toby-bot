@@ -226,6 +226,27 @@ module.exports = class moderationManager {
         });
     }
 
+    async deletePunishment(message, caseId, reason) {
+        let zisse = this;
+        return await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
+                }
+                connection.query(`UPDATE \`moderationLogs\` SET \`status\`='deleted', \`updaterId\`='${message.author.id}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${caseId} AND guildId='${message.channel.guild.id}' AND status!='deleted'`, async function (error, results, fields) {
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        res(false);
+                    }if (typeof results == "undefined")res(false);
+                    if (results.affectedRows != 1)res(false);
+                    connection.release();
+                    res(true);
+                });
+            });
+        });
+    }
+
     async checkForExpired() {
         let zisse = this;
         return await new Promise((res, rej) => {

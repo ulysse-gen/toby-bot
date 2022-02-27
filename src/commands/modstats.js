@@ -96,25 +96,27 @@ module.exports = {
                     }
                     let control = results.length;
                     results.forEach(modAction => {
-                        if (modAction.type == "Mute") {
-                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.mutes++;
-                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.mutes++;
-                            stats.allTime.mutes++;
-                        }
-                        if (modAction.type == "Ban") {
-                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.bans++;
-                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.bans++;
-                            stats.allTime.bans++;
-                        }
-                        if (modAction.type == "Kick") {
-                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.kicks++;
-                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.kicks++;
-                            stats.allTime.kicks++;
-                        }
-                        if (modAction.type == "Warn") {
-                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.warns++;
-                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.warns++;
-                            stats.allTime.warns++;
+                        if (!modAction.reason.startsWith('[RR Auto]') && modAction.status != "deleted"){
+                            if (modAction.type == "Mute") {
+                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.mutes++;
+                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.mutes++;
+                                stats.allTime.mutes++;
+                            }
+                            if (modAction.type == "Ban") {
+                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.bans++;
+                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.bans++;
+                                stats.allTime.bans++;
+                            }
+                            if (modAction.type == "Kick") {
+                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.kicks++;
+                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.kicks++;
+                                stats.allTime.kicks++;
+                            }
+                            if (modAction.type == "Warn") {
+                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.warns++;
+                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.warns++;
+                                stats.allTime.warns++;
+                            }
                         }
                         control--;
                         if (control <= 0) {
@@ -154,7 +156,7 @@ module.exports = {
         if (user.user.id == "899655742389358612")embed.addField(`**Important infos:**`, `huh?`, true);   //Olle
         if (user.user.id == "762760262683459654")embed.addField(`**Important infos:**`, `I’m very indecisive so could you make one up for me?`, true);   //Aiko
         if (user.user.id == "913934813524799490")embed.addField(`**Important infos:**`, `The original sebs badge creator.`, true);   //Sebs
-        if (user.user.id == "408726936286658561")embed.addField(`**Important infos:**`, `<:teddy_bear:945443955263303750>`, true);   //bassie
+        if (user.user.id == "408726936286658561")embed.addField(`**Important infos:**`, `<:teddy_bear:945443955263303750>`, true);   //Bassie
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
 
         message.reply({

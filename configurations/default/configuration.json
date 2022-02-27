@@ -64,6 +64,7 @@
     "muteNeedReason": true,
     "unbanNeedReason": true,
     "unmuteNeedReason": true,
+    "deletePunishmentNeedReason": true,
     "sendBanAlertInDM": false,
     "sendKickAlertInDM": false,
     "sendMuteAlertInDM": false,

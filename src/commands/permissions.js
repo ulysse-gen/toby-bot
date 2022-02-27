@@ -41,9 +41,7 @@ module.exports = {
                 if (args[1].startsWith('userid:')) user = await client.users.fetch(args[1].replace('userid:', ''));
                 if (typeof permissionManager.permissions.users[user.id] == "object" && Object.keys(permissionManager.permissions.users[user.id]).length != 0)
                     return sendPermissions(message, guild, args, `${user.tag}`, permissionManager.permissions.users[user.id]);
-                return sendPermissions(message, guild, args, `${user.tag}`, {
-                    "No Permissions": "This scope has nothing specified."
-                });
+                return sendPermissions(message, guild, args, `${user.tag}`, {});
             }
             if (args[1].startsWith("<@&") || args[1].startsWith('roleid:')) { //About a role
                 let role = message.mentions.roles.first();
@@ -58,18 +56,14 @@ module.exports = {
                 });
                 if (typeof permissionManager.permissions.roles[role.id] == "object")
                     return sendPermissions(message, guild, args, `${role.name}@${message.channel.guild.name}`, permissionManager.permissions.roles[role.id]);
-                return sendPermissions(message, guild, args, `${role.name}@${message.channel.guild.name}`, {
-                    "No Permissions": "This scope has nothing specified."
-                });
+                return sendPermissions(message, guild, args, `${role.name}@${message.channel.guild.name}`, {});
             }
             if (args[1].toLowerCase().startsWith("internalrole")) { //About a role
                 let role = args[1].toLowerCase().replace('internalrole:', '');
 
                 if (typeof permissionManager.permissions.internalRoles[role] == "object" && Object.keys(permissionManager.permissions.internalRoles[role]).length != 0)
                     return sendPermissions(message, guild, args, `internalRole.${role}`, permissionManager.permissions.internalRoles[role]);
-                return sendPermissions(message, guild, args, `internalRole.${role}@${role.guild.name}`, {
-                    "No Permissions": "This scope has nothing specified."
-                });
+                return sendPermissions(message, guild, args, `internalRole.${role}@${role.guild.name}`, {});
             }
             if (args[1].toLowerCase().startsWith("*")) { //About all
                 let embeds = {
@@ -344,6 +338,8 @@ function sendPermissions(message, guild, args, scope, permissions) {
         };
         embedFields.push([`**${permission}**`, (typeof permissions[permission] == "string") ? `${permissions[permission]}` : `**[${permissions[permission].priority}]** ${permissions[permission].value}`, true]);
     }
+
+    if (Object.keys(permissions).length == 0)embedFields.push([`**No Permissions**`, `This scope has nothing specified.`, true]);
 
     embedPages = splitArrayIntoChunksOfLen(embedFields, 9);
     embed.footer = {
