@@ -1,6 +1,7 @@
 const {
     executionTimes
 } = require(`../../index`);
+const moment = require(`moment`);
 
 module.exports.create = async function (client, message) {
     executionTimes[message.id].DMHandler = moment();

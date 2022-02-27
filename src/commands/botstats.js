@@ -39,6 +39,7 @@ module.exports = {
         embed.addField(`**Command execution**`, `${(commandExecutionsStats.execution.length == 0) ? `No stats yet` : `${(ArrayAvg(commandExecutionsStats.execution)).toFixed(2)}ms`}`, true);
         embed.addField(`**Latency**`, `${Date.now() - message.createdTimestamp}ms`, true);
         embed.addField(`**API Latency**`, `${Math.round(client.ws.ping)}ms`, true);
+        embed.addField(`**Uptime**`, `${prettyMilliseconds(client.uptime)}`, true);
 
         message.reply({
             embeds: [embed],
