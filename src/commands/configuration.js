@@ -139,13 +139,13 @@ module.exports = {
                     description: `Should the messages sent by the say command be logged in the log channel ?`,
                     configName: `logSaidMessages`,
                     path: `behaviour.logSaidMessages`
-                }/*,
-                behaviourSendConfigInEmbed: {
-                    title: `Send config in embed`,
-                    description: `Should the config command be using embed ?`,
-                    configName: `sendConfigInEmbed`,
-                    path: `behaviour.sendConfigInEmbed`
-                }*/,
+                },
+                behaviourLogToChannelEmbed: {
+                    title: `Log to channel as embed`,
+                    description: `Enable the logging to channel as embed`,
+                    configName: `logToChannelEmbed`,
+                    path: `behaviour.logToChannel.embed`,
+                },
                 behaviourLogToChannelStatus: {
                     title: `Log to channel`,
                     description: `Enable the logging to channel`,
@@ -229,6 +229,12 @@ module.exports = {
                     runAfter: async (newValue) => {
                         await guild.initChannelLogging();
                     }
+                },
+                behaviourLogToChannelEmbed: {
+                    title: `Log to channel as embed`,
+                    description: `Enable the logging to channel as embed`,
+                    configName: `logToChannelEmbed`,
+                    path: `behaviour.logToChannel.embed`,
                 },
                 behaviourLogToChannelFormat: {
                     title: `Format for log`,
@@ -326,7 +332,7 @@ module.exports = {
                     title: `Log auto moderation to channel`,
                     description: `Enable the auto moderation logging to channel`,
                     configName: `logAutoModerationToChannel`,
-                    path: `moderation.autoModerationChannel.status`,
+                    path: `moderation.autoModeration.channel.status`,
                     checkerFunction: async (newValue) => {
                         if (newValue == true && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
                             break: true,
@@ -367,7 +373,7 @@ module.exports = {
                     title: `Channel to log auto moderation to`,
                     description: `Choose what channel you want the bot to log auto moderation to`,
                     configName: `channelToLogAutoModerationTo`,
-                    path: `moderation.autoModerationChannel.channel`,
+                    path: `moderation.autoModeration.channel.channel`,
                     checkerFunction: async (newValue) => {
                         if (newValue == true && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
                             break: true,

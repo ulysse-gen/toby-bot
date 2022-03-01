@@ -2,6 +2,7 @@
 const fs = require('fs');
 const moment = require('moment');
 const mysql = require('mysql');
+const { MessageEmbed } = require(`discord.js`);
 
 
 //Import classes
@@ -102,14 +103,14 @@ module.exports = class guildManager {
     }
 
     async initAutoModerationLogging() {
-        if (!this.initialized || !this.configuration.moderation.autoModerationChannel.status || this.configuration.moderation.autoModerationChannel.channel == "none") return false;
+        if (!this.initialized || !this.configuration.moderation.autoModeration.channel.status || this.configuration.moderation.autoModeration.channel.channel == "none") return false;
         var zisse = this;
         try {
-            await this.guild.channels.fetch(this.configuration.moderation.autoModerationChannel.channel).then(channel => {
+            await this.guild.channels.fetch(this.configuration.moderation.autoModeration.channel.channel).then(channel => {
                 this.autoModerationLog.channel = channel;
                 this.autoModerationLog.initialized = true;
             }).catch(e => {
-                console.log(`Could not get auto moderation logging channel for guild [${this.configuration.moderation.autoModerationChannel.channel}][${e.toString()}]`)
+                console.log(`Could not get auto moderation logging channel for guild [${this.configuration.moderation.autoModeration.channel.channel}][${e.toString()}]`)
             });
         } catch (e) {}
         return true;
@@ -122,6 +123,24 @@ module.exports = class guildManager {
         let logText = this.configuration.behaviour.logToChannel.format.replace(`&{TEXT}`, `${string}`).replace(`&{DATE}`, moment().format(`MMMM Do YYYY`)).replace(`&{HOUR}`, moment().format(`HH:mm:ss`)).replace(`&{DISCORDDATE}`, `<t:${Math.floor(new Date().getTime() / 1000)}:F>`);
 
         this.logToChannel.channel.send(logText).catch(e => {
+            if (this.configuration.behaviour.logToChannel.status == true) this.configuration.behaviour.logToChannel.status = false;
+            console.log(`Could not use the logging channel for guild ${this.guild.id}`);
+        });
+        return true;
+    }
+
+    channelEmbedLog(title, description, color, fields = []) {
+        if (!this.initialized || !this.configuration.behaviour.logToChannel.status) return;
+        if (typeof this.logToChannel.initialized == "undefined" || !this.logToChannel.initialized) return false;
+        if (typeof title != "string" && title == "") return false;
+        if (typeof description != "string" && description == "") return false;
+        if (typeof color != "string" && color == "") return false;
+        if (typeof fields != "object") return false;
+        let embed = new MessageEmbed().setTitle(title).setDescription(description).setColor(color);
+        fields.forEach(field => embed.addField(field[0], field[1], field[2]));
+        embed.addField(`Timestamp`, `<t:${Math.floor(new Date().getTime() / 1000)}:F>`, false);
+        
+        this.logToChannel.channel.send({embeds: embed}).catch(e => {
             if (this.configuration.behaviour.logToChannel.status == true) this.configuration.behaviour.logToChannel.status = false;
             console.log(`Could not use the logging channel for guild ${this.guild.id}`);
         });
