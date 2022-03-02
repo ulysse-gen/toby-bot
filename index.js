@@ -120,13 +120,11 @@ async function exitHandler(reason, exit) {
     return true;
 }
 
-let enableCatching = true;
-
-if (enableCatching) process.on('uncaughtException', (error) => {
+if (this.enableCatching) process.on('uncaughtException', (error) => {
     exitHandler("uncaughtException", error);
 });
 
-if (enableCatching) process.on('unhandledRejection', (error) => {
+if (this.enableCatching) process.on('unhandledRejection', (error) => {
     exitHandler("unhandledRejection", error);
 });
 
@@ -171,4 +169,5 @@ module.exports.globalGuilds = globalGuilds;
 
 //Debug stuff & more
 module.exports.reload = false;
+module.exports.enableCatching = true;
 module.exports.executionTimes = {};

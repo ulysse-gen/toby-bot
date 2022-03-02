@@ -21,10 +21,8 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `- New command \`notes <@User/UserId/UserTag#0420>\` to list members notes.`;
-        embed.description += `\n- New command \`warnings <@User/UserId/UserTag#0420>\` to list members warns.`;
-        embed.description += `\n- New configuration settings to send logs as embed, preventing tagging every logs`;
-        embed.description += `\n*Embed logging is still in beta, might take a few updates to get all logs to be sent as embeds*`;
+        embed.description += `- New alias \`warns\` for the command \`warnings\`.`;
+        embed.description += `\n- Ban can now ban users that are not present in the server currently. Reason is now saved in the AuditLog, but is saved in the modlogs.`;
 
         message.reply({
             embeds: [embed],

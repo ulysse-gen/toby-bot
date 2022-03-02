@@ -11,7 +11,8 @@ const {
     MainSQLLog,
     globalPermissions,
     globalCommands,
-    executionTimes
+    executionTimes,
+    enableCatching
 } = require(`../../index`);
 
 const utils = require(`../utils`);
@@ -203,10 +204,11 @@ module.exports = async function (message, guild = undefined) {
     message.channel.sendTyping();
 
     MainLog.log(`${message.author.tag}(${message.author.id}) executed '${cmd}' in [${message.channel.id}@${message.channel.guild.id}].`);
-    //let commandResult = await command.exec(client, message, args, guild);
+    let commandResult;
+    if (!enableCatching) commandResult = await command.exec(client, message, args, guild);
     try {
         executionTimes[message.id].executingCommand = moment();
-        let commandResult = await command.exec(client, message, args, guild);
+        if (enableCatching) commandResult = await command.exec(client, message, args, guild);
         executionTimes[message.id].commandExecuted = moment();
         if (typeof commandResult != "undefined") {
             if (typeof commandResult == "object")

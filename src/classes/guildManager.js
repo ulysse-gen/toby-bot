@@ -2,7 +2,9 @@
 const fs = require('fs');
 const moment = require('moment');
 const mysql = require('mysql');
-const { MessageEmbed } = require(`discord.js`);
+const {
+    MessageEmbed
+} = require(`discord.js`);
 
 
 //Import classes
@@ -138,8 +140,10 @@ module.exports = class guildManager {
         if (typeof fields != "object") return false;
         let embed = new MessageEmbed().setTitle(title).setDescription(description).setColor(color);
         fields.forEach(field => embed.addField(field[0], field[1], field[2]));
-        
-        this.logToChannel.channel.send({embeds: [embed]}).catch(e => {
+
+        this.logToChannel.channel.send({
+            embeds: [embed]
+        }).catch(e => {
             console.log(e);
             if (this.configuration.behaviour.logToChannel.status == true) this.configuration.behaviour.logToChannel.status = false;
             console.log(`Could not use the logging channel for guild ${this.guild.id}`);
@@ -180,25 +184,25 @@ module.exports = class guildManager {
     async banUser(message, userId, reason, time) {
         let zisse = this;
         let user = await this.grabUser(message, userId);
-        if (typeof user == "undefined") return {
-            errored: true,
-            reason: `User not found.`
-        };
         if (this.configuration.moderation.banNeedReason && (typeof reason == "undefined" || reason == "" || reason.replaceAll(' ', '') == "")) return {
             errored: true,
             reason: `No reason specified.`
         };
-        let result = user.ban({
+        if (typeof user == "undefined") return this.guild.bans.create(userId)
+            .then(() => {
+                return afterBan({id: userId, user: {id: userId, tag: `Unknown#Tag`}})
+            })
+            .catch(e => {
+                return {
+                    errored: true,
+                    reason: e
+                };
+            });
+        if (typeof user != "undefined") return user.ban({
             days: 7,
             reason: `Banned by ${message.author.tag}(${message.author.id}) for ${reason}`
-        }).then(async () => {
-            let caseId = await zisse.moderationManager.log(message.guild.id, `Ban`, user.user.id, message.author.id, reason, (time != 0) ? time : undefined);
-            await zisse.moderationManager.sendPunishEmbed(message, zisse, `Ban`, caseId, user, message.author.id, reason, (time != 0) ? time : undefined);
-            MainLog.log(`${message.author.tag}(${message.author.id}) banned ${user.user.tag}(${user.user.id}) for '${reason}' from ${this.guild.id}`);
-            if (zisse.configuration.moderation.sendBanAlertInDM) await zisse.moderationManager.sendPlayerPunishment(message, zisse, `Ban`, user, message.author.id, reason, (time != 0) ? time : undefined);
-            return {
-                errored: false
-            };
+        }).then(() => {
+            return afterBan(user)
         }).catch(e => {
             return {
                 errored: true,
@@ -208,6 +212,15 @@ module.exports = class guildManager {
         return {
             errored: false
         };
+        async function afterBan(user) {
+            let caseId = await zisse.moderationManager.log(message.guild.id, `Ban`, user.user.id, message.author.id, reason, (time != 0) ? time : undefined);
+            await zisse.moderationManager.sendPunishEmbed(message, zisse, `Ban`, caseId, user, message.author.id, reason, (time != 0) ? time : undefined);
+            MainLog.log(`${message.author.tag}(${message.author.id}) banned ${user.user.tag}(${user.user.id}) for '${reason}' from ${zisse.guild.id}`);
+            if (zisse.configuration.moderation.sendBanAlertInDM && typeof user.send == "function") await zisse.moderationManager.sendPlayerPunishment(message, zisse, `Ban`, user, message.author.id, reason, (time != 0) ? time : undefined);
+            return {
+                errored: false
+            };
+        }
     }
 
     async warnUser(message, userId, reason, time) {
@@ -393,7 +406,7 @@ module.exports = class guildManager {
     }
 
     async grabUser(message, userString) {
-        let user =  (userString.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
+        let user = (userString.startsWith('<@') && message.mentions.users.size != 0) ? await message.channel.guild.members.fetch(message.mentions.users.first().id, {
             cache: false,
             force: true
         }).catch(e => {

@@ -10,7 +10,7 @@ const utils = require(`../utils`);
 module.exports = {
     name: "warnings",
     description: `List the warnings for a user.`,
-    aliases: [],
+    aliases: ["warns"],
     permission: `commands.warnings`,
     category: `moderation`,
     async exec(client, message, args, guild = undefined) {
