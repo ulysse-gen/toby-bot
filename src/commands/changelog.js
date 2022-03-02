@@ -21,8 +21,7 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `- New alias \`warns\` for the command \`warnings\`.`;
-        embed.description += `\n- Ban can now ban users that are not present in the server currently. Reason is not saved in the AuditLog, but is saved in the modlogs.`;
+        embed.description += `- New \`remindme\` command.`;
 
         message.reply({
             embeds: [embed],

@@ -15,12 +15,14 @@ const moderationManager = require(`../classes/moderationManager`);
 
 //Loggers
 const MainLog = new Logger();
+const ErrorLog = new Logger(`./logs/error.log`);
 
 module.exports = class guildManager {
     constructor(client, guild, globalGuilds) {
         this.client = client;
         this.guild = guild;
         this.globalGuilds = globalGuilds;
+        this.sqlPool = mysql.createPool(require('../../MySQL.json'));
 
         this.waitingForMessage = {
             users: {},
@@ -134,9 +136,9 @@ module.exports = class guildManager {
     channelEmbedLog(title, description, color, fields = []) {
         if (!this.initialized || !this.configuration.behaviour.logToChannel.status) return;
         if (typeof this.logToChannel.initialized == "undefined" || !this.logToChannel.initialized) return false;
-        if (typeof title != "string" && title == "") return false;
-        if (typeof description != "string" && description == "") return false;
-        if (typeof color != "string" && color == "") return false;
+        if (typeof title != "string" || title == "") return false;
+        if (typeof description != "string" ||description == "") return false;
+        if (typeof color != "string" || color == "") return false;
         if (typeof fields != "object") return false;
         let embed = new MessageEmbed().setTitle(title).setDescription(description).setColor(color);
         fields.forEach(field => embed.addField(field[0], field[1], field[2]));
@@ -149,6 +151,29 @@ module.exports = class guildManager {
             console.log(`Could not use the logging channel for guild ${this.guild.id}`);
         });
         return true;
+    }
+
+    async setReminder(guildId, userId, channelId, time, data) {
+        let zisse = this;
+        let values = [guildId, userId, channelId, time, JSON.stringify(data)];
+        let valueNames = ["guildId", "userId", "channelId", "timestamp", "content"];
+        return await new Promise((res, rej) => {
+            zisse.sqlPool.getConnection((err, connection) => {
+                if (err) {
+                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+                    res(false);
+                }
+                connection.query(`INSERT INTO \`reminders\` (\`${valueNames.join('`,`')}\`) VALUES (?,?,?,?,?)`, values, async function (error, results, fields) {
+                    try {
+                        connection.release()
+                    } catch (e) {}
+                    if (error) {
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                    }
+                    res(true);
+                });
+            });
+        });
     }
 
     async kickUser(message, userId, reason) {

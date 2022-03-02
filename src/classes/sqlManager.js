@@ -1,5 +1,8 @@
 const mysql = require('mysql');
 const moment = require('moment');
+const {
+    MessageEmbed
+} = require(`discord.js`);
 
 const Logger = require(`../classes/Logger`);
 
@@ -80,7 +83,7 @@ module.exports = class sqlManager {
         });
     }
 
-    /*async checkForReminders() {
+    async checkForReminders() {
         let zisse = this;
         return await new Promise((res, rej) => {
             zisse.sqlPool.getConnection((err, connection) => {
@@ -93,8 +96,26 @@ module.exports = class sqlManager {
                     if (typeof results != "undefined" || results.length != 0) results.forEach(async indReminer => {
                         if (moment(indReminer.timestamp).isBefore(moment())) {
                             await zisse.client.guilds.fetch(indReminer.guildId).then(async fetchedGuild => {
-                                
-                            }).catch(e => console.log(`sqlManager.js could not fetch guild ${zisse.globalGuilds.guilds[indPunishments.guildId]} (${e.toString()})`));
+                                await fetchedGuild.members.fetch(indReminer.userId).then(async fetchedMember => {
+                                    await fetchedGuild.channels.fetch(indReminer.channelId).then(async fetchedChannel => {
+                                        let reminderData = JSON.parse(indReminer.content)
+                                        let embed = new MessageEmbed({
+                                            title: `Reminder !`,
+                                            color: (typeof zisse.globalGuilds.guilds[indReminer.guildId] != "undefined") ? zisse.globalGuilds.guilds[indReminer.guildId].configuration.colors.main : `#FFFFFF`,
+                                            description: `${reminderData.text}`
+                                        });
+                                        embed.addField(`**Created**`, `<t:${moment(indReminer.createdTimestamp).unix()}>`, true);
+                                        embed.addField(`**Set to**`, `<t:${moment(indReminer.timestamp).unix()}>`, true);
+                                        connection.query(`UPDATE \`reminders\` SET \`status\`='expired' WHERE \`numId\`=${indReminer.numId}`, async function (error, results, fields) {});
+                                        MainLog.log(`Reminded ${fetchedMember.user.tag}(${indReminer.userId}).`);
+                                        fetchedChannel.send({
+                                            content: `<@${fetchedMember.user.id}>`,
+                                            embeds: [embed]
+                                        }, false).catch(e => utils.messageReplyFailLogger(message, guild, e));
+                                        return true;
+                                    }).catch(e => console.log(`sqlManager.js could not fetch channel ${zisse.globalGuilds.guilds[indReminer.guildId]} (${e.toString()})`));
+                                }).catch(e => console.log(`sqlManager.js could not fetch member ${zisse.globalGuilds.guilds[indReminer.guildId]} (${e.toString()})`));
+                            }).catch(e => console.log(`sqlManager.js could not fetch guild ${zisse.globalGuilds.guilds[indReminer.guildId]} (${e.toString()})`));
                         }
                         control++;
                         if (control <= 0) {
@@ -112,5 +133,5 @@ module.exports = class sqlManager {
                 });
             });
         });
-    }*/
+    }
 }

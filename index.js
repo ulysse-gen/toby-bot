@@ -53,6 +53,7 @@ client.on('ready', async () => {
     MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${package.version.green}]`);
     require(`./src/managers/presenceManager`)();
     setInterval(() => globalSqlManager.checkForExpiredModeration(), 60000);
+    setInterval(() => globalSqlManager.checkForReminders(), 5000);
     try {
         discordVoice.joinVoiceChannel({
             channelId: '921710545332228096',
@@ -84,7 +85,6 @@ client.on('error', (code) => {
     MainLog.log(`${`[DiscordJS Error]`.red} ${code.toString().blue}`);
 });
 
-
 (async () => {
     await globalPermissions.initialize();
     await globalConfiguration.initialize();
@@ -106,25 +106,32 @@ async function exitHandler(reason, exit) {
         await MainLog.log(`${`[Process Exit]`}[${reason.toString()}] ${exit.toString()}`);
         MainSQLLog.log(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
     }
-    /*await new Promise((res, rej) => {
+    /*setTimeout(() => {
+        process.exit();
+    }, 5000);
+    await new Promise((res, rej) => {
         let control = Object.keys(globalGuilds.guilds).length;
         if (control <= 0)res(true);
         for (const key in globalGuilds.guilds) {
-            globalGuilds.guilds[key].channelLog(`I am stopping, i should get back on quick !`);
-            globalGuilds.guilds[key].configurationManager.save(true);
+            globalGuilds.guilds[key].channelLog(`Shutdown. I should get back on as soon as possible.`);
+            globalGuilds.guilds[key].configurationManager.save();
             control--;
-            if (control <= 0)res(true);
+            console.log(control)
+            if (control <= 0){
+                process.exit();
+                res(true);
+            }
         }
-    })*/
+    });*/
     process.exit();
     return true;
 }
 
-if (typeof this.enableCatching == "undefined" || (typeof this.enableCatching == "boolean" && this.enableCatching == false)) process.on('uncaughtException', (error) => {
+if (typeof this.enableCatching == "undefined" || (typeof this.enableCatching == "boolean" && this.enableCatching == true)) process.on('uncaughtException', (error) => {
     exitHandler("uncaughtException", error);
 });
 
-if (typeof this.enableCatching == "undefined" || (typeof this.enableCatching == "boolean" && this.enableCatching == false)) process.on('unhandledRejection', (error) => {
+if (typeof this.enableCatching == "undefined" || (typeof this.enableCatching == "boolean" && this.enableCatching == true)) process.on('unhandledRejection', (error) => {
     exitHandler("unhandledRejection", error);
 });
 
