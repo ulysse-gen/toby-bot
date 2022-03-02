@@ -21,7 +21,10 @@ module.exports = {
             description: ''
         });
 
-        embed.description += `- New command \`deletepunishment\` to remove punishments from the logs.`;
+        embed.description += `- New command \`notes <@User/UserId/UserTag#0420>\` to list members notes.`;
+        embed.description += `\n- New command \`warnings <@User/UserId/UserTag#0420>\` to list members warns.`;
+        embed.description += `\n- New configuration settings to send logs as embed, preventing taggins every logs`;
+        embed.description += `\n*Embed logging is still in beta, might take a few updates to get all logs to be sent as embeds*`;
 
         message.reply({
             embeds: [embed],

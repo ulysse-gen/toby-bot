@@ -159,7 +159,7 @@ module.exports = async function (message, guild = undefined) {
 
     if (command.globalcooldown != 0 && !hasSkipCooldownPerms)
         if (typeof globalCommands.globalCooldowns[command.name] != "undefined") {
-            return utils.sendCooldown(message, guild, `Cooldown`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Cooldown]].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Cooldown]`, undefined, undefined, {
+            return utils.sendCooldown(message, guild, `Cooldown`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Cooldown].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Cooldown]`, undefined, undefined, {
                 title: `Command denied`,
                 description: `${message.content}`,
                 color: guild.configuration.colors.error,

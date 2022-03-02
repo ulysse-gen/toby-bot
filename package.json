@@ -1,6 +1,6 @@
 {
   "name": "tobybot",
-  "version": "3.3.7",
+  "version": "3.3.8",
   "description": "Toby Discord Bot",
   "main": "index.js",
   "scripts": {
