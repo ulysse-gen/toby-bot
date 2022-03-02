@@ -22,7 +22,7 @@ const commandsManager = require(`./src/classes/commandsManager`);
 const permissionsManager = require(`./src/classes/permissionsManager`);
 const configurationManager = require(`./src/classes/configurationManager`);
 const guildsManager = require(`./src/classes/guildsManager`);
-const moderationManager = require(`./src/classes/moderationManager`);
+const sqlManager = require(`./src/classes/sqlManager`);
 
 //Main Variables
 const package = require(`./package.json`);
@@ -40,7 +40,7 @@ var client = new Client({
 var globalCommands = new commandsManager(client);
 var globalPermissions = new permissionsManager(client, undefined, `../../permissions.json`, `guildsPermissions`, `\`guildId\`='global'`);
 var globalGuilds = new guildsManager(client);
-var globalModeration = new moderationManager(client, globalGuilds);
+var globalSqlManager = new sqlManager(client, globalCommands, globalPermissions, globalGuilds);
 
 //Logs
 const MainLog = new Logger();
@@ -52,7 +52,7 @@ client.on('ready', async () => {
     MainSQLLog.log(`Client Ready`, `Logged in as ${client.user.tag} on version ${package.version}`);
     MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${package.version.green}]`);
     require(`./src/managers/presenceManager`)();
-    setInterval(() => globalModeration.checkForExpired(), 30000);
+    setInterval(() => globalSqlManager.checkForExpiredModeration(), 60000);
     try {
         discordVoice.joinVoiceChannel({
             channelId: '921710545332228096',
@@ -72,7 +72,7 @@ client.on(`messageCreate`, async message => {
         if (typeof this.executionTimes[message.id].commandExecuted != "undefined") {
             MainSQLLog.log(`Command Execution`, `${message.content}`, message.channel.guild.id, message.channel.id, message.author.id, message.id, this.executionTimes[message.id]); //Only runs if the thing on top was true, logs into console
             //console.log(`Command execution took ${this.executionTimes[message.id].commandExecuted.diff(this.executionTimes[message.id].messageCreate)}ms`);
-        }else {
+        } else {
             delete this.executionTimes[message.id];
         }
     }
@@ -120,11 +120,11 @@ async function exitHandler(reason, exit) {
     return true;
 }
 
-if (this.enableCatching) process.on('uncaughtException', (error) => {
+if (typeof this.enableCatching == "undefined" || (typeof this.enableCatching == "boolean" && this.enableCatching == false)) process.on('uncaughtException', (error) => {
     exitHandler("uncaughtException", error);
 });
 
-if (this.enableCatching) process.on('unhandledRejection', (error) => {
+if (typeof this.enableCatching == "undefined" || (typeof this.enableCatching == "boolean" && this.enableCatching == false)) process.on('unhandledRejection', (error) => {
     exitHandler("unhandledRejection", error);
 });
 

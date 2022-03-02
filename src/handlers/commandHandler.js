@@ -205,10 +205,10 @@ module.exports = async function (message, guild = undefined) {
 
     MainLog.log(`${message.author.tag}(${message.author.id}) executed '${cmd}' in [${message.channel.id}@${message.channel.guild.id}].`);
     let commandResult;
-    if (!enableCatching) commandResult = await command.exec(client, message, args, guild);
+    if (typeof enableCatching == "boolean" && enableCatching == false) commandResult = await command.exec(client, message, args, guild);
     try {
         executionTimes[message.id].executingCommand = moment();
-        if (enableCatching) commandResult = await command.exec(client, message, args, guild);
+        if (typeof enableCatching == "undefined" || (typeof enableCatching == "boolean" && enableCatching == false)) commandResult = await command.exec(client, message, args, guild);
         executionTimes[message.id].commandExecuted = moment();
         if (typeof commandResult != "undefined") {
             if (typeof commandResult == "object")

@@ -22,7 +22,7 @@ module.exports = {
         });
 
         embed.description += `- New alias \`warns\` for the command \`warnings\`.`;
-        embed.description += `\n- Ban can now ban users that are not present in the server currently. Reason is now saved in the AuditLog, but is saved in the modlogs.`;
+        embed.description += `\n- Ban can now ban users that are not present in the server currently. Reason is not saved in the AuditLog, but is saved in the modlogs.`;
 
         message.reply({
             embeds: [embed],
