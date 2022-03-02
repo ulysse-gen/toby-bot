@@ -18,7 +18,7 @@ exports.makeId = async (length) => {
     return result;
 }
 
-exports.sendMain = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
+exports.sendMain = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false, embedLogging = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
     let embed = new MessageEmbed({ //Define the embed with the title and the error color
@@ -27,13 +27,13 @@ exports.sendMain = (message, guild = undefined, title, description = undefined, 
     if (typeof title != "undefined") embed.title = `${configuration.appName} - ${title}`; //If description has been sent, make it the embed content
     if (typeof description != "undefined") embed.description = `${description}`; //If description has been sent, make it the embed content
     fields.forEach(field => embed.addField(field[0], field[1], field[2]));
-    if (!doNotRepy)message.reply({ //Reply to the message that triggerred the error
+    if (!doNotRepy) message.reply({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
         if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
     }).catch(e => this.messageReplyFailLogger(message, guild, e));
-    if (doNotRepy)message.channel.send({ //Reply to the message that triggerred the error
+    if (doNotRepy) message.channel.send({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
@@ -42,7 +42,7 @@ exports.sendMain = (message, guild = undefined, title, description = undefined, 
     return true;
 }
 
-exports.sendSuccess = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
+exports.sendSuccess = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false, embedLogging = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
     let embed = new MessageEmbed({ //Define the embed with the title and the error color
@@ -51,13 +51,13 @@ exports.sendSuccess = (message, guild = undefined, title, description = undefine
     if (typeof title != "undefined") embed.title = `${configuration.appName} - ${title}`; //If description has been sent, make it the embed content
     if (typeof description != "undefined") embed.description = `${description}`; //If description has been sent, make it the embed content
     fields.forEach(field => embed.addField(field[0], field[1], field[2]));
-    if (!doNotRepy)message.reply({ //Reply to the message that triggerred the error
+    if (!doNotRepy) message.reply({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
         if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
     }).catch(e => this.messageReplyFailLogger(message, guild, e));
-    if (doNotRepy)message.channel.send({ //Reply to the message that triggerred the error
+    if (doNotRepy) message.channel.send({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
@@ -66,16 +66,20 @@ exports.sendSuccess = (message, guild = undefined, title, description = undefine
     return true;
 }
 
-exports.sendUnkownCommand = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
+exports.sendUnkownCommand = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false, embedLogging = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
-    if (typeof logMessage != "undefined"){ //Is a log message defined ?
+    if (typeof logMessage != "undefined") { //Is a log message defined ?
         MainSQLLog.log(`Unknown Command`, `${message.content}`, guild.guild.id, message.channel.id, message.author.id, message.id); //Only runs if the thing on top was true, logs into console
         MainLog.log(`${logMessage}`.grey); //Only runs if the thing on top was true, logs into console
     }
     if (typeof channelLogMessage != undefined) //Is a channel log message defined ?
         if (typeof guild != "undefined" && guild.configuration.behaviour.logOnUnknownCommand && guild.logToChannel.initialized) //Only runs if the thing on top was true, is the guild initialized & logOnUnknownCommand on
-            guild.channelLog(`${channelLogMessage}`); //Only runs if the thing on top was true, logs into channel
+            if (!guild.configuration.behaviour.logToChannel.embed) {
+                guild.channelLog(`${channelLogMessage}`); //Only runs if the thing on top was true, logs into channel
+            } else {
+                guild.channelEmbedLog(embedLogging.title, embedLogging.description, embedLogging.color, embedLogging.fields);
+            }
     if (guild.configuration.behaviour.onUnknownCommandIgnore) return false;
     let embed = new MessageEmbed({ //Define the embed with the title and the error color
         color: (typeof guild != "undefined") ? guild.configuration.colors.error : configuration.colors.error //If guild is initialized, use their error color, else use default
@@ -83,13 +87,13 @@ exports.sendUnkownCommand = (message, guild = undefined, title, description = un
     if (typeof title != "undefined") embed.title = `${configuration.appName} - ${title}`; //If description has been sent, make it the embed content
     if (typeof description != "undefined") embed.description = `${description}`; //If description has been sent, make it the embed content
     fields.forEach(field => embed.addField(field[0], field[1], field[2]));
-    if (!doNotRepy)message.reply({ //Reply to the message that triggerred the error
+    if (!doNotRepy) message.reply({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
         if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
     }).catch(e => this.messageReplyFailLogger(message, guild, e));
-    if (doNotRepy)message.channel.send({ //Reply to the message that triggerred the error
+    if (doNotRepy) message.channel.send({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
@@ -98,16 +102,20 @@ exports.sendUnkownCommand = (message, guild = undefined, title, description = un
     return false;
 }
 
-exports.sendCooldown = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
+exports.sendCooldown = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false, embedLogging = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
-    if (typeof logMessage != "undefined"){ //Is a log message defined ?
+    if (typeof logMessage != "undefined") { //Is a log message defined ?
         MainSQLLog.log(`Cooldown`, `${message.content}`, guild.guild.id, message.channel.id, message.author.id, message.id); //Only runs if the thing on top was true, logs into console
         MainLog.log(`${logMessage}`.grey); //Only runs if the thing on top was true, logs into console
     }
     if (typeof channelLogMessage != undefined) //Is a channel log message defined ?
         if (typeof guild != "undefined" && guild.configuration.behaviour.logOnCooldown && guild.logToChannel.initialized) //Only runs if the thing on top was true, is the guild initialized & logOnUnknownCommand on
-            guild.channelLog(`${channelLogMessage}`); //Only runs if the thing on top was true, logs into channel
+            if (!guild.configuration.behaviour.logToChannel.embed) {
+                guild.channelLog(`${channelLogMessage}`); //Only runs if the thing on top was true, logs into channel
+            } else {
+                guild.channelEmbedLog(embedLogging.title, embedLogging.description, embedLogging.color, embedLogging.fields);
+            }
     if (guild.configuration.behaviour.onCooldownIgnore) return false;
     let embed = new MessageEmbed({ //Define the embed with the title and the error color
         color: (typeof guild != "undefined") ? guild.configuration.colors.error : configuration.colors.error //If guild is initialized, use their error color, else use default
@@ -115,13 +123,13 @@ exports.sendCooldown = (message, guild = undefined, title, description = undefin
     if (typeof title != "undefined") embed.title = `${configuration.appName} - ${title}`; //If description has been sent, make it the embed content
     if (typeof description != "undefined") embed.description = `${description}`; //If description has been sent, make it the embed content
     fields.forEach(field => embed.addField(field[0], field[1], field[2]));
-    if (!doNotRepy)message.reply({ //Reply to the message that triggerred the error
+    if (!doNotRepy) message.reply({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
         if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
     }).catch(e => this.messageReplyFailLogger(message, guild, e));
-    if (doNotRepy)message.channel.send({ //Reply to the message that triggerred the error
+    if (doNotRepy) message.channel.send({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
@@ -130,16 +138,20 @@ exports.sendCooldown = (message, guild = undefined, title, description = undefin
     return false;
 }
 
-exports.sendDenied = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
+exports.sendDenied = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false, embedLogging = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
-    if (typeof logMessage != "undefined"){ //Is a log message defined ?
+    if (typeof logMessage != "undefined") { //Is a log message defined ?
         MainSQLLog.log(`Command Denied`, `${message.content}`, guild.guild.id, message.channel.id, message.author.id, message.id); //Only runs if the thing on top was true, logs into console
         MainLog.log(`${logMessage}`.grey); //Only runs if the thing on top was true, logs into console
     }
     if (typeof channelLogMessage != "undefined") //Is a channel log message defined ?
         if (typeof guild != "undefined" && guild.configuration.behaviour.logOnCommandDenied && guild.logToChannel.initialized) //Only runs if the thing on top was true, is the guild initialized & logOnCommandDenied on
-            guild.channelLog(`${channelLogMessage}`); //Only runs if the thing on top was true, logs into channel
+            if (!guild.configuration.behaviour.logToChannel.embed) {
+                guild.channelLog(`${channelLogMessage}`); //Only runs if the thing on top was true, logs into channel
+            } else {
+                guild.channelEmbedLog(embedLogging.title, embedLogging.description, embedLogging.color, embedLogging.fields);
+            }
     if (guild.configuration.behaviour.onCommandDeniedIgnore) return false;
     let embed = new MessageEmbed({ //Define the embed with the title and the error color
         color: (typeof guild != "undefined") ? guild.configuration.colors.error : configuration.colors.error //If guild is initialized, use their error color, else use default
@@ -147,13 +159,13 @@ exports.sendDenied = (message, guild = undefined, title, description = undefined
     if (typeof title != "undefined") embed.title = `${configuration.appName} - ${title}`; //If description has been sent, make it the embed content
     if (typeof description != "undefined") embed.description = `${description}`; //If description has been sent, make it the embed content
     fields.forEach(field => embed.addField(field[0], field[1], field[2]));
-    if (!doNotRepy)message.reply({ //Reply to the message that triggerred the error
+    if (!doNotRepy) message.reply({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
         if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
     }).catch(e => this.messageReplyFailLogger(message, guild, e));
-    if (doNotRepy)message.channel.send({ //Reply to the message that triggerred the error
+    if (doNotRepy) message.channel.send({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
@@ -162,16 +174,20 @@ exports.sendDenied = (message, guild = undefined, title, description = undefined
     return false;
 }
 
-exports.sendError = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
+exports.sendError = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false, embedLogging = false) => { //sendError exports.to makes error easier, instead of re typing the whole block i just call the funcion
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
-    if (typeof logMessage != "undefined"){ //Is a log message defined ?
+    if (typeof logMessage != "undefined") { //Is a log message defined ?
         MainSQLLog.log(`Error`, `${message.content}`, guild.guild.id, message.channel.id, message.author.id, message.id); //Only runs if the thing on top was true, logs into console
         MainLog.log(`${logMessage}`.red); //Only runs if the thing on top was true, logs into console
     }
     if (typeof channelLogMessage != "undefined") //Is a channel log message defined ?
         if (typeof guild != "undefined" && guild.configuration.behaviour.logOnCommandError && guild.logToChannel.initialized) //Only runs if the thing on top was true, is the guild initialized & logOnCommandError on
-            guild.channelLog(`[ERROR]${channelLogMessage}`); //Only runs if the thing on top was true, logs into channel
+            if (!guild.configuration.behaviour.logToChannel.embed) {
+                guild.channelLog(`${channelLogMessage}`); //Only runs if the thing on top was true, logs into channel
+            } else {
+                guild.channelEmbedLog(embedLogging.title, embedLogging.description, embedLogging.color, embedLogging.fields);
+            }
     if (guild.configuration.behaviour.onCommandErrorIgnore) return false;
     let embed = new MessageEmbed({ //Define the embed with the title and the error color
         color: (typeof guild != "undefined") ? guild.configuration.colors.error : configuration.colors.error //If guild is initialized, use their error color, else use default
@@ -179,13 +195,13 @@ exports.sendError = (message, guild = undefined, title, description = undefined,
     if (typeof title != "undefined") embed.title = `${configuration.appName} - ${title}`; //If description has been sent, make it the embed content
     if (typeof description != "undefined") embed.description = `${description}`; //If description has been sent, make it the embed content
     fields.forEach(field => embed.addField(field[0], field[1], field[2]));
-    if (!doNotRepy)message.reply({ //Reply to the message that triggerred the error
+    if (!doNotRepy) message.reply({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
         if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
     }).catch(e => this.messageReplyFailLogger(message, guild, e));
-    if (doNotRepy)message.channel.send({ //Reply to the message that triggerred the error
+    if (doNotRepy) message.channel.send({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
@@ -194,16 +210,20 @@ exports.sendError = (message, guild = undefined, title, description = undefined,
     return false;
 }
 
-exports.sendWarning = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false) => { //sendError exports.to makes error easier, instead of re typing the whole bl
+exports.sendWarning = (message, guild = undefined, title, description = undefined, logMessage = undefined, channelLogMessage = undefined, fields = [], doNotRepy = false, embedLogging = false) => { //sendError exports.to makes error easier, instead of re typing the whole bl
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
-    if (typeof logMessage != "undefined"){ //Is a log message defined ?
+    if (typeof logMessage != "undefined") { //Is a log message defined ?
         MainSQLLog.log(`Warning`, `${message.content}`, guild.guild.id, message.channel.id, message.author.id, message.id); //Only runs if the thing on top was true, logs into console
         MainLog.log(`${logMessage}`.yellow); //Only runs if the thing on top was true, logs into console
     }
     if (typeof channelLogMessage != "undefined") //Is a channel log message defined ?
         if (typeof guild != "undefined" && guild.configuration.behaviour.logOnWarning && guild.logToChannel.initialized) //Only runs if the thing on top was true, is the guild initialized & logOnWarning on
-            guild.channelLog(`[WARNING]${channelLogMessage}`); //Only runs if the thing on top was true, logs into channel
+            if (!guild.configuration.behaviour.logToChannel.embed) {
+                guild.channelLog(`${channelLogMessage}`); //Only runs if the thing on top was true, logs into channel
+            } else {
+                guild.channelEmbedLog(embedLogging.title, embedLogging.description, embedLogging.color, embedLogging.fields);
+            }
     if (guild.configuration.behaviour.onWarningIgnore) return false;
     let embed = new MessageEmbed({ //Define the embed with the title and the error color
         color: (typeof guild != "undefined") ? guild.configuration.colors.warning : configuration.colors.warning //If guild is initialized, use their error color, else use default
@@ -211,13 +231,13 @@ exports.sendWarning = (message, guild = undefined, title, description = undefine
     if (typeof title != "undefined") embed.title = `${configuration.appName} - ${title}`; //If description has been sent, make it the embed content
     if (typeof description != "undefined") embed.description = `${description}`; //If description has been sent, make it the embed content
     fields.forEach(field => embed.addField(field[0], field[1], field[2]));
-    if (!doNotRepy)message.reply({ //Reply to the message that triggerred the error
+    if (!doNotRepy) message.reply({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
         if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
     }).catch(e => this.messageReplyFailLogger(message, guild, e));
-    if (doNotRepy)message.channel.send({ //Reply to the message that triggerred the error
+    if (doNotRepy) message.channel.send({ //Reply to the message that triggerred the error
         embeds: [embed],
         failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
     }, false).then(msg => {
@@ -287,7 +307,7 @@ String.prototype.trimEllip = function (length) {
     return this.length > length ? this.substring(0, length) + "..." : this;
 }
 
-exports.splitArrayIntoChunksOfLen = function(arr, len) {
+exports.splitArrayIntoChunksOfLen = function (arr, len) {
     var chunks = [],
         i = 0,
         n = arr.length;

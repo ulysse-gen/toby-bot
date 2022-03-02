@@ -138,9 +138,9 @@ module.exports = class guildManager {
         if (typeof fields != "object") return false;
         let embed = new MessageEmbed().setTitle(title).setDescription(description).setColor(color);
         fields.forEach(field => embed.addField(field[0], field[1], field[2]));
-        embed.addField(`Timestamp`, `<t:${Math.floor(new Date().getTime() / 1000)}:F>`, false);
         
-        this.logToChannel.channel.send({embeds: embed}).catch(e => {
+        this.logToChannel.channel.send({embeds: [embed]}).catch(e => {
+            console.log(e);
             if (this.configuration.behaviour.logToChannel.status == true) this.configuration.behaviour.logToChannel.status = false;
             console.log(`Could not use the logging channel for guild ${this.guild.id}`);
         });
