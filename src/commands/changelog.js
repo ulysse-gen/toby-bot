@@ -15,20 +15,7 @@ module.exports = {
     permission: `commands.changelog`,
     category: `informations`,
     async exec(client, message, args, guild = undefined) {
-        let embed = new MessageEmbed({
-            title: `Changelog for ${configuration.appName}v${package.version}`,
-            color: guild.configuration.colors.main,
-            description: ''
-        });
-
-        embed.description += `- New \`remindme\` command.`;
-
-        message.reply({
-            embeds: [embed],
-            failIfNotExists: false
-        }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
-        }).catch(e => utils.messageReplyFailLogger(message, guild, e));
-        return true;
+        let description = `- Changed the whole return system`
+        return utils.sendMain(message, guild, `Changelog v${package.version}`, `${description}`, [], true);
     }
 }
