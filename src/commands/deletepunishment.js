@@ -23,11 +23,11 @@ module.exports = {
             title: `Punishment removed`,
             color: guild.configuration.colors.main
         });
-        if (args.length == 0)return utils.sendError(message, guild, `Wrong command synthax.`, `Use \`deletepunishment <caseId> [reason]\` to delete a punishment.`)
+        if (args.length == 0)return utils.sendError(message, guild, `Wrong command synthax.`, `Use \`deletepunishment <caseId> [reason]\` to delete a punishment.`, [], true); /*Updated To New Utils*/
         let caseId = args.shift();
         let reason = args.join(' ');
-        if (guild.configuration.moderation.deletePunishmentNeedReason && (typeof reason == "undefined" || reason == "" || reason.replaceAll(' ', '') == "")) return utils.sendError(message, guild, `Could not delete punishment.`, `No reason specified.`);
-        if (typeof caseId == "undefined" || caseId == "" || caseId.replaceAll(' ', '') == "") return utils.sendError(message, guild, `Could not delete punishment.`, `No caseId specified.`);
+        if (guild.configuration.moderation.deletePunishmentNeedReason && (typeof reason == "undefined" || reason == "" || reason.replaceAll(' ', '') == "")) return utils.sendError(message, guild, `Could not delete punishment.`, `No reason specified.`, [], true); /*Updated To New Utils*/
+        if (typeof caseId == "undefined" || caseId == "" || caseId.replaceAll(' ', '') == "") return utils.sendError(message, guild, `Could not delete punishment.`, `No caseId specified.`, [], true); /*Updated To New Utils*/
         let result = await guild.moderationManager.deletePunishment(message, caseId, reason);
         if (typeof result == "object"){
             embed.setTitle(`Could not delete punishment.`).setDescription(result.error).setColor(guild.configuration.colors.error);

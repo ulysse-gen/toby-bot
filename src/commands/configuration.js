@@ -560,12 +560,12 @@ module.exports = {
                 try {
                     args[1] = parseInt(args[1]);
                 } catch (e) {
-                    return utils.sendError(message, guild, `Pages must be selected by numbers.`);
+                    return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
                 }
                 embed.footer = {
                     text: `Use \`${guild.configuration.prefix}conf help [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
                 };
-                if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`);
+                if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
                 embedFields = embedPages[args[1] - 1];
             }
 
@@ -583,9 +583,9 @@ module.exports = {
         }
 
         if (args[0] == "show" || args[0] == "infos") {
-            if (args.length != 2) return utils.sendError(message, guild, `Error`, `Wrong command synthax. This command must have this synthax : \`${guild.configuration.prefix}configuration show/infos <setting>\``);
+            if (args.length != 2) return utils.sendError(message, guild, `Error`, `Wrong command synthax. This command must have this synthax : \`${guild.configuration.prefix}configuration show/infos <setting>\``, [], true); /*Updated To New Utils*/
             let setting = getConfigByName(args[1]);
-            if (typeof setting == "undefined") return utils.sendError(message, guild, `Error`, `Unknown setting \`${args[1]}\``);
+            if (typeof setting == "undefined") return utils.sendError(message, guild, `Error`, `Unknown setting \`${args[1]}\``, [], true); /*Updated To New Utils*/
             let embedFields = [];
             embedFields.push([`**Name:**`, `${setting.title}`, false]);
             embedFields.push([`**Description:**`, `${setting.description}`, false]);
@@ -593,26 +593,26 @@ module.exports = {
             embedFields.push([`**Current Value:**`, `${_.get(guild.configuration, setting.path)}`, true]);
             embedFields.push([`**Value Type:**`, `${(typeof _.get(defaultConfig, setting.path)).toString()}`, true]);
             await guild.configurationManager.save();
-            return utils.sendMain(message, guild, `\`${args[1]}\` setting infos :`, undefined, undefined, undefined, embedFields);
+            return utils.sendMain(message, guild, `\`${args[1]}\` setting infos :`, undefined, embedFields, true); /*Updated To New Utils*/
         }
 
         if (args[0] == "set") {
-            if (args.length != 3) return utils.sendError(message, guild, `Error`, `Wrong command synthax. This command must have this synthax : \`${guild.configuration.prefix}configuration set <setting> <value>\``);
+            if (args.length != 3) return utils.sendError(message, guild, `Error`, `Wrong command synthax. This command must have this synthax : \`${guild.configuration.prefix}configuration set <setting> <value>\``, [], true); /*Updated To New Utils*/
             let setting = getConfigByName(args[1]);
-            if (typeof setting == "undefined") return utils.sendError(message, guild, `Error`, `Unknown setting \`${args[1]}\``);
+            if (typeof setting == "undefined") return utils.sendError(message, guild, `Error`, `Unknown setting \`${args[1]}\``, [], true); /*Updated To New Utils*/
             let value = args[2];
             if (typeof _.get(defaultConfig, setting.path) == "boolean") {
                 value = (value == '1' || value == "true" || value == "yes") ? true : false;
             }
             if (typeof _.get(defaultConfig, setting.path) == "number") {
                 value = Number(args[2]);
-                if (isNaN(value)) return utils.sendError(message, guild, `Error`, `The value must be a ${(typeof _.get(defaultConfig, setting.path).toString())}, received ${typeof value}. [Wrong value \`${value}\`]`);
+                if (isNaN(value)) return utils.sendError(message, guild, `Error`, `The value must be a ${(typeof _.get(defaultConfig, setting.path).toString())}, received ${typeof value}. [Wrong value \`${value}\`]`, [], true); /*Updated To New Utils*/
             }
 
             if (typeof setting.checkerFunction == "function") {
                 checkUpResult = await setting.checkerFunction(value);
-                if (checkUpResult.break) return utils.sendError(message, guild, `${checkUpResult.title}`, `${checkUpResult.description}`);
-                if (typeof checkUpResult.title == "string" || typeof checkUpResult.description == "string") utils.sendMain(message, guild, `${checkUpResult.title}`, `${checkUpResult.description}`);
+                if (checkUpResult.break) return utils.sendError(message, guild, `${checkUpResult.title}`, `${checkUpResult.description}`, [], true); /*Updated To New Utils*/
+                if (typeof checkUpResult.title == "string" || typeof checkUpResult.description == "string") utils.sendMain(message, guild, `${checkUpResult.title}`, `${checkUpResult.description}`, [], true); /*Updated To New Utils*/
             }
 
             let oldValue = value;
@@ -623,19 +623,19 @@ module.exports = {
             if (typeof setting.runAfter == "function") await setting.runAfter(value);
 
             await guild.configurationManager.save();
-            return utils.sendSuccess(message, guild, `Value set`, `${setting.title} now set to ${value}`);
+            return utils.sendSuccess(message, guild, `Value set`, `${setting.title} now set to ${value}`, [], true); /*Updated To New Utils*/
         }
 
         if (args[0] == "reset" || args[0] == "unset" || args[0] == "default") {
-            if (args.length != 2) return utils.sendError(message, guild, `Error`, `Wrong command synthax. This command must have this synthax : \`${guild.configuration.prefix}configuration reset/unset/default <setting>\``);
+            if (args.length != 2) return utils.sendError(message, guild, `Error`, `Wrong command synthax. This command must have this synthax : \`${guild.configuration.prefix}configuration reset/unset/default <setting>\``, [], true); /*Updated To New Utils*/
             let setting = getConfigByName(args[1]);
-            if (typeof setting == "undefined") return utils.sendError(message, guild, `Error`, `Unknown setting \`${args[1]}\``);
+            if (typeof setting == "undefined") return utils.sendError(message, guild, `Error`, `Unknown setting \`${args[1]}\``, [], true); /*Updated To New Utils*/
             await guild.configurationManager.set(setting.path, _.get(defaultConfig, setting.path));
             await guild.configurationManager.save();
-            return utils.sendSuccess(message, guild, `Value reset`, `${setting.title} now reset to ${_.get(defaultConfig, setting.path)}`);
+            return utils.sendSuccess(message, guild, `Value reset`, `${setting.title} now reset to ${_.get(defaultConfig, setting.path)}`, [], true);/*Updated To New Utils*/
         }
 
-        return utils.sendError(message, guild, `Unknown subcommand`, `The command you typed seems wrong. Command format : \`${guild.configuration.prefix}configuration <subcommand> <setting> [options]\``);
+        return utils.sendError(message, guild, `Unknown subcommand`, `The command you typed seems wrong. Command format : \`${guild.configuration.prefix}configuration <subcommand> <setting> [options]\``, [], true); /*Updated To New Utils*/
     }
 }
 

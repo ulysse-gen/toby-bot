@@ -107,12 +107,12 @@ module.exports = {
             try {
                 args[1] = parseInt(args[1]);
             } catch (e) {
-                return utils.sendError(message, guild, `Pages must be selected by numbers.`);
+                return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
             }
             embed.footer = {
                 text: `Use \`${guild.configuration.prefix}warnings <user> [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
             };
-            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`);
+            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
             embedFields = embedPages[args[1] - 1];
         }
 

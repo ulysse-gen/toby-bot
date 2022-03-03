@@ -34,7 +34,7 @@ module.exports = {
             }).catch(e => {
                 return undefined;
             });
-            if (typeof user == "undefined") return utils.sendError(message, guild, `Could not get user data`, `User not found`);
+            if (typeof user == "undefined") return utils.sendError(message, guild, `Could not get user data`, `User not found`, [], true); /*Updated To New Utils*/
         }
 
         let embed = new MessageEmbed({
@@ -42,7 +42,7 @@ module.exports = {
             color: guild.configuration.colors.success
         });
 
-        if (typeof user == "undefined") return utils.sendError(message, guild, `Could not send DM.`, `User not found.`);
+        if (typeof user == "undefined") return utils.sendError(message, guild, `Could not send DM.`, `User not found.`, [], true); /*Updated To New Utils*/
 
         
         let messageContent = args.join(' ');
@@ -50,7 +50,7 @@ module.exports = {
         message.attachments.forEach(attachment => messageAttachments.push(attachment));
 
         user.send({content: (messageContent != "" && messageContent != " ") ? `${messageContent}` : null, files: messageAttachments}).catch(e => {
-            return utils.sendError(message, guild, `Could not send DM.`, `${e.toString()}`);
+            return utils.sendError(message, guild, `Could not send DM.`, `${e.toString()}`, [], true); /*Updated To New Utils*/
         });
 
         message.reply({

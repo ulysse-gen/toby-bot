@@ -132,11 +132,11 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (args.length == 1) return utils.sendError(message, guild, `Error`, `Usage: \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}roleadder logAddedUsers <true/false>\``);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (args.length == 1) return utils.sendError(message, guild, `Error`, `Usage: \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}roleadder logAddedUsers <true/false>\``, [], true); /*Updated To New Utils*/
             let statusValue = (args[1] == '1' || args[1] == "true" || args[1] == "yes") ? true : false;
             guild.configuration.roleadder.logAddedUsers = statusValue;
-            return utils.sendMain(message, guild, `RoleAdder logging ${(statusValue) ? `Enabled` : `Disabled`}`);
+            return utils.sendMain(message, guild, `RoleAdder logging ${(statusValue) ? `Enabled` : `Disabled`}`, undefined, [], true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "addrole") {
@@ -144,8 +144,8 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to add.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to add.`, [], true); /*Updated To New Utils*/
 
             let rolesToAdd = message.mentions.roles;
 
@@ -155,7 +155,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `Role(s) added`, `Role(s) to add are now <@&${(guild.configuration.roleadder.rolesToAdd.length == 1) ? guild.configuration.roleadder.rolesToAdd : guild.configuration.roleadder.rolesToAdd.join(`>, <@&`)}>.`);
+            return utils.sendMain(message, guild, `Role(s) added`, `Role(s) to add are now <@&${(guild.configuration.roleadder.rolesToAdd.length == 1) ? guild.configuration.roleadder.rolesToAdd : guild.configuration.roleadder.rolesToAdd.join(`>, <@&`)}>.`, [], true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "removerole") {
@@ -163,8 +163,8 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to remove.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to remove.`, [], true); /*Updated To New Utils*/
 
             let rolesToRemove = message.mentions.roles;
 
@@ -176,7 +176,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `Role(s) removed`, `Role(s) to add are now <@&${(guild.configuration.roleadder.rolesToAdd.length == 1) ? guild.configuration.roleadder.rolesToAdd : guild.configuration.roleadder.rolesToAdd.join(`>, <@&`)}>.`);
+            return utils.sendMain(message, guild, `Role(s) removed`, `Role(s) to add are now <@&${(guild.configuration.roleadder.rolesToAdd.length == 1) ? guild.configuration.roleadder.rolesToAdd : guild.configuration.roleadder.rolesToAdd.join(`>, <@&`)}>.`, [], true);/*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "addtoblacklist") {
@@ -184,8 +184,8 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to add.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to add.`, [], true); /*Updated To New Utils*/
 
             let blacklist = message.mentions.roles;
 
@@ -195,7 +195,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `Role(s) added`, `Blacklisted role(s) are now <@&${(guild.configuration.roleadder.blacklist.length == 1) ? guild.configuration.roleadder.blacklist : guild.configuration.roleadder.blacklist.join(`>, <@&`)}>.`);
+            return utils.sendMain(message, guild, `Role(s) added`, `Blacklisted role(s) are now <@&${(guild.configuration.roleadder.blacklist.length == 1) ? guild.configuration.roleadder.blacklist : guild.configuration.roleadder.blacklist.join(`>, <@&`)}>.`, [], true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "removefromblacklist") {
@@ -203,8 +203,8 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to remove.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to remove.`, [], true); /*Updated To New Utils*/
 
             let rolesToRemove = message.mentions.roles;
 
@@ -216,7 +216,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `Role(s) removed`, `Blacklisted role(s) are now <@&${(guild.configuration.roleadder.blacklist.length == 1) ? guild.configuration.roleadder.blacklist : guild.configuration.roleadder.blacklist.join(`>, <@&`)}>.`);
+            return utils.sendMain(message, guild, `Role(s) removed`, `Blacklisted role(s) are now <@&${(guild.configuration.roleadder.blacklist.length == 1) ? guild.configuration.roleadder.blacklist : guild.configuration.roleadder.blacklist.join(`>, <@&`)}>.`, [], true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "addtowhitelist") {
@@ -224,8 +224,8 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to add.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to add.`, [], true); /*Updated To New Utils*/
 
             let whitelist = message.mentions.roles;
 
@@ -235,7 +235,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `Role(s) added`, `Whitelisted role(s) are now <@&${(guild.configuration.roleadder.whitelist.length == 1) ? guild.configuration.roleadder.whitelist : guild.configuration.roleadder.whitelist.join(`>, <@&`)}>.`);
+            return utils.sendMain(message, guild, `Role(s) added`, `Whitelisted role(s) are now <@&${(guild.configuration.roleadder.whitelist.length == 1) ? guild.configuration.roleadder.whitelist : guild.configuration.roleadder.whitelist.join(`>, <@&`)}>.`, [], true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "removefromwhitelist") {
@@ -243,8 +243,8 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to remove.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to remove.`, [], true); /*Updated To New Utils*/
 
             let rolesToRemove = message.mentions.roles;
 
@@ -256,7 +256,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `Role(s) removed`, `Whitelisted role(s) are now <@&${(guild.configuration.roleadder.whitelist.length == 1) ? guild.configuration.roleadder.whitelist : guild.configuration.roleadder.whitelist.join(`>, <@&`)}>.`);
+            return utils.sendMain(message, guild, `Role(s) removed`, `Whitelisted role(s) are now <@&${(guild.configuration.roleadder.whitelist.length == 1) ? guild.configuration.roleadder.whitelist : guild.configuration.roleadder.whitelist.join(`>, <@&`)}>.`, [], true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "fixroles") {
@@ -264,8 +264,8 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (guild.configuration.roleadder.blacklist.length == 0 && guild.configuration.roleadder.blacklist.length == 0) return utils.sendError(message, guild, `No roles defined, i wont have to fix anything`, undefined);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (guild.configuration.roleadder.blacklist.length == 0 && guild.configuration.roleadder.blacklist.length == 0) return utils.sendError(message, guild, `No roles defined, i wont have to fix anything`, undefined, [], true); /*Updated To New Utils*/
 
 
             let roleCheckerPromise_Add = new Promise((res, rej) => {
@@ -329,7 +329,7 @@ module.exports = {
             await roleCheckerPromise_BlackList;
             await roleCheckerPromise_WhiteList;
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `Roles fixed`);
+            return utils.sendMain(message, guild, `Roles fixed`, undefined, [], true); /*Updated To New Utils*/
         }
 
         if (["prepare", "fetch"].includes(args[0].toLowerCase())) {
@@ -337,11 +337,11 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            
             let rolesToAdd = guild.configuration.roleadder.rolesToAdd;
 
-            if (rolesToAdd.length == 0) return utils.sendError(message, guild, `Error`, `No roles defined in the add list.`);
+            if (rolesToAdd.length == 0) return utils.sendError(message, guild, `Error`, `No roles defined in the add list.`, [], true); /*Updated To New Utils*/
 
             let usersToCheck = 1;
 
@@ -443,11 +443,11 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (typeof guild.roleadder == "undefined") return utils.sendError(message, guild, `Error`, `Nothing to trigger. Run \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}roleadder prepare\` to trigger the fetching.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (typeof guild.roleadder == "undefined") return utils.sendError(message, guild, `Error`, `Nothing to trigger. Run \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}roleadder prepare\` to trigger the fetching.`, [], true); /*Updated To New Utils*/
 
 
-            if (guild.roleadder.ready == false) return utils.sendError(message, guild, `Error`, `Fetching is still active, wait for it to finish before triggering.`);
+            if (guild.roleadder.ready == false) return utils.sendError(message, guild, `Error`, `Fetching is still active, wait for it to finish before triggering.`, [], true); /*Updated To New Utils*/
 
             let embed = new MessageEmbed({
                 title: `[${configuration.appName}] - Role Adder Triggered`,
@@ -522,10 +522,10 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (typeof guild.roleadder == "undefined") return utils.sendError(message, guild, `Error`, `Nothing to clear. Run \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}roleadder prepare\` to trigger the fetching.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (typeof guild.roleadder == "undefined") return utils.sendError(message, guild, `Error`, `Nothing to clear. Run \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}roleadder prepare\` to trigger the fetching.`, [], true); /*Updated To New Utils*/
             if (typeof guild.roleadder != "undefined") delete guild.roleadder;
-            return utils.sendError(message, guild, `Pending cleared`, undefined);
+            return utils.sendError(message, guild, `Pending cleared`, undefined, [], true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "reasonhelp" && false) {
@@ -554,7 +554,7 @@ module.exports = {
             }).catch(e => utils.messageReplyFailLogger(message, guild, e));
             return true;
         }
-        return utils.sendError(message, guild, `Unknown subcommand`);
+        return utils.sendError(message, guild, `Unknown subcommand`, undefined, [], true); /*Updated To New Utils*/
     }
 }
 

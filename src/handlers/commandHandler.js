@@ -29,100 +29,16 @@ module.exports = async function (message, guild = undefined) {
     let cmd = args.shift(args);
     if (cmd.startsWith(configuration.globalPrefix)) cmd = cmd.replace(configuration.globalPrefix, '');
     if (typeof guild != "undefined" && cmd.startsWith(guild.configuration.prefix)) cmd = cmd.replace(guild.configuration.prefix, '');
-    if (typeof guild == "undefined") {
-        return utils.sendError(message, guild, `Error`, `A global error occured trying to execute the command \`${cmd}\``, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][guild is undefined]`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [guild is undefined]`, undefined, undefined, {
-            title: `Command execution error`,
-            description: `${message.content}`,
-            color: `#FF0000`,
-            fields: [
-                [`Error:`, `guild is undefined`, true],
-                [`Executor:`, `<@${message.author.id}>`, true],
-                [`Channel:`, `<#${message.channel.id}>`, true],
-                [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
-            ]
-        });
-    }
-    if (typeof client == "undefined") { //This can actually never happen
-        return utils.sendError(message, guild, `Error`, `A global error occured trying to execute the command \`${cmd}\``, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][client is undefined]`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [client is undefined]`, undefined, undefined, {
-            title: `Command execution error`,
-            description: `${message.content}`,
-            color: guild.configuration.colors.error,
-            fields: [
-                [`Error:`, `client is undefined`, true],
-                [`Executor:`, `<@${message.author.id}>`, true],
-                [`Channel:`, `<#${message.channel.id}>`, true],
-                [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
-            ]
-        });
-    }
-    if (typeof configuration == "undefined") { //This error shoud never happen. configuration is the main configuration and if its undefined no commands can work.
-        return utils.sendError(message, guild, `Error`, `A global error occured trying to execute the command \`${cmd}\``, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][configuration is undefined]`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [configuration is undefined]`, undefined, undefined, {
-            title: `Command execution error`,
-            description: `${message.content}`,
-            color: guild.configuration.colors.error,
-            fields: [
-                [`Error:`, `configuration is undefined`, true],
-                [`Executor:`, `<@${message.author.id}>`, true],
-                [`Channel:`, `<#${message.channel.id}>`, true],
-                [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
-            ]
-        });
-    }
-    if (typeof globalCommands == "undefined") { //This error shoud never happen. globalCommands is the main commandManager and if its undefined no commands can work.
-        return utils.sendError(message, guild, `Error`, `A global error occured trying to execute the command \`${cmd}\``, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][globalCommands is undefined]`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [globalCommands is undefined]`, undefined, undefined, {
-            title: `Command execution error`,
-            description: `${message.content}`,
-            color: guild.configuration.colors.error,
-            fields: [
-                [`Error:`, `globalCommands is undefined`, true],
-                [`Executor:`, `<@${message.author.id}>`, true],
-                [`Channel:`, `<#${message.channel.id}>`, true],
-                [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
-            ]
-        });
-    }
-    if (typeof globalPermissions == "undefined") { //This error shoud never happen. globalPermissions is the main permissionsManager and if its undefined no commands can work.
-        return utils.sendError(message, guild, `Error`, `A global error occured trying to execute the command \`${cmd}\``, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][globalPermissions is undefined]`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [globalPermissions is undefined]`, undefined, undefined, {
-            title: `Command execution error`,
-            description: `${message.content}`,
-            color: guild.configuration.colors.error,
-            fields: [
-                [`Error:`, `globalPermissions is undefined`, true],
-                [`Executor:`, `<@${message.author.id}>`, true],
-                [`Channel:`, `<#${message.channel.id}>`, true],
-                [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
-            ]
-        });
-    }
-    if ("COMMAND LOCK" == "COMMAND LOCK" && false) { //This error shoud never happen. globalPermissions is the main permissionsManager and if its undefined no commands can work.
-        return utils.sendDenied(message, guild, `Lockdown`, `The bot is on lockdown. No commands can be executed.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][LOCKDOWN]`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${message.content}\` in <#${message.channel.id}>(${message.channel.id}). [LOCKDOWN]`, undefined, undefined, {
-            title: `Command denied`,
-            description: `${message.content}`,
-            color: guild.configuration.colors.error,
-            fields: [
-                [`Reason:`, `Command lockdown enabled`, true],
-                [`Executor:`, `<@${message.author.id}>`, true],
-                [`Channel:`, `<#${message.channel.id}>`, true],
-                [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
-            ]
-        });
-    }
+    if (typeof client == "undefined") return utils.sendError(message, guild, undefined, `Client is undefined`, [], true, -1, -1); //This can actually never happen
+    if (typeof globalCommands == "undefined") return utils.sendError(message, guild, undefined, `globalCommands is undefined`, [], true, -1, -1); //This error shoud never happen. globalCommands is the main commandManager and if its undefined no commands can work.
+    if (typeof globalPermissions == "undefined") return utils.sendError(message, guild, undefined, `globalPermissions is undefined`, [], true, -1, -1);//This error shoud never happen. globalPermissions is the main permissionsManager and if its undefined no commands can work.
+    if ("COMMAND LOCK" == "COMMAND LOCK" && false) return utils.lockdownDenied(message, guild, undefined, undefined, [], true, -1, -1)
 
     executionTimes[message.id].fetchingCommand = moment();
     let command = globalCommands.fetch(cmd);
     executionTimes[message.id].fetchedCommand = moment();
 
-    if (!command) return utils.sendUnkownCommand(message, guild, `Unknown command`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Unknown Command].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Unknown Command]`, undefined, undefined, {
-        title: `Command denied`,
-        description: `${message.content}`,
-        color: guild.configuration.colors.error,
-        fields: [
-            [`Reason:`, `Unknown command`, true],
-            [`Executor:`, `<@${message.author.id}>`, true],
-            [`Channel:`, `<#${message.channel.id}>`, true],
-            [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
-        ]
-    });
+    if (!command) return utils.unknownCommand(message, guild, true, 5000, 5000);
 
     executionTimes[message.id].gettingCommandPermission = moment();
     let permissionToCheck = command.permission;
@@ -134,18 +50,7 @@ module.exports = async function (message, guild = undefined) {
     executionTimes[message.id].gotCommandGuildPermission = moment();
     let hasPermission = (hasGlobalPermission == null) ? hasGuildPermission : hasGlobalPermission;
     executionTimes[message.id].gotPermission = moment();
-    if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`, undefined, undefined, {
-        title: `Command denied`,
-        description: `${message.content}`,
-        color: guild.configuration.colors.error,
-        fields: [
-            [`Reason:`, `Insufficient Permissions`, true],
-            [`Permission:`, `${command.permission}`, true],
-            [`Executor:`, `<@${message.author.id}>`, true],
-            [`Channel:`, `<#${message.channel.id}>`, true],
-            [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
-        ]
-    });
+    if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
     executionTimes[message.id].gettingCooldownPermission = moment();
     let cooldownPerm = `skipcooldowns.${command.permission}`;
@@ -160,18 +65,7 @@ module.exports = async function (message, guild = undefined) {
 
     if (command.globalcooldown != 0 && !hasSkipCooldownPerms)
         if (typeof globalCommands.globalCooldowns[command.name] != "undefined") {
-            return utils.sendCooldown(message, guild, `Cooldown`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Cooldown].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Cooldown]`, undefined, undefined, {
-                title: `Command denied`,
-                description: `${message.content}`,
-                color: guild.configuration.colors.error,
-                fields: [
-                    [`Reason:`, `Cooldown`, true],
-                    [`Permission:`, `skipcooldowns.${command.permission}`, true],
-                    [`Executor:`, `<@${message.author.id}>`, true],
-                    [`Channel:`, `<#${message.channel.id}>`, true],
-                    [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
-                ]
-            });
+            return utils.cooldownCommand(message, guild, cooldownPerm, reply, 5000, 5000);
         } else {
             if (typeof globalCommands.globalCooldowns[command.name] == "undefined") globalCommands.globalCooldowns[command.name] = true;
             setTimeout(() => {
@@ -180,18 +74,7 @@ module.exports = async function (message, guild = undefined) {
         }
     if (command.cooldown != 0 && !hasSkipCooldownPerms)
         if (typeof globalCommands.cooldowns[message.author.id] != "undefined" && typeof globalCommands.cooldowns[message.author.id][command.name] != "undefined") {
-            return utils.sendCooldown(message, guild, `Cooldown`, undefined, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Cooldown].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Cooldown]`, undefined, undefined, {
-                title: `Command denied`,
-                description: `${message.content}`,
-                color: guild.configuration.colors.error,
-                fields: [
-                    [`Reason:`, `Cooldown`, true],
-                    [`Permission:`, `skipcooldowns.${command.permission}`, true],
-                    [`Executor:`, `<@${message.author.id}>`, true],
-                    [`Channel:`, `<#${message.channel.id}>`, true],
-                    [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
-                ]
-            });
+            return utils.cooldownCommand(message, guild, cooldownPerm, reply, 5000, 5000);
         } else {
             if (typeof globalCommands.cooldowns[message.author.id] == "undefined") globalCommands.cooldowns[message.author.id] = {};
             globalCommands.cooldowns[message.author.id][command.name] = true;
@@ -240,6 +123,6 @@ module.exports = async function (message, guild = undefined) {
                 }
         return true;
     } catch (e) {
-        return utils.sendError(message, guild, `Error`, `A global error occured trying to execute the command \`${cmd}\``, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][${e}]`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Error in command code]`);
+        return utils.sendError(message, guild, undefined, `An error occured withing the command code.`, [], true, 5000, 5000);
     }
 }

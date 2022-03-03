@@ -183,11 +183,11 @@ module.exports = {
                     if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
                 }).catch(e => utils.messageReplyFailLogger(message, guild, e));
             }
-            return utils.sendError(message, guild, `Unknown scope`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} show <@User/@Role/userid:UserID/internalRole:internalRole>\``);
+            return utils.sendError(message, guild, `Unknown scope`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} show <@User/@Role/userid:UserID/internalRole:internalRole>\``, [], true); /*Updated To New Utils*/
         }
 
         if (args[0] == "set") {
-            if (args.length != 4 && args.length != 5) return utils.sendError(message, guild, `Wrong command synthax`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} set <@User/@Role/userid:UserID/internalRole:internalRole> <permission> <value> [priority]\``);
+            if (args.length != 4 && args.length != 5) return utils.sendError(message, guild, `Wrong command synthax`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} set <@User/@Role/userid:UserID/internalRole:internalRole> <permission> <value> [priority]\``, [], true); /*Updated To New Utils*/
             let permissionName = args[2];
             let permissionValue = (args[3] == "none") ? "none" : (args[3] == '1' || args[3] == "true" || args[3] == "yes") ? true : false;
             let permissionPriority = (typeof args[4] == "undefined") ? 0 : args[4];
@@ -277,7 +277,7 @@ module.exports = {
         }
 
         if (args[0] == "unset" || args[0] == "remove") {
-            if (args.length != 3) return utils.sendError(message, guild, `Wrong command synthax`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} unset/remove <@User/@Role/userid:UserID/internalRole:internalRole> <permission>\``);
+            if (args.length != 3) return utils.sendError(message, guild, `Wrong command synthax`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} unset/remove <@User/@Role/userid:UserID/internalRole:internalRole> <permission>\``, [], true); /*Updated To New Utils*/
             let permissionName = args[2];
             let embed = new MessageEmbed({
                 title: `Unknown scope`,
@@ -328,7 +328,7 @@ module.exports = {
             }).catch(e => utils.messageReplyFailLogger(message, guild, e));
             return true;
         }
-        return utils.sendError(message, guild, `Error`, `Unknown subcommand.`);
+        return utils.sendError(message, guild, `Error`, `Unknown subcommand.`, [], true); /*Updated To New Utils*/
     }
 }
 
@@ -374,7 +374,7 @@ function sendPermissions(message, guild, args, scope, permissions) {
         }
     });
 
-    if (typeof page == "string") return utils.sendError(message, guild, page);
+    if (typeof page == "string") return utils.sendError(message, guild, page, undefined, [], true); /*Updated To New Utils*/
 
     embedFields.forEach(embedField => {
         embed.addField(embedField[0], embedField[1], embedField[2]);

@@ -25,13 +25,13 @@ module.exports = {
             fields.push([`**Sub Commands:**`, `None yet`, false]);
             fields.push([`**Usage:**`, `${guild.configuration.prefix}${this.name} <userId> [reason]`, false]);
             fields.push([`**Example:**`, `${guild.configuration.prefix}${this.name} 168754125874596348 We miss you`, false]);
-            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, undefined, undefined, fields);
+            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
         }
         let userToUnban = args.shift();
         let reason = args.join(' ');
         let result = await guild.unbanUser(message, userToUnban, reason);
-        if (result.errored == true) return utils.sendError(message, guild, `Could not unban user`, `${result.reason}`);
-        utils.sendSuccess(message, guild, `User unbanned`);
+        if (result.errored == true) return utils.sendError(message, guild, `Could not unban user`, `${result.reason}`, [], true); /*Updated To New Utils*/
+        utils.sendSuccess(message, guild, `User unbanned`, undefined, [], true); /*Updated To New Utils*/
         return true;
     }
 }

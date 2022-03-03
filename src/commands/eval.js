@@ -22,8 +22,8 @@ module.exports = {
             color: guild.configuration.colors.success
         });
 
-        if (args.length == 0) return utils.sendError(message, guild, `Could not eval`, `Args empty`);
-        if (args[0] == "help") return utils.sendMain(message, guild, `Eval quick help`, `Return variable = \`returnValue\``);
+        if (args.length == 0) return utils.sendError(message, guild, `Could not eval`, `Args empty`, [], true); /*Updated To New Utils*/
+        if (args[0] == "help") return utils.sendMain(message, guild, `Eval quick help`, `Return variable = \`returnValue\``, [], true); /*Updated To New Utils*/
 
         embed.description = await new Promise(async (res, rej) => {
             let returnValue = `No return value.`;

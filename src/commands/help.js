@@ -27,7 +27,7 @@ module.exports = {
             let permissionToCheck = command.permission;
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
-            if (command.status && hasPermission && ((typeof category != "undefined") ? command.category == category : true)) embedFields.push([`**${command.name}**`,
+            if (command.status && hasPermission && (true || (typeof category != "undefined") ? command.category == category : true)) embedFields.push([`**${command.name}**`,
                 `${(command.aliases.length != 0) ? `Aliases : \`${command.aliases.join('`, `')}\`` : ``}\nDescription : ${command.description}\nCategory: \`${command.category}\`\nPermission : \`${(command.permission.length <= 500) ? command.permission : `The command permission is too long to be shown.`}\`\nNested permissions: ${(Object.keys(command.nestedPermissions).length != 0) ? `\`${Object.values(command.nestedPermissions).join(`\`, \``)}\`` : `No other permissions`}`, false
             ]);
         }
@@ -43,12 +43,12 @@ module.exports = {
             try {
                 args[0] = parseInt(args[0]);
             } catch (e) {
-                return utils.sendError(message, guild, `Pages must be selected by numbers.`);
+                return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
             }
             embed.footer = {
                 text: `Use \`${guild.configuration.prefix}help [page number] [category]\` to search thru pages. [${args[0]}/${embedPages.length}]`
             };
-            if (typeof embedPages[args[0] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`);
+            if (typeof embedPages[args[0] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
             embedFields = embedPages[args[0] - 1];
         }
 

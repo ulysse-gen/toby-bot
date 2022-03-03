@@ -20,27 +20,52 @@ module.exports = {
         addrole: {
             description: "Add a role to the AutoKick",
             type: "String",
-            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+            args: [{
+                description: "Guild role",
+                placeholder: ["@Role"],
+                type: "String",
+                optionnal: false
+            }]
         },
         removerole: {
             description: "Remove a role from the AutoKick",
             type: "String",
-            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+            args: [{
+                description: "Guild role",
+                placeholder: ["@Role"],
+                type: "String",
+                optionnal: false
+            }]
         },
         addtoblacklist: {
             description: "Add a role to the AutoKick blacklist",
             type: "String",
-            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+            args: [{
+                description: "Guild role",
+                placeholder: ["@Role"],
+                type: "String",
+                optionnal: false
+            }]
         },
         addfromblacklist: {
             description: "Add a role from the AutoKick blacklist",
             type: "String",
-            args: [{description:"Guild role", placeholder:["@Role"],type:"String",optionnal:false}]
+            args: [{
+                description: "Guild role",
+                placeholder: ["@Role"],
+                type: "String",
+                optionnal: false
+            }]
         },
         logkickedusers: {
             description: "Enable or disable the logging of kicked users in the logging channel",
             type: "String",
-            args: [{description:"Guild role", placeholder:["true","false"],type:"Boolean",optionnal:false}]
+            args: [{
+                description: "Guild role",
+                placeholder: ["true", "false"],
+                type: "Boolean",
+                optionnal: false
+            }]
         },
         prepare: {
             description: "Fetch the users before triggering the command",
@@ -50,7 +75,12 @@ module.exports = {
         trigger: {
             description: "Trigger the AutoKick",
             type: "String",
-            args: [{description:"Trigger option", placeholder:["testrun","nuke"],type:"String",optionnal:true}]
+            args: [{
+                description: "Trigger option",
+                placeholder: ["testrun", "nuke"],
+                type: "String",
+                optionnal: true
+            }]
         },
         clear: {
             description: "Clear the prepared AutoKick",
@@ -123,51 +153,14 @@ module.exports = {
             return true;
         }
 
-        if (args[0].toLowerCase() == "status" && false) {
-            let permissionToCheck = this.nestedPermissions.settings;
-            let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
-            let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
-
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-
-            if (args.length != 2) {
-                let embed = new MessageEmbed({
-                    title: `${configuration.appName}'s AutoKick Status`,
-                    color: guild.configuration.colors.main,
-                    description: `***This has no usage yet, to trigger an autokick use *** \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}autokick trigger\``
-                });
-                message.reply({
-                    embeds: [embed],
-                    failIfNotExists: false
-                }, false).then(msg => {
-                    if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
-                }).catch(e => utils.messageReplyFailLogger(message, guild, e));
-                return true;
-            }
-            let statusValue = (args[1] == '1' || args[1] == "true" || args[1] == "yes") ? true : false;
-            guild.configuration.autokick.status = statusValue;
-            guild.configurationManager.save();
-            let embed = new MessageEmbed({
-                title: `AutoKick status set`,
-                color: guild.configuration.colors.main
-            });
-            message.reply({
-                embeds: [embed],
-                failIfNotExists: false
-            }, false).then(msg => {
-                if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
-            }).catch(e => utils.messageReplyFailLogger(message, guild, e));
-            return true;
-        }
-
         if (args[0].toLowerCase() == "logkickedusers") {
             let permissionToCheck = this.nestedPermissions.settings;
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
-            if (args.length == 1) return utils.sendMain(message, guild, `AutoKick Helper`, `Usage: \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}autokick logKickedUsers <true/false>\``);
+            if (args.length == 1)return utils.sendMain(message, guild, `AutoKick Helpfer`, `Usage: \`${guild.configuration.prefix}autokick logKickedUsers <true/false>\``, [], true); /*Updated To New Utils*/
 
             let statusValue = (args[1] == '1' || args[1] == "true" || args[1] == "yes") ? true : false;
             guild.configuration.autokick.logKickedUsers = statusValue;
@@ -181,9 +174,9 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `AutoKick Error`, `You must mention at least one role to add.`);
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `AutoKick Error`, `You must mention at least one role to add.`, [], true); /*Updated To New Utils*/
 
             let rolesToAdd = message.mentions.roles;
 
@@ -193,7 +186,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `AutoKick role(s) added`, `Current roles in scope : ${(guild.configuration.autokick.rolesToKick.length == 0) ? `none` : `<@&${(guild.configuration.autokick.rolesToKick.length == 1) ? guild.configuration.autokick.rolesToKick : guild.configuration.autokick.rolesToKick.join(`>, <@&`)}>` }`);
+            return utils.sendMain(message, guild, `AutoKick role(s) added`,`Current roles in scope : ${(guild.configuration.autokick.rolesToKick.length == 0) ? `none` : `<@&${(guild.configuration.autokick.rolesToKick.length == 1) ? guild.configuration.autokick.rolesToKick : guild.configuration.autokick.rolesToKick.join(`>, <@&`)}>` }`, [], true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "removerole") {
@@ -201,9 +194,9 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `AutoKick Error`, `You must mention at least one role to remove.`);
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `AutoKick Error`, `You must mention at least one role to remove.`, [], true); /*Updated To New Utils*/
 
             let rolesToRemove = message.mentions.roles;
 
@@ -215,7 +208,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `AutoKick role(s) removed`, `Current roles in scope : ${(guild.configuration.autokick.rolesToKick.length == 0) ? `none` : `<@&${(guild.configuration.autokick.rolesToKick.length == 1) ? guild.configuration.autokick.rolesToKick : guild.configuration.autokick.rolesToKick.join(`>, <@&`)}>` }`);
+            return utils.sendMain(message, guild, `AutoKick role(s) removed`, `Current roles in scope : ${(guild.configuration.autokick.rolesToKick.length == 0) ? `none` : `<@&${(guild.configuration.autokick.rolesToKick.length == 1) ? guild.configuration.autokick.rolesToKick : guild.configuration.autokick.rolesToKick.join(`>, <@&`)}>` }`, [], true);/*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "addtoblacklist") {
@@ -223,8 +216,8 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to add.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to add.`, [], true); /*Updated To New Utils*/
 
             let blacklist = message.mentions.roles;
 
@@ -242,8 +235,8 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to remove.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to remove.`, [], true); /*Updated To New Utils*/
 
             let rolesToRemove = message.mentions.roles;
 
@@ -255,7 +248,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `Role(s) removed`, `Blacklisted role(s) are now <@&${(guild.configuration.autokick.blacklist.length == 1) ? guild.configuration.autokick.blacklist : guild.configuration.autokick.blacklist.join(`>, <@&`)}>.`);
+            return utils.sendMain(message, guild, `Role(s) removed`, `Blacklisted role(s) are now <@&${(guild.configuration.autokick.blacklist.length == 1) ? guild.configuration.autokick.blacklist : guild.configuration.autokick.blacklist.join(`>, <@&`)}>.`, [], true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "fixroles") {
@@ -263,9 +256,9 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
-            if (guild.configuration.autokick.rolesToKick.length == 0) return utils.sendError(message, guild, `AutoKick Error`, `No roles in scope, made it easy to fix. (the joke here is that I had nothing to do haha)`);
+            if (guild.configuration.autokick.rolesToKick.length == 0) return utils.sendError(message, guild, `AutoKick Error`, `No roles in scope, made it easy to fix. (the joke here is that I had nothing to do haha)`, [], true); /*Updated To New Utils*/
 
             let rolesLeft = guild.configuration.autokick.rolesToKick.length;
 
@@ -282,7 +275,7 @@ module.exports = {
                 rolesLeft--;
                 if (rolesLeft == 0) {
                     guild.configurationManager.save();
-                    return utils.sendMain(message, guild, `AutoKick roles fixed`, undefined);
+                    return utils.sendMain(message, guild, `AutoKick roles fixed`, undefined, [], true); /*Updated To New Utils*/
                 }
             });
         }
@@ -292,11 +285,11 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
             let rolesToKick = guild.configuration.autokick.rolesToKick;
 
-            //if (rolesToKick.length == 0) return utils.sendError(message, guild, `AutoKick Error`, `No roles in scope.`);
+            if (rolesToKick.length == 0) return utils.sendError(message, guild, `AutoKick Error`, `No roles in scope.`, [], true); /*Updated To New Utils*/
 
             guild.autokick = {
                 queue: {},
@@ -350,7 +343,7 @@ module.exports = {
                         }).catch(e => {});
                         clearInterval(updateInterval);
                     } else {
-                        if (typeof guild.autokick == "undefined")clearInterval(updateInterval);
+                        if (typeof guild.autokick == "undefined") clearInterval(updateInterval);
                         embed.fields = [];
                         embed.addField(`**Role(s) to kick :**`, (guild.configuration.autokick.rolesToKick.length == 0) ? `None, equals to @everyone` : `<@&${guild.configuration.autokick.rolesToKick.join(`>, <@&`)}>`, true);
                         embed.addField(`**Blacklisted roles:**`, (guild.configuration.autokick.blacklist.length == 0) ? `None` : `<@&${guild.configuration.autokick.blacklist.join(`>, <@&`)}>`, false);
@@ -366,7 +359,7 @@ module.exports = {
 
             }).catch(e => utils.messageReplyFailLogger(message, guild, e));
 
-            if (rolesLeft != 2147483647)client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
+            if (rolesLeft != 2147483647) client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
                 rolesToKick.forEach(indRole => {
                     fetchedGuild.roles.fetch(indRole).then(fetchedRole => {
                         let membersLeft = (typeof fetchedRole != "undefined" && fetchedRole != null) ? fetchedRole.members.size : 0;
@@ -379,7 +372,7 @@ module.exports = {
                         }
                         fetchedRole.members.forEach(indMember => {
                             let memberHasBlacklistedRole = (guild.configuration.autokick.blacklist.length != 0) ? indMember.roles.cache.some(indRole => guild.configuration.autokick.blacklist.includes(indRole.id)) : false;
-                            if (!memberHasBlacklistedRole)guild.autokick.queue[indMember.id] = indMember;
+                            if (!memberHasBlacklistedRole) guild.autokick.queue[indMember.id] = indMember;
                             membersLeft--;
                             if (membersLeft == 0) {
                                 rolesLeft--;
@@ -393,12 +386,12 @@ module.exports = {
                     });
                 });
             }).catch(e => utils.catchCustomLog(message, guild, e, `Could not fetch users`));
-            if (rolesLeft == 2147483647)client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
+            if (rolesLeft == 2147483647) client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
                 fetchedGuild.members.fetch().then(guildMembers => {
                     let membersLeft = (typeof guildMembers != "undefined" && guildMembers != null) ? guildMembers.size : 0;
                     guildMembers.forEach(indMember => {
                         let memberHasBlacklistedRole = (guild.configuration.autokick.blacklist.length != 0) ? indMember.roles.cache.some(indRole => guild.configuration.autokick.blacklist.includes(indRole.id)) : false;
-                        if (!memberHasBlacklistedRole)guild.autokick.queue[indMember.id] = indMember;
+                        if (!memberHasBlacklistedRole) guild.autokick.queue[indMember.id] = indMember;
                         membersLeft--;
                         if (membersLeft == 0) {
                             rolesLeft == 0;
@@ -417,13 +410,13 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
             if (typeof guild.autokick == "undefined") return utils.sendError(message, guild, `AutoKick Error`, `Nothing pending, run \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}autokick prepare\` to trigger the fetching.`);
 
             if (guild.autokick.ready == false) return utils.sendError(message, guild, `AutoKick Error`, `Fetching is still running.`);
 
-            if (typeof guild.autokick.triggered[message.author.id] != "undefined") return utils.sendError(message, guild, `AutoKick Error`, `You already triggered.`);
+            if (typeof guild.autokick.triggered[message.author.id] != "undefined") return utils.sendError(message, guild, `AutoKick Error`, `You already triggered.`, [], true); /*Updated To New Utils*/
 
             let embed = new MessageEmbed({
                 title: `${configuration.appName}'s AutoKick Triggerd`,
@@ -504,12 +497,12 @@ module.exports = {
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to execute '${cmd}' in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to execute \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
-            if (typeof guild.autokick == "undefined") return utils.sendError(message, guild, `AutoKick Error`, `Nothing to clear, run \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}autokick prepare\` to trigger the fetching.`);
+            if (typeof guild.autokick == "undefined") return utils.sendError(message, guild, `AutoKick Error`, `Nothing to clear, run \`${(typeof guild == "undefined") ? configuration.prefix : guild.configuration.prefix}autokick prepare\` to trigger the fetching.`, [], true); /*Updated To New Utils*/
 
             if (typeof guild.autokick != "undefined") delete guild.autokick;
-            return utils.sendMain(message, guild, `AutoKick pending cleared`);
+            return utils.sendMain(message, guild, `AutoKick pending cleared`, undefined, [], true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "reasonhelp" && false) {

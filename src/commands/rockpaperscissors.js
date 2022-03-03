@@ -47,7 +47,7 @@ module.exports = {
             if (typeof guild.waitingForMessage.channels[message.channel.id] == "undefined") guild.waitingForMessage.channels[message.channel.id] = [];
             guild.waitingForMessage.channels[message.channel.id][message.author.id] = (message) => {
                 let possibilities = ["rock", "paper", "scissors"];
-                if (!possibilities.includes(message.content)) return utils.sendError(message, guild, `Wrong play.`, `Possibilities are (case sensitive) : \`rock\`, \`paper\`, \`scissors\``);
+                if (!possibilities.includes(message.content)) return utils.sendError(message, guild, `Wrong play.`, `Possibilities are (case sensitive) : \`rock\`, \`paper\`, \`scissors\``, [], true); /*Updated To New Utils*/
                 if (message.content.startsWith(configuration.globalPrefix) || message.content.startsWith(guild.configuration.prefix)) return false;
                 guild.waitingForMessage.data.rockpaperscissors[message.author.id].gonnaPlay = possibilities[rn({
                     min: 0,
@@ -126,11 +126,11 @@ module.exports = {
                         round--;
                         embedFields.push([`Round ${round}`, `I played **${result.bot}**\nYou played **${result.player}**\nWinner: ${(result.wins == true) ? `**Me**` : (result.wins == false) ? `**You**` : `**None**`}`, false])
                     });
-                    utils.sendMain(message, guild, `${(wins.bot == wins.player) ? `Its a draw` : (wins.bot > wins.player) ? `I won` : `You won` }`, undefined, undefined, undefined, embedFields);
+                    utils.sendMain(message, guild, `${(wins.bot == wins.player) ? `Its a draw` : (wins.bot > wins.player) ? `I won` : `You won` }`, undefined, embedFields, true); /*Updated To New Utils*/
                     clearPending(guild, message);
                     return true;
                 } else {
-                    utils.sendMain(message, guild, `${(guild.waitingForMessage.data.rockpaperscissors[message.author.id].results[0].wins == null) ? `Its a draw, lets continue` : (guild.waitingForMessage.data.rockpaperscissors[message.author.id].results[0].wins == true) ? `I won, lets continue` : `You won, lets continue` }`);
+                    utils.sendMain(message, guild, `${(guild.waitingForMessage.data.rockpaperscissors[message.author.id].results[0].wins == null) ? `Its a draw, lets continue` : (guild.waitingForMessage.data.rockpaperscissors[message.author.id].results[0].wins == true) ? `I won, lets continue` : `You won, lets continue` }`, undefined, [], true); /*Updated To New Utils*/
                     return true;
                 }
             }

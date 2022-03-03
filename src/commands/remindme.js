@@ -26,7 +26,7 @@ module.exports = {
             fields.push([`**Sub Commands:**`, `None yet`, false]);
             fields.push([`**Usage:**`, `${guild.configuration.prefix}${this.name} <time> [reason]`, false]);
             fields.push([`**Example:**`, `${guild.configuration.prefix}${this.name} 24h Tell <@933695613294501888> how much i love him`, false]);
-            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, undefined, undefined, fields);
+            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
         }
         let reason = '';
         let time = 0;
@@ -46,6 +46,6 @@ module.exports = {
 
         let result = await guild.setReminder(message.channel.guild.id, message.author.id, message.channel.id, time, {text:reason});
         if (result == false)return utils.sendError(message, guild, `Could not set reminder`, `An error occured`);
-        return utils.sendSuccess(message, guild, `Reminder set !`, `I will remind you of that <t:${remindDate.unix()}>`);
+        return utils.sendSuccess(message, guild, `Reminder set !`, `I will remind you of that <t:${remindDate.unix()}>`, [], true); /*Updated To New Utils*/
     }
 }

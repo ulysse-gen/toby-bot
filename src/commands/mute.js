@@ -24,19 +24,19 @@ module.exports = {
             fields.push([`**Current mute role:**`, `${(typeof guild.configuration.moderation.muteRole == "string" && guild.configuration.moderation.muteRole != "none") ? `<@&${guild.configuration.moderation.muteRole}>` : `Not defined`}`, false]);
             fields.push([`**Usage:**`, `${guild.configuration.prefix}${this.name} <user> [time] [reason]`, false]);
             fields.push([`**Example:**`, `${guild.configuration.prefix}${this.name} @DopeUsername Being too cool\n${guild.configuration.prefix}${this.name} 168754125874596348 Being too cool\n${guild.configuration.prefix}${this.name} DopeUsername#0420 30min Being too cool`, false]);
-            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, undefined, undefined, fields);
+            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
         }
         if (args[0].toLowerCase() == "setmuterole") {
             let permissionToCheck = this.nestedPermissions.setMuteRole;
             let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
-            if (!hasPermission) return utils.sendDenied(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permissionToCheck}\`.`, `${message.author.tag}(${message.author.id}) tried to set muted role in [${message.channel.id}@${message.channel.guild.id}][Insufficient Permissions].`, `<@${message.author.id}>(${message.author.id}) tried to set muted role in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`);
-            if (message.mentions.roles.length == 0) return utils.sendError(message, guild, `Could not set mute role`, `No roles mentionned in your message.`);
+            if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+            if (message.mentions.roles.length == 0) return utils.sendError(message, guild, `Could not set mute role`, `No roles mentionned in your message.`, [], true); /*Updated To New Utils*/
             guild.configurationManager.set(`moderation.muteRole`, message.mentions.roles.first().id);
-            return utils.sendMain(message, guild, `Mute role defined`, `Mute role defined to <@&${message.mentions.roles.first().id}>`);
+            return utils.sendMain(message, guild, `Mute role defined`, `Mute role defined to <@&${message.mentions.roles.first().id}>`, [], true); /*Updated To New Utils*/
         }
-        if (typeof guild.configuration.moderation.muteRole != "string" || guild.configuration.moderation.muteRole == "") return utils.sendError(message, guild, `Could not mute`, `You must define the mute role before being able to mute.\nUse \`${guild.configuration.prefix}${this.name} setMuteRole @Role\``);
-        
+        if (typeof guild.configuration.moderation.muteRole != "string" || guild.configuration.moderation.muteRole == "") return utils.sendError(message, guild, `Could not mute`, `You must define the mute role before being able to mute.\nUse \`${guild.configuration.prefix}${this.name} setMuteRole @Role\``, [], true); /*Updated To New Utils*/
+
         let userToMute = args.shift();
         let reason = '';
         let time = 0;
@@ -48,7 +48,7 @@ module.exports = {
             reason = args.join(' ');
         }
         let result = await guild.muteUser(message, userToMute, reason, time);
-        if (result.errored == true) return utils.sendError(message, guild, `Could not mute user`, `${result.reason}`);
+        if (result.errored == true) return utils.sendError(message, guild, `Could not mute user`, `${result.reason}`, [], true); /*Updated To New Utils*/
         return false;
     }
 }

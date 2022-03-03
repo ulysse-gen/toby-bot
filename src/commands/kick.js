@@ -19,12 +19,12 @@ module.exports = {
             fields.push([`**Sub Commands:**`, `None yet`, false]);
             fields.push([`**Usage:**`, `${guild.configuration.prefix}${this.name} <user> [reason]`, false]);
             fields.push([`**Example:**`, `${guild.configuration.prefix}${this.name} @DopeUsername Being too cool\n${guild.configuration.prefix}${this.name} 168754125874596348 Being too cool\n${guild.configuration.prefix}${this.name} DopeUsername#0420 Being too cool`, false]);
-            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, undefined, undefined, fields);
+            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
         }
         let userToKick = args.shift();
         let reason = args.join(' ');
         let result = await guild.kickUser(message, userToKick, reason);
-        if (result.errored == true) return utils.sendError(message, guild, `Could not kick user`, `${result.reason}`);
+        if (result.errored == true) return utils.sendError(message, guild, `Could not kick user`, `${result.reason}`, [], true); /*Updated To New Utils*/
         return false;
     }
 }

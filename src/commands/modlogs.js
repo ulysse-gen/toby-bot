@@ -112,7 +112,7 @@ module.exports = {
             embed.footer = {
                 text: `Use \`${guild.configuration.prefix}moderationlogs <user> [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
             };
-            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`);
+            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
             embedFields = embedPages[args[1] - 1];
         }
 

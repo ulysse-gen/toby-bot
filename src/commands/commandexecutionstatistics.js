@@ -20,9 +20,9 @@ module.exports = {
     category: `informations`,
     status: true,
     async exec(client, message, args, guild = undefined) {
-        if (args.length == 0) return utils.sendError(message, guild, `Error`, `Please tell me the message id.`);
+        if (args.length == 0) return utils.sendError(message, guild, `Error`, `Please tell me the message id.`, [], true); /*Updated To New Utils*/
         let messageId = args.shift();
-        if (typeof executionTimes[messageId] == "undefined") return utils.sendError(message, guild, `Error`, `No records for this one.`);
+        if (typeof executionTimes[messageId] == "undefined") return utils.sendError(message, guild, `Error`, `No records for this one.`, [], true); /*Updated To New Utils*/
         let content = `Stats of the command execution from the message ${messageId}`;
         if (typeof executionTimes[messageId].messageCreate != "undefined") content += `\nMessage received : ${executionTimes[messageId].messageCreate}`;
         if (typeof executionTimes[messageId].gettingGuild != "undefined") content += `\nGetting guild : ${executionTimes[messageId].gettingGuild} (+${executionTimes[messageId].gettingGuild.diff(executionTimes[messageId].messageCreate)}ms)`;

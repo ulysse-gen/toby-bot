@@ -27,7 +27,7 @@ module.exports = {
         rig: "commands.russianroulette.rig"
     },
     async exec(client, message, args, guild = undefined) {
-        if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] != "undefined") return utils.sendError(message, guild, `A Russian Roulette is already running.`);
+        if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] != "undefined") return utils.sendError(message, guild, `A Russian Roulette is already running.`, undefined, [], true); /*Updated To New Utils*/
 
         const premadePrizes = {
             muted1min: {
@@ -204,7 +204,7 @@ module.exports = {
 
         if (args.length != 0) {
             clearPending(guild, message);
-            return utils.sendError(message, guild, `Unknown argument used`, `Command is \`t!rr [prizes] [-prize:prizeName] [-starttimer:startTimeSeconds] [-winners:winnersAmount]\``);
+            return utils.sendError(message, guild, `Unknown argument used`, `Command is \`t!rr [prizes] [-prize:prizeName] [-starttimer:startTimeSeconds] [-winners:winnersAmount]\``, [], true); /*Updated To New Utils*/
         }
 
         let embed = new MessageEmbed({
@@ -458,7 +458,7 @@ module.exports = {
                     ephemeral: true,
                 }).catch(e => {});
                 guild.waitingForInteraction.data.russianroulette[message.channel.id].status = "cancelled";
-                utils.sendSuccess(message, guild, `Russian Roulette cancelled.`);
+                utils.sendSuccess(message, guild, `Russian Roulette cancelled.`, undefined, [], true); /*Updated To New Utils*/
                 clearTimeout(startingTimeout);
                 return await interaction.reply({
                     content: 'You cancelled the Russian Roulette',
@@ -475,7 +475,7 @@ module.exports = {
                     ephemeral: true,
                 }).catch(e => {});
                 guild.waitingForInteraction.data.russianroulette[message.channel.id].status = "cancelled";
-                utils.sendSuccess(message, guild, `Russian Roulette stopped.`);
+                utils.sendSuccess(message, guild, `Russian Roulette stopped.`, undefined, [], true);/*Updated To New Utils*/
                 clearTimeout(startingTimeout);
                 return await interaction.reply({
                     content: 'You stopped the Russian Roulette',

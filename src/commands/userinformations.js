@@ -34,7 +34,7 @@ module.exports = {
             }).catch(e => {
                 return undefined;
             });
-            if (typeof user == "undefined") return utils.sendError(message, guild, `Could not get user data`, `User not found`);
+            if (typeof user == "undefined") return utils.sendError(message, guild, `Could not get user data`, `User not found`, [], true); /*Updated To New Utils*/
         }
         if (args.length == 0) user = await message.channel.guild.members.fetch(message.author.id, {
             cache: false,
