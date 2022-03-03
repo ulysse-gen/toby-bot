@@ -40,13 +40,7 @@ module.exports = {
             reason = args.join(' ');
         }
         let user = await guild.grabUser(message, userToBan);
-        let userPFP = await new Promise((res, rej) => {
-            if (typeof user.user.avatar == "undefined")res(`https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`)
-            let baseOfUrl = (user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
-            urlExists(`${baseOfUrl}.gif`, function (err, exists) {
-                res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
-            });
-        });
+        let userPFP = await utils.getUserPfp(user);
         let embed = new MessageEmbed({
             color: guild.configuration.colors.main,
             author: {

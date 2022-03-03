@@ -24,11 +24,12 @@ module.exports = {
             color: guild.configuration.colors.success
         });
         await globalCommands.reload();
-        delete require.cache[require.resolve(`../../src/handlers/messageCreate`)];
-        delete require.cache[require.resolve(`../../src/handlers/interactionCreate`)];
+        delete require.cache[require.resolve(`../handlers/messageCreate`)];
+        delete require.cache[require.resolve(`../handlers/interactionCreate`)];
         delete require.cache[require.resolve(`../handlers/DMHandler`)];
         delete require.cache[require.resolve(`../handlers/chatModeration`)];
         delete require.cache[require.resolve(`../handlers/commandHandler`)];
+        delete require.cache[require.resolve(`../utils`)];
         embed.addField(`**Commands loaded**`, `${globalCommands.commands.length}`, true);
 
         message.reply({

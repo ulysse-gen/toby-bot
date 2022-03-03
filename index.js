@@ -183,5 +183,5 @@ module.exports.globalGuilds = globalGuilds;
 
 //Debug stuff & more
 module.exports.reload = false;
-module.exports.enableCatching = false;
+module.exports.enableCatching = true;
 module.exports.executionTimes = {};

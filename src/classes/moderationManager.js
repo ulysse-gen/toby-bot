@@ -62,13 +62,7 @@ module.exports = class moderationManager {
     async sendPunishEmbed(message, guild, type, caseId, user, moderatorId, reason, length) {
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
-        let userPFP = await new Promise((res, rej) => {
-            if (typeof user.user.avatar == "undefined")res(`https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`)
-            let baseOfUrl = (user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
-            urlExists(`${baseOfUrl}.gif`, function (err, exists) {
-                res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
-            });
-        });
+        let userPFP = await utils.getUserPfp(user);
         let embed = new MessageEmbed({
             color: guild.configuration.colors.main,
             author: {
@@ -105,13 +99,7 @@ module.exports = class moderationManager {
         });
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
-        let userPFP = await new Promise((res, rej) => {
-            if (typeof user.user.avatar == "undefined")res(`https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`)
-            let baseOfUrl = (user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
-            urlExists(`${baseOfUrl}.gif`, function (err, exists) {
-                res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
-            });
-        });
+        let userPFP = await utils.getUserPfp(user);
         let embed = new MessageEmbed({
             color: guild.configuration.colors.main,
             author: {
@@ -135,13 +123,7 @@ module.exports = class moderationManager {
     async sendPlayerPunishment(message, guild, type, user, moderatorId, reason, length) {
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
-        let userPFP = await new Promise((res, rej) => {
-            if (typeof user.user.avatar == "undefined")res(`https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`)
-            let baseOfUrl = (user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
-            urlExists(`${baseOfUrl}.gif`, function (err, exists) {
-                res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
-            });
-        });
+        let userPFP = await utils.getUserPfp(user);
         let embed = new MessageEmbed({
             color: guild.configuration.colors.error,
             description: (type == "Warn") ? `You have been warned in ${guild.guild.name}` : (type == "Kick") ? `You have been kicked from ${guild.guild.name}` : (type == "Ban") ? `You have been banned from ${guild.guild.name}` : (type == "Mute") ? `You have been muted in ${guild.guild.name}` : ``,
