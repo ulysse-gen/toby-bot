@@ -41,7 +41,7 @@ module.exports = async function (message) {
         "<:meme_reverse:924184793053294623>": ["ily", "i love you"],
         "🥖": ["baguette", "baget", "baguet", "bread"]
     };
-    let doNotReact = ["react", "reply", "emoji", "emote", "eyes", "put", "emoticon", "respond", "place", "hate", "position", "below", "under", "set", "please", "👀", "👁", "🥖", "uno", "card"];
+    let doNotReact = ["react", "reply", "emoji", "emote", "eyes", "put", "emoticon", "respond", "place", "hate", "position", "below", "under", "set", "please", "👀", "👁", "🥖", "uno", "card", "if"];
 
     if (!doNotReact.some(ind => message.content.toLowerCase().includes(ind)))
         if (reactions["👀"].some(ind => message.content.toLowerCase().includes(ind))) {
