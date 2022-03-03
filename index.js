@@ -7,6 +7,13 @@ const {
 } = require('discord.js');
 const discordVoice = require('@discordjs/voice');
 var heapdump = require('heapdump');
+var fs = require('fs');
+
+if (!fs.existsSync(`${process.cwd()}/logs`)){
+    console.log(`Please create your MySQL.json file`);
+    process.exit();
+    return true;
+}
 
 //Setup god damn INTENTS
 let intents = new Intents();

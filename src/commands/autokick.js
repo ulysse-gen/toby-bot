@@ -472,7 +472,7 @@ module.exports = {
 
             if (guild.autokick.triggersLeft != 0) return true;
 
-            const kickLog = new Logger(`./configurations/guilds/${message.channel.guild.id}/kickLog.txt`);
+            const kickLog = new Logger(`./logs/guilds/${message.channel.guild.id}/kickLog.txt`);
 
             if ((guild.configuration.autokick.logKickedUsers && guild.logToChannel.initialized) && (typeof args[1] == "string" && args[1].toLowerCase() == "nuke")) {
                 guild.logToChannel.channel.send(`https://tenor.com/view/explosion-mushroom-cloud-atomic-bomb-bomb-boom-gif-4464831`)
