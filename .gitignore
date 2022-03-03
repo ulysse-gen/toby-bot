@@ -104,5 +104,7 @@ dist
 .tern-port
 
 #Toby Bot related
-logs/
-MySQL.json
+/MySQL.json
+/.git-credentials
+/.gitconfig
+.cache/
