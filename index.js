@@ -9,7 +9,7 @@ const discordVoice = require('@discordjs/voice');
 var heapdump = require('heapdump');
 var fs = require('fs');
 
-if (!fs.existsSync(`${process.cwd()}/logs`)){
+if (!fs.existsSync(`MySQL.json`)){
     console.log(`Please create your MySQL.json file`);
     process.exit();
     return true;
