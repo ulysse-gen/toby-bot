@@ -137,7 +137,7 @@ module.exports = class guildManager {
         if (!this.initialized || !this.configuration.behaviour.logToChannel.status) return;
         if (typeof this.logToChannel.initialized == "undefined" || !this.logToChannel.initialized) return false;
         if (typeof title != "string" || title == "") return false;
-        if (typeof description != "string" ||description == "") return false;
+        if (typeof description != "string" || description == "") return false;
         if (typeof color != "string" || color == "") return false;
         if (typeof fields != "object") return false;
         let embed = new MessageEmbed().setTitle(title).setDescription(description).setColor(color);
@@ -215,7 +215,13 @@ module.exports = class guildManager {
         };
         if (typeof user == "undefined") return this.guild.bans.create(userId)
             .then(() => {
-                return afterBan({id: userId, user: {id: userId, tag: `Unknown#Tag`}})
+                return afterBan({
+                    id: userId,
+                    user: {
+                        id: userId,
+                        tag: `Unknown#Tag`
+                    }
+                })
             })
             .catch(e => {
                 return {

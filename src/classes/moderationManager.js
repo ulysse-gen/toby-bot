@@ -62,7 +62,7 @@ module.exports = class moderationManager {
     async sendPunishEmbed(message, guild, type, caseId, user, moderatorId, reason, length) {
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
-        let userPFP = await utils.getUserPfp(user);
+        let userPFP = await getUserPfp(user);
         let embed = new MessageEmbed({
             color: guild.configuration.colors.main,
             author: {
@@ -99,7 +99,7 @@ module.exports = class moderationManager {
         });
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
-        let userPFP = await utils.getUserPfp(user);
+        let userPFP = await getUserPfp(user);
         let embed = new MessageEmbed({
             color: guild.configuration.colors.main,
             author: {
@@ -123,7 +123,7 @@ module.exports = class moderationManager {
     async sendPlayerPunishment(message, guild, type, user, moderatorId, reason, length) {
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
-        let userPFP = await utils.getUserPfp(user);
+        let userPFP = await getUserPfp(user);
         let embed = new MessageEmbed({
             color: guild.configuration.colors.error,
             description: (type == "Warn") ? `You have been warned in ${guild.guild.name}` : (type == "Kick") ? `You have been kicked from ${guild.guild.name}` : (type == "Ban") ? `You have been banned from ${guild.guild.name}` : (type == "Mute") ? `You have been muted in ${guild.guild.name}` : ``,
@@ -233,4 +233,14 @@ module.exports = class moderationManager {
             });
         });
     }
+}
+
+async function getUserPfp (user) {
+    if (typeof user == "undefined") return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
+    if (typeof user.user.avatar == "undefined" && typeof user.avatar == "undefined") return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
+    return await new Promise((res, rej) => {
+        urlExists(`${(user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}` }`, function (err, exists) {
+            res((exists) ? `${(user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}` }.gif` : `${(user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}` }.webp`);
+        });
+    });
 }
