@@ -18,8 +18,8 @@ module.exports = {
     permission: `commands.welcome`,
     category: `fun`,
     status: true,
-    cooldown: 300,
-    globalCooldown: 250,
+    cooldown: 200,
+    globalCooldown: 175,
     async exec(client, message, args, guild = undefined) {
         let embed = new MessageEmbed({
             title: (message.mentions.members.size != 0) ? `Hi there ${message.mentions.members.first().user.username}#${message.mentions.members.first().user.discriminator} !` : `Hi there !`,
