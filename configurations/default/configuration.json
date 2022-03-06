@@ -21,6 +21,9 @@
       "logCommandExecutions": true,
       "logSaidMessages": true,
       "logDiscordErrors": true,
+      "deleteMessageOnUnknown": true,
+      "deleteMessageOnDeny": true,
+      "deleteMessageOnCooldown": true,
       "sendConfigInEmbed": true,
       "helpOnlySendPermissionnedCommands": true,
       "logToChannel": {

@@ -38,7 +38,7 @@ module.exports = async function (message, guild = undefined) {
     let command = globalCommands.fetch(cmd);
     executionTimes[message.id].fetchedCommand = moment();
 
-    if (!command) return utils.unknownCommand(message, guild, true, 5000, 5000);
+    if (!command) return utils.unknownCommand(message, guild, true, (guild.configuration.behaviour.deleteMessageOnUnknown) ? 5000 : -1, (guild.configuration.behaviour.deleteMessageOnUnknown) ? 5000 : -1);
 
     executionTimes[message.id].gettingCommandPermission = moment();
     let permissionToCheck = command.permission;
@@ -50,7 +50,7 @@ module.exports = async function (message, guild = undefined) {
     executionTimes[message.id].gotCommandGuildPermission = moment();
     let hasPermission = (hasGlobalPermission == null) ? hasGuildPermission : hasGlobalPermission;
     executionTimes[message.id].gotPermission = moment();
-    if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
+    if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, (guild.configuration.behaviour.deleteMessageOnDeny) ? 5000 : -1, (guild.configuration.behaviour.deleteMessageOnDeny) ? 5000 : -1);
 
     executionTimes[message.id].gettingCooldownPermission = moment();
     let cooldownPerm = `skipcooldowns.${command.permission}`;
@@ -65,7 +65,7 @@ module.exports = async function (message, guild = undefined) {
 
     if (command.globalcooldown != 0 && !hasSkipCooldownPerms)
         if (typeof globalCommands.globalCooldowns[command.name] != "undefined") {
-            return utils.cooldownCommand(message, guild, cooldownPerm, reply, 5000, 5000);
+            return utils.cooldownCommand(message, guild, cooldownPerm, true, (guild.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
         } else {
             if (typeof globalCommands.globalCooldowns[command.name] == "undefined") globalCommands.globalCooldowns[command.name] = true;
             setTimeout(() => {
@@ -74,7 +74,7 @@ module.exports = async function (message, guild = undefined) {
         }
     if (command.cooldown != 0 && !hasSkipCooldownPerms)
         if (typeof globalCommands.cooldowns[message.author.id] != "undefined" && typeof globalCommands.cooldowns[message.author.id][command.name] != "undefined") {
-            return utils.cooldownCommand(message, guild, cooldownPerm, reply, 5000, 5000);
+            return utils.cooldownCommand(message, guild, cooldownPerm, true, (guild.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
         } else {
             if (typeof globalCommands.cooldowns[message.author.id] == "undefined") globalCommands.cooldowns[message.author.id] = {};
             globalCommands.cooldowns[message.author.id][command.name] = true;
