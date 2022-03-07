@@ -15,7 +15,7 @@ module.exports = {
     permission: `commands.changelog`,
     category: `informations`,
     async exec(client, message, args, guild = undefined) {
-        let description = `- Changed the whole return system`
+        let description = `- Fixed PFP display not working`
         return utils.sendMain(message, guild, `Changelog v${package.version}`, `${description}`, [], true);
     }
 }
