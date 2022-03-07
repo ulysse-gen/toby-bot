@@ -114,11 +114,11 @@ exports.lockdownDenied = (message, guild, reply = false, deleteOriginalAfter = -
 }
 
 exports.getUserPfp = async (user) => {
-    if (typeof user == "undefined")return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
-    if (typeof user.user.avatar == "undefined" && typeof user.avatar == "undefined")return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
+    if (typeof user == "undefined" || (typeof user.user.avatar == "undefined" && typeof user.avatar == "undefined"))return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
     return await new Promise((res, rej) => {
-        urlExists(`${(user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}` }`, function (err, exists) {
-            res((exists) ? `${(user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}` }.gif` : `${(user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}` }.webp`);
+        let urlBase = (user.avatar != null) ? `https://cdn.discordapp.com/avatars/${user.user.id}/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
+        urlExists(`${urlBase}.gif`, function (err, exists) {
+            res((exists) ? `${urlBase}.gif` : `${urlBase}.webp`);
         });
     });
 }
