@@ -24,7 +24,7 @@ module.exports = {
         let embed = new MessageEmbed({
             title: (message.mentions.members.size != 0) ? `Hi there ${message.mentions.members.first().user.username}#${message.mentions.members.first().user.discriminator} !` : `Hi there !`,
             color: guild.configuration.colors.main,
-            description: `Welcome to TobyCord`
+            description: `Welcome to ${guild.guild.name}`
         });
         embed.addField(`**📌 First of all, go read**`, `<#892106114865438721>`, true);
         embed.addField(`**📌 Make sure you get some**`, `<#907859717886447626>`, true);

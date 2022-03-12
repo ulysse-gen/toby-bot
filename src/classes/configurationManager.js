@@ -189,8 +189,7 @@ module.exports = class configuationManager {
     async checkForMissingKeys() {
         let defaultConfiguration = require(this.fallbackFile);
         let currentConfiguration = this.configuration;
-        let newConfiguration = await mergeRecursive(currentConfiguration, defaultConfiguration);
-        this.configuration = newConfiguration;
+        this.configuration = await mergeRecursive(currentConfiguration, defaultConfiguration);
         this.save();
         return true;
     }

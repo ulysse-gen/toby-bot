@@ -46,7 +46,7 @@ module.exports = {
                     ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
                     res(false);
                 }
-                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${user.user.id}' AND status!='deleted'`, async function (error, results, fields) {
+                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${user.user.id}' AND status!='deleted' AND \`guildId\`='${message.channel.guild.id}'`, async function (error, results, fields) {
                     if (results.length == 0) {
                         try {
                             connection.release()

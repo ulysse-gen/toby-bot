@@ -83,7 +83,7 @@ module.exports = {
                     ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
                     res(false);
                 }
-                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`moderatorId\`='${user.user.id}'`, async function (error, results, fields) {
+                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`moderatorId\`='${user.user.id}' AND \`guildId\`='${message.channel.guild.id}'`, async function (error, results, fields) {
                     if (results.length == 0) {
                         try { connection.release() } catch (e) {}
                         res(stats);

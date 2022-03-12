@@ -141,7 +141,7 @@ module.exports = class moderationManager {
             if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         }).catch(e => {
             ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`)
-            if (e.code == 50007)message.channel.send(`Could not send message to this user.`);
+            if (e.code == 50007) message.channel.send(`Could not send message to this user.`);
             return {
                 errored: true,
                 reason: e
@@ -219,11 +219,23 @@ module.exports = class moderationManager {
                 connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`numId\`=${caseId} AND \`guildId\`='${message.channel.guild.id}'`, async function (error, results, fields) {
                     if (error) {
                         ErrorLog.log(`An error occured during the query. ${error.toString()}`);
-                        res({error: `An error occured getting the punishment from the database.`});
-                    }if (typeof results == "undefined" || results.length == 0 || results[0].status == "deleted")res({error: `Punishment not found.`});
-                    if ((results[0].type == "Mute" || results[0].type == "Ban") && results[0].status == "active"){
+                        res({
+                            error: `An error occured getting the punishment from the database.`
+                        });
+                        return true;
+                    }
+                    if (typeof results == "undefined" || results.length == 0 || typeof results[0] == "undefined" || results[0].status == "deleted") {
+                        res({
+                            error: `Punishment not found.`
+                        });
+                        return true;
+                    }
+                    if ((results[0].type == "Mute" || results[0].type == "Ban") && results[0].status == "active") {
                         if (moment(results[0].expires).isAfter(moment())) {
-                            res({error:`This punishment isnt expired yet. ${(results[0].type == "Mute") ? `Unmute` : `Unban`} then delete the punishment.`});
+                            res({
+                                error: `This punishment isnt expired yet. ${(results[0].type == "Mute") ? `Unmute` : `Unban`} then delete the punishment.`
+                            });
+                            return true;
                         }
                     }
                     connection.query(`UPDATE \`moderationLogs\` SET \`status\`='deleted', \`updaterId\`='${message.author.id}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${caseId}`, async function (error, results, fields) {});
@@ -235,8 +247,8 @@ module.exports = class moderationManager {
     }
 }
 
-async function getUserPfp (user) {
-    if (typeof user == "undefined" || (typeof user.user.avatar == "undefined" && typeof user.avatar == "undefined"))return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
+async function getUserPfp(user) {
+    if (typeof user == "undefined" || (typeof user.user.avatar == "undefined" && typeof user.avatar == "undefined")) return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
     return await new Promise((res, rej) => {
         let urlBase = (user.avatar != null) ? `https://cdn.discordapp.com/guilds/${user.guild.id}/users/${user.user.id}/avatars/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
         urlExists(`${urlBase}.gif`, function (err, exists) {
