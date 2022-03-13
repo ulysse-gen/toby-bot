@@ -13,6 +13,7 @@
     "anti-profanity": "^2.0.7",
     "colors": "^1.4.0",
     "discord.js": "^13.6.0",
+    "express": "^4.17.3",
     "heapdump": "^0.3.15",
     "i18n": "^0.14.1",
     "linkifyjs": "^3.0.5",

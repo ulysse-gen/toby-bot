@@ -12,7 +12,6 @@ var fs = require('fs');
 if (!fs.existsSync(`./MySQL.json`)){
     console.log(`Please create your MySQL.json file`);
     process.exit();
-    return true;
 }
 
 //Setup god damn INTENTS
@@ -59,6 +58,7 @@ client.on('ready', async () => {
     MainSQLLog.log(`Client Ready`, `Logged in as ${client.user.tag} on version ${package.version}`);
     MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${package.version.green}]`);
     require(`./src/managers/presenceManager`)();
+    require(`./src/managers/api`)();
     setInterval(() => globalSqlManager.checkForExpiredModeration(), 60000);
     setInterval(() => globalSqlManager.checkForReminders(), 5000);
     try {
@@ -70,7 +70,7 @@ client.on('ready', async () => {
             selfDeaf: false
         }); //Auto join Members VC
     } catch (e) {
-        console.log(`Could not join VC. This message is normal in dev. ${e.toString()}`);
+        MainLog.log(`Could not join VC. This message is normal in dev. ${e.toString()}`.yellow);
     }
 });
 
