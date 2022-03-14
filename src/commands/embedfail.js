@@ -15,7 +15,8 @@ module.exports = {
     aliases: ["ef"],
     permission: `commands.embedfail`,
     nestedPermissions: {
-        tag: `commands.embedfail.tag`
+        tag: `commands.embedfail.tag`,
+        reply: `commands.embedfail.reply`
     },
     category: `fun`,
     cooldown: 300,
@@ -33,9 +34,19 @@ module.exports = {
 
         let sendThis = `${images[Math.floor(Math.random()*images.length)]}`;
 
-        let permissionToCheck = this.nestedPermissions.tag;
+        let permissionToCheck = this.nestedPermissions.reply;
         let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
         let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
+
+        if (hasPermission)
+            if (typeof message.type != "undefined" && message.type == "REPLY") return message.channel.messages.fetch(message.reference.messageId).then(fetchedMessage => {
+                fetchedMessage.reply(`${sendThis}`).catch(e => utils.catchCustomLog(message, guild, e, `Could not reply to message.`));
+                message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            }).catch(e => utils.catchCustomLog(message, guild, e, `Could not fetch message.`));
+
+        permissionToCheck = this.nestedPermissions.tag;
+        hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
+        hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
         if (hasPermission)
             if (message.mentions.members.size != 0) sendThis = `<@${message.mentions.members.first().user.id}> ${sendThis}`;

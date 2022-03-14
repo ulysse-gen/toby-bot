@@ -1,10 +1,10 @@
 {
   "name": "tobybot",
-  "version": "3.3.13",
+  "version": "3.3.14",
   "description": "Toby Discord Bot",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js --max-old-space-size=10240"
+    "start": "node index.js --max-old-space-size=4096"
   },
   "author": "UlysseLeGenie",
   "license": "ISC",

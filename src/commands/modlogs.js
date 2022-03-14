@@ -57,6 +57,10 @@ module.exports = {
                     results.reverse();
                     results.forEach(modAction => {
                         if (!modAction.reason.startsWith('[RR Auto]'))embedFields.push([`**Case #${modAction.numId}**`, `**Type:** ${modAction.type}\n**User:** <@${user.user.id}>(${user.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(modAction.type == "Mute" && modAction.status == "active") ? `\n**Expires:** <t:${moment(modAction.expires).unix()}>(<t:${moment(modAction.expires).unix()}:R>)` : ``}${(JSON.parse(modAction.messageHistory).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false]);
+                        if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Ban" && modAction.status == "unbanned")embedFields[embedFields.length-1][1] += `\n**Unbanned by:** <@${modAction.updaterId}>\n**Reason:** ${modAction.updateReason}\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
+                        if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Ban" && modAction.status == "expired")embedFields[embedFields.length-1][1] += `\n**Auto unbanned by TobyBot**\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
+                        if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Mute" && modAction.status == "unmuted")embedFields[embedFields.length-1][1] += `\n**Unmuted by:** <@${modAction.updaterId}>\n**Reason:** ${modAction.updateReason}\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
+                        if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Mute" && modAction.status == "expired")embedFields[embedFields.length-1][1] += `\n**Auto unmuted by TobyBot**: <t:${moment(modAction.updateTimestamp).unix()}>`;
                         control--;
                         if (control <= 0) {
                             try {

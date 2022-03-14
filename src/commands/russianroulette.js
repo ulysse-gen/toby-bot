@@ -248,6 +248,10 @@ module.exports = {
                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
                 if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
             });
+            if (guild.waitingForInteraction.data.russianroulette[message.channel.id].startTimer >= 150000){
+                guild.waitingForInteraction.data.russianroulette[message.channel.id].pinnedMessage = msg; 
+                msg.pin().catch(e=>utils.catchCustomLog(message, guild, e, `Could not pin message.`));
+            }
 
             function start() {
                 if (guild.waitingForInteraction.data.russianroulette[message.channel.id].status == "joining") {
@@ -507,5 +511,6 @@ module.exports = {
 function clearPending(guild, message) {
     guild.waitingForInteraction.data.russianroulette[message.channel.id].intervals.forEach(interval => clearInterval(interval));
     guild.waitingForInteraction.data.russianroulette[message.channel.id].timeouts.forEach(interval => clearTimeout(interval));
+    if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id].pinnedMessage != "undefined")guild.waitingForInteraction.data.russianroulette[message.channel.id].pinnedMessage.unpin().catch(e=>utils.catchCustomLog(message, guild, e, `Could not unpin message.`));
     delete guild.waitingForInteraction.data.russianroulette[message.channel.id];
 }
