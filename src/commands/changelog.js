@@ -15,10 +15,9 @@ module.exports = {
     permission: `commands.changelog`,
     category: `informations`,
     async exec(client, message, args, guild = undefined) {
-        let description = `- Modlogs now show unbans infos.`
-        description += `\n- Modlogs now show unmutes infos.`
-        description += `\n- Replying to a user with \`ef\` command now reply to that message with the embedfail gif.`
-        description += `\n- Russian Roulette now auto pin & unpin the main message if the start timer is above 150 seconds.`
+        let description = `- Embedfail now rely on https://tenor.com/, filters can be applied hard coded, if you see a weird gif sent by the bot please tell me asap.`
+        description += `\n- New \`hug\` command.`
+        description += `\n- New \`kiss\` command.`
         return utils.sendMain(message, guild, `Changelog v${package.version}`, `${description}`, [], true);
     }
 }
