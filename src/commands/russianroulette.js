@@ -24,7 +24,8 @@ module.exports = {
         stop: "commands.russianroulette.stop",
         cancel: "commands.russianroulette.cancel",
         join: "commands.russianroulette.join",
-        rig: "commands.russianroulette.rig"
+        rig: "commands.russianroulette.rig",
+        sike: "commands.russianroulette.sike"
     },
     async exec(client, message, args, guild = undefined) {
         if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id] != "undefined") return utils.sendError(message, guild, `A Russian Roulette is already running.`, undefined, [], true); /*Updated To New Utils*/
@@ -110,7 +111,7 @@ module.exports = {
             }
         }
 
-        if (args.length != 0 && args[0].toLowerCase() == "prizes"){
+        if (args.length != 0 && args[0].toLowerCase() == "prizes") {
             let embed = new MessageEmbed({
                 title: `Russian roulette prizes :`,
                 color: guild.configuration.colors.main
@@ -140,7 +141,8 @@ module.exports = {
             roundTimer: 9000,
             intervals: [],
             timeouts: [],
-            cannotDie: []
+            cannotDie: [],
+            sike: undefined
         };
 
         let customPermission = this.nestedPermissions.custom;
@@ -184,6 +186,12 @@ module.exports = {
                 if (invividualArgument.toLowerCase().startsWith("-notriggedatall:")) {
                     try {
                         guild.waitingForInteraction.data.russianroulette[message.channel.id].cannotDie = invividualArgument.replace('-notriggedatall:', ``).split(',');
+                        args = args.filter(arrayItem => arrayItem !== invividualArgument);
+                    } catch (e) {}
+                }
+                if (invividualArgument.toLowerCase().startsWith("-sike:")) {
+                    try {
+                        guild.waitingForInteraction.data.russianroulette[message.channel.id].sike = invividualArgument.replace('-sike:', ``);
                         args = args.filter(arrayItem => arrayItem !== invividualArgument);
                     } catch (e) {}
                 }
@@ -248,9 +256,9 @@ module.exports = {
                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
                 if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
             });
-            if (guild.waitingForInteraction.data.russianroulette[message.channel.id].startTimer >= 150000){
-                guild.waitingForInteraction.data.russianroulette[message.channel.id].pinnedMessage = msg; 
-                msg.pin().catch(e=>utils.catchCustomLog(message, guild, e, `Could not pin message.`));
+            if (guild.waitingForInteraction.data.russianroulette[message.channel.id].startTimer >= 150000) {
+                guild.waitingForInteraction.data.russianroulette[message.channel.id].pinnedMessage = msg;
+                msg.pin().catch(e => utils.catchCustomLog(message, guild, e, `Could not pin message.`));
             }
 
             function start() {
@@ -322,6 +330,10 @@ module.exports = {
                             integer: true
                         })];
                         if (control > 0 && !guild.waitingForInteraction.data.russianroulette[message.channel.id].cannotDie.includes(youDead.id)) control--;
+                        if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id].sike != "undefined")
+                            if (control > 0 && guild.waitingForInteraction.data.russianroulette[message.channel.id].sike == youDead.id && guild.waitingForInteraction.data.russianroulette[message.channel.id].alivePlayers.length != 2) control--;
+                        if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id].sike != "undefined")
+                            if (control > 0 && guild.waitingForInteraction.data.russianroulette[message.channel.id].sike == youDead.id && guild.waitingForInteraction.data.russianroulette[message.channel.id].alivePlayers.length == 2) control--;
                         if (control <= 0) {
                             guild.waitingForInteraction.data.russianroulette[message.channel.id].alivePlayers = guild.waitingForInteraction.data.russianroulette[message.channel.id].alivePlayers.filter(function (value, index, arr) {
                                 return value != youDead;
@@ -479,7 +491,7 @@ module.exports = {
                     ephemeral: true,
                 }).catch(e => {});
                 guild.waitingForInteraction.data.russianroulette[message.channel.id].status = "cancelled";
-                utils.sendSuccess(message, guild, `Russian Roulette stopped.`, undefined, [], true);/*Updated To New Utils*/
+                utils.sendSuccess(message, guild, `Russian Roulette stopped.`, undefined, [], true); /*Updated To New Utils*/
                 clearTimeout(startingTimeout);
                 return await interaction.reply({
                     content: 'You stopped the Russian Roulette',
@@ -511,6 +523,6 @@ module.exports = {
 function clearPending(guild, message) {
     guild.waitingForInteraction.data.russianroulette[message.channel.id].intervals.forEach(interval => clearInterval(interval));
     guild.waitingForInteraction.data.russianroulette[message.channel.id].timeouts.forEach(interval => clearTimeout(interval));
-    if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id].pinnedMessage != "undefined")guild.waitingForInteraction.data.russianroulette[message.channel.id].pinnedMessage.unpin().catch(e=>utils.catchCustomLog(message, guild, e, `Could not unpin message.`));
+    if (typeof guild.waitingForInteraction.data.russianroulette[message.channel.id].pinnedMessage != "undefined") guild.waitingForInteraction.data.russianroulette[message.channel.id].pinnedMessage.unpin().catch(e => utils.catchCustomLog(message, guild, e, `Could not unpin message.`));
     delete guild.waitingForInteraction.data.russianroulette[message.channel.id];
 }
