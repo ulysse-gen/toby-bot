@@ -15,9 +15,8 @@ module.exports = {
     permission: `commands.changelog`,
     category: `informations`,
     async exec(client, message, args, guild = undefined) {
-        let description = `- Reduced cooldown on \`hug\` & \`kiss\`.`
-        description += `\n- New \`hi\` command.`
-        description += `\n- New \`sike\` parameter in command \`russianroulette\`.`
+        description = `\n- New \`sticky\` command with \`pin\` alias. Kinda like a note but appear on top of every others player punishments on \`modlogs\`.`
+        description += `\n- New \`stickyhistory\` command with \`sh\` alias. List the history of all the sticky notes that a user ever had.`
         return utils.sendMain(message, guild, `Changelog v${package.version}`, `${description}`, [], true);
     }
 }

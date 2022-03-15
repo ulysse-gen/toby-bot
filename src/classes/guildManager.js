@@ -332,6 +332,25 @@ module.exports = class guildManager {
         };
     }
 
+    async stickyUser(message, userId, reason, time) {
+        let zisse = this;
+        let user = await this.grabUser(message, userId);
+        if (typeof user == "undefined") return {
+            errored: true,
+            reason: `User not found.`
+        };
+        if (this.configuration.moderation.muteNeedReason && (typeof reason == "undefined" || reason == "" || reason.replaceAll(' ', '') == "")) return {
+            errored: true,
+            reason: `No reason specified.`
+        };
+        let caseId = await zisse.moderationManager.log(message.guild.id, `Sticky`, user.user.id, message.author.id, reason, (time != 0) ? time : false);
+        await zisse.moderationManager.sendPunishEmbed(message, zisse, `Sticky`, caseId, user, message.author.id, reason, false);
+        MainLog.log(`${message.author.tag}(${message.author.id}) sticky noted ${user.user.tag}(${user.user.id}) for ${reason} in ${this.guild.id}`);
+        return {
+            errored: false
+        };
+    }
+
     async unbanUser(message, userId, reason) {
         let zisse = this;
         let user = userId;

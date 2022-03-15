@@ -8,10 +8,10 @@ const moment = require("moment");
 const utils = require(`../utils`);
 
 module.exports = {
-    name: "moderationlogs",
-    description: `Show the moderation logs of a member.`,
-    aliases: ["modlogs", "whattheydidwrong"],
-    permission: `commands.moderationlogs`,
+    name: "stickyhistory",
+    description: `List the sticky for a user.`,
+    aliases: ["sh"],
+    permission: `commands.stickyhistory`,
     category: `moderation`,
     async exec(client, message, args, guild = undefined) {
         let user = undefined;
@@ -32,7 +32,7 @@ module.exports = {
         let embedFields = [];
         let embedPages = [];
         let embed = new MessageEmbed({
-            title: `Moderation Log`,
+            title: `Sticky history`,
             color: guild.configuration.colors.main,
             author: {
                 name: user.user.tag,
@@ -46,7 +46,7 @@ module.exports = {
                     ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
                     res(false);
                 }
-                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${user.user.id}' AND status!='deleted' AND \`guildId\`='${message.channel.guild.id}'`, async function (error, results, fields) {
+                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${user.user.id}' AND status!='deleted' AND type='Sticky'`, async function (error, results, fields) {
                     if (results.length == 0) {
                         try {
                             connection.release()
@@ -54,23 +54,14 @@ module.exports = {
                         res(false);
                     }
                     let control = results.length;
-                    let sticky = undefined;
                     results.reverse();
                     results.forEach(modAction => {
-                        if (modAction.type == "Sticky" && typeof sticky == "undefined")sticky = [`**:warning: Sticky Note :**`, `**User:** <@${user.user.id}>(${user.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(JSON.parse(modAction.messageHistory).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false];
-                        if (modAction.type != "Sticky"){
-                            if (!modAction.reason.startsWith('[RR Auto]'))embedFields.push([`**Case #${modAction.numId}**`, `**Type:** ${modAction.type}\n**User:** <@${user.user.id}>(${user.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(modAction.type == "Mute" && modAction.status == "active") ? `\n**Expires:** <t:${moment(modAction.expires).unix()}>(<t:${moment(modAction.expires).unix()}:R>)` : ``}${(JSON.parse(modAction.messageHistory).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false]);
-                            if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Ban" && modAction.status == "unbanned")embedFields[embedFields.length-1][1] += `\n**Unbanned by:** <@${modAction.updaterId}>\n**Reason:** ${modAction.updateReason}\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
-                            if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Ban" && modAction.status == "expired")embedFields[embedFields.length-1][1] += `\n**Auto unbanned by TobyBot**\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
-                            if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Mute" && modAction.status == "unmuted")embedFields[embedFields.length-1][1] += `\n**Unmuted by:** <@${modAction.updaterId}>\n**Reason:** ${modAction.updateReason}\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
-                            if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Mute" && modAction.status == "expired")embedFields[embedFields.length-1][1] += `\n**Auto unmuted by TobyBot**: <t:${moment(modAction.updateTimestamp).unix()}>`;
-                        }
+                        if (!modAction.reason.startsWith('[RR Auto]'))embedFields.push([`**Case #${modAction.numId}**`, `**Type:** ${modAction.type}\n**User:** <@${user.user.id}>(${user.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(modAction.type == "Mute" && modAction.status == "active") ? `\n**Expires:** <t:${moment(modAction.expires).unix()}>(<t:${moment(modAction.expires).unix()}:R>)` : ``}${(JSON.parse(modAction.messageHistory).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false]);
                         control--;
                         if (control <= 0) {
                             try {
                                 connection.release()
                             } catch (e) {}
-                            if (typeof sticky != "undefined")embedFields.unshift(sticky);
                             res(true);
                         }
                     });
@@ -88,7 +79,7 @@ module.exports = {
         await makeTheStats;
 
         if (embedFields.length == 0) {
-            embed.description = `This member has no logs.`;
+            embed.description = `This member has no sticky.`;
             message.reply({
                 embeds: [embed],
                 failIfNotExists: false
@@ -102,7 +93,7 @@ module.exports = {
 
         embedPages = splitArrayIntoChunksOfLen(embedFields, 10);
         embed.footer = {
-            text: `Use \`${guild.configuration.prefix}moderationlogs <user> [page number]\` to search thru pages. [1/${embedPages.length}]`
+            text: `Use \`${guild.configuration.prefix}stickyhistory <user> [page number]\` to search thru pages. [1/${embedPages.length}]`
         };
 
         embedFields = embedPages[0];
@@ -110,10 +101,10 @@ module.exports = {
             try {
                 args[1] = parseInt(args[1]);
             } catch (e) {
-                return utils.sendError(message, guild, `Pages must be selected by numbers.`);
+                return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
             }
             embed.footer = {
-                text: `Use \`${guild.configuration.prefix}moderationlogs <user> [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
+                text: `Use \`${guild.configuration.prefix}stickyhistory <user> [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
             };
             if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
             embedFields = embedPages[args[1] - 1];

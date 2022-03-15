@@ -44,7 +44,7 @@ module.exports = class moderationManager {
                 }
                 connection.query(`INSERT INTO \`moderationLogs\` (\`${valueNames.join('`,`')}\`) VALUES (?,?,?,?,?,?,?,?)`, values, async function (error, results, fields) {
                     if (results.affectedRows == 1) {
-                        connection.query(`UPDATE \`moderationLogs\` SET \`status\`='overwritten' WHERE \`userId\`='${userId}' AND \`guildId\`='${guildId}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite') AND NOT \`numId\`='${results.insertId}'`, async function (error, results, fields) {});
+                        if (type == "Mute" || type == "Ban" || type == "Sticky")connection.query(`UPDATE \`moderationLogs\` SET \`status\`='overwritten' WHERE \`userId\`='${userId}' AND \`guildId\`='${guildId}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite' OR \`status\`='info') AND NOT \`numId\`='${results.insertId}'`, async function (error, results, fields) {});
                         res(results.insertId);
                     }
                     try {
