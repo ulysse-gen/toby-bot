@@ -7,7 +7,7 @@ const axios = require("axios");
 module.exports = {
     name: "hug",
     description: `Send a hug`,
-    aliases: [],
+    aliases: ["cuddle"],
     permission: `commands.hug`,
     nestedPermissions: {
         tag: `commands.hug.tag`,
