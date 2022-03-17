@@ -3,6 +3,9 @@ const {
 } = require(`discord.js`);
 const colors = require(`colors`);
 const moment = require(`moment`);
+const blockedUsers = [
+    "793722644016005170"
+]
 
 //Import needs from index
 const {
@@ -29,6 +32,12 @@ module.exports = async function (message) {
         message.type; //(DEFAULT, REPLY, APPLICATION_COMMAND)
     */
 
+    if (blockedUsers.includes(message.author.id)) {
+        if (typeof message.channel.guild != "undefined")return false;
+        MainLog.log(`Received DM from blocked user ${message.author.username}#${message.author.discriminator} (${message.author.id}) : ${message.content}`);
+        message.author.send(`Ur blocked basically so you can stop lmao`);
+        return true;
+    }
     if (typeof message.channel.guild == "undefined") return require(`./DMHandler`).create(client, message);
 
     if (typeof configuration.skip.guilds[message.channel.guild.id] == "object") { //Skip message if its in the !MAIN! configuation as "to skip"
