@@ -265,7 +265,7 @@ module.exports = {
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
             if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
-            if (guild.configuration.roleadder.blacklist.length == 0 && guild.configuration.roleadder.blacklist.length == 0) return utils.sendError(message, guild, `No roles defined, i wont have to fix anything`, undefined, [], true); /*Updated To New Utils*/
+            if (guild.configuration.roleadder.blacklist.length == 0) return utils.sendError(message, guild, `No roles defined, i wont have to fix anything`, undefined, [], true); /*Updated To New Utils*/
 
 
             let roleCheckerPromise_Add = new Promise((res, rej) => {

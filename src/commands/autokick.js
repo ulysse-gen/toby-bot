@@ -398,7 +398,7 @@ module.exports = {
                         if (!memberHasBlacklistedRole) guild.autokick.queue[indMember.id] = indMember;
                         membersLeft--;
                         if (membersLeft == 0) {
-                            rolesLeft == 0;
+                            rolesLeft = 0;
                             guild.autokick.ready = true;
                         }
                     });

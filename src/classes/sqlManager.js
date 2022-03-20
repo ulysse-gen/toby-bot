@@ -21,7 +21,7 @@ module.exports = class sqlManager {
 
     async checkForExpiredModeration() {
         let zisse = this;
-        return await new Promise((res, rej) => {
+        return new Promise((res, rej) => {
             zisse.sqlPool.getConnection((err, connection) => {
                 if (err) {
                     ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
@@ -29,7 +29,7 @@ module.exports = class sqlManager {
                 }
                 connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`status\`='active'`, async function (error, results, fields) {
                     let control = results.length;
-                    if (typeof results != "undefined" || results.length != 0) results.forEach(async indPunishments => {
+                    if (typeof results != "undefined" && results != null && results.length != 0) results.forEach(async indPunishments => {
                         if (moment(indPunishments.expires).isBefore(moment())) {
                             await zisse.client.guilds.fetch(indPunishments.guildId).then(async fetchedGuild => {
                                 if (indPunishments.type == "Ban") {
@@ -85,7 +85,7 @@ module.exports = class sqlManager {
 
     async checkForReminders() {
         let zisse = this;
-        return await new Promise((res, rej) => {
+        return new Promise((res, rej) => {
             zisse.sqlPool.getConnection((err, connection) => {
                 if (err) {
                     ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
@@ -93,7 +93,7 @@ module.exports = class sqlManager {
                 }
                 connection.query(`SELECT * FROM \`reminders\` WHERE \`status\`='active'`, async function (error, results, fields) {
                     let control = results.length;
-                    if (typeof results != "undefined" || results.length != 0) results.forEach(async indReminer => {
+                    if (typeof results != "undefined" && results != null && results.length != 0) results.forEach(async indReminer => {
                         if (moment(indReminer.timestamp).isBefore(moment())) {
                             await zisse.client.guilds.fetch(indReminer.guildId).then(async fetchedGuild => {
                                 await fetchedGuild.members.fetch(indReminer.userId).then(async fetchedMember => {

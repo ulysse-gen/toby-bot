@@ -80,12 +80,6 @@ module.exports = {
                     configName: `onWarningIgnore`,
                     path: `behaviour.onWarningIgnore`
                 },
-                behaviourOnWarningIgnore: {
-                    title: `Ignore on cooldown`,
-                    description: `Should we ignore cooldowns blocks ? (Or should we reply with a cooldown error)`,
-                    configName: `onCooldownIgnore`,
-                    path: `behaviour.onCooldownIgnore`
-                },
                 behaviourAutoDeleteCommands: {
                     title: `Auto delete commands`,
                     description: `Should we auto delete commands trigger ?`,
@@ -152,7 +146,7 @@ module.exports = {
                     configName: `logToChannel`,
                     path: `behaviour.logToChannel.status`,
                     checkerFunction: async (newValue) => {
-                        if (newValue == true && guild.configuration.behaviour.logToChannel.channel == defaultConfig.behaviour.logToChannel.channel) return {
+                        if (newValue && guild.configuration.behaviour.logToChannel.channel == defaultConfig.behaviour.logToChannel.channel) return {
                             break: true,
                             title: "Set the logging channel before enabling.",
                             description: `Use \`${guild.configuration.prefix}conf set channelToLogTo <#ChannelId>\` to enable !`
@@ -164,7 +158,7 @@ module.exports = {
                                         break: false
                                     });
                                 }).catch(e => {
-                                    if (guild.configuration.behaviour.logToChannel.status == true) guild.configuration.behaviour.logToChannel.status = false;
+                                    if (guild.configuration.behaviour.logToChannel.status) guild.configuration.behaviour.logToChannel.status = false;
                                     res({
                                         break: true,
                                         title: "Failed to enable",
@@ -172,7 +166,7 @@ module.exports = {
                                     });
                                 });
                             }).catch(e => {
-                                if (guild.configuration.behaviour.logToChannel.status == true) guild.configuration.behaviour.logToChannel.status = false;
+                                if (guild.configuration.behaviour.logToChannel.status) guild.configuration.behaviour.logToChannel.status = false;
                                 res({
                                     break: true,
                                     title: "Error",
@@ -193,7 +187,7 @@ module.exports = {
                     configName: `channelToLogTo`,
                     path: `behaviour.logToChannel.channel`,
                     checkerFunction: async (newValue) => {
-                        if (newValue == true && guild.configuration.behaviour.logToChannel.channel == defaultConfig.behaviour.logToChannel.channel) return {
+                        if (newValue && guild.configuration.behaviour.logToChannel.channel == defaultConfig.behaviour.logToChannel.channel) return {
                             break: true,
                             title: "Set the logging channel before enabling.",
                             description: `Use \`${guild.configuration.prefix}conf set channelToLogTo <#ChannelId>\` to enable !`
@@ -230,12 +224,6 @@ module.exports = {
                         await guild.initChannelLogging();
                     }
                 },
-                behaviourLogToChannelEmbed: {
-                    title: `Log to channel as embed`,
-                    description: `Enable the logging to channel as embed`,
-                    configName: `logToChannelEmbed`,
-                    path: `behaviour.logToChannel.embed`,
-                },
                 behaviourLogToChannelFormat: {
                     title: `Format for log`,
                     description: `Choose what format you want to server to log with placeholders.`,
@@ -250,7 +238,7 @@ module.exports = {
                     configName: `logModerationToChannel`,
                     path: `moderation.logToChannel.status`,
                     checkerFunction: async (newValue) => {
-                        if (newValue == true && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
+                        if (newValue && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
                             break: true,
                             title: "Set the moderation logging channel before enabling.",
                             description: `Use \`${guild.configuration.prefix}conf set channelToLogModerationTo <#ChannelId>\` to enable !`
@@ -262,7 +250,7 @@ module.exports = {
                                         break: false
                                     });
                                 }).catch(e => {
-                                    if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                    if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
                                     res({
                                         break: true,
                                         title: "Failed to enable",
@@ -270,7 +258,7 @@ module.exports = {
                                     });
                                 });
                             }).catch(e => {
-                                if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
                                 res({
                                     break: true,
                                     title: "Error",
@@ -291,7 +279,7 @@ module.exports = {
                     configName: `channelToLogModerationTo`,
                     path: `moderation.logToChannel.channel`,
                     checkerFunction: async (newValue) => {
-                        if (newValue == true && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
+                        if (newValue && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
                             break: true,
                             title: "Set the moderation logging channel before enabling.",
                             description: `Use \`${guild.configuration.prefix}conf set channelToLogTo <#ChannelId>\` to enable !`
@@ -305,7 +293,7 @@ module.exports = {
                                         adjustValue: newValue
                                     });
                                 }).catch(e => {
-                                    if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                    if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
                                     res({
                                         break: true,
                                         title: "Failed to enable",
@@ -313,7 +301,7 @@ module.exports = {
                                     });
                                 });
                             }).catch(e => {
-                                if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
                                 res({
                                     break: true,
                                     title: "Error",
@@ -334,7 +322,7 @@ module.exports = {
                     configName: `logAutoModerationToChannel`,
                     path: `moderation.autoModeration.channel.status`,
                     checkerFunction: async (newValue) => {
-                        if (newValue == true && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
+                        if (newValue && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
                             break: true,
                             title: "Set the auto moderation logging channel before enabling.",
                             description: `Use \`${guild.configuration.prefix}conf set autoModerationLogToChannelStatus <#ChannelId>\` to enable !`
@@ -346,7 +334,7 @@ module.exports = {
                                         break: false
                                     });
                                 }).catch(e => {
-                                    if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                    if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
                                     res({
                                         break: true,
                                         title: "Failed to enable",
@@ -354,7 +342,7 @@ module.exports = {
                                     });
                                 });
                             }).catch(e => {
-                                if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
                                 res({
                                     break: true,
                                     title: "Error",
@@ -375,13 +363,13 @@ module.exports = {
                     configName: `channelToLogAutoModerationTo`,
                     path: `moderation.autoModeration.channel.channel`,
                     checkerFunction: async (newValue) => {
-                        if (newValue == true && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
+                        if (newValue && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
                             break: true,
                             title: "Set the auto moderation logging channel before enabling.",
                             description: `Use \`${guild.configuration.prefix}conf set channelToLogAutoModerationTo <#ChannelId>\` to enable !`
                         };
                         if (newValue.startsWith(`<#`)) newValue = newValue.replace('<#', '').slice(0, -1);
-                        let GuildAndChannelCheck = new Promise((res, rej) => {
+                        return new Promise((res, rej) => {
                             client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
                                 fetchedGuild.channels.fetch(newValue).then(channel => {
                                     res({
@@ -389,7 +377,7 @@ module.exports = {
                                         adjustValue: newValue
                                     });
                                 }).catch(e => {
-                                    if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                    if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
                                     res({
                                         break: true,
                                         title: "Failed to enable",
@@ -397,7 +385,7 @@ module.exports = {
                                     });
                                 });
                             }).catch(e => {
-                                if (guild.configuration.moderation.logToChannel.status == true) guild.configuration.moderation.logToChannel.status = false;
+                                if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
                                 res({
                                     break: true,
                                     title: "Error",
@@ -405,8 +393,6 @@ module.exports = {
                                 });
                             });
                         });
-                        let GuildAndChannelCheckResult = await GuildAndChannelCheck;
-                        return GuildAndChannelCheckResult;
                     },
                     runAfter: async (newValue) => {
                         await guild.initModerationLogging();
@@ -509,7 +495,7 @@ module.exports = {
                         let indRepSplitting = splitToSubstrings(indRep, 2000)
                         indRepSplitting.forEach(indRepSplittingg => {
                             indRepSplittingg = indRepSplittingg.split('').reverse().join('').replace('||SPLIT HERE IF NEEDED||'.split('').reverse().join(''), '||MESSAGE SPLITTER||'.split('').reverse().join('')).split('').reverse().join('');
-                            console.log(`${`Response part`.red} => "${indRepSplittingg}" ${`(Length => ${indRepSplittingg.length})`.blue}`);
+                            console.log(`Response part`.red + ` => "${indRepSplittingg}" ` + `(Length => ${indRepSplittingg.length})`.blue);
                             indRepNew += indRepSplittingg;
                         });
                         responseChunks = indRepNew.split('||MESSAGE SPLITTER||');
@@ -609,13 +595,13 @@ module.exports = {
                 if (isNaN(value)) return utils.sendError(message, guild, `Error`, `The value must be a ${(typeof _.get(defaultConfig, setting.path).toString())}, received ${typeof value}. [Wrong value \`${value}\`]`, [], true); /*Updated To New Utils*/
             }
 
+            let checkUpResult;
             if (typeof setting.checkerFunction == "function") {
                 checkUpResult = await setting.checkerFunction(value);
                 if (checkUpResult.break) return utils.sendError(message, guild, `${checkUpResult.title}`, `${checkUpResult.description}`, [], true); /*Updated To New Utils*/
                 if (typeof checkUpResult.title == "string" || typeof checkUpResult.description == "string") utils.sendMain(message, guild, `${checkUpResult.title}`, `${checkUpResult.description}`, [], true); /*Updated To New Utils*/
             }
 
-            let oldValue = value;
             if (typeof setting.checkerFunction == "function" && typeof checkUpResult.adjustValue != "undefined") value = checkUpResult.adjustValue;
 
             await guild.configurationManager.set(setting.path, value);

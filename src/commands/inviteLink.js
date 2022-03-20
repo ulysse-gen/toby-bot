@@ -18,7 +18,6 @@ module.exports = {
     },
     permission: `commands.invitelink`,
     category: `informations`,
-    category: `informations`,
     async exec(client, message, args, guild = undefined) {
         let embed = new MessageEmbed({
             title: `Click here to invite me in your server !`,

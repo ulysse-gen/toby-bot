@@ -28,14 +28,14 @@ module.exports = {
         let userPFP = await utils.getUserPfp(user);
 
         let guildPFP = await new Promise((res, rej) => {
-            let baseOfUrl = (guild.guild.icon != null) ? `https://cdn.discordapp.com/icons/${guild.guild.id}/${guild.guild.icon}` : `https://cdn.discordapp.com/icons/${guild.guild.id}/${guild.guild.icon}`;
+            let baseOfUrl = `https://cdn.discordapp.com/icons/${guild.guild.id}/${guild.guild.icon}`;
             urlExists(`${baseOfUrl}.gif`, function (err, exists) {
                 res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
             });
         });
 
         let guildBanner = await new Promise((res, rej) => {
-            let baseOfUrl = (guild.guild.banner != null) ? `https://cdn.discordapp.com/banners/${guild.guild.id}/${guild.guild.banner}` : `https://cdn.discordapp.com/banners/${guild.guild.id}/${guild.guild.banner}`;
+            let baseOfUrl = `https://cdn.discordapp.com/banners/${guild.guild.id}/${guild.guild.banner}`;
             urlExists(`${baseOfUrl}.gif`, function (err, exists) {
                 res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
             });

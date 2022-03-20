@@ -32,7 +32,7 @@ module.exports = async function (message, guild = undefined) {
     if (typeof client == "undefined") return utils.sendError(message, guild, undefined, `Client is undefined`, [], true, -1, -1); //This can actually never happen
     if (typeof globalCommands == "undefined") return utils.sendError(message, guild, undefined, `globalCommands is undefined`, [], true, -1, -1); //This error shoud never happen. globalCommands is the main commandManager and if its undefined no commands can work.
     if (typeof globalPermissions == "undefined") return utils.sendError(message, guild, undefined, `globalPermissions is undefined`, [], true, -1, -1);//This error shoud never happen. globalPermissions is the main permissionsManager and if its undefined no commands can work.
-    if ("COMMAND LOCK" == "COMMAND LOCK" && false) return utils.lockdownDenied(message, guild, undefined, undefined, [], true, -1, -1)
+    //if (false) return utils.lockdownDenied(message, guild, undefined, undefined, [], true, -1, -1)
 
     executionTimes[message.id].fetchingCommand = moment();
     let command = globalCommands.fetch(cmd);
