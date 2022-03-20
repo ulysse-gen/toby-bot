@@ -4,7 +4,7 @@ const {
 const prettyMilliseconds = require("pretty-ms");
 const {
     configuration,
-    package,
+    packageJson,
     MainLog,
     executionTimes
 } = require(`../../index`);

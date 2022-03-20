@@ -31,7 +31,7 @@ const guildsManager = require(`./src/classes/guildsManager`);
 const sqlManager = require(`./src/classes/sqlManager`);
 
 //Main Variables
-const package = require(`./package.json`);
+const packageJson = require(`./package.json`);
 const globalConfiguration = new configurationManager(client, undefined, `../../configuration.json`, `configuration`);
 var configuration = globalConfiguration.configuration;
 
@@ -55,8 +55,8 @@ const AutoModLog = new Logger(`./logs/autoMod.log`);
 const MainSQLLog = new sqlLogger();
 
 client.on('ready', async () => {
-    MainSQLLog.log(`Client Ready`, `Logged in as ${client.user.tag} on version ${package.version}`);
-    MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${package.version.green}]`);
+    MainSQLLog.log(`Client Ready`, `Logged in as ${client.user.tag} on version ${packageJson.version}`);
+    MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${packageJson.version.green}]`);
     require(`./src/managers/presenceManager`)();
     require(`./src/managers/api`)();
     setInterval(() => globalSqlManager.checkForExpiredModeration(), 60000);
@@ -89,7 +89,7 @@ client.on(`interactionCreate`, interaction => require(`./src/handlers/interactio
 
 client.on('error', (code) => {
     MainSQLLog.log(`DiscordJS Error`, `${code.toString()}`);
-    MainLog.log(`${`[DiscordJS Error]`.red} ${code.toString().blue}`);
+    MainLog.log(`[DiscordJS Error]`.red + ` ${code.toString().blue}`);
 });
 
 (async () => {
@@ -110,35 +110,18 @@ async function exitHandler(reason, exit) {
         console.log(exit);
         return true;
     } else {
-        await MainLog.log(`${`[Process Exit]`}[${reason.toString()}] ${exit.toString()}`);
+        await MainLog.log(`[Process Exit][${reason.toString()}] ${exit.toString()}`);
         MainSQLLog.log(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
     }
-    /*setTimeout(() => {
-        process.exit();
-    }, 5000);
-    await new Promise((res, rej) => {
-        let control = Object.keys(globalGuilds.guilds).length;
-        if (control <= 0)res(true);
-        for (const key in globalGuilds.guilds) {
-            globalGuilds.guilds[key].channelLog(`Shutdown. I should get back on as soon as possible.`);
-            globalGuilds.guilds[key].configurationManager.save();
-            control--;
-            console.log(control)
-            if (control <= 0){
-                process.exit();
-                res(true);
-            }
-        }
-    });*/
     process.exit();
     return true;
 }
 
-if (typeof this.enableCatching == "undefined" || (typeof this.enableCatching == "boolean" && this.enableCatching == true)) process.on('uncaughtException', (error) => {
+if (typeof enableCatching == "undefined" || (typeof enableCatching == "boolean" && enableCatching)) process.on('uncaughtException', (error) => {
     exitHandler("uncaughtException", error);
 });
 
-if (typeof this.enableCatching == "undefined" || (typeof this.enableCatching == "boolean" && this.enableCatching == true)) process.on('unhandledRejection', (error) => {
+if (typeof enableCatching == "undefined" || (typeof enableCatching == "boolean" && enableCatching)) process.on('unhandledRejection', (error) => {
     exitHandler("unhandledRejection", error);
 });
 
@@ -173,7 +156,7 @@ module.exports.MainSQLLog = MainSQLLog;
 
 //Configurations:
 module.exports.configuration = configuration;
-module.exports.package = package;
+module.exports.packageJson = packageJson;
 
 //Export managers
 module.exports.globalConfiguration = globalCommands;

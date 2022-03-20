@@ -4,7 +4,7 @@ const {
 const prettyMilliseconds = require("pretty-ms");
 const {
     configuration,
-    package,
+    packageJson,
     MainLog
 } = require(`../../index`);
 
@@ -30,9 +30,9 @@ module.exports = {
             [`**Guild Prefix**:`, `\`${guild.configuration.prefix}\``, true],
             [`**Global Prefix**`, `\`${configuration.globalPrefix}\``, true],
             [`**Uptime**`, `${prettyMilliseconds(client.uptime)}`, true],
-            [`**Bot Version**`, `${package.version}`, true],
+            [`**Bot Version**`, `${packageJson.version}`, true],
             [`**NodeJS Version**`, `${process.version}`, true],
-            [`**DiscordJS Version**`, `${package.dependencies["discord.js"]}`, true],
+            [`**DiscordJS Version**`, `${packageJson.dependencies["discord.js"]}`, true],
             [`**Latency**`, `${Date.now() - message.createdTimestamp}ms`, true],
             [`**API Latency**`, `${Math.round(client.ws.ping)}ms`, true]
         ];

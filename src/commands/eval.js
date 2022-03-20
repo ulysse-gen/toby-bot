@@ -3,7 +3,7 @@ const {
 } = require(`discord.js`);
 const {
     configuration,
-    package,
+    packageJson,
     MainLog
 } = require(`../../index`);
 const discordVoice = require('@discordjs/voice');
