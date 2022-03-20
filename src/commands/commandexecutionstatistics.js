@@ -15,6 +15,10 @@ module.exports = {
     name: "commandexecutionstatistics",
     description: `Show stats about a command execution.`,
     subcommands: {},
+    usage: {
+        main: `${this.name}`,
+        args: []
+    },
     aliases: ["cmdexecstats", "ces"],
     permission: `commands.commandexecstats`,
     category: `informations`,

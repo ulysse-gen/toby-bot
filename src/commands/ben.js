@@ -15,6 +15,15 @@ module.exports = {
     name: "ben",
     description: `Ben a member`,
     aliases: ["benuser", "benmember"],
+    usage: {
+        main: `${this.name}`,
+        args: [{
+            description: "User",
+            placeholder: ["@User","UserID","UserTag#0420"],
+            type: "String",
+            optionnal: false
+        }]
+    },
     permission: `commands.ben`,
     category: `moderation`,
     async exec(client, message, args, guild = undefined) {

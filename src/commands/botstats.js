@@ -16,6 +16,10 @@ module.exports = {
     description: `Show stats about the bot.`,
     subcommands: {},
     aliases: [],
+    usage: {
+        main: `${this.name}`,
+        args: []
+    },
     permission: `commands.botstats`,
     category: `informations`,
     status: true,

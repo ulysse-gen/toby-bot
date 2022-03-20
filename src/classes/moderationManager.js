@@ -27,7 +27,7 @@ module.exports = class moderationManager {
 
     async log(guildId, type, userId, moderatorId, reason, length) {
         let zisse = this;
-        if (typeof guildId != "string" || typeof type != "string" || typeof userId != "string" || typeof moderatorId != "string" | typeof reason != "string") return false;
+        if (typeof guildId != "string" || typeof type != "string" || typeof userId != "string" || typeof moderatorId != "string" || typeof reason != "string") return false;
 
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
@@ -36,7 +36,7 @@ module.exports = class moderationManager {
         let values = [guildId, type, userId, moderatorId, reason, expireDate, (typeof length == "number") ? `active` : (typeof length == "boolean") ? (length == false) ? "info" : "indefinite" : "indefinite", (typeof this.globalGuilds.guilds[guildId].lastMessages[userId] != "undefined" ? JSON.stringify(this.globalGuilds.guilds[guildId].lastMessages[userId]) : "[]")];
         let valueNames = ["guildId", "type", "userId", "moderatorId", "reason", "expires", "status", "messageHistory"];
 
-        return await new Promise((res, rej) => {
+        return new Promise((res, rej) => {
             zisse.sqlPool.getConnection((err, connection) => {
                 if (err) {
                     ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
@@ -154,7 +154,7 @@ module.exports = class moderationManager {
 
     async isUserPunished(userId, guildId, type) {
         let zisse = this;
-        return await new Promise((res, rej) => {
+        return new Promise((res, rej) => {
             zisse.sqlPool.getConnection((err, connection) => {
                 if (err) {
                     ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);

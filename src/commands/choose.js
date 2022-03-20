@@ -6,6 +6,21 @@ module.exports = {
     name: "choose",
     description: `Choose between choices`,
     aliases: [],
+    usage: {
+        main: `${this.name}`,
+        args: [{
+            description: "Main Choice",
+            placeholder: ["canBeOneChoiceWithoutSpaces", "Or multiple ones, separated by commas"],
+            type: "String",
+            optionnal: false
+        },
+        {
+            description: "Other choice",
+            placeholder: ["isOneChoiceWithoutSpaceOnlyIfNoCommasUsed"],
+            type: "String",
+            optionnal: true
+        }]
+    },
     permission: `commands.choose`,
     category: `fun`,
     async exec(client, message, args, guild = undefined) {

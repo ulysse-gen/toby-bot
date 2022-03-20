@@ -12,6 +12,10 @@ module.exports = {
     name: "changelog",
     description: `Send the latest changelog. Not gonna lie its not updated really often.`,
     aliases: ["whatsnew"],
+    usage: {
+        main: `${this.name}`,
+        args: []
+    },
     permission: `commands.changelog`,
     category: `informations`,
     async exec(client, message, args, guild = undefined) {

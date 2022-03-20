@@ -12,6 +12,10 @@ module.exports = {
     name: "invitelink",
     description: `Send the bot's invite link for him to join your server.`,
     aliases: ["invite"],
+    usage: {
+        main: `${this.name}`,
+        args: []
+    },
     permission: `commands.invitelink`,
     category: `informations`,
     category: `informations`,

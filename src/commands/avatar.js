@@ -10,6 +10,15 @@ module.exports = {
     description: `Show someone's avatar.`,
     subcommands: {},
     aliases: ["av"],
+    usage: {
+        main: `${this.name}`,
+        args: [{
+            description: "User",
+            placeholder: ["@User","UserID","UserTag#0420"],
+            type: "String",
+            optionnal: true
+        }]
+    },
     permission: `commands.avatar`,
     nestedPermissions: {},
     category: `fun`,

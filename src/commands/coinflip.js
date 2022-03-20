@@ -6,6 +6,10 @@ module.exports = {
     name: "coinflip",
     description: `Flip a coin !`,
     aliases: ["flip", "flipacoin", "cf"],
+    usage: {
+        main: `${this.name}`,
+        args: []
+    },
     permission: `commands.coinflip`,
     category: `fun`,
     cooldown: 300,

@@ -12,8 +12,12 @@ const utils = require(`../utils`);
 
 module.exports = {
     name: "about",
-    description: `Show informations about the bot.`,
+    description: `Show basic informations about the bot.`,
     subcommands: {},
+    usage: {
+        main: `${this.name}`,
+        args: []
+    },
     aliases: [],
     permission: `commands.about`,
     category: `informations`,

@@ -13,6 +13,15 @@ module.exports = {
     name: "ban",
     description: `Ban a member`,
     aliases: ["banuser", "banmember"],
+    usage: {
+        main: `${this.name}`,
+        args: [{
+            description: "User",
+            placeholder: ["@User","UserID","UserTag#0420"],
+            type: "String",
+            optionnal: false
+        }]
+    },
     permission: `commands.ban`,
     category: `moderation`,
     async exec(client, message, args, guild = undefined) {

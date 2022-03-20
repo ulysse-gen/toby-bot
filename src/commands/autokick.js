@@ -95,6 +95,10 @@ module.exports = {
         },
     },
     aliases: ["ak"],
+    usage: {
+        main: `${this.name}`,
+        args: []
+    },
     permission: `commands.autokick`,
     nestedPermissions: {
         use: "commands.autokick.use",

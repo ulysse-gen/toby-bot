@@ -103,6 +103,9 @@ dist
 # TernJS port file
 .tern-port
 
+#lintscanner
+.scannerwork/
+
 #Toby Bot related
 /MySQL.json
 /.git-credentials
