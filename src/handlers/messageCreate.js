@@ -1,11 +1,4 @@
-const {
-    MessageEmbed
-} = require(`discord.js`);
-const colors = require(`colors`);
 const moment = require(`moment`);
-const blockedUsers = [
-    "793722644016005170"
-]
 
 //Import needs from index
 const {
@@ -13,8 +6,8 @@ const {
     configuration,
     MainLog,
     globalGuilds,
-    reload,
-    executionTimes
+    executionTimes,
+    blockedUsers
 } = require(`../../index`);
 
 module.exports = async function (message) {

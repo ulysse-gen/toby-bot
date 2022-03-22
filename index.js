@@ -157,6 +157,10 @@ module.exports.MainSQLLog = MainSQLLog;
 //Configurations:
 module.exports.configuration = configuration;
 module.exports.packageJson = packageJson;
+module.exports.blockedUsers = [
+    "793722644016005170",
+    "955837853252853761"
+]
 
 //Export managers
 module.exports.globalConfiguration = globalCommands;

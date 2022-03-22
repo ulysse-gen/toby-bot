@@ -16,7 +16,7 @@ module.exports = {
     subcommands: {},
     aliases: ["deletepunish", "delpunish"],
     permission: `commands.deletepunishment`,
-    category: `informations`,
+    category: `moderation`,
     status: true,
     async exec(client, message, args, guild = undefined) {
         let embed = new MessageEmbed({

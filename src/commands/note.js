@@ -4,7 +4,7 @@ module.exports = {
     name: "note",
     description: `Note a member. Like a warn but they dont get notified.`,
     aliases: ["notemember", "noteuser", "swarn"],
-    permission: `commands.warn`,
+    permission: `commands.note`,
     nestedPermissions: {},
     category: `moderation`,
     async exec(client, message, args, guild = undefined) {
