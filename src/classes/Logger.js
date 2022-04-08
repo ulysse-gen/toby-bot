@@ -20,7 +20,7 @@ module.exports =  class Logger {
         let logText = this.pattern.replace(`&{TEXT}`, `${string}`).replace(`&{DATE}`, moment().format(`DD/MM/YYYY`)).replace(`&{HOUR}`, moment().format(`HH:mm:ss`));
         this.consoleLog(logText);
         this.fileLog(logText);
-        return false;
+        return true;
     }
 
     consoleLog(string) {
