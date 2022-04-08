@@ -143,8 +143,8 @@ module.exports = {
         embed.addField(`**Warns (last 30 days):**`, `${stats.thirtyDays.warns}`, true);
         embed.addField(`**Warns (all time):**`, `${stats.allTime.warns}`, true);
         embed.addField(`**Total (last 7 days):**`, `${stats.sevenDays.mutes + stats.sevenDays.bans + stats.sevenDays.kicks + stats.sevenDays.warns}`, true);
-        embed.addField(`**Total (last 30 days):**`, `${stats.thirtyDays.mutes + stats.thirtyDays.bans + stats.thirtyDays.kicks + stats.sevenDays.warns}`, true);
-        embed.addField(`**Total (all time):**`, `${stats.allTime.mutes + stats.allTime.bans + stats.allTime.kicks + stats.sevenDays.warns}`, true);
+        embed.addField(`**Total (last 30 days):**`, `${stats.thirtyDays.mutes + stats.thirtyDays.bans + stats.thirtyDays.kicks + stats.thirtyDays.warns}`, true);
+        embed.addField(`**Total (all time):**`, `${stats.allTime.mutes + stats.allTime.bans + stats.allTime.kicks + stats.allTime.warns}`, true);
         if (user.user.id == "280063634477154306")embed.addField(`**Important infos:**`, `Whatever the stats can be, Kilo is still a very bad mod.`, true); //Kilo
         if (user.user.id == "737886546182799401")embed.addField(`**Important infos:**`, `Wait hm.. I'm not a kitten.`, true);   //Flair
         if (user.user.id == "899655742389358612")embed.addField(`**Important infos:**`, `huh?`, true);   //Olle
