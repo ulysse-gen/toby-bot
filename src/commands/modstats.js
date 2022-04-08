@@ -57,7 +57,7 @@ module.exports = {
 
 
 
-        let makeTheStats = new Promise((res, rej) => {
+        let makeTheStats = new Promise((res, _rej) => {
             let stats = {
                 sevenDays: {
                     mutes: 0,
@@ -83,7 +83,7 @@ module.exports = {
                     ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
                     res(false);
                 }
-                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`moderatorId\`='${user.user.id}' AND \`guildId\`='${message.channel.guild.id}'`, async function (error, results, fields) {
+                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`moderatorId\`='${user.user.id}' AND \`guildId\`='${message.channel.guild.id}'`, async function (error, results, _fields) {
                     if (results.length == 0) {
                         try { connection.release() } catch (e) {}
                         res(stats);
@@ -146,9 +146,9 @@ module.exports = {
         embed.addField(`**Total (last 30 days):**`, `${stats.thirtyDays.mutes + stats.thirtyDays.bans + stats.thirtyDays.kicks + stats.allTime.warns}`, true);
         embed.addField(`**Total (all time):**`, `${stats.allTime.mutes + stats.allTime.bans + stats.allTime.kicks + stats.allTime.warns}`, true);
         if (user.user.id == "280063634477154306")embed.addField(`**Important infos:**`, `Whatever the stats can be, Kilo is still a very bad mod.`, true); //Kilo
-        if (user.user.id == "737886546182799401")embed.addField(`**Important infos:**`, `Wait hm.. I’m not a kitten.`, true);   //Flair
+        if (user.user.id == "737886546182799401")embed.addField(`**Important infos:**`, `Wait hm.. I'm not a kitten.`, true);   //Flair
         if (user.user.id == "899655742389358612")embed.addField(`**Important infos:**`, `huh?`, true);   //Olle
-        if (user.user.id == "762760262683459654")embed.addField(`**Important infos:**`, `I’m very indecisive so could you make one up for me?`, true);   //Aiko
+        if (user.user.id == "762760262683459654")embed.addField(`**Important infos:**`, `I'm very indecisive so could you make one up for me?`, true);   //Aiko
         if (user.user.id == "913934813524799490")embed.addField(`**Important infos:**`, `The original sebs badge creator.`, true);   //Sebs
         if (user.user.id == "408726936286658561")embed.addField(`**Important infos:**`, `<:teddy_bear:945443955263303750>`, true);   //Bassie
         if (user.user.id == "580943656232419329")embed.addField(`**Important infos:**`, `aaaaaaaaaaaaaaaaa`, true);   //Ama

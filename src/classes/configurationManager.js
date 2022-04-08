@@ -35,7 +35,7 @@ module.exports = class configuationManager {
                     res(false);
                 }
                 if (this.verbose)MainLog.log(`Fecthing configuration`);
-                connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, fields) {
+                connection.query(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`, async function (error, results, _fields) {
                     if (typeof results != "undefined" && results.length == 1) {
                         if (this.verbose)MainLog.log(`Configuration fetched.`);
                         delete results[0].numId;
@@ -51,7 +51,7 @@ module.exports = class configuationManager {
                         try { connection.release() } catch (e) {}
                         res(true);
                     } else if (typeof zisse.guildId != "undefined") {
-                        connection.query(`INSERT INTO ${zisse.sqlTable} (\`guildId\`) VALUES ('${zisse.guildId}')`, async function (error, results, fields) {
+                        connection.query(`INSERT INTO ${zisse.sqlTable} (\`guildId\`) VALUES ('${zisse.guildId}')`, async function (_error, _results, _fields) {
                             if (results.affectedRows != 1) ErrorLog.log(`Did not insert for some reason wth. ${error.toString()}`);
                             try { connection.release() } catch (e) {}
                             if (error) {
@@ -68,8 +68,8 @@ module.exports = class configuationManager {
                 });
             });
         });
-        if (requestResult == null) return await this.initialize();
-        if (requestResult == false) return false;
+        if (requestResult == null) return this.initialize();
+        if (!requestResult) return false;
         await this.checkForMissingKeys();
         await this.save(true);
         this.initialized = requestResult;
@@ -80,7 +80,7 @@ module.exports = class configuationManager {
         if ((!this.initialized || this.isSaving) || bypass) return;
         if (this.verbose)MainLog.log(`Loading configuration`);
         let zisse = this;
-        return await new Promise((res, rej) => {
+        return new Promise((res, rej) => {
             zisse.sqlPool.getConnection((err, connection) => {
                 if (err) {
                     ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);

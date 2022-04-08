@@ -10,16 +10,6 @@ module.exports =  class discordChannelLogger {
         this.pattern = "[&{DISCORDDATE}] : &{TEXT}";
         this.initialized = false;
 
-        this.types = {
-            "MAIN": (string) => {return colors.white(string)},
-            "CMD": (string) => {return colors.grey(string)},
-            "MSG": (string) => {return colors.grey(string)},
-            "9GAG": (string) => {return colors.grey(string)},
-            "WARN": (string) => {return colors.yellow(string)},
-            "ERR": (string) => {return colors.red(string)},
-            "DEBUG": (string) => {return colors.blue(string)},
-        }
-
         this.init(guildId, channelId);
     }
 
@@ -41,8 +31,6 @@ module.exports =  class discordChannelLogger {
         if (typeof string != "string" && string == "")return false;
         if (typeof type != "string" && type == "")return false;
         let logText = this.pattern.replace(`&{TEXT}`, `${string}`).replace(`&{DATE}`, moment().format(`MMMM Do YYYY`)).replace(`&{HOUR}`, moment().format(`HH:mm:ss`)).replace(`&{DISCORDDATE}`, `<t:${Math.floor(new Date().getTime() / 1000)}:F>`).replace(`&{TYPE}`, `${type}`);
-        
-        if (typeof this.types[type] !== "undefined")string = this.types[type](string);
 
         this.logChannel.send(logText);
         return true;

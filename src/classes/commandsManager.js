@@ -49,7 +49,7 @@ module.exports = class commandsManager {
 
     fetch(command) { //Fetch function
         for (const indCommand of this.commands) {
-            if (typeof indCommand.status != "undefined" && indCommand.status == false) continue;
+            if (typeof indCommand.status != "undefined" && !indCommand.status) continue;
             if (indCommand.name == command) return indCommand;
             if (indCommand.aliases.includes(command)) return indCommand;
         }
