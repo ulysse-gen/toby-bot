@@ -19,7 +19,8 @@ module.exports = {
     permission: `commands.changelog`,
     category: `informations`,
     async exec(client, message, args, guild = undefined) {
-        let description = `Internal fixes and improvements.`
+        let description = `Internal fixes and improvements.`;
+        description += `\n- Fixed modstats`;
         return utils.sendMain(message, guild, `Changelog v${packageJson.version}`, `${description}`, [], true);
     }
 }
