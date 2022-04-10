@@ -34,11 +34,29 @@ Email
 module.exports = async function (message, guild = undefined) {
     executionTimes[message.id].chatModeration = moment();
 
+    let reactions = {
+        "👀": ["tobybot", "toby bot", "933695613294501888"],
+        "<:meme_reverse:924184793053294623>": ["ily", "i love you"],
+        "🥖": ["baguette", "baget", "baguet", "bread"]
+    };
+    let doNotReact = ["react", "reply", "emoji", "emote", "eyes", "put", "emoticon", "respond", "place", "hate", "position", "below", "under", "set", "please", "👀", "👁", "🥖", "uno", "card", "if"];
+    let doNotReactChannel = ["962848473236009030", "962842664900911154", "962842493257396224", "962842467378548796"]
+
+    if (!doNotReactChannel.includes(message.channel.id))
+        if (!doNotReact.some(ind => message.content.toLowerCase().includes(ind)))
+            if (reactions["👀"].some(ind => message.content.toLowerCase().includes(ind))) {
+                message.react(`👀`).catch(e => {});
+                delete reactions["👀"];
+                for (const key in reactions) {
+                    if (reactions[key].some(ind => message.content.toLowerCase().includes(ind))) message.react(key).catch(e => {});
+                }
+            }
+
     let cantSayHolidae = ["817857555674038298"];
 
-    let talkingAboutHolidae = ["h olidae","ho lidae","hol idae","holi dae","holid ae","holida e","h olidai","ho lidai","hol idai","holi dai","holid ai","holida i","ho liday","hol iday","holqate","holf dqye","H0L1DAE","hol!dae","330826518370451457",
-                                "holi day","holid ay","holida y","holidae","holiday","holidai","holy","h0ly","h01y","holee","holeeday","holeedae","holeedai","holeday","holedae","holedai","🅾️","ℹ️","🅰️","⭕", ":octagonal_sign:",":o:","🇭",":o2:", "🛑", "🇱", "🇮", "🇩", "🇦", "🇪","c9n@ sik l qir",
-                                "day","holi day","holi","dae","h011d43","|-|011[)43","holedae","h01idae","ho1idae","h0lidae","401idae","holedai","h01idai","ho1idai","h0lidai","401idai","head admin","headadmin","admin","consigliere ","con sig liere","consig","con","sig","liere "];
+    let talkingAboutHolidae = ["h olidae","ho lidae","hol idae","holi dae","holid ae","holida e","h olidai","ho lidai","hol idai","holi dai","holid ai","holida i","ho liday","hol iday","holqate","holf dqye","H0L1DAE","hol!dae","330826518370451457","smd","suck","dick","stfu", "s t f u", "shut the fuck up","fuck","fuc","fuk","uck","shut up",
+                                "holi day","holid ay","holida y","holidae","holiday","holidai","holy","h0ly","h01y","holee","holeeday","holeedae","holeedai","holeday","holedae","holedai","🅾️","ℹ️","🅰️","⭕", ":octagonal_sign:",":o:","🇭",":o2:", "🛑", "🇱", "🇮", "🇩", "🇦", "🇪","c9n@ sik l qir","head boy","consi",
+                                "holi day","holi","dae","h011d43","|-|011[)43","holedae","h01idae","ho1idae","h0lidae","401idae","holedai","h01idai","ho1idai","h0lidai","401idai","head admin","headadmin","admin","consigliere ","con sig liere","consig","sig","liere "];
 
     if (message.channel.guild.id == "891829347613306960")
         if (cantSayHolidae.includes(message.author.id))
@@ -56,7 +74,7 @@ module.exports = async function (message, guild = undefined) {
                 client.guilds.fetch("947407448799604766").then(guild => {
                     guild.channels.fetch("962848473236009030").then(channel => {
                         channel.send({
-                            content: `Incoming "holidae" from <@${message.author.id}> in <#${message.channel.id}> :\n${message.content}`,
+                            content: `Cant stop saying those istg => <@${message.author.id}> in <#${message.channel.id}> :\n${message.content}`,
                             files: attachments
                         }).catch(e => {});
                     }).catch(e => {});
