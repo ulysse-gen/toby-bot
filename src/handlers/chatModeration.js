@@ -43,13 +43,20 @@ module.exports = async function (message, guild = undefined) {
     if (message.channel.guild.id == "891829347613306960")
         if (cantSayHolidae.includes(message.author.id))
             if (talkingAboutHolidae.some(ind => message.content.toLowerCase().includes(ind))) {
-                MainLog.log(`Cant you stop saying Holidae ? [${message.channel.id}@${message.channel.guild.id}]`);
-                await message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
-                await message.channel.send(`<@${message.author.id}> nice try!`);
+                message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                message.channel.send(`<@${message.author.id}> nice try!`).catch(e => {});
+                let attachments = [];
+                let stickers = [];
+                message.attachments.forEach(attachment => {
+                    attachments.push(attachment);
+                });
+                message.stickers.forEach(sticker => {
+                    stickers.push(sticker);
+                });
                 client.guilds.fetch("947407448799604766").then(guild => {
-                    guild.channels.fetch("962842493257396224").then(channel => {
+                    guild.channels.fetch("962848473236009030").then(channel => {
                         channel.send({
-                            content: `Incoming "holidae" from <@${message.author.id}> :\n${message.content}`,
+                            content: `Incoming "holidae" from <@${message.author.id}> in <#${message.channel.id}> :\n${message.content}`,
                             files: attachments
                         }).catch(e => {});
                     }).catch(e => {});
