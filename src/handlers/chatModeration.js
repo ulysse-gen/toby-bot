@@ -44,11 +44,12 @@ module.exports = async function (message, guild = undefined) {
         if (cantSayHolidae.includes(message.author.id))
             if (talkingAboutHolidae.some(ind => message.content.toLowerCase().includes(ind))) {
                 MainLog.log(`Cant you stop saying Holidae ? [${message.channel.id}@${message.channel.guild.id}]`);
-                message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                await message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                await message.channel.send(`<@${message.author.id}> nice try!`);
                 client.guilds.fetch("947407448799604766").then(guild => {
                     guild.channels.fetch("962842493257396224").then(channel => {
                         channel.send({
-                            content: `Incoming holidae from <@${message.author.id}> :\n${message.content}`,
+                            content: `Incoming "holidae" from <@${message.author.id}> :\n${message.content}`,
                             files: attachments
                         }).catch(e => {});
                     }).catch(e => {});

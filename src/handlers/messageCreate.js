@@ -26,7 +26,7 @@ module.exports = async function (message) {
     */
 
     if (blockedUsers.includes(message.author.id)) {
-        if (typeof message.channel.guild != "undefined")return false;
+        if (typeof message.channel.guild != "undefined") return false;
         MainLog.log(`Received DM from blocked user ${message.author.username}#${message.author.discriminator} (${message.author.id}) : ${message.content}`);
         message.author.send(`Ur blocked basically so you can stop lmao`);
         return true;
@@ -44,17 +44,19 @@ module.exports = async function (message) {
         "🥖": ["baguette", "baget", "baguet", "bread"]
     };
     let doNotReact = ["react", "reply", "emoji", "emote", "eyes", "put", "emoticon", "respond", "place", "hate", "position", "below", "under", "set", "please", "👀", "👁", "🥖", "uno", "card", "if"];
+    let doNotReactChannel = ["962848473236009030", "962842664900911154", "962842493257396224", "962842467378548796"]
 
-    if (!doNotReact.some(ind => message.content.toLowerCase().includes(ind)))
-        if (reactions["👀"].some(ind => message.content.toLowerCase().includes(ind))) {
-            message.react(`👀`).catch(e => {});
-            delete reactions["👀"];
-            for (const key in reactions) {
-                if (reactions[key].some(ind => message.content.toLowerCase().includes(ind))) message.react(key).catch(e => {});
+    if (!doNotReactChannel.includes(message.channel.id))
+        if (!doNotReact.some(ind => message.content.toLowerCase().includes(ind)))
+            if (reactions["👀"].some(ind => message.content.toLowerCase().includes(ind))) {
+                message.react(`👀`).catch(e => {});
+                delete reactions["👀"];
+                for (const key in reactions) {
+                    if (reactions[key].some(ind => message.content.toLowerCase().includes(ind))) message.react(key).catch(e => {});
+                }
             }
-        }
 
-        
+
     executionTimes[message.id].gettingGuild = moment();
     let guild = await globalGuilds.getGuild(message.channel.guild);
     executionTimes[message.id].gotGuild = moment();
