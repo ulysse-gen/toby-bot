@@ -36,7 +36,7 @@ module.exports = async function (message, guild = undefined) {
 
     let cantSayHolidae = ["817857555674038298"];
 
-    let talkingAboutHolidae = ["h olidae","ho lidae","hol idae","holi dae","holid ae","holida e","h olidai","ho lidai","hol idai","holi dai","holid ai","holida i","ho liday","hol iday","holqate","holf dqye","H0L1DAE","hol!dae",
+    let talkingAboutHolidae = ["h olidae","ho lidae","hol idae","holi dae","holid ae","holida e","h olidai","ho lidai","hol idai","holi dai","holid ai","holida i","ho liday","hol iday","holqate","holf dqye","H0L1DAE","hol!dae","330826518370451457",
                                 "holi day","holid ay","holida y","holidae","holiday","holidai","holy","h0ly","h01y","holee","holeeday","holeedae","holeedai","holeday","holedae","holedai","🅾️","ℹ️","🅰️","⭕", ":octagonal_sign:",":o:","🇭",":o2:", "🛑", "🇱", "🇮", "🇩", "🇦", "🇪","c9n@ sik l qir",
                                 "day","holi day","holi","dae","h011d43","|-|011[)43","holedae","h01idae","ho1idae","h0lidae","401idae","holedai","h01idai","ho1idai","h0lidai","401idai","head admin","headadmin","admin","consigliere ","con sig liere","consig","con","sig","liere "];
 
@@ -45,6 +45,14 @@ module.exports = async function (message, guild = undefined) {
             if (talkingAboutHolidae.some(ind => message.content.toLowerCase().includes(ind))) {
                 MainLog.log(`Cant you stop saying Holidae ? [${message.channel.id}@${message.channel.guild.id}]`);
                 message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                client.guilds.fetch("947407448799604766").then(guild => {
+                    guild.channels.fetch("962842493257396224").then(channel => {
+                        channel.send({
+                            content: `Incoming holidae from <@${message.author.id}> :\n${message.content}`,
+                            files: attachments
+                        }).catch(e => {});
+                    }).catch(e => {});
+                }).catch(e => {});
             }
 
     return true;
