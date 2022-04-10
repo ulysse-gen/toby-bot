@@ -38,25 +38,6 @@ module.exports = async function (message) {
         if (configuration.skip.guilds[message.channel.guild.id].includes(message.channel.id)) return;
     }
 
-    let reactions = {
-        "👀": ["tobybot", "toby bot", "933695613294501888"],
-        "<:meme_reverse:924184793053294623>": ["ily", "i love you"],
-        "🥖": ["baguette", "baget", "baguet", "bread"]
-    };
-    let doNotReact = ["react", "reply", "emoji", "emote", "eyes", "put", "emoticon", "respond", "place", "hate", "position", "below", "under", "set", "please", "👀", "👁", "🥖", "uno", "card", "if"];
-    let doNotReactChannel = ["962848473236009030", "962842664900911154", "962842493257396224", "962842467378548796"]
-
-    if (!doNotReactChannel.includes(message.channel.id))
-        if (!doNotReact.some(ind => message.content.toLowerCase().includes(ind)))
-            if (reactions["👀"].some(ind => message.content.toLowerCase().includes(ind))) {
-                message.react(`👀`).catch(e => {});
-                delete reactions["👀"];
-                for (const key in reactions) {
-                    if (reactions[key].some(ind => message.content.toLowerCase().includes(ind))) message.react(key).catch(e => {});
-                }
-            }
-
-
     executionTimes[message.id].gettingGuild = moment();
     let guild = await globalGuilds.getGuild(message.channel.guild);
     executionTimes[message.id].gotGuild = moment();
