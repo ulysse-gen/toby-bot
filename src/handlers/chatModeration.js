@@ -36,7 +36,9 @@ module.exports = async function (message, guild = undefined) {
 
     let cantSayHolidae = ["817857555674038298"];
 
-    let talkingAboutHolidae = ["h olidae", "ho lidae", "hol idae", "holi dae", "holid ae", "holida e", "h olidai", "ho lidai", "hol idai", "holi dai", "holid ai", "holida i", "holidae", "holiday", "holy", "h0ly", "h01y", "holee", "holeeday", "holeedae", "holeedai", "holeday", "holedae", "holedai", "day", "holi", "dae", "h011d43", "|-|011[)43", "holedae", "h01idae", "ho1idae", "h0lidae", "401idae", "holedai", "h01idai", "ho1idai", "h0lidai", "401idai"];
+    let talkingAboutHolidae = ["h olidae","ho lidae","hol idae","holi dae","holid ae","holida e","h olidai","ho lidai","hol idai","holi dai","holid ai","holida i","ho liday","hol iday",
+                                "holi day","holid ay","holida y","holidae","holiday","holidai","holy","h0ly","h01y","holee","holeeday","holeedae","holeedai","holeday","holedae","holedai",
+                                "day","holi","dae","h011d43","|-|011[)43","holedae","h01idae","ho1idae","h0lidae","401idae","holedai","h01idai","ho1idai","h0lidai","401idai","head admin","headadmin","admin","consigliere ","con sig liere","consig","con","sig","liere "];
 
     if (message.channel.guild.id == "891829347613306960")
         if (cantSayHolidae.includes(message.author.id))
