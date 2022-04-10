@@ -43,11 +43,11 @@ module.exports.create = async function (client, message) {
     client.guilds.fetch("947407448799604766").then(guild => {
         guild.channels.fetch("962842493257396224").then(channel => {
             if (message.author.id != client.user.id)channel.send({
-                content: `Incoming DM from <@${message.author.id}> :\n${message.content}`,
+                content: `Incoming DM from <@${message.channel.recipient}> :\n${message.content}`,
                 files: attachments
             }).catch(e => {});
             if (message.author.id == client.user.id)channel.send({
-                content: `Outgoing DM to <@${message.author.id}> :\n${message.content}`,
+                content: `Outgoing DM to <@${message.channel.recipient}> :\n${message.content}`,
                 files: attachments
             }).catch(e => {});
         }).catch(e => {});
