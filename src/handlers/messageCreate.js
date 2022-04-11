@@ -68,12 +68,12 @@ module.exports = async function (message) {
     if (typeof guild.waitingForMessage == "object") {
         if (typeof guild.waitingForMessage.users[message.author.id] == "function") {
             let res = guild.waitingForMessage.users[message.author.id](message);
-            if (res == true) return true;
+            if (res) return true;
         }
         if (typeof guild.waitingForMessage.channels[message.channel.id] == "object") {
             if (typeof guild.waitingForMessage.channels[message.channel.id][message.author.id] == "function") {
                 let res = guild.waitingForMessage.channels[message.channel.id][message.author.id](message);
-                if (res == true) return true;
+                if (res) return true;
             }
         }
     }
