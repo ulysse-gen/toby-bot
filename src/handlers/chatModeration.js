@@ -161,9 +161,11 @@ module.exports = async function (message, guild = undefined) {
             }
         }
 
+
         let triggersList = (violationsArray.length == 1) ? violationsArray[0] : violationsArray.join(', ');
         let violationsList = (violationsContent.length == 1) ? violationsContent[0] : violationsContent.join(', ');
         let checkList = (checkArray.length == 1) ? checkArray[0] : checkArray.join(', ');
+        if (triggersList == "" || violationsList == "") console.log("chatModeration.js@168 => ", violations, violationsArray, violationsContent, checkArray);
         guild.moderationManager.sendAutoModEmbed(message, guild, triggersList, checkList, user, violationsContent);
         AutoModLog.log(`Message containing ${triggersList} content (${violationsList}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
     }
