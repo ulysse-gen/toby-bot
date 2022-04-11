@@ -90,13 +90,16 @@ module.exports = class moderationManager {
         return false;
     }
 
-    async sendAutoModEmbed(message, guild, trigger, check, user, reason) {
+    async sendAutoModEmbed(message, guild, trigger, check, user, reason = []) {
         reason = reason.filter(function (e) {
             return (typeof e != "undefined" && e !== '')
         });
         reason = reason.map(e => {
             if (typeof e == "string") return e.trim()
         });
+        if (typeof check != "string" || check == "")return false;
+        if (typeof trigger != "string" || trigger == "")return false;
+        if (reason.length == 0)return false;
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
         let userPFP = await getUserPfp(user);
