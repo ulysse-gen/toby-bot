@@ -44,8 +44,6 @@ module.exports = async function (message) {
 
     if (!guild.initialized) return false;
 
-    require(`./chatModeration`)(message, guild); //Same but if thats with guild prefix
-
     if (typeof guild.lastMessages[message.author.id] == "undefined") guild.lastMessages[message.author.id] = [];
     let lastMessagePush = {
         channelId: message.channel.id,
@@ -64,6 +62,8 @@ module.exports = async function (message) {
     if (message.author.id == client.user.id) return; //Skip if himself
 
     if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
+    
+    require(`./chatModeration`)(message, guild); //Same but if thats with guild prefix
 
     if (typeof guild.waitingForMessage == "object") {
         if (typeof guild.waitingForMessage.users[message.author.id] == "function") {

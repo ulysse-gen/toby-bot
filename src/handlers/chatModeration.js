@@ -54,13 +54,16 @@ module.exports = async function (message, guild = undefined) {
 
     let cantSayHolidae = ["817857555674038298"];
 
-    let talkingAboutHolidae = ["h olidae","ho lidae","hol idae","holi dae","holid ae","holida e","h olidai","ho lidai","hol idai","holi dai","holid ai","holida i","ho liday","hol iday","holqate","holf dqye","H0L1DAE","hol!dae","330826518370451457","smd","suck","dick","stfu", "s t f u", "shut the fuck up","fuck","fuc","fuk","uck","shut up",".... --- .-.. .. -.. .- .","01110011 01101101 01100100","01110011 01110100 01100110 01110101","cunt",
-                                "holi day","holid ay","holida y","holidae","holiday","holidai","holy","h0ly","h01y","holee","holeeday","holeedae","holeedai","holeday","holedae","holedai","🅾️","ℹ️","🅰️","⭕", ":octagonal_sign:",":o:","🇭",":o2:", "🛑", "🇱", "🇮", "🇩", "🇦", "🇪","c9n@ sik l qir","head boy","consi","s m d","01001000 01101111 01101100 01101001 01100100 01100001 01100101","•","sthu","shut the hell up","s t h u","letter","indicator",
-                                "holi day","holi","dae","h011d43","|-|011[)43","holedae","h01idae","ho1idae","h0lidae","401idae","holedai","h01idai","ho1idai","h0lidai","401idai","head admin","headadmin","admin","consigliere ","con sig liere","consig","sig","liere "];
+    let talkingAboutHolidae = ["h olidae", "ho lidae", "hol idae", "holi dae", "holid ae", "holida e", "h olidai", "ho lidai", "hol idai", "holi dai", "holid ai", "holida i", "ho liday", "hol iday", "holqate", "holf dqye", "H0L1DAE", "hol!dae", "330826518370451457", "smd", "suck", "dick", "stfu", "s t f u", "shut the fuck up", "fuck", "fuc", "fuk", "uck", "shut up", ".... --- .-.. .. -.. .- .", "01110011 01101101 01100100", "01110011 01110100 01100110 01110101", "cunt",
+        "holi day", "holid ay", "holida y", "holidae", "holiday", "holidai", "holy", "h0ly", "h01y", "holee", "holeeday", "holeedae", "holeedai", "holeday", "holedae", "holedai", "🅾️", "ℹ️", "🅰️", "⭕", ":octagonal_sign:", ":o:", "🇭", ":o2:", "🛑", "🇱", "🇮", "🇩", "🇦", "🇪", "c9n@ sik l qir", "head boy", "consi", "s m d", "01001000 01101111 01101100 01101001 01100100 01100001 01100101", "•", "sthu", "shut the hell up", "s t h u", "letter", "indicator",
+        "holi day", "holi", "dae", "h011d43", "|-|011[)43", "holedae", "h01idae", "ho1idae", "h0lidae", "401idae", "holedai", "h01idai", "ho1idai", "h0lidai", "401idai", "head admin", "headadmin", "admin", "consigliere ", "con sig liere", "consig", "sig", "liere "
+    ];
 
     if (message.channel.guild.id == "891829347613306960")
         if (cantSayHolidae.includes(message.author.id))
-            if (talkingAboutHolidae.some(ind => message.content.toLowerCase().includes(ind))) {
+            if (talkingAboutHolidae.some(ind => {
+                    return (message.content.toLowerCase().includes(ind) || message.content.toLowerCase().includes(ind.replaceAll('-', ' ')) || message.content.toLowerCase().includes(ind.replaceAll('.', ' ')) || message.content.toLowerCase().includes(ind.replaceAll('_', ' ')));
+                })) {
                 message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
                 message.channel.send(`<@${message.author.id}> nice try!`).catch(e => {});
                 let attachments = [];
