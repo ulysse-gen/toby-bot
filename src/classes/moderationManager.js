@@ -1,6 +1,7 @@
 const moment = require('moment');
 const mysql = require('mysql');
 const urlExists = require('url-exists');
+const axios = require('axios');
 const {
     MessageEmbed
 } = require(`discord.js`);
@@ -23,6 +24,13 @@ module.exports = class moderationManager {
             type: `logonly`, //logonly, punishonly, logandpunish
             punish: `none` //none, delete, warn, strike(soon), mute, kick, ban
         }
+
+        this.scamLinks = [];
+        this.scamTherms = [];
+        this.scamSlashes = [];
+        this.refreshDataSets();
+
+        setInterval(() => this.refreshDataSets(), 43200000); //Scan toutes les 12H
     }
 
     async log(guildId, type, userId, moderatorId, reason, length) {
@@ -44,7 +52,7 @@ module.exports = class moderationManager {
                 }
                 connection.query(`INSERT INTO \`moderationLogs\` (\`${valueNames.join('`,`')}\`) VALUES (?,?,?,?,?,?,?,?)`, values, async function (error, results, fields) {
                     if (results.affectedRows == 1) {
-                        if (type == "Mute" || type == "Ban" || type == "Sticky")connection.query(`UPDATE \`moderationLogs\` SET \`status\`='overwritten' WHERE \`userId\`='${userId}' AND \`guildId\`='${guildId}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite' OR \`status\`='info') AND NOT \`numId\`='${results.insertId}'`, async function (error, results, fields) {});
+                        if (type == "Mute" || type == "Ban" || type == "Sticky") connection.query(`UPDATE \`moderationLogs\` SET \`status\`='overwritten' WHERE \`userId\`='${userId}' AND \`guildId\`='${guildId}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite' OR \`status\`='info') AND NOT \`numId\`='${results.insertId}'`, async function (error, results, fields) {});
                         res(results.insertId);
                     }
                     try {
@@ -97,9 +105,9 @@ module.exports = class moderationManager {
         reason = reason.map(e => {
             if (typeof e == "string") return e.trim()
         });
-        if (typeof check != "string" || check == "")return false;
-        if (typeof trigger != "string" || trigger == "")return false;
-        if (reason.length == 0)return false;
+        if (typeof check != "string" || check == "") return false;
+        if (typeof trigger != "string" || trigger == "") return false;
+        if (reason.length == 0) return false;
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
         let userPFP = await getUserPfp(user);
@@ -247,6 +255,31 @@ module.exports = class moderationManager {
                 });
             });
         });
+    }
+
+    async refreshDataSets() {
+        this.scamLinks = await axios.get('https://spen.tk/api/v1/links')
+            .then(response => {
+                return response.data.links
+            })
+            .catch(_error => {
+                return [];
+            });
+        this.scamTherms = await axios.get('https://spen.tk/api/v1/terms')
+            .then(response => {
+                return response.data.terms
+            })
+            .catch(_error => {
+                return [];
+            });
+        this.scamSlashes = await axios.get('https://spen.tk/api/v1/slashes')
+            .then(response => {
+                return response.data.slashes
+            })
+            .catch(_error => {
+                return [];
+            });
+        MainLog.log(`Loaded autoMod datasets.`)
     }
 }
 

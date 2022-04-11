@@ -7,6 +7,7 @@ const linkify = require('linkifyjs');
 const antiProfanity = require('anti-profanity');
 const removeAccents = require(`remove-accents`);
 const leetSpeakConverter = require('../../node_modules/leet-speak-converter/src/leet-converter');
+const url = require('url');
 
 const {
     client,
@@ -34,6 +35,7 @@ Email
 
 module.exports = async function (message, guild = undefined) {
     executionTimes[message.id].chatModeration = moment();
+    let startTimer = moment();
 
     tobyReaction(message);
     textContains(message.content, "holidae");
@@ -47,7 +49,7 @@ module.exports = async function (message, guild = undefined) {
 
     if (message.channel.guild.id == "891829347613306960")
         if (cantSayHolidae.includes(message.author.id))
-            if (talkingAboutHolidae.some(ind => messageConainsWord(message.content, ind))) {
+            if (talkingAboutHolidae.some(ind => textContains(message.content, ind))) {
                 message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
                 message.channel.send(`<@${message.author.id}> nice try!`).catch(e => {});
                 let attachments = [];
@@ -79,6 +81,17 @@ module.exports = async function (message, guild = undefined) {
     let linkifyReturn = linkify.find(message.content);
     if (linkifyReturn.length != 0)
         for (const element of linkifyReturn) {
+            let linkToScan = element.value;
+            if (url.parse(linkToScan, false).href != null) {
+                linkToScan = (!linkToScan.startsWith('https://')) ? `https://${linkToScan}`  : linkToScan;
+            }
+            if (url.parse(linkToScan, false).hostname != null && guild.moderationManager.scamLinks.includes(url.parse(linkToScan, false).hostname)) {
+                violations.push({
+                    check: `spen.tk`,
+                    trigger: "Scam URL",
+                    value: element.value
+                });
+            }
             violations.push({
                 check: `linkify`,
                 trigger: element.type,
@@ -91,7 +104,7 @@ module.exports = async function (message, guild = undefined) {
         trigger: `profanity`
     });*/
 
-    let customDetect = detectProfanities(message.content);
+    let customDetect = detectProfanities(message.content, guild);
     if (customDetect.length != 0)
         for (const element of customDetect) {
             violations.push({
@@ -141,6 +154,14 @@ module.exports = async function (message, guild = undefined) {
             {
                 check: "linkify",
                 trigger: "email"
+            },
+            {
+                check: "spen.tk",
+                trigger: "Scam URL"
+            },
+            {
+                check: "spen.tk",
+                trigger: "Scam Domain"
             }
         ]
 
@@ -168,6 +189,7 @@ module.exports = async function (message, guild = undefined) {
         guild.moderationManager.sendAutoModEmbed(message, guild, triggersList, checkList, user, violationsContent);
         AutoModLog.log(`Message containing ${triggersList} content (${violationsList}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
     }
+    MainLog.log(`AutoMod done, time elspsed : ${moment().diff(startTimer)}ms`);
 }
 
 function tobyReaction(message) {
@@ -191,15 +213,16 @@ function tobyReaction(message) {
             }
 }
 
-function detectProfanities(textToCheck) {
+function detectProfanities(textToCheck, guild) {
     let violations = [];
     let checkWords = {
         "N-Word": ["migger", "negress", "nigga", "nigger", "yigger", "nigg "],
         "F-Slur": ["faggot", "fag"],
         "H-Related": ["hitler", "nazy", "nazi"],
         "Sexual": ["porno", "sex", "ass", "tits", "dick", "pussy", "vagina", "penis", "cock", "anus", "blowjob", "anulingus", "cunnilingus", "sodomy", "sodomize", "cum", "creampie", "deepthroat", "butthole", "bukkake", "boobs", "boner", "masturbating", "masturbate", "masturbation"],
-        "Profanity": ["ajbfGSGY7FGfpdARHg7GyjmkP$nMT8q&RM3AQJMx"]
-    }
+        "Profanity": ["ajbfGSGY7FGfpdARHg7GyjmkP$nMT8q&RM3AQJMx"],
+        "Scam Therms": guild.moderationManager.scamTherms
+    };
     for (const key in checkWords) {
         checkWords[key].forEach(el => {
             let violation = {
