@@ -150,6 +150,39 @@ module.exports = class guildManager {
         return true;
     }
 
+    autoModlLog(string) {
+        if (!this.initialized || !this.configuration.moderation.autoModeration.channel.status) return;
+        if (typeof this.autoModerationLog.initialized == "undefined" || !this.autoModerationLog.initialized) return false;
+        if (typeof string != "string" && string == "") return false;
+        let logText = this.configuration.moderation.autoModeration.channel.format.replace(`&{TEXT}`, `${string}`).replace(`&{DATE}`, moment().format(`MMMM Do YYYY`)).replace(`&{HOUR}`, moment().format(`HH:mm:ss`)).replace(`&{DISCORDDATE}`, `<t:${Math.floor(new Date().getTime() / 1000)}:F>`);
+
+        this.autoModerationLog.channel.send(logText).catch(_e => {
+            if (this.configuration.moderation.autoModeration.channel.status) this.configuration.moderation.autoModeration.channel.status = false;
+            console.log(`Could not use the logging channel for guild ${this.guild.id}`);
+        });
+        return true;
+    }
+
+    autoModEmbedLog(title, description, color, fields = []) {
+        if (!this.initialized || !this.configuration.moderation.autoModeration.channel.status) return;
+        if (typeof this.autoModerationLog.initialized == "undefined" || !this.autoModerationLog.initialized) return false;
+        if (typeof title != "string" || title == "") return false;
+        if (typeof description != "string" || description == "") return false;
+        if (typeof color != "string" || color == "") return false;
+        if (typeof fields != "object") return false;
+        let embed = new MessageEmbed().setTitle(title).setDescription(description).setColor(color);
+        fields.forEach(field => embed.addField(field[0], field[1], field[2]));
+
+        this.autoModerationLog.channel.send({
+            embeds: [embed]
+        }).catch(e => {
+            console.log(e);
+            if (this.configuration.moderation.autoModeration.channel.status) this.configuration.moderation.autoModeration.channel.status = false;
+            console.log(`Could not use the logging channel for guild ${this.guild.id}`);
+        });
+        return true;
+    }
+
     async setReminder(guildId, userId, channelId, time, data) {
         let zisse = this;
         let values = [guildId, userId, channelId, time, JSON.stringify(data)];

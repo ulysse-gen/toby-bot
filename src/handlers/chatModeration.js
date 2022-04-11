@@ -6,6 +6,7 @@ const moment = require(`moment`);
 const linkify = require('linkifyjs');
 const antiProfanity = require('anti-profanity');
 const removeAccents = require(`remove-accents`);
+const leetSpeakConverter = require('../../node_modules/leet-speak-converter/src/leet-converter');
 
 const {
     client,
@@ -34,23 +35,8 @@ Email
 module.exports = async function (message, guild = undefined) {
     executionTimes[message.id].chatModeration = moment();
 
-    let reactions = {
-        "👀": ["tobybot", "toby bot", "933695613294501888"],
-        "<:meme_reverse:924184793053294623>": ["ily", "i love you"],
-        "🥖": ["baguette", "baget", "baguet", "bread"]
-    };
-    let doNotReact = ["react", "reply", "emoji", "emote", "eyes", "put", "emoticon", "respond", "place", "hate", "position", "below", "under", "set", "please", "👀", "👁", "🥖", "uno", "card", "if"];
-    let doNotReactChannel = ["962848473236009030", "962842664900911154", "962842493257396224", "962842467378548796"]
-
-    if (!doNotReactChannel.includes(message.channel.id))
-        if (!doNotReact.some(ind => message.content.toLowerCase().includes(ind)))
-            if (reactions["👀"].some(ind => message.content.toLowerCase().includes(ind))) {
-                message.react(`👀`).catch(e => {});
-                delete reactions["👀"];
-                for (const key in reactions) {
-                    if (reactions[key].some(ind => message.content.toLowerCase().includes(ind))) message.react(key).catch(e => {});
-                }
-            }
+    tobyReaction(message);
+    textContains(message.content, "holidae");
 
     let cantSayHolidae = ["817857555674038298"];
 
@@ -61,9 +47,7 @@ module.exports = async function (message, guild = undefined) {
 
     if (message.channel.guild.id == "891829347613306960")
         if (cantSayHolidae.includes(message.author.id))
-            if (talkingAboutHolidae.some(ind => {
-                    return (message.content.toLowerCase().includes(ind) || message.content.toLowerCase().includes(ind.replaceAll('-', ' ')) || message.content.toLowerCase().includes(ind.replaceAll('.', ' ')) || message.content.toLowerCase().includes(ind.replaceAll('_', ' ')));
-                })) {
+            if (talkingAboutHolidae.some(ind => messageConainsWord(message.content, ind))) {
                 message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
                 message.channel.send(`<@${message.author.id}> nice try!`).catch(e => {});
                 let attachments = [];
@@ -79,24 +63,22 @@ module.exports = async function (message, guild = undefined) {
                         channel.send({
                             content: `Cant stop saying those istg => <@${message.author.id}> in <#${message.channel.id}> :\n${message.content}`,
                             files: attachments
-                        }).catch(e => {});
-                    }).catch(e => {});
-                }).catch(e => {});
+                        }).catch(catchSend());
+                    }).catch(catchFetch());
+                }).catch(catchFetch());
             }
 
-    return true;
     let permissionToCheck = `chat.fullbypass`;
     let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
     let hasGuildPermission = await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
     let hasPermission = (hasGlobalPermission == null) ? hasGuildPermission : hasGlobalPermission;
-    if (hasPermission == true) return true;
+    if (hasPermission && !message.content.includes('-dontbypass')) return true;
 
     let violations = [];
 
     let linkifyReturn = linkify.find(message.content);
     if (linkifyReturn.length != 0)
-        for (let index = 0; index < linkifyReturn.length; index++) {
-            const element = linkifyReturn[index];
+        for (const element of linkifyReturn) {
             violations.push({
                 check: `linkify`,
                 trigger: element.type,
@@ -109,10 +91,9 @@ module.exports = async function (message, guild = undefined) {
         trigger: `profanity`
     });
 
-    let customDetect = detectProfanities(message);
+    let customDetect = detectProfanities(message.content);
     if (customDetect.length != 0)
-        for (let index = 0; index < customDetect.length; index++) {
-            const element = customDetect[index];
+        for (const element of customDetect) {
             violations.push({
                 check: `custom`,
                 trigger: element.trigger,
@@ -123,6 +104,8 @@ module.exports = async function (message, guild = undefined) {
     if (violations.length != 0) {
         //This message has been detected as containing profanities
         let violationsArray = [];
+        let violationsContent = [];
+        let checkArray = [];
 
         let user = await message.channel.guild.members.fetch(message.author.id, {
             cache: false,
@@ -131,83 +114,84 @@ module.exports = async function (message, guild = undefined) {
             return false;
         });
 
-        if (violations.some(e => (e.check == `custom` && e.trigger == `N-Word`))) {
-            guild.moderationManager.sendAutoModEmbed(message, guild, `N-Word`, `custom`, user, violations.map(e => {
-                if (e.trigger == "N-Word" && typeof e.value != "undefined") return e.value
-            }))
-            violationsArray.push(`N-Word`);
-            AutoModLog.log(`Message containing N-Word content (${violations.map(e => {if (e.trigger == "N-Word" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
-            return true;
+        let triggers = [{
+                check: "custom",
+                trigger: "N-Word"
+            },
+            {
+                check: "custom",
+                trigger: "F-Slur"
+            },
+            {
+                check: "custom",
+                trigger: "H-Related"
+            },
+            {
+                check: "custom",
+                trigger: "Sexual"
+            },
+            {
+                check: "custom",
+                trigger: "Profanity"
+            },
+            {
+                check: "linkify",
+                trigger: "url"
+            },
+            {
+                check: "linkify",
+                trigger: "email"
+            }
+        ]
+
+        for (const trigger of triggers) {
+            if (violations.some(e => (e.check == trigger.check && e.trigger == trigger.trigger))) {
+                if (!violationsArray.includes(trigger.trigger)) violationsArray.push(trigger.trigger);
+                if (!checkArray.includes(trigger.check)) checkArray.push(trigger.check);
+                let content = violations.map(e => {
+                    if (e.trigger == trigger.trigger && typeof e.value != "undefined") return e.value
+                });
+                content = content.filter(function (e) {
+                    return (typeof e != "undefined" && e !== '')
+                });
+                content = content.map(e => {
+                    if (typeof e == "string") return e.trim()
+                });
+                violationsContent = violationsContent.concat(content);
+            }
         }
-        if (violations.some(e => (e.check == `custom` && e.trigger == `F-Slur`))) {
-            guild.moderationManager.sendAutoModEmbed(message, guild, `F-Slur`, `custom`, user, violations.map(e => {
-                if (e.trigger == "F-Slur" && typeof e.value != "undefined") return e.value
-            }))
-            violationsArray.push(`F-Slur`);
-            AutoModLog.log(`Message containing F-Slur content (${violations.map(e => {if (e.trigger == "F-Slur" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
-            return true;
-        }
-        if (violations.some(e => (e.check == `custom` && e.trigger == `H-Related`))) {
-            guild.moderationManager.sendAutoModEmbed(message, guild, `H-Related`, `custom`, user, violations.map(e => {
-                if (e.trigger == "H-Related" && typeof e.value != "undefined") return e.value
-            }))
-            violationsArray.push(`H-Related`);
-            AutoModLog.log(`Message containing H-Related content (${violations.map(e => {if (e.trigger == "H-Related" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
-            return true;
-        }
-        if (violations.some(e => (e.check == `custom` && e.trigger == `Sexual`))) {
-            guild.moderationManager.sendAutoModEmbed(message, guild, `Sexual`, `custom`, user, violations.map(e => {
-                if (e.trigger == "Sexual" && typeof e.value != "undefined") return e.value
-            }))
-            violationsArray.push(`Sexual`);
-            AutoModLog.log(`Message containing Sexual content (${violations.map(e => {if (e.trigger == "Sexual" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
-            return true;
-        }
-        if (violations.some(e => (e.check == `custom` && e.trigger == `Profanity`))) {
-            guild.moderationManager.sendAutoModEmbed(message, guild, `Profanity`, `custom`, user, violations.map(e => {
-                if (e.trigger == "Profanity" && typeof e.value != "undefined") return e.value
-            }))
-            violationsArray.push(`Profanity`);
-            AutoModLog.log(`Message containing Profanity content (${violations.map(e => {if (e.trigger == "Profanity" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
-            return true;
-        }
-        if (violations.some(e => (e.check == `linkify` && e.trigger == `url`))) {
-            guild.moderationManager.sendAutoModEmbed(message, guild, `url`, `linkify`, user, violations.map(e => {
-                if (e.trigger == "url" && typeof e.value != "undefined") return e.value
-            }))
-            violationsArray.push(`URL`);
-            AutoModLog.log(`Message containing URL content (${violations.map(e => {if (e.trigger == "url" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
-            return true;
-        }
-        if (violations.some(e => (e.check == `linkify` && e.trigger == `email`))) {
-            guild.moderationManager.sendAutoModEmbed(message, guild, `email`, `linkify`, user, violations.map(e => {
-                if (e.trigger == "email" && typeof e.value != "undefined") return e.value
-            }))
-            violationsArray.push(`Email`);
-            AutoModLog.log(`Message containing Email content (${violations.map(e => {if (e.trigger == "email" && typeof e.value != "undefined")return e.value}).join(', ')}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
-            return true;
-        }
+
+        let triggersList = (violationsArray.length == 1) ? violationsArray[0] : violationsArray.join(', ');
+        let violationsList = (violationsContent.length == 1) ? violationsContent[0] : violationsContent.join(', ');
+        let checkList = (checkArray.length == 1) ? checkArray[0] : checkArray.join(', ');
+        guild.moderationManager.sendAutoModEmbed(message, guild, triggersList, checkList, user, violationsContent);
+        AutoModLog.log(`Message containing ${triggersList} content (${violationsList}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
     }
 }
 
-function detectProfanities(message) {
+function tobyReaction(message) {
+    let reactions = {
+        "👀": ["tobybot", "toby bot", "933695613294501888"],
+        "<:meme_reverse:924184793053294623>": ["ily", "i love you"],
+        "🥖": ["baguette", "baget", "baguet", "bread"]
+    };
+    let doNotReact = ["react", "reply", "emoji", "emote", "eyes", "put", "emoticon", "respond", "place", "hate", "position", "below", "under", "set", "please", "👀", "👁", "🥖", "uno", "card", "if"];
+    let doNotReactChannel = ["962848473236009030", "962842664900911154", "962842493257396224", "962842467378548796"];
+    let doNotReactUser = ["962848473236009030", "962842664900911154", "962842493257396224", "962842467378548796"];
+
+    if (!doNotReactChannel.includes(message.channel.id) && !doNotReactUser.includes(message.author.id)) //Skip channels & users set as "doNotReact"
+        if (!doNotReact.some(ind => textContains(message.content, ind))) //Skip message if contains any "doNotReact" words
+            if (reactions["👀"].some(ind => textContains(message.content, ind))) { //Check for main reaction
+                message.react(`👀`).catch(catchDoNothing());
+                delete reactions["👀"];
+                for (const key in reactions) {
+                    if (reactions[key].some(ind => textContains(message.content, ind))) message.react(key).catch(catchDoNothing());
+                }
+            }
+}
+
+function detectProfanities(textToCheck) {
     let violations = [];
-    let content = message.content.toLowerCase();
-    let toCheck = [content];
-    let splitters = [" ", ",", ".", ";", ":", "/", "\\", "-", "_", "+", "*", "="];
-    let replacePatterns = [
-        ["4", "a"],
-        ["8", "b"],
-        ["0", "d"],
-        ["3", "e"],
-        ["1", "i"],
-        ["7", "l"],
-        ["0", "o"],
-        ["5", "s"],
-        ["7", "t"],
-        ["$", "s"],
-        ["@", "a"]
-    ];
     let checkWords = {
         "N-Word": ["migger", "negress", "nigga", "nigger", "yigger", "nigg "],
         "F-Slur": ["faggot", "fag"],
@@ -215,30 +199,60 @@ function detectProfanities(message) {
         "Sexual": ["porno", "sex", "ass", "tits", "dick", "pussy", "vagina", "penis", "cock", "anus", "blowjob", "anulingus", "cunnilingus", "sodomy", "sodomize", "cum", "creampie", "deepthroat", "butthole", "bukkake", "boobs", "boner", "masturbating", "masturbate", "masturbation"],
         "Profanity": ["ajbfGSGY7FGfpdARHg7GyjmkP$nMT8q&RM3AQJMx"]
     }
-    splitters.forEach(splitter => {
-        toCheck.push(content.replaceAll(splitter, ``));
-    });
-    toCheck.forEach(element => {
-        replacePatterns.forEach(replacePattern => {
-            toCheck.push(element.replaceAll(replacePattern[0], replacePattern[1]));
-        });
-    });
-    toCheck.forEach(element => {
-        let withoutAccents = removeAccents(element);
-        if (!toCheck.includes(withoutAccents)) toCheck.push(withoutAccents)
-    });
     for (const key in checkWords) {
-        toCheck.forEach(element => {
-            checkWords[key].forEach(el => {
-                let violation = {
-                    check: `customProfanity`,
-                    trigger: key,
-                    value: el
-                };
-                if (element.includes(el))
-                    if (!violations.some(e => (e.check == violation.check && e.value == violation.value))) violations.push(violation);
-            })
-        })
+        checkWords[key].forEach(el => {
+            let violation = {
+                check: `customProfanity`,
+                trigger: key,
+                value: el
+            };
+            if (textContains(textToCheck, el))
+                if (!violations.some(e => (e.check == violation.check && e.value == violation.value))) violations.push(violation);
+        });
     }
     return violations;
+}
+
+function textContains(text, word) {
+    let messageText = text.toLowerCase();
+    let splitters = [" ", ",", ".", ";", ":", "/", "\\", "-", "_", "+", "*", "="];
+    let toTry = [word.toLowerCase(), word.replaceAll(' ', '')];
+    let found = false;
+    splitters.forEach(splitter => {
+        let toAdd = word.split('').join(splitter);
+        if (!toTry.includes(toAdd)) toTry.push(toAdd);
+        toAdd = word.split('').join(splitter + splitter);
+        if (!toTry.includes(toAdd)) toTry.push(toAdd);
+        toAdd = word.split('').join(splitter + splitter + splitter);
+        if (!toTry.includes(toAdd)) toTry.push(toAdd);
+    });
+    toTry.forEach(element => {
+        let withoutAccents = removeAccents(element);
+        if (!toTry.includes(withoutAccents)) toTry.push(withoutAccents);
+    });
+    toTry.forEach(possibility => {
+        if ((new RegExp(escapeRegex(possibility))).test(messageText) || (new RegExp(escapeRegex(possibility))).test(leetSpeakConverter.convertInputReverse(messageText))) {
+            found = true;
+            return found;
+        }
+    });
+    return found;
+}
+
+function escapeRegex(string) {
+    return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
+function catchDoNothing() {
+    return false;
+}
+
+function catchFetch() {
+    MainLog.log(`Failed to fetch.`)
+    return false;
+}
+
+function catchSend() {
+    MainLog.log(`Failed to send.`)
+    return false;
 }

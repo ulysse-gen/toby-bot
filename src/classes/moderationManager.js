@@ -108,12 +108,12 @@ module.exports = class moderationManager {
             }
         });
         embed.addField(`**Trigger**`, `${trigger}`, true);
-        embed.addField(`**Check**`, `${check}`, true);
+        embed.addField(`**Checks**`, `${check}`, true);
         embed.addField(`**User**`, `<@${user.user.id}>`, true);
         embed.addField(`**Channel**`, `<#${message.channel.id}>`, true);
         embed.addField(`**Detected**`, `||${reason.join(`||, ||`)}||`, true);
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
-        if (typeof guild != "undefined" && guild.configuration.moderation.autoModeration.channel.status && guild.autoModerationLog.initialized) guild.autoModerationLog.channel.send({ //Reply to the message that triggerred the error
+        if (typeof guild != "undefined" && guild.configuration.moderation.autoModeration.channel.status && guild.autoModerationLog.initialized) guild.autoModerationLog.channel.send({
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
