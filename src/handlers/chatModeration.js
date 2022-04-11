@@ -189,7 +189,6 @@ module.exports = async function (message, guild = undefined) {
         guild.moderationManager.sendAutoModEmbed(message, guild, triggersList, checkList, user, violationsContent);
         AutoModLog.log(`Message containing ${triggersList} content (${violationsList}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
     }
-    MainLog.log(`AutoMod done, time elspsed : ${moment().diff(startTimer)}ms`);
 }
 
 function tobyReaction(message) {
