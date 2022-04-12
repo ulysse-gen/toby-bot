@@ -106,6 +106,8 @@ dist
 #lintscanner
 .scannerwork/
 
+.vscode/
+
 #Toby Bot related
 /MySQL.json
 /.git-credentials
