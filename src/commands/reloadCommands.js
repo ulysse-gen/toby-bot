@@ -1,7 +1,7 @@
 const {
     MessageEmbed
 } = require(`discord.js`);
-const { exec } = require("child_process");
+const exec = util.promisify(require('child_process').exec);
 
 
 const {
@@ -26,17 +26,17 @@ module.exports = {
             title: `Reloaded commands`,
             color: guild.configuration.colors.success
         });
-        exec("git pull --tags origin develop && /usr/local/bin/npm install", (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                return;
-            }
-            console.log(`stdout: ${stdout}`);
-        });
+        try {
+            const {
+                stdout,
+                stderr
+            } = await exec('git pull --tags origin develop');
+            console.log('stdout:', stdout);
+            console.log('stderr:', stderr);
+        } catch (e) {
+            console.error(e); // should contain code (exit code) and signal (that caused the termination).
+        }
+        //            /usr/local/bin/npm install
         delete require.cache[require.resolve(`../handlers/messageCreate`)];
         delete require.cache[require.resolve(`../handlers/interactionCreate`)];
         delete require.cache[require.resolve(`../handlers/DMHandler`)];
