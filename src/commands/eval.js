@@ -4,7 +4,8 @@ const {
 const {
     configuration,
     packageJson,
-    MainLog
+    MainLog,
+    globalMetrics
 } = require(`../../index`);
 const discordVoice = require('@discordjs/voice');
 

@@ -6,7 +6,7 @@ const moment = require(`moment`);
 const linkify = require('linkifyjs');
 const antiProfanity = require('anti-profanity');
 const removeAccents = require(`remove-accents`);
-const leetSpeakConverter = require('../../node_modules/leet-speak-converter/src/leet-converter');
+const leetSpeakConverter = require('../utils/leet-converter');
 const url = require('url');
 
 const {
@@ -34,56 +34,32 @@ Email
 */
 
 module.exports = async function (message, guild = undefined) {
-    executionTimes[message.id].chatModeration = moment();
-    let startTimer = moment();
+    let messageMetric =  message.customMetric;
+    messageMetric.addEntry(`ChatModerationStart`);
 
+    messageMetric.addEntry(`TobyReactionsCheck`);
     tobyReaction(message);
-    textContains(message.content, "holidae");
+    messageMetric.addEntry(`CantSayThingsCheck`);
+    cantSayThings(message);
 
-    let cantSayHolidae = ["817857555674038298"];
-
-    let talkingAboutHolidae = ["h olidae", "ho lidae", "hol idae", "holi dae", "holid ae", "holida e", "h olidai", "ho lidai", "hol idai", "holi dai", "holid ai", "holida i", "ho liday", "hol iday", "holqate", "holf dqye", "H0L1DAE", "hol!dae", "330826518370451457", "smd", "suck", "dick", "stfu", "s t f u", "shut the fuck up", "fuck", "fuc", "fuk", "uck", "shut up", ".... --- .-.. .. -.. .- .", "01110011 01101101 01100100", "01110011 01110100 01100110 01110101", "cunt",
-        "holi day", "holid ay", "holida y", "holidae", "holiday", "holidai", "holy", "h0ly", "h01y", "holee", "holeeday", "holeedae", "holeedai", "holeday", "holedae", "holedai", "🅾️", "ℹ️", "🅰️", "⭕", ":octagonal_sign:", ":o:", "🇭", ":o2:", "🛑", "🇱", "🇮", "🇩", "🇦", "🇪", "c9n@ sik l qir", "head boy", "consi", "s m d", "01001000 01101111 01101100 01101001 01100100 01100001 01100101", "•", "sthu", "shut the hell up", "s t h u", "letter", "indicator",
-        "holi day", "holi", "dae", "h011d43", "|-|011[)43", "holedae", "h01idae", "ho1idae", "h0lidae", "401idae", "holedai", "h01idai", "ho1idai", "h0lidai", "401idai", "head admin", "headadmin", "admin", "consigliere ", "con sig liere", "consig", "sig", "liere "
-    ];
-
-    if (message.channel.guild.id == "891829347613306960")
-        if (cantSayHolidae.includes(message.author.id))
-            if (talkingAboutHolidae.some(ind => textContains(message.content, ind))) {
-                message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
-                message.channel.send(`<@${message.author.id}> nice try!`).catch(e => {});
-                let attachments = [];
-                let stickers = [];
-                message.attachments.forEach(attachment => {
-                    attachments.push(attachment);
-                });
-                message.stickers.forEach(sticker => {
-                    stickers.push(sticker);
-                });
-                client.guilds.fetch("947407448799604766").then(guild => {
-                    guild.channels.fetch("962848473236009030").then(channel => {
-                        channel.send({
-                            content: `Cant stop saying those istg => <@${message.author.id}> in <#${message.channel.id}> :\n${message.content}`,
-                            files: attachments
-                        }).catch(catchSend());
-                    }).catch(catchFetch());
-                }).catch(catchFetch());
-            }
-
+    messageMetric.addEntry(`ChatBypassCheck`);
     let permissionToCheck = `chat.fullbypass`;
     let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
     let hasGuildPermission = await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
     let hasPermission = (hasGlobalPermission == null) ? hasGuildPermission : hasGlobalPermission;
     if (hasPermission && !message.content.includes('-dontbypass')) return true;
+    messageMetric.addEntry(`ChatBypassChecked`);
 
     let violations = [];
 
+    messageMetric.addEntry(`ChatLinkifyCheck`);
     let linkifyReturn = linkify.find(message.content);
+    messageMetric.addEntry(`ChatLinkifyChecked`);
     if (linkifyReturn.length != 0)
         for (const element of linkifyReturn) {
             let linkToScan = element.value;
             if (url.parse(linkToScan, false).href != null) {
-                linkToScan = (!linkToScan.startsWith('https://')) ? `https://${linkToScan}`  : linkToScan;
+                linkToScan = (!linkToScan.startsWith('https://')) ? `https://${linkToScan}` : linkToScan;
             }
             if (url.parse(linkToScan, false).hostname != null && guild.moderationManager.scamLinks.includes(url.parse(linkToScan, false).hostname)) {
                 violations.push({
@@ -98,12 +74,8 @@ module.exports = async function (message, guild = undefined) {
                 value: element.value
             });
         }
-    /*let antiProfanityReturn = antiProfanity.isProfane(message.content, true);
-    if (antiProfanityReturn) violations.push({
-        check: `antiProfanity`,
-        trigger: `profanity`
-    });*/
 
+    messageMetric.addEntry(`ChatCustomProfanitiesCheck`);
     let customDetect = detectProfanities(message.content, guild);
     if (customDetect.length != 0)
         for (const element of customDetect) {
@@ -113,8 +85,10 @@ module.exports = async function (message, guild = undefined) {
                 value: element.value
             });
         }
+    messageMetric.addEntry(`ChatCustomProfanitiesChecked`);
 
     if (violations.length != 0) {
+        messageMetric.addEntry(`ChatViolationSummary`);
         //This message has been detected as containing profanities
         let violationsArray = [];
         let violationsContent = [];
@@ -188,7 +162,9 @@ module.exports = async function (message, guild = undefined) {
         let checkList = (checkArray.length == 1) ? checkArray[0] : checkArray.join(', ');
         guild.moderationManager.sendAutoModEmbed(message, guild, triggersList, checkList, user, violationsContent);
         AutoModLog.log(`Message containing ${triggersList} content (${violationsList}) received from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id}.`);
+        messageMetric.addEntry(`ChatViolationSummaryDone`);
     }
+    messageMetric.addEntry(`ChatViolationDone`);
 }
 
 function tobyReaction(message) {
@@ -210,6 +186,43 @@ function tobyReaction(message) {
                     if (reactions[key].some(ind => textContains(message.content, ind))) message.react(key).catch(catchDoNothing());
                 }
             }
+}
+
+function cantSayThings(message) {
+    let cantSayThingsData = {
+        "817857555674038298": {
+            things: ["h olidae", "ho lidae", "hol idae", "holi dae", "holid ae", "holida e", "h olidai", "ho lidai", "hol idai", "holi dai", "holid ai", "holida i", "ho liday", "hol iday", "holqate", "holf dqye", "hol!dae", "330826518370451457", "smd", "suck", "dick", "stfu", "s t f u", "shut the fuck up", "fuck", "fuc", "fuk", "uck", "shut up", ".... --- .-.. .. -.. .- .", "01110011 01101101 01100100", "01110011 01110100 01100110 01110101", "cunt", "suce ma bite", "hoe",
+                "holi day", "holid ay", "holida y", "holidae", "holiday", "holidai", "holy", "holee", "holeeday", "holeedae", "holeedai", "holeday", "holedae", "holedai", "🅾️", "ℹ️", "🅰️", "⭕", ":octagonal_sign:", ":o:", "🇭", ":o2:", "🛑", "🇱", "🇮", "🇩", "🇦", "🇪", "c9n@ sik l qir", "head boy", "consi", "s m d", "01001000 01101111 01101100 01101001 01100100 01100001 01100101", "•", "sthu", "shut the hell up", "s t h u", "letter", "indicator",
+                "holi day", "holi", "dae", "holedae", "holedai", "head admin", "headadmin", "admin", "consigliere ", "con sig liere", "consig", "sig", "liere "
+            ],
+            sendAfter: `<@${message.author.id}> nice try!`
+        },
+        "231461358200291330": {
+            things: ["h olidae", "ho lidae", "hol idae", "holi dae", "holid ae", "holida e", "h olidai", "ho lidai", "hol idai", "holi dai", "holid ai", "holida i", "ho liday", "hol iday", "holqate", "holf dqye", "hol!dae", "330826518370451457", "smd", "suck", "dick", "stfu", "s t f u", "shut the fuck up", "fuck", "fuc", "fuk", "uck", "shut up", ".... --- .-.. .. -.. .- .", "01110011 01101101 01100100", "01110011 01110100 01100110 01110101", "cunt", "suce ma bite", "hoe",
+                "holi day", "holid ay", "holida y", "holidae", "holiday", "holidai", "holy", "holee", "holeeday", "holeedae", "holeedai", "holeday", "holedae", "holedai", "🅾️", "ℹ️", "🅰️", "⭕", ":octagonal_sign:", ":o:", "🇭", ":o2:", "🛑", "🇱", "🇮", "🇩", "🇦", "🇪", "c9n@ sik l qir", "head boy", "consi", "s m d", "01001000 01101111 01101100 01101001 01100100 01100001 01100101", "•", "sthu", "shut the hell up", "s t h u", "letter", "indicator",
+                "holi day", "holi", "dae", "holedae", "holedai", "head admin", "headadmin", "admin", "consigliere ", "con sig liere", "consig", "sig", "liere "
+            ],
+            sendAfter: `<@${message.author.id}> nice try!`
+        }
+    };
+
+    if (message.channel.guild.id == "891829347613306960" || message.channel.guild.id == "933416930038136832")
+        if (typeof cantSayThingsData[message.author.id] != "undefined") {
+            if (cantSayThingsData[message.author.id].things.some(ind => textContains(message.content, ind))) {
+                message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                if (typeof cantSayThingsData[message.author.id].sendAfter != "undefined") message.channel.send(cantSayThingsData[message.author.id].sendAfter).catch(catchDoNothing());
+                client.guilds.fetch("947407448799604766").then(fetchedGuild => {
+                    fetchedGuild.channels.fetch("962848473236009030").then(fetchedChannel => {
+                        fetchedChannel.send({
+                            content: `<@${message.author.id}> said a word they are not allowed to in <#${message.channel.id}> :\n${message.content}`,
+                            attachments: message.attachments,
+                            stickers: message.stickers,
+                            embeds: message.embeds
+                        }).catch(catchSend());
+                    }).catch(catchFetch());
+                }).catch(catchFetch());
+            }
+        }
 }
 
 function detectProfanities(textToCheck, guild) {

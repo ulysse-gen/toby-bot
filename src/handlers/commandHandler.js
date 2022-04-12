@@ -18,7 +18,8 @@ const {
 const utils = require(`../utils`);
 
 module.exports = async function (message, guild = undefined) {
-    executionTimes[message.id].commandHandler = moment();
+    let messageMetric =  message.customMetric;
+    messageMetric.addEntry(`CommandHandlerStart`);
     let args = message.content.split(' ');
     args = args.filter(function (e) {
         return e !== ''
@@ -34,34 +35,32 @@ module.exports = async function (message, guild = undefined) {
     if (typeof globalPermissions == "undefined") return utils.sendError(message, guild, undefined, `globalPermissions is undefined`, [], true, -1, -1);//This error shoud never happen. globalPermissions is the main permissionsManager and if its undefined no commands can work.
     //if (false) return utils.lockdownDenied(message, guild, undefined, undefined, [], true, -1, -1)
 
-    executionTimes[message.id].fetchingCommand = moment();
+    messageMetric.addEntry(`FetchingCommand`);
     let command = globalCommands.fetch(cmd);
-    executionTimes[message.id].fetchedCommand = moment();
+    messageMetric.addEntry(`FetchedCommand`);
 
     if (!command) return utils.unknownCommand(message, guild, true, (guild.configuration.behaviour.deleteMessageOnUnknown) ? 5000 : -1, (guild.configuration.behaviour.deleteMessageOnUnknown) ? 5000 : -1);
 
-    executionTimes[message.id].gettingCommandPermission = moment();
     let permissionToCheck = command.permission;
-    executionTimes[message.id].gettingCommandGlobalPermission = moment();
+    messageMetric.addEntry(`GettingGlobalPermissions`);
     let hasGlobalPermission = await globalPermissions.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id, true);
-    executionTimes[message.id].gotCommandGlobalPermission = moment();
-    executionTimes[message.id].gettingCommandGuildPermission = moment();
+    messageMetric.addEntry(`GotGlobalPermissions`);
+    messageMetric.addEntry(`GettingGuildPermissions`);
     let hasGuildPermission = await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id);
-    executionTimes[message.id].gotCommandGuildPermission = moment();
+    messageMetric.addEntry(`GotGuildPermissions`);
     let hasPermission = (hasGlobalPermission == null) ? hasGuildPermission : hasGlobalPermission;
-    executionTimes[message.id].gotPermission = moment();
+    messageMetric.addEntry(`GotPermissions`);
     if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, (guild.configuration.behaviour.deleteMessageOnDeny) ? 5000 : -1, (guild.configuration.behaviour.deleteMessageOnDeny) ? 5000 : -1);
 
-    executionTimes[message.id].gettingCooldownPermission = moment();
     let cooldownPerm = `skipcooldowns.${command.permission}`;
-    executionTimes[message.id].gettingCooldownGlobalPermission = moment();
+    messageMetric.addEntry(`GettingCooldownGlobalPermission`);
     let hasSkipCooldownGlobalPerms = await globalPermissions.userHasPermission(cooldownPerm, message.author.id, undefined, message.channel.id, message.guild.id, true);
-    executionTimes[message.id].gotCooldownGlobalPermission = moment();
-    executionTimes[message.id].gettingCooldownGuildPermission = moment();
+    messageMetric.addEntry(`GotCooldownGlobalPermission`);
+    messageMetric.addEntry(`GettingCooldownGuildPermission`);
     let hasSkipCooldownGuildPerms = await guild.permissionsManager.userHasPermission(cooldownPerm, message.author.id, undefined, message.channel.id, message.guild.id);
-    executionTimes[message.id].gotCooldownGuildPermission = moment();
+    messageMetric.addEntry(`GotCooldownGuildPermission`);
     let hasSkipCooldownPerms = (hasSkipCooldownGlobalPerms == null) ? hasSkipCooldownGuildPerms : hasSkipCooldownGlobalPerms;
-    executionTimes[message.id].gotCooldownPermission = moment();
+    messageMetric.addEntry(`GotCooldownPermissions`);
 
     if (command.globalcooldown != 0 && !hasSkipCooldownPerms)
         if (typeof globalCommands.globalCooldowns[command.name] != "undefined") {
@@ -83,16 +82,16 @@ module.exports = async function (message, guild = undefined) {
             }, command.globalCooldown * 1000)
         }
 
-    executionTimes[message.id].typingSent = moment();
+    messageMetric.addEntry(`TypingEventSent`);
     message.channel.sendTyping();
 
     MainLog.log(`${message.author.tag}(${message.author.id}) executed '${cmd}' in [${message.channel.id}@${message.channel.guild.id}].`);
     let commandResult;
     if (typeof enableCatching == "boolean" && enableCatching == false) commandResult = await command.exec(client, message, args, guild);
     try {
-        executionTimes[message.id].executingCommand = moment();
+        messageMetric.addEntry(`ExecutingCommand`);
         if (typeof commandResult == "undefined") commandResult = await command.exec(client, message, args, guild);
-        executionTimes[message.id].commandExecuted = moment();
+        messageMetric.addEntry(`ExecutedCommand`);
         if (typeof commandResult != "undefined") {
             if (typeof commandResult == "object")
                 if (typeof guild != "undefined" && guild.configuration.behaviour.logCommandExecutions)

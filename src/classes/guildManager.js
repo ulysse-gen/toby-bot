@@ -61,11 +61,11 @@ module.exports = class guildManager {
         if (!fs.existsSync(`${process.cwd()}/configurations`)) fs.mkdirSync(`${process.cwd()}/configurations`);
         if (!fs.existsSync(`${process.cwd()}/configurations/guilds`)) fs.mkdirSync(`${process.cwd()}/configurations/guilds`);
         if (!fs.existsSync(`${process.cwd()}/configurations/guilds/${this.guild.id}`)) fs.mkdirSync(`${process.cwd()}/configurations/guilds/${this.guild.id}`);
-        this.permissionsManager = new permissionManager(this.client, undefined, `../../configurations/default/permissions.json`, `guildsPermissions`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
+        this.permissionsManager = new permissionManager(this.client, `../../configurations/default/permissions.json`, `guildsPermissions`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
         this.permissions = this.permissionsManager.permissions;
-        this.configurationManager = new configurationManager(this.client, undefined, `../../configurations/default/configuration.json`, `guildsConfigurations`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
+        this.configurationManager = new configurationManager(this.client, `../../configurations/default/configuration.json`, `guildsConfigurations`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
         this.configuration = this.configurationManager.configuration;
-        this.embedsManager = new configurationManager(this.client, undefined, `../../configurations/default/embeds.json`, `guildsEmbeds`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
+        this.embedsManager = new configurationManager(this.client, `../../configurations/default/embeds.json`, `guildsEmbeds`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
         this.embeds = this.embedsManager.configuration;
         this.moderationManager = new moderationManager(this.client, this.globalGuilds);
         await this.permissionsManager.initialize();

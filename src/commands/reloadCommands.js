@@ -1,6 +1,9 @@
 const {
     MessageEmbed
 } = require(`discord.js`);
+const { exec } = require("child_process");
+
+
 const {
     configuration,
     packageJson,
@@ -23,13 +26,24 @@ module.exports = {
             title: `Reloaded commands`,
             color: guild.configuration.colors.success
         });
-        await globalCommands.reload();
+        exec("git pull; then /usr/local/bin/npm install", (error, stdout, stderr) => {
+            if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.log(`stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+        });
         delete require.cache[require.resolve(`../handlers/messageCreate`)];
         delete require.cache[require.resolve(`../handlers/interactionCreate`)];
         delete require.cache[require.resolve(`../handlers/DMHandler`)];
         delete require.cache[require.resolve(`../handlers/chatModeration`)];
         delete require.cache[require.resolve(`../handlers/commandHandler`)];
         delete require.cache[require.resolve(`../utils`)];
+        await globalCommands.reload();
         embed.addField(`**Commands loaded**`, `${globalCommands.commands.length}`, true);
 
         message.reply({

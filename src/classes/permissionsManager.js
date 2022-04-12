@@ -14,7 +14,7 @@ const MainLog = new Logger();
 const ErrorLog = new Logger(`./logs/error.log`);
 
 module.exports = class permissionsManager {
-    constructor(client, sqlConfiguration, fallbackFile, sqlTable = `guildsPermissions`, sqlWhere = `\`numId\` = 1`, guildId = undefined) {
+    constructor(client, fallbackFile, sqlTable = `guildsPermissions`, sqlWhere = `\`numId\` = 1`, guildId = undefined) {
         this.client = client;
         this.sqlPool = mysql.createPool(require('../../MySQL.json'));
         this.sqlTable = sqlTable;
@@ -84,7 +84,8 @@ module.exports = class permissionsManager {
                         });
                     }
                     if (error) {
-                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
+                        ErrorLog.log(`An error occured during the query. ${error.toString()}`.red);
+                        console.log(`SELECT * FROM ${zisse.sqlTable}${(typeof zisse.sqlWhere != "undefined") ? ` WHERE ${zisse.sqlWhere}` : ``}`.blue)
                         res(false);
                     }
                 });

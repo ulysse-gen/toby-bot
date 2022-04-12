@@ -29,10 +29,11 @@ const permissionsManager = require(`./src/classes/permissionsManager`);
 const configurationManager = require(`./src/classes/configurationManager`);
 const guildsManager = require(`./src/classes/guildsManager`);
 const sqlManager = require(`./src/classes/sqlManager`);
+const metricsManager = require(`./src/classes/metricsManager`);
 
 //Main Variables
 const packageJson = require(`./package.json`);
-const globalConfiguration = new configurationManager(client, undefined, `../../configuration.json`, `configuration`);
+const globalConfiguration = new configurationManager(client, `../../configuration.json`, `configuration`);
 var configuration = globalConfiguration.configuration;
 
 //Create Objects
@@ -44,9 +45,10 @@ var client = new Client({
 
 //CommandManagers & PermissionsManagers
 var globalCommands = new commandsManager(client);
-var globalPermissions = new permissionsManager(client, undefined, `../../permissions.json`, `guildsPermissions`, `\`guildId\`='global'`);
+var globalPermissions = new permissionsManager(client, `../../permissions.json`, `guildsPermissions`, `\`guildId\`='global'`);
 var globalGuilds = new guildsManager(client);
 var globalSqlManager = new sqlManager(client, globalCommands, globalPermissions, globalGuilds);
+var globalMetrics = new metricsManager();
 
 //Logs
 const MainLog = new Logger();
@@ -76,15 +78,9 @@ client.on('ready', async () => {
 
 client.on(`messageCreate`, async message => {
     await require(`./src/handlers/messageCreate`)(message);
-    if (typeof this.executionTimes[message.id] != "undefined") {
-        if (typeof this.executionTimes[message.id].commandExecuted != "undefined") {
-            MainSQLLog.log(`Command Execution`, `${message.content}`, message.channel.guild.id, message.channel.id, message.author.id, message.id, this.executionTimes[message.id]); //Only runs if the thing on top was true, logs into console
-            //console.log(`Command execution took ${this.executionTimes[message.id].commandExecuted.diff(this.executionTimes[message.id].messageCreate)}ms`);
-        } else {
-            delete this.executionTimes[message.id];
-        }
-    }
+    if (typeof message.customMetric != "undefined")message.customMetric.end();
 });
+
 client.on(`interactionCreate`, interaction => require(`./src/handlers/interactionCreate`)(interaction));
 
 client.on('error', (code) => {
@@ -167,6 +163,7 @@ module.exports.globalConfiguration = globalCommands;
 module.exports.globalCommands = globalCommands;
 module.exports.globalPermissions = globalPermissions;
 module.exports.globalGuilds = globalGuilds;
+module.exports.globalMetrics = globalMetrics;
 
 //Debug stuff & more
 module.exports.reload = false;
