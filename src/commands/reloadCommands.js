@@ -27,17 +27,10 @@ module.exports = {
             title: `Reloaded commands`,
             color: guild.configuration.colors.success
         });
-        try {
-            const {
-                stdout,
-                stderr
-            } = await exec('git pull --tags origin develop');
-            console.log('stdout:', stdout);
-            console.log('stderr:', stderr);
-        } catch (e) {
-            console.error(e); // should contain code (exit code) and signal (that caused the termination).
-        }
-        //            /usr/local/bin/npm install
+
+        await exec("git pull --tags origin develop");
+        await exec("npm i -y");
+
         delete require.cache[require.resolve(`../handlers/messageCreate`)];
         delete require.cache[require.resolve(`../handlers/interactionCreate`)];
         delete require.cache[require.resolve(`../handlers/DMHandler`)];
