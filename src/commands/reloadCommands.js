@@ -26,7 +26,7 @@ module.exports = {
             title: `Reloaded commands`,
             color: guild.configuration.colors.success
         });
-        exec("git pull; then /usr/local/bin/npm install", (error, stdout, stderr) => {
+        exec("git pull && /usr/local/bin/npm install", (error, stdout, stderr) => {
             if (error) {
                 console.log(`error: ${error.message}`);
                 return;
