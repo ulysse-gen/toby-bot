@@ -39,11 +39,12 @@ module.exports = class Command {
     }
 }
 
-function returnWithError (error) {
+function returnWithError(error) {
     MainLog.log(`${error}`);
     return false;
 }
-function logError (error) {
+
+function logError(error) {
     MainLog.log(`${error}`);
     return false;
 }

@@ -52,7 +52,9 @@ module.exports = class sqlLogger {
                 }
                 connection.query(`INSERT INTO ${zisse.sqlTable} (\`${valueNames.join('`,`')}\`) VALUES (${valuesPlaceHolders.join(', ')})`, values, async function (error, results, fields) {
                     if (results.affectedRows != 1) ErrorLog.log(`Did not insert for some reason wth. ${error.toString()}`);
-                    try { connection.release() } catch (e) {}
+                    try {
+                        connection.release()
+                    } catch (e) {}
                     if (error) {
                         ErrorLog.log(`An error occured during the query. ${error.toString()}`);
                         res(false);

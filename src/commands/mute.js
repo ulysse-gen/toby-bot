@@ -35,7 +35,9 @@ module.exports = {
             guild.configurationManager.set(`moderation.muteRole`, message.mentions.roles.first().id);
             return utils.sendMain(message, guild, `Mute role defined`, `Mute role defined to <@&${message.mentions.roles.first().id}>`, [], true); /*Updated To New Utils*/
         }
-        if (typeof guild.configuration.moderation.muteRole != "string" || guild.configuration.moderation.muteRole == "") return utils.sendError(message, guild, `Could not mute`, `You must define the mute role before being able to mute.\nUse \`${guild.configuration.prefix}${this.name} setMuteRole @Role\``, [], true); /*Updated To New Utils*/
+        if (typeof guild.configuration.moderation.muteRole != "string" || guild.configuration.moderation.muteRole == "none") return utils.sendError(message, guild, `Could not mute`, `You must define the mute role before being able to mute.\nUse \`${guild.configuration.prefix}${this.name} setMuteRole @Role\``, [], true); /*Updated To New Utils*/
+
+
 
         let userToMute = args.shift();
         let reason = '';

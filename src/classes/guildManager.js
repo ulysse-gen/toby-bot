@@ -217,7 +217,7 @@ module.exports = class guildManager {
             errored: true,
             reason: `No reason specified.`
         };
-       return user.kick(`Kicked by ${message.author.tag}(${message.author.id}) for ${reason}`).then(async () => {
+        return user.kick(`Kicked by ${message.author.tag}(${message.author.id}) for ${reason}`).then(async () => {
             let caseId = await zisse.moderationManager.log(message.guild.id, `Kick`, user.user.id, message.author.id, reason, false);
             await zisse.moderationManager.sendPunishEmbed(message, zisse, `Kick`, caseId, user, message.author.id, reason, false);
             MainLog.log(`${message.author.tag}(${message.author.id}) kicked ${user.user.tag}(${user.user.id}) for '${reason}' from ${this.guild.id}`);

@@ -1,10 +1,11 @@
 const colors = require(`colors`);
 
 //Import needs from index
-const { configuration, client, MainLog } = require(`../../index`);
+const { configuration, client, MainLog, botLifeMetric } = require(`../../index`);
 
 module.exports = async function () {
     let currentPresence = 0;
+    botLifeMetric.addEntry("presenceManagerStartup");
     MainLog.log(`Starting presence manager, loop mode : ${(configuration.presence.loop) ? `true`.green : `false`.red}.`)
 
     client.user.setPresence(configuration.presence.defaultPresence);

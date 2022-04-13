@@ -9,10 +9,12 @@ const {
     configuration,
     client,
     MainLog,
-    globalGuilds
+    globalGuilds,
+    botLifeMetric
 } = require(`../../index`);
 
 module.exports = async function () {
+    botLifeMetric.addEntry("apiStartup");
     app.get('/discord/users/:userId', async (req, res) => {
         if (typeof req.headers.authorization == "undefined" || req.headers.authorization != authorizationToken) {
             res.status(403).json({
@@ -179,6 +181,7 @@ module.exports = async function () {
     });
 
     app.listen(20000, () => {
+        botLifeMetric.addEntry("apiStarted");
         MainLog.log(`API Ready.`)
     })
 }

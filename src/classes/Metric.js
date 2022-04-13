@@ -11,13 +11,19 @@ module.exports = class Metric {
         this.metricManager = metricManager;
         this.name = name;
         this.id = crypto.randomBytes(25).toString('hex');
-        this.entries = [
-            {name: "initialization", timestamp: moment(), extras: {}}
-        ];
+        this.entries = [{
+            name: "initialization",
+            timestamp: moment(),
+            extras: {}
+        }];
     }
 
-    async addEntry(name, extras={}) {
-        this.entries.push({name: name, timestamp: moment(), extras: extras});
+    async addEntry(name, extras = {}) {
+        this.entries.push({
+            name: name,
+            timestamp: moment(),
+            extras: extras
+        });
         return true;
     }
 

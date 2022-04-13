@@ -45,24 +45,17 @@ module.exports = class moderationManager {
         let valueNames = ["guildId", "type", "userId", "moderatorId", "reason", "expires", "status", "messageHistory"];
 
         return new Promise((res, rej) => {
-            zisse.sqlPool.getConnection((err, connection) => {
-                if (err) {
-                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+            zisse.sqlPool.query(`INSERT INTO \`moderationLogs\` (\`${valueNames.join('`,`')}\`) VALUES (?,?,?,?,?,?,?,?)`, values, async (error, results) => {
+                if (error) {
+                    ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}]`);
+                    res(null);
+                }
+                if (results.affectedRows != 1) {
+                    ErrorLog.log(`Could not insert punishment. [${zisse.sqlTable} => ${zisse.sqlWhere}]`);
                     res(false);
                 }
-                connection.query(`INSERT INTO \`moderationLogs\` (\`${valueNames.join('`,`')}\`) VALUES (?,?,?,?,?,?,?,?)`, values, async function (error, results, fields) {
-                    if (results.affectedRows == 1) {
-                        if (type == "Mute" || type == "Ban" || type == "Sticky") connection.query(`UPDATE \`moderationLogs\` SET \`status\`='overwritten' WHERE \`userId\`='${userId}' AND \`guildId\`='${guildId}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite' OR \`status\`='info') AND NOT \`numId\`='${results.insertId}'`, async function (error, results, fields) {});
-                        res(results.insertId);
-                    }
-                    try {
-                        connection.release()
-                    } catch (e) {}
-                    if (error) {
-                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
-                    }
-                    res(false);
-                });
+                if (type == "Mute" || type == "Ban" || type == "Sticky") zisse.sqlPool.query(`UPDATE \`moderationLogs\` SET \`status\`='overwritten' WHERE \`userId\`='${userId}' AND \`guildId\`='${guildId}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite' OR \`status\`='info') AND NOT \`numId\`='${results.insertId}'`);
+                res(results.insertId);
             });
         });
     }
@@ -128,10 +121,10 @@ module.exports = class moderationManager {
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
-        return false;
+        return true;
     }
 
-    async sendPlayerPunishment(message, guild, type, user, moderatorId, reason, length) {
+    async sendPlayerPunishment(message, guild, type, user, _moderatorId, reason, length) {
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
         let userPFP = await getUserPfp(user);
@@ -165,94 +158,50 @@ module.exports = class moderationManager {
 
     async isUserPunished(userId, guildId, type) {
         let zisse = this;
-        return new Promise((res, rej) => {
-            zisse.sqlPool.getConnection((err, connection) => {
-                if (err) {
-                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
-                    res(false);
+        return new Promise((res, _rej) => {
+            zisse.sqlPool.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${userId}' AND \`type\`='${type}' AND \`guildId\`='${guildId}' AND (\`status\`='active' OR \`status\`='indefinite')`, async (error, results) => {
+                if (error) {
+                    ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}]`);
+                    res(null);
                 }
-                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${userId}' AND \`type\`='${type}' AND \`guildId\`='${guildId}' AND (\`status\`='active' OR \`status\`='indefinite')`, async function (error, results, fields) {
-                    if (results.length == 0) {
-                        try {
-                            connection.release()
-                        } catch (e) {}
-                        res(false);
-                    }
-                    try {
-                        connection.release()
-                    } catch (e) {}
-                    if (error) {
-                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
-                        res(false);
-                    }
-                    res(true);
-                });
+                if (results.length == 0) res(false);
+                res(true);
             });
         });
     }
 
     async getPunishementByCaseId(caseId, guildId) {
         let zisse = this;
-        return await new Promise((res, rej) => {
-            zisse.sqlPool.getConnection((err, connection) => {
-                if (err) {
-                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
-                    res(false);
+        return new Promise((res, rej) => {
+            zisse.sqlPool.query(`SELECT * FROM \`moderationLogs\` WHERE \`numId\`='${caseId}' AND \`guildId\`='${guildId}'`, async (error, results) => {
+                if (error) {
+                    ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}]`);
+                    res(null);
                 }
-                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`numId\`='${caseId}' AND \`guildId\`='${guildId}'`, async function (error, results, fields) {
-                    if (results.length == 0) {
-                        try {
-                            connection.release()
-                        } catch (e) {}
-                        res(false);
-                    }
-                    try {
-                        connection.release()
-                    } catch (e) {}
-                    if (error) {
-                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
-                        res(false);
-                    }
-                    res(results[0]);
-                });
+                if (results.length == 0) res(false);
+                res(results[0]);
             });
         });
     }
 
     async deletePunishment(message, caseId, reason) {
         let zisse = this;
-        return await new Promise((res, rej) => {
-            zisse.sqlPool.getConnection((err, connection) => {
-                if (err) {
-                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
-                    res(false);
+        return new Promise((res, _rej) => {
+            zisse.sqlPool.query(`SELECT * FROM \`moderationLogs\` WHERE \`numId\`=${caseId} AND \`guildId\`='${message.channel.guild.id}'`, async (error, results) => {
+                if (error) {
+                    ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}]`);
+                    res(null);
                 }
-                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`numId\`=${caseId} AND \`guildId\`='${message.channel.guild.id}'`, async function (error, results, fields) {
-                    if (error) {
-                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
-                        res({
-                            error: `An error occured getting the punishment from the database.`
-                        });
-                        return true;
-                    }
-                    if (typeof results == "undefined" || results.length == 0 || typeof results[0] == "undefined" || results[0].status == "deleted") {
-                        res({
-                            error: `Punishment not found.`
-                        });
-                        return true;
-                    }
-                    if ((results[0].type == "Mute" || results[0].type == "Ban") && results[0].status == "active") {
-                        if (moment(results[0].expires).isAfter(moment())) {
-                            res({
-                                error: `This punishment isnt expired yet. ${(results[0].type == "Mute") ? `Unmute` : `Unban`} then delete the punishment.`
-                            });
-                            return true;
-                        }
-                    }
-                    connection.query(`UPDATE \`moderationLogs\` SET \`status\`='deleted', \`updaterId\`='${message.author.id}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${caseId}`, async function (error, results, fields) {});
-                    connection.release();
-                    res(true);
+                if (typeof results == "undefined" || results.length == 0 || typeof results[0] == "undefined" || results[0].status == "deleted")return res({
+                    error: `Punishment not found.`
                 });
+                if (["Mute", "Ban"].includes(results[0].type) && ["active","indefinite"].includes(results[0].status)) {
+                    if (moment(results[0].expires).isAfter(moment()) || results[0].status == "indefinite")return res({
+                        error: `This punishment isnt expired yet. ${(results[0].type == "Mute") ? `Unmute` : `Unban`} then delete the punishment.`
+                    });
+                }
+                zisse.sqlPool.query(`UPDATE \`moderationLogs\` SET \`status\`='deleted', \`updaterId\`='${message.author.id}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${caseId}`);
+                res(true);
             });
         });
     }
@@ -279,15 +228,15 @@ module.exports = class moderationManager {
             .catch(_error => {
                 return [];
             });
-        MainLog.log(`Loaded autoMod datasets.`)
+        //MainLog.log(`Loaded autoMod datasets.`)
     }
 }
 
 async function getUserPfp(user) {
     if (typeof user == "undefined" || (typeof user.user.avatar == "undefined" && typeof user.avatar == "undefined")) return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
-    return await new Promise((res, rej) => {
+    return new Promise((res, _rej) => {
         let urlBase = (user.avatar != null) ? `https://cdn.discordapp.com/guilds/${user.guild.id}/users/${user.user.id}/avatars/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
-        urlExists(`${urlBase}.gif`, function (err, exists) {
+        urlExists(`${urlBase}.gif`, function (_err, exists) {
             res((exists) ? `${urlBase}.gif` : `${urlBase}.webp`);
         });
     });

@@ -19,7 +19,8 @@ module.exports = {
     permission: `commands.changelog`,
     category: `informations`,
     async exec(client, message, args, guild = undefined) {
-        let description = `wow, a shit ton of things tbh..`;
+        let description = `- Lots of upgrades, fixes and improvements.`;
+        description += `\n- Metrics.`;
         return utils.sendMain(message, guild, `Changelog v${packageJson.version}`, `${description}`, [], true);
     }
 }

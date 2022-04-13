@@ -36,7 +36,7 @@ module.exports = class configuationManager {
                     ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}][${moment().diff(startTimer)}ms]`);
                     res(null);
                 }
-                if (typeof results == "undefined" || results.length != 1) {
+                if (typeof results == "undefined" || results == null || results.length != 1) {
                     if (zisse.verbose) MainLog.log(`Could not fetch configuration. [${zisse.sqlTable} => ${zisse.sqlWhere}][${moment().diff(startTimer)}ms]`);
                     res(zisse.sqlPool.query(`INSERT INTO ${zisse.sqlTable} (\`guildId\`) VALUES ('${zisse.guildId}')`, async (error, results) => {
                         if (error) {
@@ -105,14 +105,16 @@ module.exports = class configuationManager {
     }
 
     async save(bypass = false) {
-        if ((!this.initialized || this.isSaving) && !bypass) return;
-        if (this.verbose) MainLog.log(`Saving configuration.`);
         let zisse = this;
+        let startTimer = moment();
+        if ((!this.initialized || this.isSaving) || bypass) return false;
+        if (this.verbose) MainLog.log(`Saving configuration. [${this.sqlTable} => ${this.sqlWhere}][${moment().diff(startTimer)}ms]`);
         this.isSaving = true;
         let configurationToPush = this.configuration;
-        let sqlString = `UPDATE \`${this.sqlTable}\` SET &[SQLVALUESTOSET]${(typeof this.sqlWhere != "undefined") ? ` WHERE ${this.sqlWhere}` : ``}`;
+        let sqlString = `UPDATE \`${this.sqlTable}\` SET &[SQLVALUESTOSET] WHERE ${this.sqlWhere}`;
         let sqlValues = [];
         let sqlPlaceholders = [];
+        if (this.verbose) MainLog.log(`Preparing configuration saving. [${this.sqlTable} => ${this.sqlWhere}][${moment().diff(startTimer)}ms]`);
         for (let iterator in configurationToPush) {
             if (typeof configurationToPush[iterator] == "object") {
                 try {
@@ -130,38 +132,23 @@ module.exports = class configuationManager {
                 sqlPlaceholders.push(`\`${iterator}\`=?`);
             }
         }
-        let requestResult = await new Promise((res, rej) => {
-            zisse.sqlPool.getConnection((err, connection) => {
-                if (err) {
-                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+        if (this.verbose) MainLog.log(`Started configuration saving. [${this.sqlTable} => ${this.sqlWhere}][${moment().diff(startTimer)}ms]`);
+        return new Promise((res, rej) => {
+            zisse.sqlPool.query(`${sqlString.replace(`&[SQLVALUESTOSET]`, sqlPlaceholders.join(','))}`, sqlValues, async function (error, results, _fields) {
+                if (error) {
+                    ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}][${moment().diff(startTimer)}ms]`);
                     res(false);
                 }
-                if (this.verbose) MainLog.log(`Connected to SQL`);
-                if (this.verbose) MainLog.log(`Pushing configuration`);
-                connection.query(`${sqlString.replace(`&[SQLVALUESTOSET]`, sqlPlaceholders.join(','))}`, sqlValues, async function (error, results, fields) {
-                    if (typeof results.affectedRows == "number" && results.affectedRows == 0) {
-                        try {
-                            connection.release()
-                        } catch (e) {}
-                        res(false);
-                    }
-                    try {
-                        connection.release()
-                    } catch (e) {}
-                    res(true);
-                    if (error) {
-                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
-                        res(false);
-                    }
-                });
+                if (typeof results == "undefined" || results.affectedRows != 1) {
+                    if (zisse.verbose) MainLog.log(`Could not save configuration. [${zisse.sqlTable} => ${zisse.sqlWhere}][${moment().diff(startTimer)}ms]`);
+                    await zisse.initialize();
+                    res(zisse.save(true));
+                }
+                if (zisse.verbose) MainLog.log(`Saved configuration. [${zisse.sqlTable} => ${zisse.sqlWhere}][${moment().diff(startTimer)}ms]`);
+                zisse.isSaving = false;
+                res(true);
             });
         });
-        if (requestResult == null) {
-            await this.initialize();
-            await this.save();
-        }
-        this.isSaving = false;
-        return true;
     }
 
     set(path, value) {

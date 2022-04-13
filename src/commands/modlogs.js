@@ -18,7 +18,13 @@ module.exports = {
 
         if (args.length != 0) {
             user = await guild.grabUser(message, args[0]);
-            if (typeof user == "undefined") user = {id: args[0], user: {id: args[0], tag: `Unknown#Tag`}};
+            if (typeof user == "undefined") user = {
+                id: args[0],
+                user: {
+                    id: args[0],
+                    tag: `Unknown#Tag`
+                }
+            };
         }
         if (args.length == 0) user = await message.channel.guild.members.fetch(message.author.id, {
             cache: false,
@@ -41,50 +47,36 @@ module.exports = {
         });
 
         let makeTheStats = new Promise((res, rej) => {
-            guild.moderationManager.sqlPool.getConnection((err, connection) => {
-                if (err) {
-                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+            guild.moderationManager.sqlPool.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${user.user.id}' AND status!='deleted' AND \`guildId\`='${message.channel.guild.id}'`, async (error, results) => {
+                if (error) {
+                    ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}][${moment().diff(startTimer)}ms]`);
+                    res(null);
+                }
+                if (results.length == 0) {
                     res(false);
                 }
-                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${user.user.id}' AND status!='deleted' AND \`guildId\`='${message.channel.guild.id}'`, async function (error, results, fields) {
-                    if (results.length == 0) {
-                        try {
-                            connection.release()
-                        } catch (e) {}
-                        res(false);
+                let control = results.length;
+                let sticky = undefined;
+                results.reverse();
+                results.forEach(modAction => {
+                    if (modAction.type == "Sticky" && typeof sticky == "undefined") sticky = [`**:warning: Sticky Note :**`, `**User:** <@${user.user.id}>(${user.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(JSON.parse(modAction.messageHistory).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false];
+                    if (modAction.type != "Sticky") {
+                        if (!modAction.reason.startsWith('[RR Auto]')) embedFields.push([`**Case #${modAction.numId}**`, `**Type:** ${modAction.type}\n**User:** <@${user.user.id}>(${user.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(modAction.type == "Mute" && modAction.status == "active") ? `\n**Expires:** <t:${moment(modAction.expires).unix()}>(<t:${moment(modAction.expires).unix()}:R>)` : ``}${(JSON.parse(modAction.messageHistory).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false]);
+                        if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Ban" && modAction.status == "unbanned") embedFields[embedFields.length - 1][1] += `\n**Unbanned by:** <@${modAction.updaterId}>\n**Reason:** ${modAction.updateReason}\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
+                        if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Ban" && modAction.status == "expired") embedFields[embedFields.length - 1][1] += `\n**Auto unbanned by TobyBot**\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
+                        if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Mute" && modAction.status == "unmuted") embedFields[embedFields.length - 1][1] += `\n**Unmuted by:** <@${modAction.updaterId}>\n**Reason:** ${modAction.updateReason}\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
+                        if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Mute" && modAction.status == "expired") embedFields[embedFields.length - 1][1] += `\n**Auto unmuted by TobyBot**: <t:${moment(modAction.updateTimestamp).unix()}>`;
                     }
-                    let control = results.length;
-                    let sticky = undefined;
-                    results.reverse();
-                    results.forEach(modAction => {
-                        if (modAction.type == "Sticky" && typeof sticky == "undefined")sticky = [`**:warning: Sticky Note :**`, `**User:** <@${user.user.id}>(${user.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(JSON.parse(modAction.messageHistory).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false];
-                        if (modAction.type != "Sticky"){
-                            if (!modAction.reason.startsWith('[RR Auto]'))embedFields.push([`**Case #${modAction.numId}**`, `**Type:** ${modAction.type}\n**User:** <@${user.user.id}>(${user.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(modAction.type == "Mute" && modAction.status == "active") ? `\n**Expires:** <t:${moment(modAction.expires).unix()}>(<t:${moment(modAction.expires).unix()}:R>)` : ``}${(JSON.parse(modAction.messageHistory).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false]);
-                            if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Ban" && modAction.status == "unbanned")embedFields[embedFields.length-1][1] += `\n**Unbanned by:** <@${modAction.updaterId}>\n**Reason:** ${modAction.updateReason}\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
-                            if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Ban" && modAction.status == "expired")embedFields[embedFields.length-1][1] += `\n**Auto unbanned by TobyBot**\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
-                            if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Mute" && modAction.status == "unmuted")embedFields[embedFields.length-1][1] += `\n**Unmuted by:** <@${modAction.updaterId}>\n**Reason:** ${modAction.updateReason}\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
-                            if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Mute" && modAction.status == "expired")embedFields[embedFields.length-1][1] += `\n**Auto unmuted by TobyBot**: <t:${moment(modAction.updateTimestamp).unix()}>`;
-                        }
-                        control--;
-                        if (control <= 0) {
-                            try {
-                                connection.release()
-                            } catch (e) {}
-                            if (typeof sticky != "undefined")embedFields.unshift(sticky);
-                            res(true);
-                        }
-                    });
-                    try {
-                        connection.release()
-                    } catch (e) {}
-                    if (error) {
-                        ErrorLog.log(`An error occured during the query. ${error.toString()}`);
-                        res(false);
+                    control--;
+                    if (control <= 0) {
+                        if (typeof sticky != "undefined") embedFields.unshift(sticky);
+                        res(true);
                     }
-                    res(true);
                 });
+                res(true);
             });
         });
+
         await makeTheStats;
 
         if (embedFields.length == 0) {

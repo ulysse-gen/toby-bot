@@ -39,7 +39,7 @@ module.exports = class commandsManager {
                         if (zisse.verbose && !zisse.checkForExistence(command)) MainLog.log(`Initialized command ${command.name}.`, undefined, `file`);
                         if (!zisse.checkForExistence(command)) zisse.commands.push(command); //Push it in the command manager commands array
                     }
-                    if (control == 0)res(true);
+                    if (control == 0) res(true);
                 });
             });
         })

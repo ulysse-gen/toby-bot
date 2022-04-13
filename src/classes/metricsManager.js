@@ -21,7 +21,7 @@ module.exports = class metricsManager {
 
     async endMetric(id) {
         let zisse = this;
-        if (typeof this.entries[id] == "undefined")return null;
+        if (typeof this.entries[id] == "undefined") return null;
         let metricToEnd = this.entries[id];
         metricToEnd.addEntry(`end`);
         return new Promise((res, _rej) => {

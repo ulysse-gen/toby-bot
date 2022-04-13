@@ -56,12 +56,15 @@ const ErrorLog = new Logger(`./logs/error.log`);
 const AutoModLog = new Logger(`./logs/autoMod.log`);
 const MainSQLLog = new sqlLogger();
 
+var botLifeMetric = globalMetrics.createMetric("botLifeMetric");
+
 client.on('ready', async () => {
+    botLifeMetric.addEntry("botReady");
     MainSQLLog.log(`Client Ready`, `Logged in as ${client.user.tag} on version ${packageJson.version}`);
     MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${packageJson.version.green}]`);
     require(`./src/managers/presenceManager`)();
     require(`./src/managers/api`)();
-    setInterval(() => globalSqlManager.checkForExpiredModeration(), 60000);
+    setInterval(() => globalSqlManager.checkForExpiredModeration(), 5000);
     setInterval(() => globalSqlManager.checkForReminders(), 5000);
     try {
         discordVoice.joinVoiceChannel({
@@ -84,13 +87,17 @@ client.on(`messageCreate`, async message => {
 client.on(`interactionCreate`, interaction => require(`./src/handlers/interactionCreate`)(interaction));
 
 client.on('error', (code) => {
+    botLifeMetric.addEntry("botError", {error: code});
     MainSQLLog.log(`DiscordJS Error`, `${code.toString()}`);
     MainLog.log(`[DiscordJS Error]`.red + ` ${code.toString().blue}`);
 });
 
 (async () => {
-    await globalPermissions.initialize();
+    botLifeMetric.addEntry("globalConfInit");
     await globalConfiguration.initialize();
+    botLifeMetric.addEntry("globalPermInit");
+    await globalPermissions.initialize();
+    botLifeMetric.addEntry("clientLogin");
     client.login(configuration.botToken);
 })();
 
@@ -101,6 +108,7 @@ async function exitHandler(reason, exit) {
         await ErrorLog.log(`[Process Exit][${reason}]Closing process, saving and closing.`);
         MainSQLLog.log(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
     } else if (reason == "uncaughtException" || reason == "unhandledRejection") {
+        botLifeMetric.addEntry("uncaughtException", {error: exit});
         await ErrorLog.log(`[${reason}]Exception catched, error : ${exit.toString()}`);
         MainSQLLog.log(`[${reason.toString()}]`, `${exit.toString()}`);
         console.log(exit);
@@ -169,3 +177,4 @@ module.exports.globalMetrics = globalMetrics;
 module.exports.reload = false;
 module.exports.enableCatching = false;
 module.exports.executionTimes = {};
+module.exports.botLifeMetric = botLifeMetric;
