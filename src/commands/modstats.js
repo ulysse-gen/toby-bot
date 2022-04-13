@@ -79,14 +79,12 @@ module.exports = {
                 }
             }
 
-            guild.moderationManager.sqlPool.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${user.user.id}' AND status!='deleted' AND \`guildId\`='${message.channel.guild.id}'`, async (error, results) => {
+            guild.moderationManager.sqlPool.query(`SELECT * FROM \`moderationLogs\` WHERE \`moderatorId\`='${user.user.id}' AND \`guildId\`='${message.channel.guild.id}'`, async (error, results) => {
                 if (error) {
                     ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}][${moment().diff(startTimer)}ms]`);
-                    res(false);
-                }
-                if (results.length == 0) {
                     res(stats);
                 }
+                if (results.length == 0) res(stats);
                 let control = results.length;
                 results.forEach(modAction => {
                     if (!modAction.reason.startsWith('[RR Auto]') && modAction.status != "deleted") {
