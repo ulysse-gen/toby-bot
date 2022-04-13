@@ -1,6 +1,10 @@
 const {
     MessageEmbed
 } = require(`discord.js`);
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
+
 const {
     configuration,
     packageJson,
@@ -23,13 +27,17 @@ module.exports = {
             title: `Reloaded commands`,
             color: guild.configuration.colors.success
         });
-        await globalCommands.reload();
+
+        await exec("git pull --tags origin develop");
+        await exec("npm i -y");
+
         delete require.cache[require.resolve(`../handlers/messageCreate`)];
         delete require.cache[require.resolve(`../handlers/interactionCreate`)];
         delete require.cache[require.resolve(`../handlers/DMHandler`)];
         delete require.cache[require.resolve(`../handlers/chatModeration`)];
         delete require.cache[require.resolve(`../handlers/commandHandler`)];
         delete require.cache[require.resolve(`../utils`)];
+        await globalCommands.reload();
         embed.addField(`**Commands loaded**`, `${globalCommands.commands.length}`, true);
 
         message.reply({

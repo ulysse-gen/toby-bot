@@ -4,7 +4,8 @@ const {
 const moment = require(`moment`);
 
 module.exports.create = async function (client, message) {
-    executionTimes[message.id].DMHandler = moment();
+    let messageMetric =  message.customMetric;
+    messageMetric.addEntry(`DMHandlerStart`);
     if (message.content.startsWith('dm!') && ["231461358200291330", "330826518370451457"].includes(message.author.id)) {
         let args = message.content.split(' ');
         let command = args.shift().replace("dm!", "");

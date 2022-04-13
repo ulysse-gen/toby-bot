@@ -61,11 +61,11 @@ module.exports = class guildManager {
         if (!fs.existsSync(`${process.cwd()}/configurations`)) fs.mkdirSync(`${process.cwd()}/configurations`);
         if (!fs.existsSync(`${process.cwd()}/configurations/guilds`)) fs.mkdirSync(`${process.cwd()}/configurations/guilds`);
         if (!fs.existsSync(`${process.cwd()}/configurations/guilds/${this.guild.id}`)) fs.mkdirSync(`${process.cwd()}/configurations/guilds/${this.guild.id}`);
-        this.permissionsManager = new permissionManager(this.client, undefined, `../../configurations/default/permissions.json`, `guildsPermissions`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
+        this.permissionsManager = new permissionManager(this.client, `../../configurations/default/permissions.json`, `guildsPermissions`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
         this.permissions = this.permissionsManager.permissions;
-        this.configurationManager = new configurationManager(this.client, undefined, `../../configurations/default/configuration.json`, `guildsConfigurations`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
+        this.configurationManager = new configurationManager(this.client, `../../configurations/default/configuration.json`, `guildsConfigurations`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
         this.configuration = this.configurationManager.configuration;
-        this.embedsManager = new configurationManager(this.client, undefined, `../../configurations/default/embeds.json`, `guildsEmbeds`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
+        this.embedsManager = new configurationManager(this.client, `../../configurations/default/embeds.json`, `guildsEmbeds`, `\`guildId\` = '${this.guild.id}'`, this.guild.id);
         this.embeds = this.embedsManager.configuration;
         this.moderationManager = new moderationManager(this.client, this.globalGuilds);
         await this.permissionsManager.initialize();
@@ -217,7 +217,7 @@ module.exports = class guildManager {
             errored: true,
             reason: `No reason specified.`
         };
-       return user.kick(`Kicked by ${message.author.tag}(${message.author.id}) for ${reason}`).then(async () => {
+        return user.kick(`Kicked by ${message.author.tag}(${message.author.id}) for ${reason}`).then(async () => {
             let caseId = await zisse.moderationManager.log(message.guild.id, `Kick`, user.user.id, message.author.id, reason, false);
             await zisse.moderationManager.sendPunishEmbed(message, zisse, `Kick`, caseId, user, message.author.id, reason, false);
             MainLog.log(`${message.author.tag}(${message.author.id}) kicked ${user.user.tag}(${user.user.id}) for '${reason}' from ${this.guild.id}`);

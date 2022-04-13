@@ -78,53 +78,44 @@ module.exports = {
                     warns: 0
                 }
             }
-            guild.moderationManager.sqlPool.getConnection((err, connection) => {
-                if (err) {
-                    ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
+
+            guild.moderationManager.sqlPool.query(`SELECT * FROM \`moderationLogs\` WHERE \`userId\`='${user.user.id}' AND status!='deleted' AND \`guildId\`='${message.channel.guild.id}'`, async (error, results) => {
+                if (error) {
+                    ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}][${moment().diff(startTimer)}ms]`);
                     res(false);
                 }
-                connection.query(`SELECT * FROM \`moderationLogs\` WHERE \`moderatorId\`='${user.user.id}' AND \`guildId\`='${message.channel.guild.id}'`, async function (error, results, _fields) {
-                    if (results.length == 0) {
-                        try { connection.release() } catch (e) {}
-                        res(stats);
+                if (results.length == 0) {
+                    res(stats);
+                }
+                let control = results.length;
+                results.forEach(modAction => {
+                    if (!modAction.reason.startsWith('[RR Auto]') && modAction.status != "deleted") {
+                        if (modAction.type == "Mute") {
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.mutes++;
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.mutes++;
+                            stats.allTime.mutes++;
+                        }
+                        if (modAction.type == "Ban") {
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.bans++;
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.bans++;
+                            stats.allTime.bans++;
+                        }
+                        if (modAction.type == "Kick") {
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.kicks++;
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.kicks++;
+                            stats.allTime.kicks++;
+                        }
+                        if (modAction.type == "Warn") {
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.warns++;
+                            if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.warns++;
+                            stats.allTime.warns++;
+                        }
                     }
-                    let control = results.length;
-                    results.forEach(modAction => {
-                        if (!modAction.reason.startsWith('[RR Auto]') && modAction.status != "deleted"){
-                            if (modAction.type == "Mute") {
-                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.mutes++;
-                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.mutes++;
-                                stats.allTime.mutes++;
-                            }
-                            if (modAction.type == "Ban") {
-                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.bans++;
-                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.bans++;
-                                stats.allTime.bans++;
-                            }
-                            if (modAction.type == "Kick") {
-                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.kicks++;
-                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.kicks++;
-                                stats.allTime.kicks++;
-                            }
-                            if (modAction.type == "Warn") {
-                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(7, 'days'))) stats.sevenDays.warns++;
-                                if (!moment(moment(modAction.timestamp)).isBefore(moment().subtract(30, 'days'))) stats.thirtyDays.warns++;
-                                stats.allTime.warns++;
-                            }
-                        }
-                        control--;
-                        if (control <= 0) {
-                            try { connection.release() } catch (e) {}
-                            res(stats);
-                        }
-                        try { connection.release() } catch (e) {}
-                        if (error) {
-                            ErrorLog.log(`An error occured during the query. ${error.toString()}`);
-                            res(stats);
-                        }
-                        res(stats);
-                    });
+                    control--;
+                    if (control <= 0) res(stats);
+                    res(stats);
                 });
+                res(true);
             });
         });
         let stats = await makeTheStats;
@@ -145,13 +136,13 @@ module.exports = {
         embed.addField(`**Total (last 7 days):**`, `${stats.sevenDays.mutes + stats.sevenDays.bans + stats.sevenDays.kicks + stats.sevenDays.warns}`, true);
         embed.addField(`**Total (last 30 days):**`, `${stats.thirtyDays.mutes + stats.thirtyDays.bans + stats.thirtyDays.kicks + stats.thirtyDays.warns}`, true);
         embed.addField(`**Total (all time):**`, `${stats.allTime.mutes + stats.allTime.bans + stats.allTime.kicks + stats.allTime.warns}`, true);
-        if (user.user.id == "280063634477154306")embed.addField(`**Important infos:**`, `Whatever the stats can be, Kilo is still a very bad mod.`, true); //Kilo
-        if (user.user.id == "737886546182799401")embed.addField(`**Important infos:**`, `Wait hm.. I'm not a kitten.`, true);   //Flair
-        if (user.user.id == "899655742389358612")embed.addField(`**Important infos:**`, `huh?`, true);   //Olle
-        if (user.user.id == "762760262683459654")embed.addField(`**Important infos:**`, `I'm very indecisive so could you make one up for me?`, true);   //Aiko
-        if (user.user.id == "913934813524799490")embed.addField(`**Important infos:**`, `The original sebs badge creator.`, true);   //Sebs
-        if (user.user.id == "408726936286658561")embed.addField(`**Important infos:**`, `<:teddy_bear:945443955263303750>`, true);   //Bassie
-        if (user.user.id == "580943656232419329")embed.addField(`**Important infos:**`, `aaaaaaaaaaaaaaaaa`, true);   //Ama
+        if (user.user.id == "280063634477154306") embed.addField(`**Important infos:**`, `Whatever the stats can be, Kilo is still a very bad mod.`, true); //Kilo
+        if (user.user.id == "737886546182799401") embed.addField(`**Important infos:**`, `Wait hm.. I'm not a kitten.`, true); //Flair
+        if (user.user.id == "899655742389358612") embed.addField(`**Important infos:**`, `huh?`, true); //Olle
+        if (user.user.id == "762760262683459654") embed.addField(`**Important infos:**`, `I'm very indecisive so could you make one up for me?`, true); //Aiko
+        if (user.user.id == "913934813524799490") embed.addField(`**Important infos:**`, `The original sebs badge creator.`, true); //Sebs
+        if (user.user.id == "408726936286658561") embed.addField(`**Important infos:**`, `<:teddy_bear:945443955263303750>`, true); //Bassie
+        if (user.user.id == "580943656232419329") embed.addField(`**Important infos:**`, `aaaaaaaaaaaaaaaaa`, true); //Ama
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
 
         message.reply({
