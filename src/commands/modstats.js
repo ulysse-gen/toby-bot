@@ -112,10 +112,8 @@ module.exports = {
                         }
                     }
                     control--;
-                    if (control <= 0) res(stats);
-                    res(stats);
+                    if (control <= 0)res(stats);
                 });
-                res(true);
             });
         });
         let stats = await makeTheStats;

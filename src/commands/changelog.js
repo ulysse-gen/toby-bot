@@ -22,6 +22,7 @@ module.exports = {
         let description = `- Lots of upgrades, fixes and improvements.`;
         description += `\n- New aliases for \`deletepunishement\` (\`deletewarn\`, \`delwarn\`, \`deletenote\`, \`delnote\`, \`deletesticky\`, \`delsticky\`).`;
         description += `\n- Metrics.`;
+        description += `\n- Fixed modstats :see_no_evil:`;
         return utils.sendMain(message, guild, `Changelog v${packageJson.version}`, `${description}`, [], true);
     }
 }
