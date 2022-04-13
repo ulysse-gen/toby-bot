@@ -64,7 +64,7 @@ client.on('ready', async () => {
     MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${packageJson.version.green}]`);
     require(`./src/managers/presenceManager`)();
     require(`./src/managers/api`)();
-    setInterval(() => globalSqlManager.checkForExpiredModeration(), 5000);
+    setInterval(() => globalSqlManager.checkForExpiredModeration(), 20000);
     setInterval(() => globalSqlManager.checkForReminders(), 5000);
     try {
         discordVoice.joinVoiceChannel({
