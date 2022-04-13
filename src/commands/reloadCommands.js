@@ -28,8 +28,8 @@ module.exports = {
             color: guild.configuration.colors.success
         });
 
-        await exec("git pull --tags origin develop");
-        await exec("npm i -y");
+        /*await exec("git pull --tags origin develop");
+        await exec("npm i -y");*/
 
         delete require.cache[require.resolve(`../handlers/messageCreate`)];
         delete require.cache[require.resolve(`../handlers/interactionCreate`)];
