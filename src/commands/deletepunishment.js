@@ -14,7 +14,7 @@ module.exports = {
     name: "deletepunishment",
     description: `Delete a punishment from the database.`,
     subcommands: {},
-    aliases: ["deletepunish", "delpunish"],
+    aliases: ["deletepunish", "delpunish","deletewarn","delwarn","deletenote","delnote","deletesticky","delsticky"],
     permission: `commands.deletepunishment`,
     category: `moderation`,
     status: true,
