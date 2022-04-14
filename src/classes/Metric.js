@@ -27,7 +27,7 @@ module.exports = class Metric {
         return true;
     }
 
-    end() {
+    async end() {
         return this.metricManager.endMetric(this.id);
     }
 }
