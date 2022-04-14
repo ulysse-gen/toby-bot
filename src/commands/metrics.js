@@ -45,12 +45,11 @@ module.exports = {
                     }
                     control--;
                     if (control <= 0){
-                        console.log(tempStats.botStartup)
-                        fields.push(["**Full Message Handle (Commands Only)**",`${(ArrayAvg(tempStats.fromSentToEnd_Command)).toFixed(2)}ms`,true]);
-                        fields.push(["**Full Message Handle (Without Commands)**",`${(ArrayAvg(tempStats.fromSentToEnd_Message)).toFixed(2)}ms`,true]);
-                        fields.push(["**Full Message Handle (Both)**",`${(ArrayAvg(tempStats.fromSentToEnd_Both)).toFixed(2)}ms`,true]);
-                        fields.push(["**Permission Grabbing**",`${(ArrayAvg(tempStats.permissionGrabbing)).toFixed(2)}ms`,true]);
-                        fields.push(["**Bot Startup**",`${(ArrayAvg(tempStats.botStartup)/1000).toFixed(2)}s`, true]);
+                        fields.push(["**Full Message Handle (Commands Only)**",(tempStats.fromSentToEnd_Command.length != 0) ? `${(ArrayAvg(tempStats.fromSentToEnd_Command)).toFixed(2)}ms` : `**No Data**`,true]);
+                        fields.push(["**Full Message Handle (Without Commands)**",(tempStats.fromSentToEnd_Message.length != 0) ? `${(ArrayAvg(tempStats.fromSentToEnd_Message)).toFixed(2)}ms` : `**No Data**`,true]);
+                        fields.push(["**Full Message Handle (Both)**",(tempStats.fromSentToEnd_Both.length != 0) ? `${(ArrayAvg(tempStats.fromSentToEnd_Both)).toFixed(2)}ms` : `**No Data**`,true]);
+                        fields.push(["**Permission Grabbing**",(tempStats.permissionGrabbing.length != 0) ? `${(ArrayAvg(tempStats.permissionGrabbing)).toFixed(2)}ms` : `**No Data**`,true]);
+                        fields.push(["**Bot Startup**",(tempStats.botStartup.length != 0) ? `${(ArrayAvg(tempStats.botStartup)/1000).toFixed(2)}s` : `**No Data**`,true]);
                         res(true);
                     }
                 });
