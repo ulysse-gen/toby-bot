@@ -66,7 +66,7 @@ module.exports = async (message, guild = undefined) => {
                         action: guild.configuration.moderation.autoModeration.modules.scams.reaction
                     });
                 }
-                if (guild.configuration.moderation.autoModeration.modules.links.status && (url.parse(linkToScan, false).hostname == null || !guild.configuration.moderation.autoModeration.modules.links.allowed.includes(url.parse(linkToScan, false).hostname))) violations.push({
+                if (guild.configuration.moderation.autoModeration.modules.links.status && (url.parse(linkToScan, false).hostname == null || (!guild.configuration.moderation.autoModeration.modules.links.allowed.includes(url.parse(linkToScan, false).hostname) && !guild.configuration.moderation.autoModeration.modules.links.allowed.includes(`https://${url.parse(linkToScan, false).hostname}/`)))) violations.push({
                     check: `linkify`,
                     trigger: element.type,
                     value: element.value,
@@ -127,13 +127,13 @@ module.exports = async (message, guild = undefined) => {
         
         if (actions.includes('delete'))message.delete().catch({});
         if (actions.includes('ban')){
-            guild.banUser(message, user.id, guild.configuration.moderation.autoModeration.banReason, guild.configuration.moderation.autoModeration.banDuration * 60, true);
+            guild.banUser(message, user.id, guild.configuration.moderation.autoModeration.banReason, guild.configuration.moderation.autoModeration.banDuration * 60, true, true);
         }else if (actions.includes('kick')){
-            guild.kickUser(message, user.id, guild.configuration.moderation.autoModeration.kickReason, undefined, true);
+            guild.kickUser(message, user.id, guild.configuration.moderation.autoModeration.kickReason, undefined, true, true);
         }else if (actions.includes('mute')){
-            guild.muteUser(message, user.id, guild.configuration.moderation.autoModeration.muteReason, guild.configuration.moderation.autoModeration.muteDuration * 60, true);
+            guild.muteUser(message, user.id, guild.configuration.moderation.autoModeration.muteReason, guild.configuration.moderation.autoModeration.muteDuration * 60, true, true);
         }else if (actions.includes('warn')) {
-            guild.warnUser(message, user.id, guild.configuration.moderation.autoModeration.warnReason, undefined, true);
+            guild.warnUser(message, user.id, guild.configuration.moderation.autoModeration.warnReason, undefined, true, true);
         }
 
         let mainAction = actions.shift();
