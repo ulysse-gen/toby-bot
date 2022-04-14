@@ -19,10 +19,7 @@ module.exports = {
     permission: `commands.changelog`,
     category: `informations`,
     async exec(client, message, args, guild = undefined) {
-        let description = `- Lots of upgrades, fixes and improvements.`;
-        description += `\n- New aliases for \`deletepunishement\` (\`deletewarn\`, \`delwarn\`, \`deletenote\`, \`delnote\`, \`deletesticky\`, \`delsticky\`).`;
-        description += `\n- Metrics.`;
-        description += `\n- Fixed modstats :see_no_evil:`;
+        let description = `- <@933695613294501888> AutoMod starting to raise !`;
         return utils.sendMain(message, guild, `Changelog v${packageJson.version}`, `${description}`, [], true);
     }
 }

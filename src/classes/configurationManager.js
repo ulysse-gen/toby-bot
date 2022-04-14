@@ -34,21 +34,21 @@ module.exports = class configuationManager {
             zisse.sqlPool.query(`SELECT * FROM ${zisse.sqlTable} WHERE ${zisse.sqlWhere}`, async (error, results) => {
                 if (error) {
                     ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}][${moment().diff(startTimer)}ms]`);
-                    res(null);
+                    return res(null);
                 }
                 if (typeof results == "undefined" || results == null || results.length != 1) {
                     if (zisse.verbose) MainLog.log(`Could not fetch configuration. [${zisse.sqlTable} => ${zisse.sqlWhere}][${moment().diff(startTimer)}ms]`);
-                    res(zisse.sqlPool.query(`INSERT INTO ${zisse.sqlTable} (\`guildId\`) VALUES ('${zisse.guildId}')`, async (error, results) => {
+                    return res(zisse.sqlPool.query(`INSERT INTO ${zisse.sqlTable} (\`guildId\`) VALUES ('${zisse.guildId}')`, async (error, results) => {
                         if (error) {
                             ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}][${moment().diff(startTimer)}ms]`);
-                            res(null);
+                            return res(null);
                         }
                         if (results.affectedRows != 1) {
                             MainLog.log(`Could not create the configuration. ${error.toString()}[${moment().diff(startTimer)}ms]`);
-                            res(false);
+                            return res(false);
                         }
                         if (zisse.verbose) MainLog.log(`Created configuration. [${zisse.sqlTable} => ${zisse.sqlWhere}][${moment().diff(startTimer)}ms]`);
-                        res(zisse.initialize());
+                        return res(zisse.initialize());
                     }));
                 }
                 if (zisse.verbose) MainLog.log(`Fetched configuration. [${zisse.sqlTable} => ${zisse.sqlWhere}][${moment().diff(startTimer)}ms]`);
@@ -166,7 +166,6 @@ module.exports = class configuationManager {
         let defaultConfiguration = require(this.fallbackFile);
         let currentConfiguration = this.configuration;
         this.configuration = await mergeRecursive(currentConfiguration, defaultConfiguration);
-        this.save();
         return true;
     }
 }

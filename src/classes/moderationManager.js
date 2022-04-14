@@ -25,9 +25,9 @@ module.exports = class moderationManager {
             punish: `none` //none, delete, warn, strike(soon), mute, kick, ban
         }
 
-        this.scamLinks = [];
-        this.scamTherms = [];
-        this.scamSlashes = [];
+        this.scamLinks = undefined;
+        this.scamTherms = undefined;
+        this.scamSlashes = undefined;
         this.refreshDataSets();
 
         setInterval(() => this.refreshDataSets(), 43200000); //Scan toutes les 12H
@@ -60,7 +60,7 @@ module.exports = class moderationManager {
         });
     }
 
-    async sendPunishEmbed(message, guild, type, caseId, user, moderatorId, reason, length) {
+    async sendPunishEmbed(message, guild, type, caseId, user, moderatorId, reason, length, silent = false) {
         let expireDate = moment();
         if (typeof length == "number") expireDate.add(length, 'seconds');
         let userPFP = await getUserPfp(user);
@@ -78,27 +78,27 @@ module.exports = class moderationManager {
         embed.addField(`**Reason**`, `${(typeof reason == "string") ? reason : `No reason specified.`}`, true);
         if (typeof length != "boolean") embed.addField(`**Expires**`, (typeof length == "number") ? `<t:${moment(expireDate).unix()}>(<t:${moment(expireDate).unix()}:R>)` : (typeof length == "boolean" && !length) ? `N/A` : `Indefinite`, true);
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
-        message.channel.send({ //Reply to the message that triggerred the error
+        if (!silent)message.channel.send({
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).then(msg => {
             if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         }).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
-        if (typeof guild != "undefined" && guild.configuration.moderation.logToChannel.status && guild.moderationLog.initialized) guild.moderationLog.channel.send({ //Reply to the message that triggerred the error
+        if (typeof guild != "undefined" && guild.configuration.moderation.logToChannel.status && guild.moderationLog.initialized) guild.moderationLog.channel.send({ 
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         return false;
     }
 
-    async sendAutoModEmbed(message, guild, trigger, check, user, reason = []) {
+    async sendAutoModEmbed(message, guild, trigger, actionTaken, user, reason = [], alert = false) {
         reason = reason.filter(function (e) {
             return (typeof e != "undefined" && e !== '')
         });
         reason = reason.map(e => {
             if (typeof e == "string") return e.trim()
         });
-        if (typeof check != "string" || check == "") return false;
+        if (typeof actionTaken != "string" || actionTaken == "") return false;
         if (typeof trigger != "string" || trigger == "") return false;
         if (reason.length == 0) return false;
         let expireDate = moment();
@@ -112,15 +112,17 @@ module.exports = class moderationManager {
             }
         });
         embed.addField(`**Trigger**`, `${trigger}`, true);
-        embed.addField(`**Checks**`, `${check}`, true);
+        embed.addField(`**Action(s) Taken**`, `${actionTaken}`, true);
         embed.addField(`**User**`, `<@${user.user.id}>`, true);
         embed.addField(`**Channel**`, `<#${message.channel.id}>`, true);
         embed.addField(`**Detected**`, `||${reason.join(`||, ||`)}||`, true);
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
-        if (typeof guild != "undefined" && guild.configuration.moderation.autoModeration.channel.status && guild.autoModerationLog.initialized) guild.autoModerationLog.channel.send({
+        let messageContent = {
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
-        }, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
+        };
+        if (alert && guild.configuration.moderation.autoModeration.staffRoleForAlert.length != 0)messageContent.content = `<@&${guild.configuration.moderation.autoModeration.staffRoleForAlert.join("> <@&")}>`;
+        if (typeof guild != "undefined" && guild.configuration.moderation.autoModeration.channel.status && guild.autoModerationLog.initialized) guild.autoModerationLog.channel.send(messageContent, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         return true;
     }
 
@@ -228,7 +230,7 @@ module.exports = class moderationManager {
             .catch(_error => {
                 return [];
             });
-        //MainLog.log(`Loaded autoMod datasets.`)
+        //MainLog.log(`Loaded autoMod datasets.`);
     }
 }
 

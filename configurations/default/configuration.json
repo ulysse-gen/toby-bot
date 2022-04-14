@@ -64,12 +64,19 @@
         "status": false,
         "channel": "none"
       },
+      "staffRoleForAlert": [],
       "ignoredChannels": [],
       "ignoredRoles": [],
+      "warnReason": "TobyBot AutoMod violation.",
+      "muteReason": "TobyBot AutoMod violation.",
+      "muteDuration": 60,
+      "kickReason": "TobyBot AutoMod violation.",
+      "banReason": "TobyBot AutoMod violation.",
+      "banDuration": 0,
       "modules": {
         "links": {
-          "status": true,
-          "reaction": ["delete"],
+          "status": false,
+          "reaction": ["log","delete"],
           "ignoredChannels": [],
           "allowed": [],
           "overwrite": {
@@ -79,16 +86,22 @@
         },
         "email": {
           "status": true,
-          "reaction": ["delete"],
+          "reaction": ["log","delete"],
+          "ignoredChannels": []
+        },
+        "IPs": {
+          "status": true,
+          "reaction": ["log","delete"],
           "ignoredChannels": []
         },
         "wordsDetection": {
-          "status": true,
-          "tobybotpreset":false,
-          "notify": [],
+          "status": false,
+          "log": [],
+          "alert": [],
           "delete": [],
           "warn": [],
           "mute": [],
+          "kick": [],
           "ban": [],
           "ignoredChannels": []
         },
@@ -98,16 +111,16 @@
           "ignoredChannels": []
         },
         "duplicateText": {
-          "status": true,
-          "reaction": ["delete"],
+          "status": false,
+          "reaction": ["log","delete"],
           "ignoredChannels": [],
           "threshold": {
             "amount": 2
           }
         },
         "fastMessageSpam": {
-          "status": true,
-          "reaction": ["delete"],
+          "status": false,
+          "reaction": ["log","delete"],
           "ignoredChannels": [],
           "threshold": {
             "time": 5,
@@ -115,13 +128,13 @@
           }
         },
         "discordInvite": {
-          "status": true,
-          "reaction": ["delete"],
+          "status": false,
+          "reaction": ["log","delete"],
           "ignoredChannels": []
         },
         "massMentions": {
-          "status": true,
-          "reaction": ["delete"],
+          "status": false,
+          "reaction": ["log","delete"],
           "ignoredChannels": [],
           "threshold": {
             "time": 0,
@@ -129,8 +142,8 @@
           }
         },
         "imageSpam": {
-          "status": true,
-          "reaction": ["delete"],
+          "status": false,
+          "reaction": ["log","delete"],
           "ignoredChannels": [],
           "threshold": {
             "time": 10,
@@ -138,36 +151,29 @@
           }
         },
         "emojiSpam": {
-          "status": true,
-          "reaction": ["delete"],
+          "status": false,
+          "reaction": ["log","delete"],
           "ignoredChannels": [],
           "threshold": {
             "amount": 8
           }
         },
-        "spoilers": {
-          "status": false,
-          "reaction": [],
-          "ignoredChannels": []
-        },
-        "zalgo": {
-          "status": true,
-          "reaction": ["delete"],
-          "ignoredChannels": []
-        },
-        "stickers": {
-          "status": false,
-          "reaction": [],
-          "ignoredChannels": []
-        },
         "stickerSpam": {
-          "status": true,
-          "reaction": ["delete"],
+          "status": false,
+          "reaction": ["log","delete"],
           "ignoredChannels": [],
           "threshold": {
             "time": 10,
             "amount": 3
           }
+        },
+        "scams": {
+          "status": true,
+          "reaction": ["log","delete"],
+          "ignoredChannels": [],
+          "links": true,
+          "therms": true,
+          "slashes": false
         }
       }
     },
