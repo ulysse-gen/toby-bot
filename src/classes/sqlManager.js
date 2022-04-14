@@ -154,6 +154,13 @@ async function errorHandler(error, callback = undefined) {
         customError.text = `Could not fetch what you were looking for with this parameter.`;
         return (typeof callback == "function") ? callback(customError) : customError;
     }
+    if (error.code == 100007) { //Unknown user
+        customError.fatal = false;
+        customError.code = 404;
+        customError.type = `discord`;
+        customError.text = `Unknown member`;
+        return (typeof callback == "function") ? callback(customError) : customError;
+    }
     if (error.code == 10013) { //Unknown user
         customError.fatal = false;
         customError.code = 404;
