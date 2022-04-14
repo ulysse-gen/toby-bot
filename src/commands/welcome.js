@@ -14,7 +14,7 @@ module.exports = {
     name: "welcome",
     description: `Welcome a user in the server`,
     subcommands: {},
-    aliases: [],
+    aliases: ["w"],
     permission: `commands.welcome`,
     category: `fun`,
     status: true,
