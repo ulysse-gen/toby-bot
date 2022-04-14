@@ -14,7 +14,6 @@ module.exports = {
         let getTheMetrics = new Promise((res, rej) => {
             let tempStats = {
                 "botStartup": [],
-                "fromSentToEnd_Both": [],
                 "fromSentToEnd_Message": [],
                 "fromSentToEnd_Command": [],
                 "chatModeration": [],
@@ -37,7 +36,6 @@ module.exports = {
                     if (typeof metric.botReady != "undefined")tempStats.botStartup.push(moment(metric.botReady).diff(metric.initialization));
                     if (typeof metric.MessageCreation != "undefined"){
                         let total = moment(metric.end).diff(metric.initialization);
-                        tempStats.fromSentToEnd_Both.push(total);
                         if (typeof metric.CommandHandlerStart != "undefined")tempStats.fromSentToEnd_Command.push(total);
                         if (typeof metric.CommandHandlerStart == "undefined")tempStats.fromSentToEnd_Message.push(total);
                         if (![typeof metric.GettingGlobalPermissions, typeof metric.GotPermissions].includes("undefined"))tempStats.permissionGrabbing.push(moment(metric.GotPermissions).diff(metric.GettingGlobalPermissions));
@@ -47,7 +45,6 @@ module.exports = {
                     if (control <= 0){
                         fields.push(["**Full Message Handle (Commands Only)**",(tempStats.fromSentToEnd_Command.length != 0) ? `${(ArrayAvg(tempStats.fromSentToEnd_Command)).toFixed(2)}ms` : `**No Data**`,true]);
                         fields.push(["**Full Message Handle (Without Commands)**",(tempStats.fromSentToEnd_Message.length != 0) ? `${(ArrayAvg(tempStats.fromSentToEnd_Message)).toFixed(2)}ms` : `**No Data**`,true]);
-                        fields.push(["**Full Message Handle (Both)**",(tempStats.fromSentToEnd_Both.length != 0) ? `${(ArrayAvg(tempStats.fromSentToEnd_Both)).toFixed(2)}ms` : `**No Data**`,true]);
                         fields.push(["**Permission Grabbing**",(tempStats.permissionGrabbing.length != 0) ? `${(ArrayAvg(tempStats.permissionGrabbing)).toFixed(2)}ms` : `**No Data**`,true]);
                         fields.push(["**Bot Startup**",(tempStats.botStartup.length != 0) ? `${(ArrayAvg(tempStats.botStartup)/1000).toFixed(2)}s` : `**No Data**`,true]);
                         res(true);

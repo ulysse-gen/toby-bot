@@ -322,27 +322,27 @@ module.exports = {
                     configName: `logAutoModerationToChannel`,
                     path: `moderation.autoModeration.channel.status`,
                     checkerFunction: async (newValue) => {
-                        if (newValue && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
+                        if (newValue && guild.configuration.moderation.autoModeration.channel.channel == defaultConfig.moderation.autoModeration.channel.channel) return {
                             break: true,
                             title: "Set the auto moderation logging channel before enabling.",
-                            description: `Use \`${guild.configuration.prefix}conf set autoModerationLogToChannelStatus <#ChannelId>\` to enable !`
+                            description: `Use \`${guild.configuration.prefix}conf set channelToLogAutoModerationTo <#ChannelId>\` to enable !`
                         };
-                        let GuildAndChannelCheck = new Promise((res, rej) => {
+                        return new Promise((res, _rej) => {
                             client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
-                                fetchedGuild.channels.fetch(guild.configuration.moderation.logToChannel.channel).then(channel => {
+                                fetchedGuild.channels.fetch(guild.configuration.moderation.autoModeration.channel.channel).then(_channel => {
                                     res({
                                         break: false
                                     });
-                                }).catch(e => {
-                                    if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
+                                }).catch(_e => {
+                                    if (guild.configuration.moderation.autoModeration.channel.status) guild.configuration.moderation.autoModeration.channel.status = false;
                                     res({
                                         break: true,
                                         title: "Failed to enable",
                                         description: `Could not fetch the channel set as auto moderation logging channel. Fix permissions or update it using \`${guild.configuration.prefix}conf set channelToLogAutoModerationTo <#ChannelId>\``
                                     });
                                 });
-                            }).catch(e => {
-                                if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
+                            }).catch(_e => {
+                                if (guild.configuration.moderation.autoModeration.channel.status) guild.configuration.moderation.autoModeration.channel.status = false;
                                 res({
                                     break: true,
                                     title: "Error",
@@ -350,11 +350,9 @@ module.exports = {
                                 });
                             });
                         });
-                        let GuildAndChannelCheckResult = await GuildAndChannelCheck;
-                        return GuildAndChannelCheckResult;
                     },
-                    runAfter: async (newValue) => {
-                        await guild.initModerationLogging();
+                    runAfter: async (_newValue) => {
+                        await guild.initAutoModerationLogging();
                     }
                 },
                 autoModerationLogToChannelChannel: {
@@ -363,20 +361,15 @@ module.exports = {
                     configName: `channelToLogAutoModerationTo`,
                     path: `moderation.autoModeration.channel.channel`,
                     checkerFunction: async (newValue) => {
-                        if (newValue && guild.configuration.moderation.logToChannel.channel == defaultConfig.moderation.logToChannel.channel) return {
-                            break: true,
-                            title: "Set the auto moderation logging channel before enabling.",
-                            description: `Use \`${guild.configuration.prefix}conf set channelToLogAutoModerationTo <#ChannelId>\` to enable !`
-                        };
                         if (newValue.startsWith(`<#`)) newValue = newValue.replace('<#', '').slice(0, -1);
-                        return new Promise((res, rej) => {
+                        return new Promise((res, _rej) => {
                             client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
-                                fetchedGuild.channels.fetch(newValue).then(channel => {
+                                fetchedGuild.channels.fetch(newValue).then(_channel => {
                                     res({
                                         break: false,
                                         adjustValue: newValue
                                     });
-                                }).catch(e => {
+                                }).catch(_e => {
                                     if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
                                     res({
                                         break: true,
@@ -384,7 +377,7 @@ module.exports = {
                                         description: `Could not fetch the channel set as auto moderation logging channel. Fix permissions or update it using \`${guild.configuration.prefix}conf set channelToLogAutoModerationTo <#ChannelId>\``
                                     });
                                 });
-                            }).catch(e => {
+                            }).catch(_e => {
                                 if (guild.configuration.moderation.logToChannel.status) guild.configuration.moderation.logToChannel.status = false;
                                 res({
                                     break: true,
@@ -394,8 +387,8 @@ module.exports = {
                             });
                         });
                     },
-                    runAfter: async (newValue) => {
-                        await guild.initModerationLogging();
+                    runAfter: async (_newValue) => {
+                        await guild.initAutoModerationLogging();
                     }
                 },
                 moderationKickNeedReason: {
