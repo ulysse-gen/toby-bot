@@ -211,7 +211,7 @@ module.exports = class guildManager {
         });
     }
 
-    async kickUser(message, userId, reason, time = 0, punishAsBot = false) {
+    async kickUser(message, userId, reason, time = 0, punishAsBot = false, silent = false) {
         let zisse = this;
         let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
@@ -224,7 +224,7 @@ module.exports = class guildManager {
         };
         return user.kick(`Kicked by ${(!punishAsBot) ? message.author.tag : configuration.appName}(${(!punishAsBot) ? message.author.id : configuration.appId}) for ${reason}`).then(async () => {
             let caseId = await zisse.moderationManager.log(message.guild.id, `Kick`, user.user.id, (!punishAsBot) ? message.author.id : configuration.appId, reason, false);
-            await zisse.moderationManager.sendPunishEmbed(message, zisse, `Kick`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, false);
+            await zisse.moderationManager.sendPunishEmbed(message, zisse, `Kick`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, false, silent);
             MainLog.log(`${(!punishAsBot) ? message.author.tag : configuration.appName}(${(!punishAsBot) ? message.author.id : configuration.appId}) kicked ${user.user.tag}(${user.user.id}) for '${reason}' from ${this.guild.id}`);
             if (zisse.configuration.moderation.sendKickAlertInDM) await zisse.moderationManager.sendPlayerPunishment(message, zisse, `Kick`, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, false);
             return {
@@ -238,7 +238,7 @@ module.exports = class guildManager {
         });
     }
 
-    async banUser(message, userId, reason, time = 0, punishAsBot = false) {
+    async banUser(message, userId, reason, time = 0, punishAsBot = false, silent = false) {
         let zisse = this;
         let user = await this.grabUser(message, userId);
         if (this.configuration.moderation.banNeedReason && (typeof reason == "undefined" || reason == "" || reason.replaceAll(' ', '') == "")) return {
@@ -277,7 +277,7 @@ module.exports = class guildManager {
         };
         async function afterBan(user) {
             let caseId = await zisse.moderationManager.log(message.guild.id, `Ban`, user.user.id, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : undefined);
-            await zisse.moderationManager.sendPunishEmbed(message, zisse, `Ban`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : undefined);
+            await zisse.moderationManager.sendPunishEmbed(message, zisse, `Ban`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : undefined, silent);
             MainLog.log(`${(!punishAsBot) ? message.author.tag : configuration.appName}(${(!punishAsBot) ? message.author.id : configuration.appId}) banned ${user.user.tag}(${user.user.id}) for '${reason}' from ${zisse.guild.id}`);
             if (zisse.configuration.moderation.sendBanAlertInDM && typeof user.send == "function") await zisse.moderationManager.sendPlayerPunishment(message, zisse, `Ban`, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : undefined);
             return {
@@ -286,7 +286,7 @@ module.exports = class guildManager {
         }
     }
 
-    async warnUser(message, userId, reason, time = 0, punishAsBot = false) {
+    async warnUser(message, userId, reason, time = 0, punishAsBot = false, silent = false) {
         let zisse = this;
         let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
@@ -299,14 +299,14 @@ module.exports = class guildManager {
         };
         //Here warn the player & log in in sql
         let caseId = await zisse.moderationManager.log(message.guild.id, `Warn`, user.user.id, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : false);
-        await zisse.moderationManager.sendPunishEmbed(message, zisse, `Warn`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, false);
+        await zisse.moderationManager.sendPunishEmbed(message, zisse, `Warn`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, false, silent);
         MainLog.log(`${(!punishAsBot) ? message.author.tag : configuration.appName}(${(!punishAsBot) ? message.author.id : configuration.appId}) warned ${user.user.tag}(${user.user.id}) for ${reason} in ${this.guild.id}`);
         return (zisse.configuration.moderation.sendWarningInDM) ? zisse.moderationManager.sendPlayerPunishment(message, zisse, `Warn`, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, false) : {
             errored: false
         };
     }
 
-    async noteUser(message, userId, reason, time = 0, punishAsBot = false) {
+    async noteUser(message, userId, reason, time = 0, punishAsBot = false, silent = false) {
         let zisse = this;
         let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
@@ -319,14 +319,14 @@ module.exports = class guildManager {
         };
         //Here warn the player & log in in sql
         let caseId = await zisse.moderationManager.log(message.guild.id, `Note`, user.user.id, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : false);
-        await zisse.moderationManager.sendPunishEmbed(message, zisse, `Note`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, false);
+        await zisse.moderationManager.sendPunishEmbed(message, zisse, `Note`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, false, silent);
         MainLog.log(`${(!punishAsBot) ? message.author.tag : configuration.appName}(${(!punishAsBot) ? message.author.id : configuration.appId}) noted ${user.user.tag}(${user.user.id}) for ${reason} in ${this.guild.id}`);
         return {
             errored: false
         };
     }
 
-    async muteUser(message, userId, reason, time = 0, punishAsBot = false) {
+    async muteUser(message, userId, reason, time = 0, punishAsBot = false, silent = false) {
         let zisse = this;
         let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
@@ -340,7 +340,7 @@ module.exports = class guildManager {
         return this.guild.roles.fetch(this.configuration.moderation.muteRole).then(fetchedRole => {
             return user.roles.add(fetchedRole, `Muted by ${(!punishAsBot) ? message.author.tag : configuration.appName}(${(!punishAsBot) ? message.author.id : configuration.appId}) for ${reason}`).then(async () => {
                 let caseId = await this.moderationManager.log(message.guild.id, `Mute`, user.user.id, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : undefined);
-                await zisse.moderationManager.sendPunishEmbed(message, zisse, `Mute`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : undefined);
+                await zisse.moderationManager.sendPunishEmbed(message, zisse, `Mute`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : undefined, silent);
                 MainLog.log(`${(!punishAsBot) ? message.author.tag : configuration.appName}(${(!punishAsBot) ? message.author.id : configuration.appId}) muted ${user.user.tag}(${user.user.id}) for ${reason} in ${this.guild.id}`);
                 if (zisse.configuration.moderation.sendMuteAlertInDM) await zisse.moderationManager.sendPlayerPunishment(message, zisse, `Mute`, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : undefined);
                 return {
@@ -360,7 +360,7 @@ module.exports = class guildManager {
         });
     }
 
-    async stickyUser(message, userId, reason, time = 0, punishAsBot = false) {
+    async stickyUser(message, userId, reason, time = 0, punishAsBot = false, silent = false) {
         let zisse = this;
         let user = await this.grabUser(message, userId);
         if (typeof user == "undefined") return {
@@ -372,7 +372,7 @@ module.exports = class guildManager {
             reason: `No reason specified.`
         };
         let caseId = await zisse.moderationManager.log(message.guild.id, `Sticky`, user.user.id, (!punishAsBot) ? message.author.id : configuration.appId, reason, (time != 0) ? time : false);
-        await zisse.moderationManager.sendPunishEmbed(message, zisse, `Sticky`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, false);
+        await zisse.moderationManager.sendPunishEmbed(message, zisse, `Sticky`, caseId, user, (!punishAsBot) ? message.author.id : configuration.appId, reason, false, silent);
         MainLog.log(`${(!punishAsBot) ? message.author.tag : configuration.appName}(${(!punishAsBot) ? message.author.id : configuration.appId}) sticky noted ${user.user.tag}(${user.user.id}) for ${reason} in ${this.guild.id}`);
         return {
             errored: false
