@@ -47,26 +47,27 @@ module.exports = class sqlManager {
                                                 zisse.sqlPool.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`);
                                                 MainLog.log(`Unmuted ${(fetchedMember.user.tag)}(${indPunishments.userId}). Punishment expired`);
                                             }).catch(e => errorHandler(e, (e) => {
+                                                if (!e.fatal)zisse.sqlPool.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`);
                                                 if (e.code == 100) {
-                                                    zisse.sqlPool.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`);
                                                     ErrorLog.log(`Could not fetch the mute role, the mute role should be defined again. [Guild ${indPunishments.guildId}]`);
                                                 } else {
-                                                    console.log(e);
+                                                    console.log("1", e);
                                                 }
                                             }));
                                         }).catch(e => errorHandler(e, (e) => {
-                                            if (e.code == 100) {
+                                            if (!e.fatal)zisse.sqlPool.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`);
+                                            if (e.code == 404) {
                                                 ErrorLog.log(`Could not fetch the member to unmute. [Guild ${indPunishments.guildId}]`);
                                             } else {
-                                                console.log(e);
+                                                console.log("2", e);
                                             }
                                         }));
                                     }).catch(e => errorHandler(e, (e) => {
+                                        if (!e.fatal)zisse.sqlPool.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`);
                                         if (e.code == 100) {
-                                            zisse.sqlPool.query(`UPDATE \`moderationLogs\` SET \`status\`='expired', \`updaterId\`='${zisse.client.user.id}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishments.numId}`);
                                             ErrorLog.log(`Could not fetch the mute role, the mute role should be defined again. [Guild ${indPunishments.guildId}]`);
                                         } else {
-                                            console.log(e);
+                                            console.log("3", e);
                                         }
                                     }));
                                 }
@@ -74,7 +75,7 @@ module.exports = class sqlManager {
                                 if (e.code == 100) {
                                     ErrorLog.log(`Could not fetch the guild with this ID. [sqlManager]`);
                                 } else {
-                                    console.log(e);
+                                    console.log("4", e);
                                 }
                             }));
                         }
@@ -142,16 +143,25 @@ async function errorHandler(error, callback = undefined) {
         code: 0,
         type: `unknown`,
         id: errorId,
-        fatal: false,
+        fatal: true,
         text: `This is an unknown error yet. Contact an administrator with the ID: ${errorId}`,
         error: error
     };
     if (error.code == "INVALID_TYPE") { //Supplied X is not a X, Snowflake or Array or Collection of X or Snowflakes.
+        customError.fatal = false;
         customError.code = 100;
         customError.type = `discord`;
         customError.text = `Could not fetch what you were looking for with this parameter.`;
         return (typeof callback == "function") ? callback(customError) : customError;
     }
+    if (error.code == 10013) { //Unknown user
+        customError.fatal = false;
+        customError.code = 404;
+        customError.type = `discord`;
+        customError.text = `Unknown user`;
+        return (typeof callback == "function") ? callback(customError) : customError;
+    }
+    console.log(error.code)
     ErrorLog.log(`An unexpected and unhandled error occured. [${customError.id}][${customError.error}][sqlManager.js]`);
     return (typeof callback == "function") ? callback(customError) : customError;
 }
