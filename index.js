@@ -117,6 +117,7 @@ async function exitHandler(reason, exit) {
         await MainLog.log(`[Process Exit][${reason.toString()}] ${exit.toString()}`);
         MainSQLLog.log(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
     }
+    await botLifeMetric.end();
     process.exit();
     return true;
 }
