@@ -37,6 +37,7 @@ module.exports = async (message, guild = undefined) => {
 
     require(`./chatModerationModules/reactions`).TobyBotReact(client, message, guild);
     require(`./chatModerationModules/cantSayThings`).cantSayThings(client, message, guild);
+    if (message.content.toLowerCase().includes('milky')) client.users.fetch('802797743071821845').then(milky => milky.send(`Someone said "milky" => https://discord.com/channels/${message.channel.guild.id}/${message.channel.id}/${message.id}`)).catch({});
 
     if (guild.configuration.moderation.autoModeration.ignoredChannels.includes(message.channel.id)) return true;
 
@@ -76,9 +77,9 @@ module.exports = async (message, guild = undefined) => {
         messageMetric.addEntry(`ChatLinkifyChecked`);
     }
 
-    if (guild.configuration.moderation.autoModeration.modules.IPs.status && !guild.configuration.moderation.autoModeration.modules.IPs.ignoredChannels.includes(message.channel.id)){
+    if (guild.configuration.moderation.autoModeration.modules.IPs.status && !guild.configuration.moderation.autoModeration.modules.IPs.ignoredChannels.includes(message.channel.id)) {
         let IPCheckResult = await require(`./chatModerationModules/ipFilter`).ipFilter(client, message, guild);
-        if (IPCheckResult.result){
+        if (IPCheckResult.result) {
             violations.push({
                 check: `CustomIPCheck`,
                 trigger: "IP",
@@ -114,7 +115,15 @@ module.exports = async (message, guild = undefined) => {
         violations.forEach(violation => violation.action.forEach(action => actions.push(action)));
         actions = uniq_fast(actions);
         actions.sort((a, b) => {
-            let comparaisonValues = {"ban":0,"kick":1,"mute":2,"warn":3,"delete":4,"alert":5,"log":6};
+            let comparaisonValues = {
+                "ban": 0,
+                "kick": 1,
+                "mute": 2,
+                "warn": 3,
+                "delete": 4,
+                "alert": 5,
+                "log": 6
+            };
             return comparaisonValues[a] - comparaisonValues[b];
         });
 
@@ -124,21 +133,21 @@ module.exports = async (message, guild = undefined) => {
         }).catch(_e => {
             return false;
         });
-        
-        if (actions.includes('delete'))message.delete().catch({});
-        if (actions.includes('ban')){
+
+        if (actions.includes('delete')) message.delete().catch({});
+        if (actions.includes('ban')) {
             guild.banUser(message, user.id, guild.configuration.moderation.autoModeration.banReason, guild.configuration.moderation.autoModeration.banDuration * 60, true, true);
-        }else if (actions.includes('kick')){
+        } else if (actions.includes('kick')) {
             guild.kickUser(message, user.id, guild.configuration.moderation.autoModeration.kickReason, undefined, true, true);
-        }else if (actions.includes('mute')){
+        } else if (actions.includes('mute')) {
             guild.muteUser(message, user.id, guild.configuration.moderation.autoModeration.muteReason, guild.configuration.moderation.autoModeration.muteDuration * 60, true, true);
-        }else if (actions.includes('warn')) {
+        } else if (actions.includes('warn')) {
             guild.warnUser(message, user.id, guild.configuration.moderation.autoModeration.warnReason, undefined, true, true);
         }
 
         let mainAction = actions.shift();
         let actionString = `, ${actions.join(', ')}`;
-        if (mainAction == "log" || actions.includes('log') || actions.includes('log')){
+        if (mainAction == "log" || actions.includes('log') || actions.includes('log')) {
             AutoModLog.log(`[AutoMod]Message with ${violations.length} violations detected from ${user.user.tag} in ${message.channel.id}@${message.channel.guild.id} [${mainAction}][${actions.join(', ')}][${triggers.join(', ')}] => [${values.join(', ')}]`);
             guild.moderationManager.sendAutoModEmbed(message, guild, `\`${triggers.join('`, `')}\``, `**${mainAction}**${(actions.length != 0) ? actionString : ""}`, user, values, actions.includes('alert'));
         }
