@@ -2,6 +2,7 @@ const linkify = require('linkifyjs');
 const antiProfanity = require('anti-profanity');
 const removeAccents = require(`remove-accents`);
 const leetSpeakConverter = require('../utils/leet-converter');
+const colors = require('colors');
 const url = require('url');
 
 const {
@@ -57,22 +58,40 @@ module.exports = async (message, guild = undefined) => {
         let linkifyReturn = linkify.find(message.content);
         if (linkifyReturn.length != 0)
             for (const element of linkifyReturn) {
-                let linkToScan = element.value;
-                if (url.parse(linkToScan, false).href != null) linkToScan = (!linkToScan.startsWith('https://')) ? `https://${linkToScan}` : linkToScan;
-                if (typeof guild.moderationManager.scamLinks != "undefined" && guild.configuration.moderation.autoModeration.modules.scams.links && url.parse(linkToScan, false).hostname != null && guild.moderationManager.scamLinks.includes(url.parse(linkToScan, false).hostname)) {
-                    violations.push({
-                        check: `spen.tk`,
-                        trigger: "Scam URL",
-                        value: element.value,
-                        action: guild.configuration.moderation.autoModeration.modules.scams.reaction
-                    });
+                let linkUrl = url.parse(element.href);
+                let linkData = {
+                    fullLink: element.href,
+                    fullHost: linkUrl.host,
+                    mainDomain: `${linkUrl.host.split(".")[linkUrl.host.split(".").length-2]}.${linkUrl.host.split(".")[linkUrl.host.split(".").length-1]}`
                 }
-                if (guild.configuration.moderation.autoModeration.modules.links.status && (url.parse(linkToScan, false).hostname == null || (!guild.configuration.moderation.autoModeration.modules.links.allowed.includes(url.parse(linkToScan, false).hostname) && !guild.configuration.moderation.autoModeration.modules.links.allowed.includes(`https://${url.parse(linkToScan, false).hostname}/`)))) violations.push({
-                    check: `linkify`,
-                    trigger: element.type,
+
+                if (guild.configuration.moderation.autoModeration.modules.scams.links && typeof guild.moderationManager.scamLinks != "undefined" &&
+                (guild.moderationManager.scamLinks.includes(linkData.mainDomain) || guild.moderationManager.scamLinks.includes(`*.${linkData.mainDomain}`) || guild.moderationManager.scamLinks.includes(linkData.fullHost))) violations.push({
+                    check: `spen.tk`,
+                    trigger: "Scam URL",
                     value: element.value,
-                    action: guild.configuration.moderation.autoModeration.modules.links.reaction
+                    action: guild.configuration.moderation.autoModeration.modules.scams.reaction
                 });
+
+                if (guild.configuration.moderation.autoModeration.modules.links.status) {
+                    if (guild.configuration.moderation.autoModeration.modules.links.overwrite.deny.includes(`*.${linkData.mainDomain}`) || guild.configuration.moderation.autoModeration.modules.links.overwrite.deny.includes(linkData.fullHost)) {
+                        violations.push({
+                            check: `linkify`,
+                            trigger: element.type,
+                            value: element.value,
+                            action: guild.configuration.moderation.autoModeration.modules.links.reaction
+                        });
+                    } else if (!guild.configuration.moderation.autoModeration.modules.links.overwrite.allow.includes(`*.${linkData.mainDomain}`) && !guild.configuration.moderation.autoModeration.modules.links.overwrite.allow.includes(linkData.fullHost)) {
+                        if (!guild.configuration.moderation.autoModeration.modules.links.allowed.includes(`*.${linkData.mainDomain}`) && !guild.configuration.moderation.autoModeration.modules.links.allowed.includes(linkData.fullHost)) {
+                            violations.push({
+                                check: `linkify`,
+                                trigger: element.type,
+                                value: element.value,
+                                action: guild.configuration.moderation.autoModeration.modules.links.reaction
+                            });
+                        }
+                    }
+                }
             }
         messageMetric.addEntry(`ChatLinkifyChecked`);
     }
