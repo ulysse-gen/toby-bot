@@ -172,7 +172,7 @@
           "reaction": ["log","delete"],
           "ignoredChannels": [],
           "links": true,
-          "therms": true,
+          "terms": true,
           "slashes": false
         }
       }
