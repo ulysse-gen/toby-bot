@@ -88,6 +88,7 @@ module.exports = class sqlManager {
     }
 
     async checkForReminders() {
+        let zisse = this;
         return this.sqlPool.getConnection((err, connection) => {
             if (err) {
                 ErrorLog.log(`An error occured trying to get a connection from the pool. ${err.toString()}`);
@@ -97,13 +98,13 @@ module.exports = class sqlManager {
                 let control = results.length;
                 if (typeof results != "undefined" && results != null && results.length != 0) results.forEach(async indReminer => {
                     if (moment(indReminer.timestamp).isBefore(moment())) {
-                        await this.client.guilds.fetch(indReminer.guildId).then(async fetchedGuild => {
+                        await zisse.client.guilds.fetch(indReminer.guildId).then(async fetchedGuild => {
                             await fetchedGuild.members.fetch(indReminer.userId).then(async fetchedMember => {
                                 await fetchedGuild.channels.fetch(indReminer.channelId).then(async fetchedChannel => {
                                     let reminderData = JSON.parse(indReminer.content)
                                     let embed = new MessageEmbed({
                                         title: `Reminder !`,
-                                        color: (typeof this.globalGuilds.guilds[indReminer.guildId] != "undefined") ? this.globalGuilds.guilds[indReminer.guildId].configuration.colors.main : `#FFFFFF`,
+                                        color: (typeof zisse.globalGuilds.guilds[indReminer.guildId] != "undefined") ? zisse.globalGuilds.guilds[indReminer.guildId].configuration.colors.main : `#FFFFFF`,
                                         description: `${reminderData.text}`
                                     });
                                     embed.addField(`**Created**`, `<t:${moment(indReminer.createdTimestamp).unix()}>`, true);
@@ -115,9 +116,9 @@ module.exports = class sqlManager {
                                         embeds: [embed]
                                     }, false).catch(e => utils.messageReplyFailLogger(message, guild, e));
                                     return true;
-                                }).catch(e => console.log(`sqlManager.js could not fetch channel ${this.globalGuilds.guilds[indReminer.guildId]} (${e.toString()})`));
-                            }).catch(e => console.log(`sqlManager.js could not fetch member ${this.globalGuilds.guilds[indReminer.guildId]} (${e.toString()})`));
-                        }).catch(e => console.log(`sqlManager.js could not fetch guild ${this.globalGuilds.guilds[indReminer.guildId]} (${e.toString()})`));
+                                }).catch(e => console.log(`sqlManager.js could not fetch channel ${zisse.globalGuilds.guilds[indReminer.guildId]} (${e.toString()})`));
+                            }).catch(e => console.log(`sqlManager.js could not fetch member ${zisse.globalGuilds.guilds[indReminer.guildId]} (${e.toString()})`));
+                        }).catch(e => console.log(`sqlManager.js could not fetch guild ${zisse.globalGuilds.guilds[indReminer.guildId]} (${e.toString()})`));
                     }
                     control++;
                     if (control <= 0) {
