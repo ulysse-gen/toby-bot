@@ -28,10 +28,10 @@ let checkWords = {
         action: ["log"],
         set: ["porno", "sex", "ass", "tits", "dick", "pussy", "vagina", "penis", "cock", "anus", "blowjob", "anulingus", "cunnilingus", "sodomy", "sodomize", "cum", "creampie", "deepthroat", "butthole", "bukkake", "boobs", "boner", "masturbating", "masturbate", "masturbation"]
     },*/
-    "Scam Therms": {
+    "Scam terms": {
         status: true,
         action: ["log", "alert"],
-        set: `eval:guild.moderationManager.scamTherms`
+        set: `eval:guild.moderationManager.scamterms`
     },
     "Scam Slashes": {
         status: true,
@@ -44,8 +44,8 @@ module.exports.detectProfanities = async (_client, message, guild = undefined, p
     message.customMetric.addEntry(`ChatCustomProfanitiesCheck`);
     return new Promise(async (res, _rej) => {
         let violations = [];
-        if (typeof presets.therms != undefined && presets.therms) {
-            let key = "Scam Therms";
+        if (typeof presets.terms != undefined && presets.terms) {
+            let key = "Scam terms";
             if (typeof checkWords[key].set == "string" && checkWords[key].set.startsWith(`eval:`)) {
                 let builtSet = await eval(checkWords[key].set.replace('eval:', ''));
                 checkWords[key].set = (typeof builtSet != "undefined") ? builtSet : checkWords[key].set;

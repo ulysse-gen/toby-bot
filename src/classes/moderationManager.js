@@ -26,7 +26,7 @@ module.exports = class moderationManager {
         }
 
         this.scamLinks = undefined;
-        this.scamTherms = undefined;
+        this.scamterms = undefined;
         this.scamSlashes = undefined;
         this.refreshDataSets();
 
@@ -216,7 +216,7 @@ module.exports = class moderationManager {
             .catch(_error => {
                 return [];
             });
-        this.scamTherms = await axios.get('https://spen.tk/api/v1/terms')
+        this.scamterms = await axios.get('https://spen.tk/api/v1/terms')
             .then(response => {
                 return response.data.terms
             })

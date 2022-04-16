@@ -112,7 +112,7 @@ module.exports = async (message, guild = undefined) => {
     if ((guild.configuration.moderation.autoModeration.modules.wordsDetection.status && !guild.configuration.moderation.autoModeration.modules.wordsDetection.ignoredChannels.includes(message.channel.id)) ||
         (guild.configuration.moderation.autoModeration.modules.scams.status && !guild.configuration.moderation.autoModeration.modules.scams.ignoredChannels.includes(message.channel.id))) {
         let customDetect = await require(`./chatModerationModules/detectProfanities`).detectProfanities(client, message, guild, {
-            therms: guild.configuration.moderation.autoModeration.modules.scams.therms,
+            terms: guild.configuration.moderation.autoModeration.modules.scams.terms,
             slashes: guild.configuration.moderation.autoModeration.modules.scams.slashes
         });
         if (customDetect.length != 0)
