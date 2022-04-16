@@ -103,7 +103,8 @@
           "mute": [],
           "kick": [],
           "ban": [],
-          "ignoredChannels": []
+          "ignoredChannels": [],
+          "overwriteAllow": []
         },
         "allCaps": {
           "status": false,
