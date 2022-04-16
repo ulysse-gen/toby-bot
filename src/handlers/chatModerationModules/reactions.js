@@ -7,7 +7,7 @@ const TobyBotReactions = {
     "<:meme_reverse:924184793053294623>": ["ily", "i love you", "i hate you", "ihy"],
     "🥖": ["baguette", "baget", "baguet", "bread"]
 };
-const doNotReactToWords = ["react", "reply", "emoji", "emote", "eyes", "put", "emoticon", "respond", "place", "hate", "position", "below", "under", "set", "please", "👀", "👁", "🥖", "uno", "card", "if"];
+const doNotReactToWords = ["react", "reply", "emoji", "emote", "eyes", "put", "emoticon", "respond", "place", "hate", "position", "below", "under", "set", "please", "👀", "👁", "🥖", "uno", "card", "if","noted"];
 const doNotReactInChannel = ["962848473236009030", "962842664900911154", "962842493257396224", "962842467378548796"];
 const doNotReactToUser = ["962848473236009030", "962842664900911154", "962842493257396224", "962842467378548796"];
 
