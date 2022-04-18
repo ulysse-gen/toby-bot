@@ -3,7 +3,7 @@ const {
 } = require(`./utilities`);
 
 const cantSayThings = {
-    "817857555674038298": {
+    /*"817857555674038298": {
         inGuild: ["891829347613306960"],
         inChannel: [],
         list: ["h olidae", "ho lidae", "hol idae", "holi dae", "holid ae", "holida e", "h olidai", "ho lidai", "hol idai", "holi dai", "holid ai", "holida i", "ho liday", "hol iday", "holqate", "holf dqye", "hol!dae", "330826518370451457", "smd", "suck", "dick", "stfu", "s t f u", "shut the fuck up", "fuck", "fuc", "fuk", "shut up", ".... --- .-.. .. -.. .- .", "01110011 01101101 01100100", "01110011 01110100 01100110 01110101", "cunt", "suce ma bite", "hoe",
@@ -24,17 +24,7 @@ const cantSayThings = {
                 }).catch({});
             }).catch({});
         }
-    },
-    "231461358200291330": {
-        inGuild: [],
-        inChannel: [],
-        list: ["this is a test things that i am not allowed to send"
-        ],
-        action: (_client, message, _guild = undefined) => {
-            message.channel.send(`<@${message.author.id}> this is a test things that you are not allowed to send`);
-            message.delete().catch({});
-        }
-    }
+    }*/
 };
 
 module.exports.cantSayThings = async (client, message, _guild = undefined) => {
