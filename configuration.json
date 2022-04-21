@@ -1,15 +1,9 @@
 {
   "appName": "Toby Bot",
-  "appId": 933695613294501888,
+  "appId": 933936295074480300,
   "botToken": "",
   "globalPrefix": "$toby.gg$",
-  "skip": {
-    "guilds": {
-      "719963783677870173": [
-        "926449510375358525"
-      ]
-    }
-  },
+  "skip": {},
   "presence": {
     "loop": true,
     "loopTime": 10000,

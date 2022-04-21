@@ -3,7 +3,7 @@ const moment = require(`moment`);
 //Import needs from index
 const {
     client,
-    configuration,
+    globalConfiguration,
     MainLog,
     globalGuilds,
     executionTimes,
@@ -38,9 +38,9 @@ module.exports = async function (message) {
     if (typeof message.channel.guild == "undefined") return require(`./DMHandler`).create(client, message);
 
     messageMetric.addEntry(`SkipGuildsCheck`);
-    if (typeof configuration.skip.guilds[message.channel.guild.id] == "object") { //Skip message if its in the !MAIN! configuation as "to skip"
-        if (configuration.skip.guilds[message.channel.guild.id].length == 1 && configuration.skip.guilds[message.channel.guild.id][0] == "*") return;
-        if (configuration.skip.guilds[message.channel.guild.id].includes(message.channel.id)) return;
+    if (typeof globalConfiguration.configuration.skip.guilds[message.channel.guild.id] == "object") { //Skip message if its in the !MAIN! configuation as "to skip"
+        if (globalConfiguration.configuration.skip.guilds[message.channel.guild.id].length == 1 && globalConfiguration.configuration.skip.guilds[message.channel.guild.id][0] == "*") return;
+        if (globalConfiguration.configuration.skip.guilds[message.channel.guild.id].includes(message.channel.id)) return;
     }
 
     messageMetric.addEntry(`GuildGrabbing`);
@@ -88,7 +88,7 @@ module.exports = async function (message) {
     }
 
     messageMetric.addEntry(`CommandHandlerPass`);
-    if (message.content.startsWith(guild.configuration.prefix)) return require(`./commandHandler`)(message, guild); //Same but if thats with guild prefix
-    if (message.content.startsWith(configuration.globalPrefix)) return require(`./commandHandler`)(message, guild); //If message starts with global prefix, exec
+    if (message.content.startsWith(guild.configurationManager.configuration.prefix)) return require(`./commandHandler`)(message, guild); //Same but if thats with guild prefix
+    if (message.content.startsWith(globalConfiguration.configuration.globalPrefix)) return require(`./commandHandler`)(message, guild); //If message starts with global prefix, exec
     return false;
 }

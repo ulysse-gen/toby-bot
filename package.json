@@ -1,6 +1,6 @@
 {
   "name": "tobybot",
-  "version": "3.4.6",
+  "version": "3.5.0",
   "description": "Toby Discord Bot",
   "main": "index.js",
   "scripts": {
@@ -9,10 +9,12 @@
   "author": "UlysseLeGenie",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/rest": "^0.4.1",
     "@discordjs/voice": "^0.8.0",
     "anti-profanity": "^2.0.7",
     "axios": "^0.26.1",
     "colors": "^1.4.0",
+    "discord-api-types": "^0.31.2",
     "discord.js": "^13.6.0",
     "express": "^4.17.3",
     "heapdump": "^0.3.15",

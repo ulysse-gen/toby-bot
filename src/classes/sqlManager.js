@@ -40,7 +40,7 @@ module.exports = class sqlManager {
                                     }).catch(e => errorHandler(e, (e) => console.log("2", e)));
                                 }
                                 if (indPunishments.type == "Mute" && typeof zisse.globalGuilds.guilds[indPunishments.guildId] != "undefined") {
-                                    let muteRole = zisse.globalGuilds.guilds[indPunishments.guildId].configuration.moderation.muteRole;
+                                    let muteRole = zisse.globalGuilds.guilds[indPunishments.guildId].configurationManager.configuration.moderation.muteRole;
                                     await fetchedGuild.roles.fetch(muteRole).then(async fetchedRole => {
                                         await fetchedGuild.members.fetch(indPunishments.userId).then(async fetchedMember => {
                                             await fetchedMember.roles.remove(fetchedRole, `Punishment expire. (Was muted for ${indPunishments.reason})`).then(async () => {
@@ -104,7 +104,7 @@ module.exports = class sqlManager {
                                     let reminderData = JSON.parse(indReminer.content)
                                     let embed = new MessageEmbed({
                                         title: `Reminder !`,
-                                        color: (typeof zisse.globalGuilds.guilds[indReminer.guildId] != "undefined") ? zisse.globalGuilds.guilds[indReminer.guildId].configuration.colors.main : `#FFFFFF`,
+                                        color: (typeof zisse.globalGuilds.guilds[indReminer.guildId] != "undefined") ? zisse.globalGuilds.guilds[indReminer.guildId].configurationManager.configuration.colors.main : `#FFFFFF`,
                                         description: `${reminderData.text}`
                                     });
                                     embed.addField(`**Created**`, `<t:${moment(indReminer.createdTimestamp).unix()}>`, true);

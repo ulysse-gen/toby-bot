@@ -37,7 +37,7 @@ module.exports = {
         if (hasPermission)
             if (typeof message.type != "undefined" && message.type == "REPLY") return message.channel.messages.fetch(message.reference.messageId).then(fetchedMessage => {
                 fetchedMessage.reply(`${sendThis}`).catch(e => utils.catchCustomLog(message, guild, e, `Could not reply to message.`));
-                if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             }).catch(e => utils.catchCustomLog(message, guild, e, `Could not fetch message.`));
 
         permissionToCheck = this.nestedPermissions.tag;
@@ -48,7 +48,7 @@ module.exports = {
             if (message.mentions.members.size != 0) sendThis = `Hey <@${message.mentions.members.first().user.id}>, <@${message.author.id}> sent you a kiss ${possibilities[Math.floor(Math.random()*possibilities.length)]}`;
 
         message.channel.send(`${sendThis}`).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
         }).catch(e => utils.catchCustomLog(message, guild, e, `Could not send message`));
         return true;
     }

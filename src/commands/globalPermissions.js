@@ -2,7 +2,7 @@ const {
     MessageEmbed
 } = require(`discord.js`);
 const {
-    configuration,
+    globalConfiguration,
     MainLog,
     globalPermissions
 } = require(`../../index`);
@@ -26,16 +26,16 @@ module.exports = {
             let response = "**Global Permission Helper**";
 
             response += "\n\nHow to use : *(<Needed Parameter> [Optionnal Parameter])*";
-            response += `\n\`${guild.configuration.prefix}${this.name} show/infos/list <@User/@Role/userid:UserID/roleid:RoleID/internalRole:internalRole>\` *shows the current perm of a selected scope.*`;
-            response += `\n\`${guild.configuration.prefix}${this.name} set <@User/@Role/userid:UserID/roleid:RoleID/internalRole:internalRole> <permission> <true/false>\` *set the permission for a selected scope.*`;
-            response += `\n\`${guild.configuration.prefix}${this.name} unset/remove <@User/@Role/userid:UserID/roleid:RoleID/internalRole:internalRole> <permission>\` *completely remove the permission from the selected scope.*`;
+            response += `\n\`${guild.configurationManager.configuration.prefix}${this.name} show/infos/list <@User/@Role/userid:UserID/roleid:RoleID/internalRole:internalRole>\` *shows the current perm of a selected scope.*`;
+            response += `\n\`${guild.configurationManager.configuration.prefix}${this.name} set <@User/@Role/userid:UserID/roleid:RoleID/internalRole:internalRole> <permission> <true/false>\` *set the permission for a selected scope.*`;
+            response += `\n\`${guild.configurationManager.configuration.prefix}${this.name} unset/remove <@User/@Role/userid:UserID/roleid:RoleID/internalRole:internalRole> <permission>\` *completely remove the permission from the selected scope.*`;
             response += `\nUserID & internalRole scopes must be written litterally like shown here => (UserID exemple : \`userid:933695613294501888\`)(internalRole exemple : \`internalRole:0\`)`;
             response += `\nInternalRole has **nothing** to do with discord itself. Its a custom role process hand-coded that has nothing to do with the Guild roles.`;
             response += `\nAdding the \`*\` permission with the \`false\` value will completely overwrite the lower priority scopes perms.`;
             response += `\nScope priority order : User > InternalRole > Role.`;
 
             message.reply(response, false).then(msg => {
-                if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             }).catch(e => utils.messageReplyFailLogger(message, guild, e));
             return true;
         }
@@ -163,14 +163,14 @@ module.exports = {
 
                 let introEmbed = new MessageEmbed({
                     title: `Permissions list:`,
-                    color: guild.configuration.colors.main
+                    color: guild.configurationManager.configuration.colors.main
                 });
                 let embedsToAdd = [introEmbed];
                 for (const embedName in embeds) {
                     let indEmbed = embeds[embedName];
                     let permissionEmbed = new MessageEmbed({
                         title: indEmbed.title,
-                        color: guild.configuration.colors.main,
+                        color: guild.configurationManager.configuration.colors.main,
                         description: (indEmbed.fields.length == 0) ? `No permissions defined` : undefined
                     });
                     if (indEmbed.fields.length != 0) indEmbed.fields.forEach(indField => permissionEmbed.addField(`${indField[0]}`, `${indField[1]}`, indField[2]));
@@ -180,14 +180,14 @@ module.exports = {
                     embeds: embedsToAdd,
                     failIfNotExists: false
                 }, false).then(msg => {
-                    if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                    if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
                 }).catch(e => utils.messageReplyFailLogger(message, guild, e));
             }
-            return utils.sendError(message, guild, `Unknown scope`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} show <@User/@Role/userid:UserID/internalRole:internalRole>\``, [], true); /*Updated To New Utils*/
+            return utils.sendError(message, guild, `Unknown scope`, `This command must have this synthax : \`${guild.configurationManager.configuration.prefix}${this.name} show <@User/@Role/userid:UserID/internalRole:internalRole>\``, [], true); /*Updated To New Utils*/
         }
 
         if (args[0] == "set") {
-            if (args.length != 4 && args.length != 5) return utils.sendError(message, guild, `Wrong command synthax`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} set <@User/@Role/userid:UserID/internalRole:internalRole> <permission> <value> [priority]\``, [], true); /*Updated To New Utils*/
+            if (args.length != 4 && args.length != 5) return utils.sendError(message, guild, `Wrong command synthax`, `This command must have this synthax : \`${guild.configurationManager.configuration.prefix}${this.name} set <@User/@Role/userid:UserID/internalRole:internalRole> <permission> <value> [priority]\``, [], true); /*Updated To New Utils*/
             let permissionName = args[2];
             let permissionValue = (args[3] == "none") ? "none" : (args[3] == '1' || args[3] == "true" || args[3] == "yes") ? true : false;
             let permissionPriority = (typeof args[4] == "undefined") ? 0 : args[4];
@@ -198,8 +198,8 @@ module.exports = {
             }
             let embed = new MessageEmbed({
                 title: `Unknown scope`,
-                color: guild.configuration.colors.error,
-                description: `This command must have this synthax : \`${guild.configuration.prefix}${this.name} set <@User/@Role/userid:UserID/internalRole:internalRole> <permission> <value> [priority]\``
+                color: guild.configurationManager.configuration.colors.error,
+                description: `This command must have this synthax : \`${guild.configurationManager.configuration.prefix}${this.name} set <@User/@Role/userid:UserID/internalRole:internalRole> <permission> <value> [priority]\``
             });
             if (args[1].startsWith("<@!") || args[1].startsWith('userid:')) { //About a user
                 let user = args[1];
@@ -208,7 +208,7 @@ module.exports = {
 
                 });
                 embed.title = `Permission set.`;
-                embed.color = guild.configuration.colors.main;
+                embed.color = guild.configurationManager.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope <@${user.id}>.`;
                 if (typeof permissionManager.permissions.users[user.id] != "object") permissionManager.permissions.users[user.id] = {};
                 if (permissionValue != "none") permissionManager.permissions.users[user.id][permissionName] = {
@@ -230,7 +230,7 @@ module.exports = {
                     }
                 });
                 embed.title = `Permission set.`;
-                embed.color = guild.configuration.colors.main;
+                embed.color = guild.configurationManager.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope <@&${role.id}>.`;
                 if (typeof permissionManager.permissions.roles[role.id] != "object") permissionManager.permissions.roles[role.id] = {};
                 if (permissionValue != "none") permissionManager.permissions.roles[role.id][permissionName] = {
@@ -243,7 +243,7 @@ module.exports = {
             if (args[1].toLowerCase().startsWith("internalrole")) { //About a internalrole
                 let internalrole = args[1].toLowerCase().replace('internalrole:', '');
                 embed.title = `Permission set.`;
-                embed.color = guild.configuration.colors.main;
+                embed.color = guild.configurationManager.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope \`${internalrole}\`.`;
                 if (typeof permissionManager.permissions.internalRoles[internalrole] != "object") permissionManager.permissions.internalRoles[internalrole] = {};
                 if (permissionValue != "none") permissionManager.permissions.internalRoles[internalrole][permissionName] = {
@@ -256,7 +256,7 @@ module.exports = {
             if (args[1].toLowerCase().startsWith("guild")) { //About a guild
                 let guild = args[1].toLowerCase().replace('guild:', '');
                 embed.title = `Permission set.`;
-                embed.color = guild.configuration.colors.main;
+                embed.color = guild.configurationManager.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` set to \`${permissionValue}\` for scope \`${guild.id}\` with priority \`${permissionPriority}\`.`;
                 if (typeof permissionManager.permissions.guild[guild] != "object") permissionManager.permissions.guild[guild] = {};
                 if (permissionValue != "none") permissionManager.permissions.guild[guild][permissionName] = {
@@ -271,25 +271,25 @@ module.exports = {
                 embeds: [embed],
                 failIfNotExists: false
             }, false).then(msg => {
-                if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             }).catch(e => utils.messageReplyFailLogger(message, guild, e));
             return true;
         }
 
         if (args[0] == "unset" || args[0] == "remove") {
-            if (args.length != 3) return utils.sendError(message, guild, `Wrong command synthax`, `This command must have this synthax : \`${guild.configuration.prefix}${this.name} unset/remove <@User/@Role/userid:UserID/internalRole:internalRole> <permission>\``, [], true); /*Updated To New Utils*/
+            if (args.length != 3) return utils.sendError(message, guild, `Wrong command synthax`, `This command must have this synthax : \`${guild.configurationManager.configuration.prefix}${this.name} unset/remove <@User/@Role/userid:UserID/internalRole:internalRole> <permission>\``, [], true); /*Updated To New Utils*/
             let permissionName = args[2];
             let embed = new MessageEmbed({
                 title: `Unknown scope`,
-                color: guild.configuration.colors.error,
-                description: `This command must have this synthax : \`${guild.configuration.prefix}${this.name} unset <@User/@Role/userid:UserID/internalRole:internalRole> <permission>\``
+                color: guild.configurationManager.configuration.colors.error,
+                description: `This command must have this synthax : \`${guild.configurationManager.configuration.prefix}${this.name} unset <@User/@Role/userid:UserID/internalRole:internalRole> <permission>\``
             });
             if (args[1].startsWith("<@!") || args[1].startsWith('userid:')) { //About a user
                 let user = args[1];
                 if (args[1].startsWith("<@!")) user = message.mentions.users.first();
                 if (args[1].startsWith('userid:')) user = await client.users.fetch(args[1].replace('userid:', ''));
                 embed.title = `Permission unset.`;
-                embed.color = guild.configuration.colors.main;
+                embed.color = guild.configurationManager.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` unset from scope <@${user.id}>.`;
                 if (typeof permissionManager.permissions.users[user.id] != "object") permissionManager.permissions.users[user.id] = {};
                 delete permissionManager.permissions.users[user.id][permissionName];
@@ -304,7 +304,7 @@ module.exports = {
                     }
                 }
                 embed.title = `Permission unset.`;
-                embed.color = guild.configuration.colors.main;
+                embed.color = guild.configurationManager.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` unset from scope <@&${role.id}>.`;
                 if (typeof permissionManager.permissions.roles[role.id] != "object") permissionManager.permissions.roles[role.id] = {};
                 delete permissionManager.permissions.roles[role.id][permissionName];
@@ -313,7 +313,7 @@ module.exports = {
             if (args[1].toLowerCase().startsWith("internalrole")) { //About a role
                 let internalRole = args[1].toLowerCase().replace('internalrole:', '');
                 embed.title = `Permission unset.`;
-                embed.color = guild.configuration.colors.main;
+                embed.color = guild.configurationManager.configuration.colors.main;
                 embed.description = `Permission \`${permissionName}\` unset from scope \`${internalRole}\`.`;
                 if (typeof permissionManager.permissions.internalRoles[internalRole] != "object") permissionManager.permissions.internalRoles[internalRole] = {};
                 delete permissionManager.permissions.internalRoles[internalRole][permissionName];
@@ -324,7 +324,7 @@ module.exports = {
                 embeds: [embed],
                 failIfNotExists: false
             }, false).then(msg => {
-                if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             }).catch(e => utils.messageReplyFailLogger(message, guild, e));
             return true;
         }
@@ -338,7 +338,7 @@ function sendPermissions(message, guild, args, scope, permissions) {
     let page = 1;
     let embed = new MessageEmbed({
         title: `${Object.keys(permissions).length} permissions set for scope ${scope}`,
-        color: guild.configuration.colors.main
+        color: guild.configurationManager.configuration.colors.main
     });
 
 
@@ -365,7 +365,7 @@ function sendPermissions(message, guild, args, scope, permissions) {
                 args = args.filter(arrayItem => arrayItem !== invividualArgument);
                 if (typeof embedPages[page - 1] == "undefined") return page = `This page does not exist`;
                 embed.footer = {
-                    text: `Use \`${guild.configuration.prefix}help [page number] [category]\` to search thru pages. [${page}/${embedPages.length}]`
+                    text: `Use \`${guild.configurationManager.configuration.prefix}help [page number] [category]\` to search thru pages. [${page}/${embedPages.length}]`
                 };
                 embedFields = embedPages[page - 1];
             } catch (e) {
@@ -384,7 +384,7 @@ function sendPermissions(message, guild, args, scope, permissions) {
         embeds: [embed],
         failIfNotExists: false
     }, false).then(msg => {
-        if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+        if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
     }).catch(e => utils.messageDeleteFailLogger(message, guild, e));
     return true;
 }

@@ -14,9 +14,9 @@ module.exports = {
 
             let fields = [];
             fields.push([`**Sub Commands:**`, `None yet`, false]);
-            fields.push([`**Usage:**`, `${guild.configuration.prefix}${this.name} <userId> [reason]`, false]);
-            fields.push([`**Example:**`, `${guild.configuration.prefix}${this.name} 168754125874596348 We miss you`, false]);
-            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
+            fields.push([`**Usage:**`, `${guild.configurationManager.configuration.prefix}${this.name} <userId> [reason]`, false]);
+            fields.push([`**Example:**`, `${guild.configurationManager.configuration.prefix}${this.name} 168754125874596348 We miss you`, false]);
+            return utils.sendMain(message, guild, `Command: ${guild.configurationManager.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
         }
         let userToUnban = args.shift();
         let reason = args.join(' ');

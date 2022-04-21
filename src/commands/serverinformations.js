@@ -43,7 +43,7 @@ module.exports = {
 
         let embed = new MessageEmbed({
             title: `${guild.guild.name}`,
-            color: guild.configuration.colors.main,
+            color: guild.configurationManager.configuration.colors.main,
             image: {
                 url: `${guildBanner}?size=600`
             },
@@ -107,7 +107,7 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
         }).catch(e => utils.messageReplyFailLogger(message, guild, e));
         return true;
     }

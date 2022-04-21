@@ -21,7 +21,7 @@ module.exports = {
         ]
 
         message.reply(`Rolling the dice !`, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             let rollOccur = rn({min: 3, max: 4, integer: true});
             let rollInterval = setInterval(() => {
                 if (rollOccur != 0)msg.edit(`Rolling the dice : **${rn({min: 1, max: 6, integer: true})}**`).catch(e => {

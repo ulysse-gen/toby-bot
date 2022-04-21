@@ -29,7 +29,7 @@
       "logToChannel": {
         "status": false,
         "channel": "none",
-        "embed": false,
+        "embed": true,
         "format": "[&{DISCORDDATE}] &{TEXT}"
       },
       "ignoreBots": true,
@@ -129,7 +129,7 @@
           }
         },
         "discordInvite": {
-          "status": false,
+          "status": true,
           "reaction": ["log","delete"],
           "ignoredChannels": []
         },

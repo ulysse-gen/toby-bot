@@ -3,7 +3,7 @@ const {
 } = require(`discord.js`);
 const prettyMilliseconds = require("pretty-ms");
 const {
-    configuration,
+    globalConfiguration,
     packageJson,
     MainLog
 } = require(`../../index`);
@@ -19,12 +19,12 @@ module.exports = {
         let OGMessage = message;
         let embed = new MessageEmbed({
             title: `${(args.length != 0 && args[0].toLowerCase() == "help") ? `Embed Creator Help` : `Initilizing the embed.. Use commands below to set it up !`}`,
-            color: guild.configuration.colors.main,
+            color: guild.configurationManager.configuration.colors.main,
             description: `You dont have to add the prefix if its not shown below. Make any of those 'none' to remove them.`
         });
 
-        if (args.length != 0 && args[0].toLowerCase() == "help") embed.addField(`\`${guild.configuration.prefix}makeembed\``, `Start the embed creation utility`, false);
-        embed.addField(`\`${guild.configuration.prefix}makeembed <help/hidehelp>\``, `Show this help without triggering the embed creation`, false);
+        if (args.length != 0 && args[0].toLowerCase() == "help") embed.addField(`\`${guild.configurationManager.configuration.prefix}makeembed\``, `Start the embed creation utility`, false);
+        embed.addField(`\`${guild.configurationManager.configuration.prefix}makeembed <help/hidehelp>\``, `Show this help without triggering the embed creation`, false);
         embed.addField(`\`setTitle <The embed title>\``, `Set the embed title `, false);
         embed.addField(`\`setDescription <The embed description>\``, `Set the embed description [Works with CodeBlocks & Tags] `, false);
         embed.addField(`\`setColor <The embed color>\``, `Set the embed color [Format: #FFFFFF]`, false);
@@ -54,9 +54,9 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
             });
             if (args.length != 0 && args[0].toLowerCase() == "help") return;
 
@@ -67,7 +67,7 @@ module.exports = {
                     title: ``,
                     description: ``,
                     fields: [],
-                    color: guild.configuration.colors.main
+                    color: guild.configurationManager.configuration.colors.main
                 };
 
                 guild.waitingForMessage.users[message.author.id] = async (message) => {
@@ -87,14 +87,14 @@ module.exports = {
                         if (typeof args[0] == "undefined" || !args[0].startsWith('https://')) {
                             let embed = new MessageEmbed({
                                 title: `Wrong link`,
-                                color: guild.configuration.colors.error,
+                                color: guild.configurationManager.configuration.colors.error,
                                 description: `Links must start with \`https://\``
                             });
                             message.channel.send({
                                 embeds: [embed]
                             }).then(msg => {}).catch(e => {
                                 MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 return false;
                             });
                             delete guild.waitingForMessage.users[message.author.id];
@@ -171,14 +171,14 @@ module.exports = {
                         if (typeof args[0] == "undefined" || !args[0].startsWith('https://')) {
                             let embed = new MessageEmbed({
                                 title: `Wrong link`,
-                                color: guild.configuration.colors.error,
+                                color: guild.configurationManager.configuration.colors.error,
                                 description: `Links must start with \`https://\``
                             });
                             message.channel.send({
                                 embeds: [embed]
                             }).then(msg => {}).catch(e => {
                                 MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 return false;
                             });
                             delete guild.waitingForMessage.users[message.author.id];
@@ -192,14 +192,14 @@ module.exports = {
                         if (typeof args[0] == "undefined" || !args[0].startsWith('https://')) {
                             let embed = new MessageEmbed({
                                 title: `Wrong link`,
-                                color: guild.configuration.colors.error,
+                                color: guild.configurationManager.configuration.colors.error,
                                 description: `Links must start with \`https://\``
                             });
                             message.channel.send({
                                 embeds: [embed]
                             }).then(msg => {}).catch(e => {
                                 MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 return false;
                             });
                             delete guild.waitingForMessage.users[message.author.id];
@@ -212,13 +212,13 @@ module.exports = {
                     if (["cancel", "leave", "close"].includes(cmd.toLowerCase())) {
                         let embed = new MessageEmbed({
                             title: `Embed building cancelled`,
-                            color: guild.configuration.colors.main
+                            color: guild.configurationManager.configuration.colors.main
                         });
                         message.channel.send({
                             embeds: [embed]
                         }).then(msg => {}).catch(e => {
                             MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             return false;
                         });
                         delete guild.waitingForMessage.data.makeembed[message.author.id];
@@ -228,7 +228,7 @@ module.exports = {
                     if (cmd.toLowerCase() == "sendembed") {
                         message.delete().catch(e => {
                             MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                         });
                         sendEmbed(guild.waitingForMessage.data.makeembed[message.author.id], message.channel);
                         delete guild.waitingForMessage.data.makeembed[message.author.id];
@@ -252,19 +252,19 @@ module.exports = {
                         if (!message.content.startsWith(`loadjson{`)) {
                             let embed = new MessageEmbed({
                                 title: `Wrong synthax`,
-                                color: guild.configuration.colors.error,
+                                color: guild.configurationManager.configuration.colors.error,
                                 description: `\`loadjson{}\` with \`{}\` as your json.`
                             });
                             message.channel.send({
                                 embeds: [embed]
                             }).then(msg => {}).catch(e => {
                                 MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 return false;
                             });
                             message.delete().catch(e => {
                                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             });
                             return true;
                         }
@@ -274,35 +274,35 @@ module.exports = {
                             guild.waitingForMessage.data.makeembed[message.author.id] = parsedJson;
                             let embed = new MessageEmbed({
                                 title: `Loaded JSON`,
-                                color: guild.configuration.colors.success
+                                color: guild.configurationManager.configuration.colors.success
                             });
                             message.delete().catch(e => {
                                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             });
                             message.channel.send({
                                 embeds: [embed]
                             }).then(msg => {}).catch(e => {
                                 MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 return false;
                             });
                             return true;
                         } catch (e) {
                             let embed = new MessageEmbed({
                                 title: `Wrong JSON`,
-                                color: guild.configuration.colors.error,
+                                color: guild.configurationManager.configuration.colors.error,
                                 description: `${e}`
                             });
                             message.delete().catch(e => {
                                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             });
                             message.channel.send({
                                 embeds: [embed]
                             }).then(msg => {}).catch(e => {
                                 MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 return false;
                             });
                             return true;
@@ -312,20 +312,20 @@ module.exports = {
                         if (typeof args[0] == "undefined" || args[0] == "" || (args[0] == "-public" && (typeof args[1] == "undefined" || args[1] == ""))) {
                             let embed = new MessageEmbed({
                                 title: `You must specify a name for it`,
-                                color: guild.configuration.colors.error
+                                color: guild.configurationManager.configuration.colors.error
                             });
                             message.channel.send({
                                 embeds: [embed]
                             }).then(msg => {}).catch(e => {
                                 MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 return false;
                             });
                             return true;
                         }
                         let embed = new MessageEmbed({
                             title: `Embed saved \`${args[0]}\``,
-                            color: guild.configuration.colors.main
+                            color: guild.configurationManager.configuration.colors.main
                         });
 
                         if (args.includes('-public')) {
@@ -333,13 +333,13 @@ module.exports = {
                             if (typeof guild.embedsManager.get(`sharedEmbeds.${args[0]}`) != "undefined") {
                                 let embed = new MessageEmbed({
                                     title: `You already saved an embed with this name.`,
-                                    color: guild.configuration.colors.error
+                                    color: guild.configurationManager.configuration.colors.error
                                 });
                                 message.channel.send({
                                     embeds: [embed]
                                 }).then(msg => {}).catch(e => {
                                     MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                     return false;
                                 });
                                 return true;
@@ -349,13 +349,13 @@ module.exports = {
                         } else if (typeof guild.embedsManager.get(`userEmbeds.${message.author.id}.${args[0]}`) != "undefined") {
                             let embed = new MessageEmbed({
                                 title: `You already saved an embed with this name.`,
-                                color: guild.configuration.colors.error
+                                color: guild.configurationManager.configuration.colors.error
                             });
                             message.channel.send({
                                 embeds: [embed]
                             }).then(msg => {}).catch(e => {
                                 MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 return false;
                             });
                             return true;
@@ -368,7 +368,7 @@ module.exports = {
                             embeds: [embed]
                         }).then(msg => {}).catch(e => {
                             MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             return false;
                         });
                         delete guild.waitingForMessage.users[message.author.id];
@@ -378,20 +378,20 @@ module.exports = {
                         if (typeof args[0] == "undefined" || args[0] == "" || (args[0] == "-public" && (typeof args[1] == "undefined" || args[1] == ""))) {
                             let embed = new MessageEmbed({
                                 title: `You must specify the embed you want to load`,
-                                color: guild.configuration.colors.error
+                                color: guild.configurationManager.configuration.colors.error
                             });
                             message.channel.send({
                                 embeds: [embed]
                             }).then(msg => {}).catch(e => {
                                 MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 return false;
                             });
                             return true;
                         }
                         let embed = new MessageEmbed({
                             title: `Embed loaded \`${args[0]}\``,
-                            color: guild.configuration.colors.main
+                            color: guild.configurationManager.configuration.colors.main
                         });
 
                         if (args.includes('-public')) {
@@ -399,13 +399,13 @@ module.exports = {
                             if (typeof guild.embedsManager.get(`sharedEmbeds.${args[0]}`) == "undefined") {
                                 let embed = new MessageEmbed({
                                     title: `Could not find a matching embed.`,
-                                    color: guild.configuration.colors.error
+                                    color: guild.configurationManager.configuration.colors.error
                                 });
                                 message.channel.send({
                                     embeds: [embed]
                                 }).then(msg => {}).catch(e => {
                                     MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                     return false;
                                 });
                                 return true;
@@ -414,13 +414,13 @@ module.exports = {
                         } else if (typeof guild.embedsManager.get(`userEmbeds.${message.author.id}.${args[0]}`) == "undefined") {
                             let embed = new MessageEmbed({
                                 title: `Could not find a matching embed.`,
-                                color: guild.configuration.colors.error
+                                color: guild.configurationManager.configuration.colors.error
                             });
                             message.channel.send({
                                 embeds: [embed]
                             }).then(msg => {}).catch(e => {
                                 MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 return false;
                             });
                             return true;
@@ -431,7 +431,7 @@ module.exports = {
                             embeds: [embed]
                         }).then(msg => {}).catch(e => {
                             MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             return false;
                         });
                         return true;
@@ -439,7 +439,7 @@ module.exports = {
                     if (cmd.toLowerCase() == "listembeds" && false) {
                         let embed = new MessageEmbed({
                             title: `Your saved embeds :`,
-                            color: guild.configuration.colors.main
+                            color: guild.configurationManager.configuration.colors.main
                         });
 
                         let savedEmbeds = [];
@@ -467,33 +467,33 @@ module.exports = {
                             embeds: [embed]
                         }).then(msg => {}).catch(e => {
                             MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             return false;
                         });
                         return true;
                     }
                     let embed = new MessageEmbed({
                         title: `Unknown command`,
-                        color: guild.configuration.colors.error,
+                        color: guild.configurationManager.configuration.colors.error,
                         description: `You are still in embed creation mode and this command is unknown. You can say \`cancel\` to leave this mode or say \`saveembed\` to save your progress and load it back later.`
                     });
                     message.channel.send({
                         embeds: [embed]
                     }).then(msg => {}).catch(e => {
                         MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                        if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                         return false;
                     });
                     message.delete().catch(e => {
                         MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                        if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                     });
                     return true;
                 }
             }
         }).catch(e => {
             MainLog.log(`Could not reply to message ${message.id} in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
         });
         return true;
     }
@@ -545,7 +545,7 @@ async function sendEmbed(makeembedData, channel, preview = false) {
         return true;
     }).catch(e => {
         MainLog.log(`Could not send message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+        if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
         return false;
     });
 }

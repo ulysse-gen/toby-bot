@@ -39,7 +39,7 @@ module.exports = {
 
         let embed = new MessageEmbed({
             title: `DM Sent.`,
-            color: guild.configuration.colors.success
+            color: guild.configurationManager.configuration.colors.success
         });
 
         if (typeof user == "undefined") return utils.sendError(message, guild, `Could not send DM.`, `User not found.`, [], true); /*Updated To New Utils*/
@@ -57,7 +57,7 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
         }).catch(e => utils.messageReplyFailLogger(message, guild, e));
         return true;
     }

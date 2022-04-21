@@ -19,7 +19,7 @@ module.exports = class Logger {
 
     async log(string) {
         if (typeof string != "string" && string == "") return false;
-        let logText = this.pattern.replace(`&{TEXT}`, `${string}`).replace(`&{DATE}`, moment().format(`DD/MM/YYYY`)).replace(`&{HOUR}`, moment().format(`HH:mm:ss`));
+        let logText = this.pattern.replace(`&{TEXT}`, `${string}`).replace(`&{DATE}`, moment().format(`DD/MM/YYYY`)).replace(`&{HOUR}`, moment().format(`HH:mm:ss:SSS`));
         this.consoleLog(logText);
         this.fileLog(logText);
         return true;

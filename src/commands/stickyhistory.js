@@ -33,7 +33,7 @@ module.exports = {
         let embedPages = [];
         let embed = new MessageEmbed({
             title: `Sticky history`,
-            color: guild.configuration.colors.main,
+            color: guild.configurationManager.configuration.colors.main,
             author: {
                 name: user.user.tag,
                 iconURL: `${userPFP}?size=64`
@@ -84,7 +84,7 @@ module.exports = {
                 embeds: [embed],
                 failIfNotExists: false
             }, false).then(msg => {
-                if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             }).catch(e => utils.messageReplyFailLogger(message, guild, e));
             return true;
         }
@@ -93,7 +93,7 @@ module.exports = {
 
         embedPages = splitArrayIntoChunksOfLen(embedFields, 10);
         embed.footer = {
-            text: `Use \`${guild.configuration.prefix}stickyhistory <user> [page number]\` to search thru pages. [1/${embedPages.length}]`
+            text: `Use \`${guild.configurationManager.configuration.prefix}stickyhistory <user> [page number]\` to search thru pages. [1/${embedPages.length}]`
         };
 
         embedFields = embedPages[0];
@@ -104,7 +104,7 @@ module.exports = {
                 return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
             }
             embed.footer = {
-                text: `Use \`${guild.configuration.prefix}stickyhistory <user> [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
+                text: `Use \`${guild.configurationManager.configuration.prefix}stickyhistory <user> [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
             };
             if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
             embedFields = embedPages[args[1] - 1];
@@ -119,7 +119,7 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
         }).catch(e => utils.messageReplyFailLogger(message, guild, e));
         return true;
     }

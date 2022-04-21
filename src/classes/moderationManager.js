@@ -65,7 +65,7 @@ module.exports = class moderationManager {
         if (typeof length == "number") expireDate.add(length, 'seconds');
         let userPFP = await getUserPfp(user);
         let embed = new MessageEmbed({
-            color: guild.configuration.colors.main,
+            color: guild.configurationManager.configuration.colors.main,
             author: {
                 name: user.user.tag,
                 iconURL: `${userPFP}?size=64`
@@ -82,9 +82,9 @@ module.exports = class moderationManager {
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         }).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
-        if (typeof guild != "undefined" && guild.configuration.moderation.logToChannel.status && guild.moderationLog.initialized) guild.moderationLog.channel.send({ 
+        if (typeof guild != "undefined" && guild.configurationManager.configuration.moderation.logToChannel.status && guild.moderationLog.initialized) guild.moderationLog.channel.send({ 
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
@@ -105,7 +105,7 @@ module.exports = class moderationManager {
         if (typeof length == "number") expireDate.add(length, 'seconds');
         let userPFP = await getUserPfp(user);
         let embed = new MessageEmbed({
-            color: guild.configuration.colors.main,
+            color: guild.configurationManager.configuration.colors.main,
             author: {
                 name: user.user.tag,
                 iconURL: `${userPFP}?size=64`
@@ -121,8 +121,8 @@ module.exports = class moderationManager {
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         };
-        if (alert && guild.configuration.moderation.autoModeration.staffRoleForAlert.length != 0)messageContent.content = `<@&${guild.configuration.moderation.autoModeration.staffRoleForAlert.join("> <@&")}>`;
-        if (typeof guild != "undefined" && guild.configuration.moderation.autoModeration.channel.status && guild.autoModerationLog.initialized) guild.autoModerationLog.channel.send(messageContent, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
+        if (alert && guild.configurationManager.configuration.moderation.autoModeration.staffRoleForAlert.length != 0)messageContent.content = `<@&${guild.configurationManager.configuration.moderation.autoModeration.staffRoleForAlert.join("> <@&")}>`;
+        if (typeof guild != "undefined" && guild.configurationManager.configuration.moderation.autoModeration.channel.status && guild.autoModerationLog.initialized) guild.autoModerationLog.channel.send(messageContent, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         return true;
     }
 
@@ -131,7 +131,7 @@ module.exports = class moderationManager {
         if (typeof length == "number") expireDate.add(length, 'seconds');
         let userPFP = await getUserPfp(user);
         let embed = new MessageEmbed({
-            color: guild.configuration.colors.error,
+            color: guild.configurationManager.configuration.colors.error,
             description: (type == "Warn") ? `You have been warned in ${guild.guild.name}` : (type == "Kick") ? `You have been kicked from ${guild.guild.name}` : (type == "Ban") ? `You have been banned from ${guild.guild.name}` : (type == "Mute") ? `You have been muted in ${guild.guild.name}` : ``,
             author: {
                 name: user.user.tag,
@@ -144,7 +144,7 @@ module.exports = class moderationManager {
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         }).catch(e => {
             ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`)
             if (e.code == 50007) message.channel.send(`Could not send message to this user.`);

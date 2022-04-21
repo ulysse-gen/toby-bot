@@ -1,7 +1,55 @@
 {
-    "users": {},
-    "internalRoles": {},
-    "roles": {},
-    "channels": {},
-    "guilds": {}
-  }
+  "users": {},
+  "internalRoles": {
+    "default": {
+      "commands.about": {
+        "value": true,
+        "priority": 0,
+        "temporary": false
+      },
+      "commands.embedfail": {
+        "value": true,
+        "priority": 0,
+        "temporary": false
+      },
+      "commands.help": {
+        "value": true,
+        "priority": 0,
+        "temporary": false
+      },
+      "commands.hi": {
+        "value": true,
+        "priority": 0,
+        "temporary": false
+      },
+      "commands.hug": {
+        "value": true,
+        "priority": 0,
+        "temporary": false
+      },
+      "commands.kiss": {
+        "value": true,
+        "priority": 0,
+        "temporary": false
+      },
+      "commands.remindme": {
+        "value": true,
+        "priority": 0,
+        "temporary": false
+      },
+      "commands.slap": {
+        "value": true,
+        "priority": 0,
+        "temporary": false
+      },
+      "commands.welcome": {
+        "value": true,
+        "priority": 0,
+        "temporary": false
+      }
+    }
+  },
+  "roles": {},
+  "channels": {},
+  "guilds": {}
+}

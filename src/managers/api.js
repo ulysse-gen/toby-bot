@@ -6,7 +6,7 @@ const authorizationToken = "Et$9kT!mFfXkts9kiLspkNNb6fjt$d83H3BL73R9";
 
 //Import needs from index
 const {
-    configuration,
+    globalConfiguration,
     client,
     MainLog,
     globalGuilds,
@@ -15,6 +15,16 @@ const {
 
 module.exports = async function () {
     botLifeMetric.addEntry("apiStartup");
+
+    app.get('/configuration/getKeys', async (req, res) => {
+        res.status(200).json(makeConfigEntries(require(`../../configurations/default/configuration.json`), require(`../../configurations/default/documentation.js`)));
+    });
+
+    app.get('/configuration/getKeys/:guildId', async (req, res) => {
+        res.status(200).json(makeGuildConfigEntries(require(`../../configurations/default/configuration.json`), (await globalGuilds.getGuild({id: req.params.guildId})).configurationManager.configuration, require(`../../configurations/default/documentation.js`)));
+    });
+
+
     app.get('/discord/users/:userId', async (req, res) => {
         if (typeof req.headers.authorization == "undefined" || req.headers.authorization != authorizationToken) {
             res.status(403).json({
@@ -154,7 +164,7 @@ module.exports = async function () {
             });
             return false;
         }
-        res.status(200).json(guild.configuration);
+        res.status(200).json(guild.configurationManager.configuration);
         return false;
     });
 
@@ -176,7 +186,7 @@ module.exports = async function () {
             });
             return false;
         }
-        res.status(200).json(guild.permissions);
+        res.status(200).json(guild.permissionsManager.permissions);
         return false;
     });
 
@@ -184,4 +194,62 @@ module.exports = async function () {
         botLifeMetric.addEntry("apiStarted");
         MainLog.log(`API Ready.`)
     })
+}
+
+
+
+function makeConfigEntries(defaultConfig, documentation, path = []) {
+    let configEntries = {};
+    for (var entry in defaultConfig) {
+        let pathh = JSON.parse(JSON.stringify(path));
+        pathh.push(entry)
+        try {
+            if (defaultConfig[entry].constructor === Object) {
+                let configThings = makeConfigEntries(defaultConfig[entry], documentation[entry], pathh)
+                for (const key in configThings) {
+                    configEntries[key] = configThings[key];
+                }
+            } else {
+                configEntries[pathh.join('.')] = {
+                    type: typeof defaultConfig[entry],
+                    name: entry,
+                    path: pathh,
+                    defaultValue: defaultConfig[entry]
+                };
+                if (typeof documentation[entry] == "object")configEntries[pathh.join('.')].documentation = documentation[entry];
+            }
+        } catch (e) {
+            console.log(`An error occured making the config entries.`);
+        }
+    }
+    return configEntries;
+}
+
+function makeGuildConfigEntries(defaultConfig, currentConfig, documentation, path = []) {
+    let configEntries = {};
+    for (var entry in currentConfig) {
+        let pathh = JSON.parse(JSON.stringify(path));
+        pathh.push(entry);
+
+        try {
+            if (currentConfig[entry].constructor === Object) {
+                let configThings = makeGuildConfigEntries(defaultConfig[entry], currentConfig[entry], documentation[entry], pathh)
+                for (const key in configThings) {
+                    configEntries[key] = configThings[key];
+                }
+            } else {
+                configEntries[pathh.join('.')] = {
+                    type: typeof currentConfig[entry],
+                    name: entry,
+                    path: pathh,
+                    value: currentConfig[entry],
+                    defaultValue: defaultConfig[entry]
+                };
+                if (typeof documentation[entry] == "object")configEntries[pathh.join('.')].documentation = documentation[entry];
+            }
+        } catch (e) {
+            console.log(`An error occured making the config entries.`);
+        }
+    }
+    return configEntries;
 }
