@@ -7,7 +7,7 @@ const {
 } = require(`discord.js`);
 const utils = require(`../utils`);
 const {
-    configuration,
+    globalConfiguration,
     MainLog,
     globalPermissions
 } = require(`../../index`);
@@ -114,7 +114,7 @@ module.exports = {
         if (args.length != 0 && args[0].toLowerCase() == "prizes") {
             let embed = new MessageEmbed({
                 title: `Russian roulette prizes :`,
-                color: guild.configuration.colors.main
+                color: guild.configurationManager.configuration.colors.main
             });
             for (const key in premadePrizes) {
                 embed.addField(`${premadePrizes[key].name}`, `t!rr -prize:${key}`, true);
@@ -123,7 +123,7 @@ module.exports = {
                 embeds: [embed],
                 failIfNotExists: false
             }, false).then(msg => {
-                if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             }).catch(e => utils.messageReplyFailLogger(message, guild, e));
             return true;
         }
@@ -217,7 +217,7 @@ module.exports = {
 
         let embed = new MessageEmbed({
             title: `The Russian Roulette will start in ${guild.waitingForInteraction.data.russianroulette[message.channel.id].startTimer/1000} seconds`,
-            color: guild.configuration.colors.main,
+            color: guild.configurationManager.configuration.colors.main,
             description: `**Click** on the **join button** below to join the **Russian Roulette** %prize%\nCurrent players [%player_amount%]: %player_list%`
                 .replaceAll(`%player_amount%`, `0`)
                 .replaceAll(`%player_list%`, ``)
@@ -254,7 +254,7 @@ module.exports = {
         }, false).then(async msg => {
             message.delete().catch(e => {
                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
             });
             if (guild.waitingForInteraction.data.russianroulette[message.channel.id].startTimer >= 150000) {
                 guild.waitingForInteraction.data.russianroulette[message.channel.id].pinnedMessage = msg;
@@ -289,7 +289,7 @@ module.exports = {
                             let multipleWinners = (guild.waitingForInteraction.data.russianroulette[message.channel.id].winners == 1);
                             let winningEmbed = new MessageEmbed({
                                 title: (multipleWinners) ? `We got our winner !` : `We got our winners !`,
-                                color: guild.configuration.colors.main,
+                                color: guild.configurationManager.configuration.colors.main,
                                 description: (multipleWinners) ?
                                     `%player_alive_list% is the only survivor, GG!%prize%`
                                     .replaceAll(`%player_alive_list%`, guild.waitingForInteraction.data.russianroulette[message.channel.id].alivePlayers.join(', '))
@@ -302,7 +302,7 @@ module.exports = {
                                 failIfNotExists: false
                             }, false).catch(e => {
                                 MainLog.log(`Could not send message in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             });
                             embed.description = `The **Russian Roulette** is done !\nTotal players **%player_amount%**\nWinner(s) [%player_alive_amount%]: %player_alive_list%\nDead players [%dead_player_amount%]: %dead_player_list%%prize%`
                                 .replaceAll(`%player_amount%`, `${guild.waitingForInteraction.data.russianroulette[message.channel.id].players.length}`)
@@ -343,7 +343,7 @@ module.exports = {
                         }
                         let eliminatedEmbed = new MessageEmbed({
                             title: (control > 0) ? `Rolling the barrel for.. ${youDead.username}#${youDead.discriminator}` : `${youDead.username}#${youDead.discriminator} :gun:`,
-                            color: guild.configuration.colors.main,
+                            color: guild.configurationManager.configuration.colors.main,
                             description: (control > 0) ? `Players still alive : **%player_alive_amount%**`.replaceAll(`%player_alive_amount%`, `${guild.waitingForInteraction.data.russianroulette[message.channel.id].alivePlayers.length}`).replaceAll(`%player_alive_list%`, guild.waitingForInteraction.data.russianroulette[message.channel.id].alivePlayers.join(', ')) : `${youDead} eliminated.\n${`Players still alive : **%player_alive_amount%**`.replaceAll(`%player_alive_amount%`, `${guild.waitingForInteraction.data.russianroulette[message.channel.id].alivePlayers.length}`).replaceAll(`%player_alive_list%`, guild.waitingForInteraction.data.russianroulette[message.channel.id].alivePlayers.join(', '))}`
                         });
                         if (typeof eliminationMessage == "undefined") eliminationMessage = await message.channel.send({
@@ -352,14 +352,14 @@ module.exports = {
                             failIfNotExists: false
                         }, false).catch(e => {
                             MainLog.log(`Could not send message in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                         });
                         if (typeof eliminationMessage != "undefined") eliminationMessage.edit({
                             embeds: [eliminatedEmbed],
                             failIfNotExists: false
                         }, false).catch(e => {
                             MainLog.log(`Could not send message in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                         });
                     }, ((guild.waitingForInteraction.data.russianroulette[message.channel.id].roundTimer - 3500) / 4)));
                     embed.description = `The **Russian Roulette** is running !\nTotal players **%player_amount%**\nPlayers alive [%player_alive_amount%]: %player_alive_list%\nDead players [%dead_player_amount%]: %dead_player_list%%prize%`
@@ -396,14 +396,14 @@ module.exports = {
                 guild.waitingForInteraction.data.russianroulette[message.channel.id].status = "pre-play";
                 let prestartingEmbed = new MessageEmbed({
                     title: `The Russian Roulette is about to start !`,
-                    color: guild.configuration.colors.main
+                    color: guild.configurationManager.configuration.colors.main
                 });
                 message.channel.send({
                     embeds: [prestartingEmbed],
                     failIfNotExists: false
                 }, false).catch(e => {
                     MainLog.log(`Could not send message in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                 });
             }, guild.waitingForInteraction.data.russianroulette[message.channel.id].startTimer - 5000));
 
@@ -413,7 +413,7 @@ module.exports = {
                     guild.waitingForInteraction.data.russianroulette[message.channel.id].status = "cancelled";
                     let winningEmbed = new MessageEmbed({
                         title: `Russian Roulette Cancelled`,
-                        color: guild.configuration.colors.main,
+                        color: guild.configurationManager.configuration.colors.main,
                         description: `No one wants to play my game :(`
                     });
                     message.channel.send({
@@ -421,7 +421,7 @@ module.exports = {
                         failIfNotExists: false
                     }, false).catch(e => {
                         MainLog.log(`Could not send message in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                        if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                     });
                     clearPending(guild, message);
                     return true;
@@ -430,7 +430,7 @@ module.exports = {
                 round();
                 let startingEmbed = new MessageEmbed({
                     title: `The Russian Roulette started`,
-                    color: guild.configuration.colors.main,
+                    color: guild.configurationManager.configuration.colors.main,
                     description: `Good luck %player_list% !`
                         .replaceAll(`%player_amount%`, `0`)
                         .replaceAll(`%player_list%`, guild.waitingForInteraction.data.russianroulette[message.channel.id].players.join(', '))
@@ -440,7 +440,7 @@ module.exports = {
                     failIfNotExists: false
                 }, false).catch(e => {
                     MainLog.log(`Could not send message in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                 });
             }, guild.waitingForInteraction.data.russianroulette[message.channel.id].startTimer));
 
@@ -514,7 +514,7 @@ module.exports = {
             }
         }).catch(e => {
             MainLog.log(`Could not reply to message ${message.id} in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
         });
         return true;
     }

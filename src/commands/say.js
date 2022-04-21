@@ -2,7 +2,7 @@ const {
     MessageEmbed
 } = require(`discord.js`);
 const {
-    configuration,
+    globalConfiguration,
     MainLog,
     globalPermissions
 } = require(`../../index`);
@@ -29,7 +29,7 @@ module.exports = {
         };
         let embed = new MessageEmbed({
             title: `Tell me what to say !`,
-            color: guild.configuration.colors.main
+            color: guild.configurationManager.configuration.colors.main
         });
 
         if (typeof args[0] != undefined) {
@@ -45,23 +45,23 @@ module.exports = {
 
                         if (!hasPermission) {
                             MainLog.log(`${message.author.tag}(${message.author.id}) tried executing 'say' accross channel '${wantedChannel}' [${message.channel.id}][${message.channel.guild.id}][Insufficient Permissions].`); //Logging in file & console
-                            if (typeof guild != "undefined" && guild.configuration.behaviour.logOnInsufficientPermissions && guild.logToChannel.initialized) guild.channelLog(`[ERR] <@${message.author.id}>(${message.author.id}) tried executing 'say' accross channel <#${wantedChannel}>(${wantedChannel}) from <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`); //Loggin in log channel if logOnInsufficientPermissions is set & the log channel is initialized
-                            if ((typeof guild == "undefined") ? configuration.behaviour.onInsufficientPermissionsIgnore : guild.configuration.behaviour.onInsufficientPermissionsIgnore) res(false); //Stop the command execution here if onInsufficientPermissionsIgnore is enabled
+                            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logOnInsufficientPermissions && guild.logToChannel.initialized) guild.channelLog(`[ERR] <@${message.author.id}>(${message.author.id}) tried executing 'say' accross channel <#${wantedChannel}>(${wantedChannel}) from <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`); //Loggin in log channel if logOnInsufficientPermissions is set & the log channel is initialized
+                            if ((typeof guild == "undefined") ? configurationManager.configuration.behaviour.onInsufficientPermissionsIgnore : guild.configurationManager.configuration.behaviour.onInsufficientPermissionsIgnore) res(false); //Stop the command execution here if onInsufficientPermissionsIgnore is enabled
                             let embed = new MessageEmbed({
                                 title: `Insufficient Permissions`,
-                                color: guild.configuration.colors.error
+                                color: guild.configurationManager.configuration.colors.error
                             });
                             message.reply({
                                 embeds: [embed],
                                 failIfNotExists: false
                             }, false).then(msg => {
-                                if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
+                                if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
                                     MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                                 })
                             }).catch(e => {
                                 MainLog.log(`Could not reply to message ${message.id} in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             });
                             res(false);
                         }
@@ -97,23 +97,23 @@ module.exports = {
 
             if (!hasPermission) {
                 MainLog.log(`${message.author.tag}(${message.author.id}) tried executing '${message.content}' in [${message.channel.id}][${message.channel.guild.id}][Insufficient Permissions].`); //Logging in file & console
-                if (typeof guild != "undefined" && guild.configuration.behaviour.logOnInsufficientPermissions && guild.logToChannel.initialized) guild.channelLog(`[ERR] <@${message.author.id}>(${message.author.id}) tried to execute \`${message.content}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`); //Loggin in log channel if logOnInsufficientPermissions is set & the log channel is initialized
-                if ((typeof guild == "undefined") ? configuration.behaviour.onInsufficientPermissionsIgnore : guild.configuration.behaviour.onInsufficientPermissionsIgnore) return true; //Stop the command execution here if onInsufficientPermissionsIgnore is enabled
+                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logOnInsufficientPermissions && guild.logToChannel.initialized) guild.channelLog(`[ERR] <@${message.author.id}>(${message.author.id}) tried to execute \`${message.content}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`); //Loggin in log channel if logOnInsufficientPermissions is set & the log channel is initialized
+                if ((typeof guild == "undefined") ? configurationManager.configuration.behaviour.onInsufficientPermissionsIgnore : guild.configurationManager.configuration.behaviour.onInsufficientPermissionsIgnore) return true; //Stop the command execution here if onInsufficientPermissionsIgnore is enabled
                 let embed = new MessageEmbed({
                     title: `Insufficient Permissions`,
-                    color: guild.configuration.colors.error
+                    color: guild.configurationManager.configuration.colors.error
                 });
                 message.reply({
                     embeds: [embed],
                     failIfNotExists: false
                 }, false).then(msg => {
-                    if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
+                    if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
                         MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                        if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                     })
                 }).catch(e => {
                     MainLog.log(`Could not reply to message ${message.id} in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                 });
                 return false;
             }
@@ -126,7 +126,7 @@ module.exports = {
                     failIfNotExists: false
                 }, false).catch(e => {
                     MainLog.log(`Could not reply to message ${message.id} in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                 });
                 return (typeof guild.waitingForMessage.data.say[message.author.id].noLogs != "undefined" && guild.waitingForMessage.data.say[message.author.id].noLogs == true) ? {
                     dontLog: true
@@ -144,23 +144,23 @@ module.exports = {
 
             if (!hasPermission) {
                 MainLog.log(`${message.author.tag}(${message.author.id}) tried executing '${message.content}' in [${message.channel.id}][${message.channel.guild.id}][Insufficient Permissions].`); //Logging in file & console
-                if (typeof guild != "undefined" && guild.configuration.behaviour.logOnInsufficientPermissions && guild.logToChannel.initialized) guild.channelLog(`[ERR] <@${message.author.id}>(${message.author.id}) tried to execute \`${message.content}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`); //Loggin in log channel if logOnInsufficientPermissions is set & the log channel is initialized
-                if ((typeof guild == "undefined") ? configuration.behaviour.onInsufficientPermissionsIgnore : guild.configuration.behaviour.onInsufficientPermissionsIgnore) return true; //Stop the command execution here if onInsufficientPermissionsIgnore is enabled
+                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logOnInsufficientPermissions && guild.logToChannel.initialized) guild.channelLog(`[ERR] <@${message.author.id}>(${message.author.id}) tried to execute \`${message.content}\` in <#${message.channel.id}>(${message.channel.id}). [Insufficient Permissions]`); //Loggin in log channel if logOnInsufficientPermissions is set & the log channel is initialized
+                if ((typeof guild == "undefined") ? configurationManager.configuration.behaviour.onInsufficientPermissionsIgnore : guild.configurationManager.configuration.behaviour.onInsufficientPermissionsIgnore) return true; //Stop the command execution here if onInsufficientPermissionsIgnore is enabled
                 let embed = new MessageEmbed({
                     title: `Insufficient Permissions`,
-                    color: guild.configuration.colors.error
+                    color: guild.configurationManager.configuration.colors.error
                 });
                 message.reply({
                     embeds: [embed],
                     failIfNotExists: false
                 }, false).then(msg => {
-                    if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
+                    if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
                         MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                        if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                     })
                 }).catch(e => {
                     MainLog.log(`Could not reply to message ${message.id} in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                 });
                 return false;
             }
@@ -174,7 +174,7 @@ module.exports = {
                 fetchedGuild.channels.fetch(guild.waitingForMessage.data.say[message.author.id].channel).then(fetchedChannel => {
                     fetchedChannel.send({content: (guild.waitingForMessage.data.say[message.author.id].content != "" && guild.waitingForMessage.data.say[message.author.id].content != " ") ? `${guild.waitingForMessage.data.say[message.author.id].content}` : null, files: guild.waitingForMessage.data.say[message.author.id].attachments}).then(msg => {
                         let isAcrossChannel = (fetchedChannel.id != message.channel.id);
-                        if (guild.configuration.behaviour.logSaidMessages == true) {
+                        if (guild.configurationManager.configuration.behaviour.logSaidMessages == true) {
                             if (guild.waitingForMessage.data.say[message.author.id].noLogs) MainLog.log(`${message.author.tag}(${message.author.id}) made me say \`${guild.waitingForMessage.data.say[message.author.id].content}\` in [${guild.waitingForMessage.data.say[message.author.id].channel}@${guild.waitingForMessage.data.say[message.author.id].channel}]`);
                             if (!guild.waitingForMessage.data.say[message.author.id].noLogs && guild.logToChannel.initialized == true && !isAcrossChannel) guild.channelLog(`<@${message.author.id}>(${message.author.id}) made me say \`${guild.waitingForMessage.data.say[message.author.id].content}\` in <#${guild.waitingForMessage.data.say[message.author.id].channel}>(${guild.waitingForMessage.data.say[message.author.id].channel}).`);
                             if (!guild.waitingForMessage.data.say[message.author.id].noLogs && guild.logToChannel.initialized == true && isAcrossChannel) guild.channelLog(`<@${message.author.id}>(${message.author.id}) made me say \`${guild.waitingForMessage.data.say[message.author.id].content}\` in <#${guild.waitingForMessage.data.say[message.author.id].channel}>(${guild.waitingForMessage.data.say[message.author.id].channel}). [Across channel from <#${message.channel.id}>(${message.channel.id})]`);
@@ -183,25 +183,25 @@ module.exports = {
                             clearPending(guild, message);
                     }).catch(e => {
                         MainLog.log(`Could not send message in [${fetchedChannel.id}][${fetchedChannel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message in [<#${fetchedChannel.id}>(${fetchedChannel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                        if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message in [<#${fetchedChannel.id}>(${fetchedChannel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                         if (!guild.waitingForMessage.data.say[message.author.id].toggle)
                             clearPending(guild, message);
                     });
                 }).catch(e => {
                     MainLog.log(`Could not fetch channel [${guild.waitingForMessage.data.say.acrossChannel[message.author.id]}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch channel <#${guild.waitingForMessage.data.say.acrossChannel[message.author.id]}>(${guild.waitingForMessage.data.say.acrossChannel[message.author.id]}) in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch channel <#${guild.waitingForMessage.data.say.acrossChannel[message.author.id]}>(${guild.waitingForMessage.data.say.acrossChannel[message.author.id]}) in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                     if (!guild.waitingForMessage.data.say[message.author.id].toggle)
                         clearPending(guild, message);
                 })
             }).catch(e => {
                 MainLog.log(`Could not fetch guild [${message.channel.guild.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch guild [${message.channel.guild.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch guild [${message.channel.guild.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                 if (!guild.waitingForMessage.data.say[message.author.id].toggle)
                     clearPending(guild, message);
             });
             message.delete().catch(e => {
                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
             });
             return ((typeof guild.waitingForMessage.data.say[message.author.id].noLogs != "undefined" && guild.waitingForMessage.data.say[message.author.id].noLogs == true)) ? {
                 dontLog: true
@@ -212,9 +212,9 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(async msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
             });
 
             if (guild.waitingForMessage.data.say[message.author.id].toggle) {
@@ -233,7 +233,7 @@ module.exports = {
             if (typeof guild.waitingForMessage.channels == "undefined")guild.waitingForMessage.channels = [];
             if (typeof guild.waitingForMessage.channels[message.channel.id] == "undefined")guild.waitingForMessage.channels[message.channel.id] = [];
             guild.waitingForMessage.channels[message.channel.id][message.author.id] = (message) => {
-                if (message.content.startsWith(configuration.globalPrefix) || message.content.startsWith(guild.configuration.prefix)) return (typeof guild.waitingForMessage.data.say[message.author.id].noLogs != "undefined" && guild.waitingForMessage.data.say[message.author.id].noLogs == true) ? {
+                if (message.content.startsWith(globalConfiguration.configuration.globalPrefix) || message.content.startsWith(guild.configurationManager.configuration.prefix)) return (typeof guild.waitingForMessage.data.say[message.author.id].noLogs != "undefined" && guild.waitingForMessage.data.say[message.author.id].noLogs == true) ? {
                     dontLog: true
                 } : false;
                 if (typeof guild.waitingForMessage.data.say[message.author.id].channel == "undefined") guild.waitingForMessage.data.say[message.author.id].channel = message.channel.id;
@@ -245,7 +245,7 @@ module.exports = {
                     fetchedGuild.channels.fetch((typeof guild.waitingForMessage.data.say[message.author.id].channel == "undefined") ? message.channel.id : guild.waitingForMessage.data.say[message.author.id].channel).then(fetchedChannel => {
                         fetchedChannel.send({content: (guild.waitingForMessage.data.say[message.author.id].content != "" && guild.waitingForMessage.data.say[message.author.id].content != " ") ? `${guild.waitingForMessage.data.say[message.author.id].content}` : null, files: guild.waitingForMessage.data.say[message.author.id].attachments}).then(msg => {
                             let isAcrossChannel = (fetchedChannel.id != message.channel.id);
-                            if (guild.configuration.behaviour.logSaidMessages == true) {
+                            if (guild.configurationManager.configuration.behaviour.logSaidMessages == true) {
                                 if (guild.waitingForMessage.data.say[message.author.id].noLogs) MainLog.log(`${message.author.tag}(${message.author.id}) made me say \`${guild.waitingForMessage.data.say[message.author.id].content}\` in [${guild.waitingForMessage.data.say[message.author.id].channel}@${guild.waitingForMessage.data.say[message.author.id].channel}]`);
                                 if (!guild.waitingForMessage.data.say[message.author.id].noLogs && guild.logToChannel.initialized == true && !isAcrossChannel) guild.channelLog(`<@${message.author.id}>(${message.author.id}) made me say \`${guild.waitingForMessage.data.say[message.author.id].content}\` in <#${guild.waitingForMessage.data.say[message.author.id].channel}>(${guild.waitingForMessage.data.say[message.author.id].channel}).`);
                                 if (!guild.waitingForMessage.data.say[message.author.id].noLogs && guild.logToChannel.initialized == true && isAcrossChannel) guild.channelLog(`<@${message.author.id}>(${message.author.id}) made me say \`${guild.waitingForMessage.data.say[message.author.id].content}\` in <#${guild.waitingForMessage.data.say[message.author.id].channel}>(${guild.waitingForMessage.data.say[message.author.id].channel}). [Across channel from <#${message.channel.id}>(${message.channel.id})]`);
@@ -254,41 +254,41 @@ module.exports = {
                                 clearPending(guild, message);
                         }).catch(e => {
                             MainLog.log(`Could not send message in [${fetchedChannel.id}][${fetchedChannel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message in [<#${fetchedChannel.id}>(${fetchedChannel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not send message in [<#${fetchedChannel.id}>(${fetchedChannel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                             if (!guild.waitingForMessage.data.say[message.author.id].toggle)
                                 clearPending(guild, message);
                         });
                     }).catch(e => {
                         MainLog.log(`Could not fetch channel [${guild.waitingForMessage.data.say.acrossChannel[message.author.id]}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch channel <#${guild.waitingForMessage.data.say.acrossChannel[message.author.id]}>(${guild.waitingForMessage.data.say.acrossChannel[message.author.id]}) in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                        if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch channel <#${guild.waitingForMessage.data.say.acrossChannel[message.author.id]}>(${guild.waitingForMessage.data.say.acrossChannel[message.author.id]}) in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                         if (!guild.waitingForMessage.data.say[message.author.id].toggle)
                             clearPending(guild, message);
                     })
                 }).catch(e => {
                     MainLog.log(`Could not fetch guild [${message.channel.guild.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch guild [${message.channel.guild.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not fetch guild [${message.channel.guild.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                     if (!guild.waitingForMessage.data.say[message.author.id].toggle)
                         clearPending(guild, message);
                 });
                 message.delete().catch(e => {
                     MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                 });
                 if (!guild.waitingForMessage.data.say[message.author.id].toggle) {
                     msg.delete().catch(e => {
                         MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                        if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                     });
                     OGMessage.delete().catch(e => {
                         MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                        if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                        if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
                     });
                 }
                 return true;
             }
         }).catch(e => {
             MainLog.log(`Could not reply to message ${message.id} in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
         });
         return ((typeof guild.waitingForMessage.data.say[message.author.id].noLogs != "undefined" && guild.waitingForMessage.data.say[message.author.id].noLogs == true)) ? {
             dontLog: true

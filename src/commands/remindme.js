@@ -3,7 +3,7 @@ const {
 } = require(`discord.js`);
 
 const {
-    configuration,
+    globalConfiguration,
     MainLog
 } = require(`../../index`);
 const timestring = require('timestring')
@@ -24,9 +24,9 @@ module.exports = {
 
             let fields = [];
             fields.push([`**Sub Commands:**`, `None yet`, false]);
-            fields.push([`**Usage:**`, `${guild.configuration.prefix}${this.name} <time> [reason]`, false]);
-            fields.push([`**Example:**`, `${guild.configuration.prefix}${this.name} 24h Tell <@933695613294501888> how much i love him`, false]);
-            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
+            fields.push([`**Usage:**`, `${guild.configurationManager.configuration.prefix}${this.name} <time> [reason]`, false]);
+            fields.push([`**Example:**`, `${guild.configurationManager.configuration.prefix}${this.name} 24h Tell <@933695613294501888> how much i love him`, false]);
+            return utils.sendMain(message, guild, `Command: ${guild.configurationManager.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
         }
         let reason = '';
         let time = 0;

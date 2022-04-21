@@ -3,7 +3,7 @@ const {
 } = require(`discord.js`);
 const {
     globalCommands,
-    configuration,
+    globalConfiguration,
     globalPermissions
 } = require(`../../index`);
 const utils = require(`../utils`);
@@ -16,7 +16,7 @@ module.exports = {
     category: `informations`,
     async exec(client, message, args, guild = undefined) {
         if (args.length == 0) {
-            let description = `List of ${configuration.appName}'s commands *(Only list the commands you can execute)* **[${Object.keys(globalCommands.commands).length}]**: \n`;
+            let description = `List of ${globalConfiguration.configuration.appName}'s commands *(Only list the commands you can execute)* **[${Object.keys(globalCommands.commands).length}]**: \n`;
             let embedFields = [];
             for (const command of globalCommands.commands) {
                 let permissionToCheck = command.permission;
@@ -24,18 +24,18 @@ module.exports = {
                 let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
                 if (command.status && hasPermission) description += `\`${command.name}\` `;
             }
-            embedFields.push([`**Show all the commands with detail :**`, `${guild.configuration.prefix}help detail [page number]`, false]);
-            embedFields.push([`**Show all the commands within a category with detail :**`, `${guild.configuration.prefix}help detail <category> <page number>`, false]);
-            embedFields.push([`**Show help for a certain command :**`, `${guild.configuration.prefix}help <command name>`, false]);
-            return utils.sendEmbed(message, guild, `Help`, description, guild.configuration.colors.main, embedFields)
+            embedFields.push([`**Show all the commands with detail :**`, `${guild.configurationManager.configuration.prefix}help detail [page number]`, false]);
+            embedFields.push([`**Show all the commands within a category with detail :**`, `${guild.configurationManager.configuration.prefix}help detail <category> <page number>`, false]);
+            embedFields.push([`**Show help for a certain command :**`, `${guild.configurationManager.configuration.prefix}help <command name>`, false]);
+            return utils.sendEmbed(message, guild, `Help`, description, guild.configurationManager.configuration.colors.main, embedFields)
         }
         if (args[0] == "detail") {
             let embedFields = [];
             let embedPages = [];
             let category = (args.length == 3) ? args[1] : undefined;
             let embed = new MessageEmbed({
-                title: `${configuration.appName} - Detailed help${(typeof category != "undefined") ? ` for category ${category}` : ``}`,
-                color: guild.configuration.colors.main
+                title: `${globalConfiguration.configuration.appName} - Detailed help${(typeof category != "undefined") ? ` for category ${category}` : ``}`,
+                color: guild.configurationManager.configuration.colors.main
             });
             for (const command of globalCommands.commands) {
                 let permissionToCheck = command.permission;
@@ -48,7 +48,7 @@ module.exports = {
             if (embedFields.length == 0)return utils.sendError(message, guild, `Unknown category`, undefined, undefined, undefined, undefined, -1, -1);
             embedPages = splitArrayIntoChunksOfLen(embedFields, 8);
             embed.footer = {
-                text: `Use \`${guild.configuration.prefix}help detail [page number]\` to search thru pages. [1/${embedPages.length}]`
+                text: `Use \`${guild.configurationManager.configuration.prefix}help detail [page number]\` to search thru pages. [1/${embedPages.length}]`
             };
             embedFields = embedPages[0];
             if (args.length == 2) {
@@ -58,7 +58,7 @@ module.exports = {
                     return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
                 }
                 embed.footer = {
-                    text: `Use \`${guild.configuration.prefix}help detail [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
+                    text: `Use \`${guild.configurationManager.configuration.prefix}help detail [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
                 };
                 if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
                 embedFields = embedPages[args[1] - 1];
@@ -70,7 +70,7 @@ module.exports = {
                 embeds: [embed],
                 failIfNotExists: false
             }, false).then(msg => {
-                if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+                if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             }).catch(e => utils.messageReplyFailLogger(message, guild, e));
             return true;
         }
@@ -86,7 +86,7 @@ module.exports = {
         embedFields.push([`**Nested permissions**`, `\`${Object.values(command.nestedPermissions).join('`, `')}\``, false]);
         if (Object.keys(command.subcommands).length != 0){
             for (const subcommand in command.subcommands) {
-                let usage = `**Usage :** \`${guild.configuration.prefix}${command.name}${subcommand}`;
+                let usage = `**Usage :** \`${guild.configurationManager.configuration.prefix}${command.name}${subcommand}`;
                 command.subcommands[subcommand].args.forEach(arg => {
                     if (arg.optionnal)usage += ` [${arg.placeholder.join('/')}]`;
                     if (!arg.optionnal)usage += ` <${arg.placeholder.join('/')}>`;
@@ -95,17 +95,17 @@ module.exports = {
                 console.log(command.subcommands[subcommand]);
             }
         }
-        if (subCommandsFields.length == 0)return utils.sendEmbed(message, guild, `Help for command '${command.name}'`, `**Description**: \n${command.description}`, guild.configuration.colors.main, embedFields);
-        utils.sendEmbed(message, guild, `Help for command '${command.name}'`, `**Description**: \n${command.description}`, guild.configuration.colors.main, embedFields);
-        return utils.sendEmbed(message, guild, `${command.name} sub commands`, `Sub commands and their usage :`, guild.configuration.colors.main, subCommandsFields);
+        if (subCommandsFields.length == 0)return utils.sendEmbed(message, guild, `Help for command '${command.name}'`, `**Description**: \n${command.description}`, guild.configurationManager.configuration.colors.main, embedFields);
+        utils.sendEmbed(message, guild, `Help for command '${command.name}'`, `**Description**: \n${command.description}`, guild.configurationManager.configuration.colors.main, embedFields);
+        return utils.sendEmbed(message, guild, `${command.name} sub commands`, `Sub commands and their usage :`, guild.configurationManager.configuration.colors.main, subCommandsFields);
 
         return true;
         //let embedFields = [];
         let embedPages = [];
         let category = (args.length == 2) ? args[1] : undefined;
         let embed = new MessageEmbed({
-            title: `${configuration.appName}'s help ${typeof category != "undefined" ? `[${category}]` : ""}`,
-            color: guild.configuration.colors.main
+            title: `${globalConfiguration.configuration.appName}'s help ${typeof category != "undefined" ? `[${category}]` : ""}`,
+            color: guild.configurationManager.configuration.colors.main
         });
 
         for (const command of globalCommands.commands) {
@@ -119,7 +119,7 @@ module.exports = {
 
         embedPages = splitArrayIntoChunksOfLen(embedFields, 8);
         embed.footer = {
-            text: `Use \`${guild.configuration.prefix}help [page number]\` to search thru pages. [1/${embedPages.length}]`
+            text: `Use \`${guild.configurationManager.configuration.prefix}help [page number]\` to search thru pages. [1/${embedPages.length}]`
         };
 
 
@@ -131,7 +131,7 @@ module.exports = {
                 return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
             }
             embed.footer = {
-                text: `Use \`${guild.configuration.prefix}help [page number]\` to search thru pages. [${args[0]}/${embedPages.length}]`
+                text: `Use \`${guild.configurationManager.configuration.prefix}help [page number]\` to search thru pages. [${args[0]}/${embedPages.length}]`
             };
             if (typeof embedPages[args[0] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
             embedFields = embedPages[args[0] - 1];
@@ -145,7 +145,7 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
         }).catch(e => utils.messageReplyFailLogger(message, guild, e));
         return true;
     }

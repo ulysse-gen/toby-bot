@@ -2,7 +2,7 @@ const {
     MessageEmbed
 } = require(`discord.js`);
 const {
-    configuration,
+    globalConfiguration,
     packageJson,
     MainLog,
     globalMetrics,
@@ -21,7 +21,7 @@ module.exports = {
     async exec(client, message, args, guild = undefined) {
         let embed = new MessageEmbed({
             title: `Eval :`,
-            color: guild.configuration.colors.success
+            color: guild.configurationManager.configuration.colors.success
         });
 
         if (args.length == 0) return utils.sendError(message, guild, `Could not eval`, `Args empty`, [], true); /*Updated To New Utils*/
@@ -33,7 +33,7 @@ module.exports = {
                 returnValue = eval(args.join(' '));
                 res(`\`\`\`${returnValue.toString()}\`\`\``);
             } catch (e) {
-                embed.color = guild.configuration.colors.error;
+                embed.color = guild.configurationManager.configuration.colors.error;
                 res(`Could not eval : ${e.toString()}`);
             }
         });
@@ -42,7 +42,7 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
         }).catch(e => utils.messageReplyFailLogger(message, guild, e));
         return true;
     }

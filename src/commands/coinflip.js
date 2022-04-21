@@ -21,7 +21,7 @@ module.exports = {
         ]
 
         message.reply(`https://media.discordapp.net/attachments/936578361302614018/937817970170806292/flip_coin.gif`, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             setTimeout(() => {
                 msg.edit(`${headOrTails[rn({min: 0, max: headOrTails.length - 1, integer: true})]}`).catch(e => {
                     console.log(`Could not edit message ${e}`);
@@ -48,7 +48,7 @@ module.exports = {
 
         /*let embed = new MessageEmbed({
             title: `Flipping the coin`,
-            color: guild.configuration.colors.main,
+            color: guild.configurationManager.configuration.colors.main,
             image: {
                 url: `https://cdn.discordapp.com/attachments/930708376311177227/937801144363782215/flip_coin.gif`
             }
@@ -63,7 +63,7 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             setTimeout(()=> {
                 embed.image.url = headOrTails[Math.floor(Math.random()*headOrTails.length)];
                 msg.edit({

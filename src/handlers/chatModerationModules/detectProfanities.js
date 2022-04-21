@@ -3,31 +3,6 @@ const {
 } = require(`./utilities`);
 
 let checkWords = {
-    /*"N-Word": {
-        status: true,
-        action: ["log", "alert", "delete", "ban"],
-        set: ["nigg"]
-    },
-    "F-Slur": {
-        status: true,
-        action: ["log", "alert", "delete"],
-        set: ["fag"]
-    },
-    "R-Slur": {
-        status: true,
-        action: ["log", "alert", "delete"],
-        set: ["retard"]
-    },
-    "H-Related": {
-        status: true,
-        action: ["log", "alert"],
-        set: ["hitler"]
-    },
-    "Sexual": {
-        status: false,
-        action: ["log"],
-        set: ["porno", "sex", "ass", "tits", "dick", "pussy", "vagina", "penis", "cock", "anus", "blowjob", "anulingus", "cunnilingus", "sodomy", "sodomize", "cum", "creampie", "deepthroat", "butthole", "bukkake", "boobs", "boner", "masturbating", "masturbate", "masturbation"]
-    },*/
     "Scam terms": {
         status: true,
         action: ["log", "alert"],
@@ -55,7 +30,7 @@ module.exports.detectProfanities = async (_client, message, guild = undefined, p
                     check: `Unnamed`,
                     trigger: key,
                     value: word,
-                    action: guild.configuration.moderation.autoModeration.modules.scams.reaction
+                    action: guild.configurationManager.configuration.moderation.autoModeration.modules.scams.reaction
                 };
                 if (textContains(message.content, word))
                     if (!violations.some(e => (e.check == violation.check && e.value == violation.value))) violations.push(violation);
@@ -72,13 +47,13 @@ module.exports.detectProfanities = async (_client, message, guild = undefined, p
                     check: `Unnamed`,
                     trigger: key,
                     value: word,
-                    action: guild.configuration.moderation.autoModeration.modules.scams.reaction
+                    action: guild.configurationManager.configuration.moderation.autoModeration.modules.scams.reaction
                 };
                 if (textContains(message.content, word))
                     if (!violations.some(e => (e.check == violation.check && e.value == violation.value))) violations.push(violation);
             });
         }
-        guild.configuration.moderation.autoModeration.modules.wordsDetection.log.forEach(word => {
+        guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.log.forEach(word => {
             let violation = {
                 check: `Unnamed`,
                 trigger: "User Set",
@@ -88,7 +63,7 @@ module.exports.detectProfanities = async (_client, message, guild = undefined, p
             if (textContains(message.content, word))
                 if (!violations.some(e => (e.check == violation.check && e.value == violation.value && e.action.includes('log')))) violations.push(violation);
         });
-        guild.configuration.moderation.autoModeration.modules.wordsDetection.alert.forEach(word => {
+        guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.alert.forEach(word => {
             let violation = {
                 check: `Unnamed`,
                 trigger: "User Set",
@@ -98,7 +73,7 @@ module.exports.detectProfanities = async (_client, message, guild = undefined, p
             if (textContains(message.content, word))
                 if (!violations.some(e => (e.check == violation.check && e.value == violation.value && e.action.includes('alert')))) violations.push(violation);
         });
-        guild.configuration.moderation.autoModeration.modules.wordsDetection.delete.forEach(word => {
+        guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.delete.forEach(word => {
             let violation = {
                 check: `Unnamed`,
                 trigger: "User Set",
@@ -108,42 +83,42 @@ module.exports.detectProfanities = async (_client, message, guild = undefined, p
             if (textContains(message.content, word))
                 if (!violations.some(e => (e.check == violation.check && e.value == violation.value && e.action.includes('delete')))) violations.push(violation);
         });
-        guild.configuration.moderation.autoModeration.modules.wordsDetection.warn.forEach(word => {
+        guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.warn.forEach(word => {
             let violation = {
                 check: `Unnamed`,
                 trigger: "User Set",
                 value: word,
                 action: [`warn`],
                 actionData: {
-                    reason: guild.configuration.moderation.autoModeration.modules.wordsDetection.warnReason
+                    reason: guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.warnReason
                 }
             };
             if (textContains(message.content, word))
                 if (!violations.some(e => (e.check == violation.check && e.value == violation.value && e.action.includes('warn')))) violations.push(violation);
         });
-        guild.configuration.moderation.autoModeration.modules.wordsDetection.mute.forEach(word => {
+        guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.mute.forEach(word => {
             let violation = {
                 check: `Unnamed`,
                 trigger: "User Set",
                 value: word,
                 action: [`mute`],
                 actionData: {
-                    reason: guild.configuration.moderation.autoModeration.modules.wordsDetection.muteReason,
-                    duration: guild.configuration.moderation.autoModeration.modules.wordsDetection.muteDuration
+                    reason: guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.muteReason,
+                    duration: guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.muteDuration
                 }
             };
             if (textContains(message.content, word))
                 if (!violations.some(e => (e.check == violation.check && e.value == violation.value && e.action.includes('mute')))) violations.push(violation);
         });
-        guild.configuration.moderation.autoModeration.modules.wordsDetection.ban.forEach(word => {
+        guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.ban.forEach(word => {
             let violation = {
                 check: `Unnamed`,
                 trigger: "User Set",
                 value: word,
                 action: [`ban`],
                 actionData: {
-                    reason: guild.configuration.moderation.autoModeration.modules.wordsDetection.banReason,
-                    duration: guild.configuration.moderation.autoModeration.modules.wordsDetection.banDuration
+                    reason: guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.banReason,
+                    duration: guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.banDuration
                 }
             };
             if (textContains(message.content, word))

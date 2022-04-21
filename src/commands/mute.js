@@ -9,6 +9,33 @@ module.exports = {
     description: `Mute a member`,
     aliases: ["muteuser", "mutemember"],
     permission: `commands.mute`,
+    slashCommandData: {
+        options: [
+            {
+                name: "target",
+                description: "The user to mute",
+                required: true,
+                type: "USER"
+            },
+            {
+                name: "time",
+                description: "Time of the mute",
+                required: false,
+                choices: [
+                    ["One hour", "1h"],
+                    ["Three hours", "3h"],
+                    ["One day", "1d"]
+                ],
+                type: "STRING"
+            },
+            {
+                name: "reason",
+                description: "Reason of the mute",
+                required: false,
+                type: "STRING"
+            }
+        ]
+    },
     nestedPermissions: {
         setMuteRole: `commands.mute.setmuterole`
     },
@@ -20,11 +47,11 @@ module.exports = {
             description += `\n**Cooldown:** None`;
 
             let fields = [];
-            fields.push([`**Sub Commands:**`, `${guild.configuration.prefix}${this.name} setMuteRole @Role`, false]);
-            fields.push([`**Current mute role:**`, `${(typeof guild.configuration.moderation.muteRole == "string" && guild.configuration.moderation.muteRole != "none") ? `<@&${guild.configuration.moderation.muteRole}>` : `Not defined`}`, false]);
-            fields.push([`**Usage:**`, `${guild.configuration.prefix}${this.name} <user> [time] [reason]`, false]);
-            fields.push([`**Example:**`, `${guild.configuration.prefix}${this.name} @DopeUsername Being too cool\n${guild.configuration.prefix}${this.name} 168754125874596348 Being too cool\n${guild.configuration.prefix}${this.name} DopeUsername#0420 30min Being too cool`, false]);
-            return utils.sendMain(message, guild, `Command: ${guild.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
+            fields.push([`**Sub Commands:**`, `${guild.configurationManager.configuration.prefix}${this.name} setMuteRole @Role`, false]);
+            fields.push([`**Current mute role:**`, `${(typeof guild.configurationManager.configuration.moderation.muteRole == "string" && guild.configurationManager.configuration.moderation.muteRole != "none") ? `<@&${guild.configurationManager.configuration.moderation.muteRole}>` : `Not defined`}`, false]);
+            fields.push([`**Usage:**`, `${guild.configurationManager.configuration.prefix}${this.name} <user> [time] [reason]`, false]);
+            fields.push([`**Example:**`, `${guild.configurationManager.configuration.prefix}${this.name} @DopeUsername Being too cool\n${guild.configurationManager.configuration.prefix}${this.name} 168754125874596348 Being too cool\n${guild.configurationManager.configuration.prefix}${this.name} DopeUsername#0420 30min Being too cool`, false]);
+            return utils.sendMain(message, guild, `Command: ${guild.configurationManager.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
         }
         if (args[0].toLowerCase() == "setmuterole") {
             let permissionToCheck = this.nestedPermissions.setMuteRole;
@@ -35,7 +62,7 @@ module.exports = {
             guild.configurationManager.set(`moderation.muteRole`, message.mentions.roles.first().id);
             return utils.sendMain(message, guild, `Mute role defined`, `Mute role defined to <@&${message.mentions.roles.first().id}>`, [], true); /*Updated To New Utils*/
         }
-        if (typeof guild.configuration.moderation.muteRole != "string" || guild.configuration.moderation.muteRole == "none") return utils.sendError(message, guild, `Could not mute`, `You must define the mute role before being able to mute.\nUse \`${guild.configuration.prefix}${this.name} setMuteRole @Role\``, [], true); /*Updated To New Utils*/
+        if (typeof guild.configurationManager.configuration.moderation.muteRole != "string" || guild.configurationManager.configuration.moderation.muteRole == "none") return utils.sendError(message, guild, `Could not mute`, `You must define the mute role before being able to mute.\nUse \`${guild.configurationManager.configuration.prefix}${this.name} setMuteRole @Role\``, [], true); /*Updated To New Utils*/
 
 
 

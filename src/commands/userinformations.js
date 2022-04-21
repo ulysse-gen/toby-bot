@@ -76,8 +76,6 @@ module.exports = {
         embed.addField(`**Key Permissions**`, `${(userPermissions.length == 0) ? `None` : `${userPermissions.join(', ')}`}`, false);
         embed.addField(`**Acknowledgements**`, `${userAcknowledgements}`, false);
         /*Custom Specifications for the bot itself*/if (user.user.id == client.user.id) embed.addField(`**Specifications**`, `- Is really nice\n- Is really cool\n- Built by <@231461358200291330>\n- Idea from <@330826518370451457>`, false);
-        /*Custom Specifications for the bot itself*/if (user.user.id == client.user.id) embed.addField(`**Specifications**`, `- Is really nice\n- Is really cool\n- Idea for <@330826518370451457>`, false);
-        /*Custom Specifications for the bot itself*/if (user.user.id == client.user.id) embed.addField(`**Specifications**`, `- Is really nice\n- Is really cool\n- Built <@231461358200291330>`, false);
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
 
 
@@ -85,7 +83,7 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
         }).catch(e => utils.messageReplyFailLogger(message, guild, e));
         return true;
     }

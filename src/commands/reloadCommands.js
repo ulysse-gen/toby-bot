@@ -6,7 +6,7 @@ const exec = util.promisify(require('child_process').exec);
 
 
 const {
-    configuration,
+    globalConfiguration,
     packageJson,
     MainLog,
     globalCommands
@@ -15,22 +15,24 @@ const {
 const utils = require(`../utils`);
 
 module.exports = {
-    name: "reloadcommands",
-    description: `Reload the bot commands.`,
+    name: "reload",
+    description: `Reload bot commands, certain modules as well as the configuration.`,
     subcommands: {},
-    aliases: ["rcmds", "reload"],
+    aliases: ["rcmds"],
     permission: `commands.reload`,
     category: `informations`,
     status: true,
     async exec(client, message, args, guild = undefined) {
         let embed = new MessageEmbed({
-            title: `Reloaded commands`,
-            color: guild.configuration.colors.success
+            title: `Reloaded`,
+            color: guild.configurationManager.configuration.colors.success
         });
 
         /*await exec("git pull --tags origin develop");
         await exec("npm i -y");*/
 
+        await guild.configurationManager.load();
+        
         delete require.cache[require.resolve(`../handlers/messageCreate`)];
         delete require.cache[require.resolve(`../handlers/interactionCreate`)];
         delete require.cache[require.resolve(`../handlers/DMHandler`)];
@@ -44,7 +46,7 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
         }).catch(e => utils.messageReplyFailLogger(message, guild, e));
         return true;
     }

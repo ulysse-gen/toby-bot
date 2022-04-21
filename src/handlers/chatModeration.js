@@ -1,24 +1,15 @@
 const linkify = require('linkifyjs');
-const antiProfanity = require('anti-profanity');
-const removeAccents = require(`remove-accents`);
-const leetSpeakConverter = require('../utils/leet-converter');
-const colors = require('colors');
 const url = require('url');
 
 const {
     client,
-    MainLog,
     AutoModLog,
-    globalPermissions,
-    configuration,
+    globalPermissions
 } = require(`../../index`);
 
 const {
-    textContains,
-    escapeRegex
+    textContains
 } = require(`./chatModerationModules/utilities`);
-
-const utils = require(`../utils`);
 
 /*
 Trigger Names:
@@ -40,7 +31,7 @@ module.exports = async (message, guild = undefined) => {
     require(`./chatModerationModules/cantSayThings`).cantSayThings(client, message, guild);
     if (message.content.toLowerCase().includes('milky')) client.users.fetch('802797743071821845').then(milky => milky.send(`Someone said "milky" => https://discord.com/channels/${message.channel.guild.id}/${message.channel.id}/${message.id}`)).catch({});
 
-    if (guild.configuration.moderation.autoModeration.ignoredChannels.includes(message.channel.id)) return true;
+    if (guild.configurationManager.configuration.moderation.autoModeration.ignoredChannels.includes(message.channel.id)) return true;
 
     messageMetric.addEntry(`ChatBypassCheck`);
     let permissionToCheck = `chat.fullbypass`;
@@ -52,8 +43,9 @@ module.exports = async (message, guild = undefined) => {
 
     let violations = [];
 
-    if ((guild.configuration.moderation.autoModeration.modules.links.status && !guild.configuration.moderation.autoModeration.modules.links.ignoredChannels.includes(message.channel.id)) ||
-        (guild.configuration.moderation.autoModeration.modules.scams.status && !guild.configuration.moderation.autoModeration.modules.scams.ignoredChannels.includes(message.channel.id))) {
+    if ((guild.configurationManager.configuration.moderation.autoModeration.modules.links.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.links.ignoredChannels.includes(message.channel.id)) ||
+        (guild.configurationManager.configuration.moderation.autoModeration.modules.scams.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.scams.ignoredChannels.includes(message.channel.id)) ||
+        (guild.configurationManager.configuration.moderation.autoModeration.modules.discordInvite.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.discordInvite.ignoredChannels.includes(message.channel.id))) {
         messageMetric.addEntry(`ChatLinkifyCheck`);
         let linkifyReturn = linkify.find(message.content);
         if (linkifyReturn.length != 0)
@@ -65,29 +57,40 @@ module.exports = async (message, guild = undefined) => {
                     mainDomain: `${linkUrl.host.split(".")[linkUrl.host.split(".").length-2]}.${linkUrl.host.split(".")[linkUrl.host.split(".").length-1]}`
                 }
 
-                if (guild.configuration.moderation.autoModeration.modules.scams.links && typeof guild.moderationManager.scamLinks != "undefined" &&
+                if (guild.configurationManager.configuration.moderation.autoModeration.modules.discordInvite.status) {
+                    if (textContains(linkData.fullLink, "discord.com/invite/")){
+                        violations.push({
+                            check: `CustomDiscordInvite`,
+                            trigger: "Discord Invite",
+                            value: linkData.fullLink,
+                            action: guild.configurationManager.configuration.moderation.autoModeration.modules.discordInvite.reaction
+                        });
+                    }
+                }
+
+                if (guild.configurationManager.configuration.moderation.autoModeration.modules.scams.links && typeof guild.moderationManager.scamLinks != "undefined" &&
                 (guild.moderationManager.scamLinks.includes(linkData.mainDomain) || guild.moderationManager.scamLinks.includes(`*.${linkData.mainDomain}`) || guild.moderationManager.scamLinks.includes(linkData.fullHost))) violations.push({
                     check: `spen.tk`,
                     trigger: "Scam URL",
                     value: element.value,
-                    action: guild.configuration.moderation.autoModeration.modules.scams.reaction
+                    action: guild.configurationManager.configuration.moderation.autoModeration.modules.scams.reaction
                 });
 
-                if (guild.configuration.moderation.autoModeration.modules.links.status) {
-                    if (guild.configuration.moderation.autoModeration.modules.links.overwrite.deny.includes(`*.${linkData.mainDomain}`) || guild.configuration.moderation.autoModeration.modules.links.overwrite.deny.includes(linkData.fullHost)) {
+                if (guild.configurationManager.configuration.moderation.autoModeration.modules.links.status) {
+                    if (guild.configurationManager.configuration.moderation.autoModeration.modules.links.overwrite.deny.includes(`*.${linkData.mainDomain}`) || guild.configurationManager.configuration.moderation.autoModeration.modules.links.overwrite.deny.includes(linkData.fullHost)) {
                         violations.push({
                             check: `linkify`,
                             trigger: element.type,
                             value: element.value,
-                            action: guild.configuration.moderation.autoModeration.modules.links.reaction
+                            action: guild.configurationManager.configuration.moderation.autoModeration.modules.links.reaction
                         });
-                    } else if (!guild.configuration.moderation.autoModeration.modules.links.overwrite.allow.includes(`*.${linkData.mainDomain}`) && !guild.configuration.moderation.autoModeration.modules.links.overwrite.allow.includes(linkData.fullHost)) {
-                        if (!guild.configuration.moderation.autoModeration.modules.links.allowed.includes(`*.${linkData.mainDomain}`) && !guild.configuration.moderation.autoModeration.modules.links.allowed.includes(linkData.fullHost)) {
+                    } else if (!guild.configurationManager.configuration.moderation.autoModeration.modules.links.overwrite.allow.includes(`*.${linkData.mainDomain}`) && !guild.configurationManager.configuration.moderation.autoModeration.modules.links.overwrite.allow.includes(linkData.fullHost)) {
+                        if (!guild.configurationManager.configuration.moderation.autoModeration.modules.links.allowed.includes(`*.${linkData.mainDomain}`) && !guild.configurationManager.configuration.moderation.autoModeration.modules.links.allowed.includes(linkData.fullHost)) {
                             violations.push({
                                 check: `linkify`,
                                 trigger: element.type,
                                 value: element.value,
-                                action: guild.configuration.moderation.autoModeration.modules.links.reaction
+                                action: guild.configurationManager.configuration.moderation.autoModeration.modules.links.reaction
                             });
                         }
                     }
@@ -96,24 +99,23 @@ module.exports = async (message, guild = undefined) => {
         messageMetric.addEntry(`ChatLinkifyChecked`);
     }
 
-    if (guild.configuration.moderation.autoModeration.modules.IPs.status && !guild.configuration.moderation.autoModeration.modules.IPs.ignoredChannels.includes(message.channel.id)) {
+    if (guild.configurationManager.configuration.moderation.autoModeration.modules.IPs.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.IPs.ignoredChannels.includes(message.channel.id)) {
         let IPCheckResult = await require(`./chatModerationModules/ipFilter`).ipFilter(client, message, guild);
         if (IPCheckResult.result) {
             violations.push({
                 check: `CustomIPCheck`,
                 trigger: "IP",
                 value: IPCheckResult.value,
-                action: guild.configuration.moderation.autoModeration.modules.IPs.reaction
+                action: guild.configurationManager.configuration.moderation.autoModeration.modules.IPs.reaction
             });
         }
     }
 
-
-    if ((guild.configuration.moderation.autoModeration.modules.wordsDetection.status && !guild.configuration.moderation.autoModeration.modules.wordsDetection.ignoredChannels.includes(message.channel.id)) ||
-        (guild.configuration.moderation.autoModeration.modules.scams.status && !guild.configuration.moderation.autoModeration.modules.scams.ignoredChannels.includes(message.channel.id))) {
+    if ((guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.ignoredChannels.includes(message.channel.id)) ||
+        (guild.configurationManager.configuration.moderation.autoModeration.modules.scams.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.scams.ignoredChannels.includes(message.channel.id))) {
         let customDetect = await require(`./chatModerationModules/detectProfanities`).detectProfanities(client, message, guild, {
-            terms: guild.configuration.moderation.autoModeration.modules.scams.terms,
-            slashes: guild.configuration.moderation.autoModeration.modules.scams.slashes
+            terms: guild.configurationManager.configuration.moderation.autoModeration.modules.scams.terms,
+            slashes: guild.configurationManager.configuration.moderation.autoModeration.modules.scams.slashes
         });
         if (customDetect.length != 0)
             for (const element of customDetect) {
@@ -155,13 +157,13 @@ module.exports = async (message, guild = undefined) => {
 
         if (actions.includes('delete')) message.delete().catch({});
         if (actions.includes('ban')) {
-            guild.banUser(message, user.id, guild.configuration.moderation.autoModeration.banReason, guild.configuration.moderation.autoModeration.banDuration * 60, true, true);
+            guild.banUser(message, user.id, guild.configurationManager.configuration.moderation.autoModeration.banReason, guild.configurationManager.configuration.moderation.autoModeration.banDuration * 60, true, true);
         } else if (actions.includes('kick')) {
-            guild.kickUser(message, user.id, guild.configuration.moderation.autoModeration.kickReason, undefined, true, true);
+            guild.kickUser(message, user.id, guild.configurationManager.configuration.moderation.autoModeration.kickReason, undefined, true, true);
         } else if (actions.includes('mute')) {
-            guild.muteUser(message, user.id, guild.configuration.moderation.autoModeration.muteReason, guild.configuration.moderation.autoModeration.muteDuration * 60, true, true);
+            guild.muteUser(message, user.id, guild.configurationManager.configuration.moderation.autoModeration.muteReason, guild.configurationManager.configuration.moderation.autoModeration.muteDuration * 60, true, true);
         } else if (actions.includes('warn')) {
-            guild.warnUser(message, user.id, guild.configuration.moderation.autoModeration.warnReason, undefined, true, true);
+            guild.warnUser(message, user.id, guild.configurationManager.configuration.moderation.autoModeration.warnReason, undefined, true, true);
         }
 
         let mainAction = actions.shift();

@@ -13,5 +13,3 @@ Things saved by TobyBot:
 - Make the permission scan all at once not one by one (User, Internal Role, Role, Channel, Guild) > Will work on it later, im tired of playing with permissions rn
                 
 - Auto Moderation Phase/ Version 4. > Should start working on it soonish, will take some time, may implement slowly
-
-- Things

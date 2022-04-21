@@ -4,7 +4,7 @@ const {
 } = require(`discord.js`);
 const utils = require(`../utils`);
 const {
-    configuration,
+    globalConfiguration,
     MainLog
 } = require(`../../index`);
 
@@ -28,7 +28,7 @@ module.exports = {
 
         let embed = new MessageEmbed({
             title: `I choose what im gonna send, ur turn :eyes:`,
-            color: guild.configuration.colors.main,
+            color: guild.configurationManager.configuration.colors.main,
             description: `Possibilities are (case sensitive) : \`rock\`, \`paper\`, \`scissors\` [${guild.waitingForMessage.data.rockpaperscissors[message.author.id].rounds} rounds]`
         });
 
@@ -36,9 +36,9 @@ module.exports = {
             embeds: [embed],
             failIfNotExists: false
         }, false).then(async msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
                 MainLog.log(`Could not delete message [${message.id}] in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-                if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+                if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not delete message [${message.id}] in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
             });
 
 
@@ -48,7 +48,7 @@ module.exports = {
             guild.waitingForMessage.channels[message.channel.id][message.author.id] = (message) => {
                 let possibilities = ["rock", "paper", "scissors"];
                 if (!possibilities.includes(message.content)) return utils.sendError(message, guild, `Wrong play.`, `Possibilities are (case sensitive) : \`rock\`, \`paper\`, \`scissors\``, [], true); /*Updated To New Utils*/
-                if (message.content.startsWith(configuration.globalPrefix) || message.content.startsWith(guild.configuration.prefix)) return false;
+                if (message.content.startsWith(globalConfiguration.globalConfiguration.configuration.globalPrefix) || message.content.startsWith(guild.configurationManager.configuration.prefix)) return false;
                 guild.waitingForMessage.data.rockpaperscissors[message.author.id].gonnaPlay = possibilities[rn({
                     min: 0,
                     max: possibilities.length - 1,
@@ -136,7 +136,7 @@ module.exports = {
             }
         }).catch(e => {
             MainLog.log(`Could not reply to message ${message.id} in [${message.channel.id}][${message.channel.guild.id}] Error : ${e}`.red); //Logging in file & console
-            if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
+            if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized) guild.channelLog(`[ERR] Could not reply to message ${message.id} in [<#${message.channel.id}>(${message.channel.id})] Error : \`${e}\``); //Loggin in log channel if logDiscordErrors is set & the log channel is initialized
         });
         return true;
     }

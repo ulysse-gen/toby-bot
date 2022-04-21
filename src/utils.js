@@ -5,7 +5,7 @@ const moment = require(`moment`);
 const urlExists = require("url-exists");
 
 const {
-    configuration,
+    globalConfiguration,
     MainLog,
     MainSQLLog
 } = require(`../index`);
@@ -24,7 +24,7 @@ exports.sendEmbed = (message, guild, title, description = undefined, color = `#F
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
     if (typeof title == "undefined") return false;
-    let embed = new MessageEmbed().setTitle(`${configuration.appName} - ${title}`).setColor(color);
+    let embed = new MessageEmbed().setTitle(`${globalConfiguration.configuration.appName} - ${title}`).setColor(color);
     if (typeof description != "undefined" && description.replaceAll(' ', '') != "") embed.setDescription(description);
     if (typeof fields == "object" && fields.length > 0)
         fields.forEach(indField => embed.addField(indField[0], indField[1], indField[2]));
@@ -53,64 +53,64 @@ exports.sendEmbed = (message, guild, title, description = undefined, color = `#F
     }
 }
 
-exports.sendMain = (message, guild, title, description = undefined, fields = [], reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => this.sendEmbed(message, guild, title, description, guild.configuration.colors.main, fields, reply, deleteOriginalAfter, deleteItselfAfter);
-exports.sendSuccess = (message, guild, title = `Success`, description = undefined, fields = [], reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => this.sendEmbed(message, guild, title, description, guild.configuration.colors.success, fields, reply, deleteOriginalAfter, deleteItselfAfter);
-exports.sendError = (message, guild, title = `Error`, description = undefined, fields = [], reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => this.sendEmbed(message, guild, title, description, guild.configuration.colors.error, fields, reply, deleteOriginalAfter, deleteItselfAfter);
-exports.sendWarning = (message, guild, title = `Warning`, description = undefined, fields = [], reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => this.sendEmbed(message, guild, title, description, guild.configuration.colors.warning, fields, reply, deleteOriginalAfter, deleteItselfAfter);
+exports.sendMain = (message, guild, title, description = undefined, fields = [], reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => this.sendEmbed(message, guild, title, description, guild.configurationManager.configuration.colors.main, fields, reply, deleteOriginalAfter, deleteItselfAfter);
+exports.sendSuccess = (message, guild, title = `Success`, description = undefined, fields = [], reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => this.sendEmbed(message, guild, title, description, guild.configurationManager.configuration.colors.success, fields, reply, deleteOriginalAfter, deleteItselfAfter);
+exports.sendError = (message, guild, title = `Error`, description = undefined, fields = [], reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => this.sendEmbed(message, guild, title, description, guild.configurationManager.configuration.colors.error, fields, reply, deleteOriginalAfter, deleteItselfAfter);
+exports.sendWarning = (message, guild, title = `Warning`, description = undefined, fields = [], reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => this.sendEmbed(message, guild, title, description, guild.configurationManager.configuration.colors.warning, fields, reply, deleteOriginalAfter, deleteItselfAfter);
 
 exports.unknownCommand = (message, guild, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
-    if (guild.configuration.behaviour.logOnUnknownCommand && guild.logToChannel.initialized)
-        guild.channelEmbedLog(`Command Denied`, `${message.content}`, guild.configuration.colors.error, [
+    if (guild.configurationManager.configuration.behaviour.logOnUnknownCommand && guild.logToChannel.initialized)
+        guild.channelEmbedLog(`Command Denied`, `${message.content}`, guild.configurationManager.configuration.colors.error, [
             [`Reason:`, `Unknown command`, true],
             [`Executor:`, `<@${message.author.id}>`, true],
             [`Channel:`, `<#${message.channel.id}>`, true],
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
-    if (guild.configuration.behaviour.onUnknownCommandIgnore)return true;
-    return this.sendError(message, guild, `${configuration.appName} - Unknown Command`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
+    if (guild.configurationManager.configuration.behaviour.onUnknownCommandIgnore)return true;
+    return this.sendError(message, guild, `${globalConfiguration.configuration.appName} - Unknown Command`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 exports.cooldownCommand = (message, guild, permission, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
-    if (guild.configuration.behaviour.logOnCooldown && guild.logToChannel.initialized)
-        guild.channelEmbedLog(`Command Denied`, `${message.content}`, guild.configuration.colors.error, [
+    if (guild.configurationManager.configuration.behaviour.logOnCooldown && guild.logToChannel.initialized)
+        guild.channelEmbedLog(`Command Denied`, `${message.content}`, guild.configurationManager.configuration.colors.error, [
             [`Reason:`, `Cooldown`, true],
             [`Permission:`, `${permission}`, true],
             [`Executor:`, `<@${message.author.id}>`, true],
             [`Channel:`, `<#${message.channel.id}>`, true],
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
-    if (guild.configuration.behaviour.onCooldownIgnore)return true;
-    return this.sendError(message, guild, `${configuration.appName} - Cooldown`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
+    if (guild.configurationManager.configuration.behaviour.onCooldownIgnore)return true;
+    return this.sendError(message, guild, `${globalConfiguration.configuration.appName} - Cooldown`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 exports.insufficientPermissions = (message, guild, permission, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
-    if (guild.configuration.behaviour.logOnCommandDenied && guild.logToChannel.initialized)
-        guild.channelEmbedLog(`Command Denied`, `${message.content}`, guild.configuration.colors.error, [
+    if (guild.configurationManager.configuration.behaviour.logOnCommandDenied && guild.logToChannel.initialized)
+        guild.channelEmbedLog(`Command Denied`, `${message.content}`, guild.configurationManager.configuration.colors.error, [
             [`Reason:`, `Insufficient Permissions`, true],
             [`Permission:`, `${permission}`, true],
             [`Executor:`, `<@${message.author.id}>`, true],
             [`Channel:`, `<#${message.channel.id}>`, true],
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
-    if (guild.configuration.behaviour.onCommandDeniedIgnore)return true;
-    return this.sendError(message, guild, `${configuration.appName} - Insufficient Permissions`, `You are missing the permission \`${permission}\``, [], reply, deleteOriginalAfter, deleteItselfAfter);
+    if (guild.configurationManager.configuration.behaviour.onCommandDeniedIgnore)return true;
+    return this.sendError(message, guild, `${globalConfiguration.configuration.appName} - Insufficient Permissions`, `You are missing the permission \`${permission}\``, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 exports.lockdownDenied = (message, guild, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
-    if (guild.configuration.behaviour.logOnCommandDenied && guild.logToChannel.initialized)
-        guild.channelEmbedLog(`Command Denied`, `${message.content}`, guild.configuration.colors.error, [
+    if (guild.configurationManager.configuration.behaviour.logOnCommandDenied && guild.logToChannel.initialized)
+        guild.channelEmbedLog(`Command Denied`, `${message.content}`, guild.configurationManager.configuration.colors.error, [
             [`Reason:`, `Command Lockdown`, true],
             [`Executor:`, `<@${message.author.id}>`, true],
             [`Channel:`, `<#${message.channel.id}>`, true],
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
-    if (guild.configuration.behaviour.onCommandDeniedIgnore)return true;
-    return this.sendError(message, guild, `${configuration.appName} - Command Lockdown`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
+    if (guild.configurationManager.configuration.behaviour.onCommandDeniedIgnore)return true;
+    return this.sendError(message, guild, `${globalConfiguration.configuration.appName} - Command Lockdown`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 
 exports.getUserPfp = async (user) => {
@@ -126,21 +126,21 @@ exports.getUserPfp = async (user) => {
 exports.messageReplyFailLogger = (message, guild, error) => {
     MainSQLLog.log(`Reply Error`, ``, guild.guild.id, message.channel.id, message.author.id, message.id); //Only runs if the thing on top was true, logs into console
     MainLog.log(`[ERROR] Could not reply to message ${message.id} in [${message.channel.id}@${message.channel.guild.id}] Error : ${error}`.yellow);
-    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized)
+    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized)
         guild.channelLog(`[ERROR] Could not reply to message ${message.id} in <#${message.channel.id}>(${message.channel.id}) Error : \`${error}\``);
 }
 
 exports.messageDeleteFailLogger = (message, guild, error) => {
     MainSQLLog.log(`Delete Error`, ``, guild.guild.id, message.channel.id, message.author.id, message.id); //Only runs if the thing on top was true, logs into console
     MainLog.log(`[ERROR] Could not delete message ${message.id} from [${message.channel.id}@${message.channel.guild.id}] Error : ${error}`.yellow);
-    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized)
+    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized)
         guild.channelLog(`[ERROR] Could not delete message ${message.id} from <#${message.channel.id}>(${message.channel.id}) Error : \`${error}\``);
 }
 
 exports.catchCustomLog = (message, guild, error, customlog) => {
     MainSQLLog.log(`Custom Error`, `${customlog}`, guild.guild.id, message.channel.id, message.author.id, message.id); //Only runs if the thing on top was true, logs into console
     MainLog.log(`[ERROR] ${customlog} [${message.channel.id}@${message.channel.guild.id}] Error : ${error}`.yellow);
-    if (typeof guild != "undefined" && guild.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized)
+    if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logDiscordErrors && guild.logToChannel.initialized)
         guild.channelLog(`[ERROR] ${customlog} <#${message.channel.id}>(${message.channel.id}) Error : \`${error}\``);
 }
 

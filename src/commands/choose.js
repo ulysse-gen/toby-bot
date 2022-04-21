@@ -27,7 +27,7 @@ module.exports = {
         let possibilities = (args.join(' ').includes(',')) ? args.join(' ').split(',') : args;
 
         message.reply(`Lemme think a bit..`, false).then(msg => {
-            if (guild.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
+            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
             let rollOccur = rn({min: 3, max: 4, integer: true});
             let rollInterval = setInterval(() => {
                 if (rollOccur != 0)msg.edit(`Lemme think a bit.. **${possibilities[rn({min: 0, max: possibilities.length-1, integer: true})]}**`).catch(e => {

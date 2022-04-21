@@ -1,10 +1,10 @@
 //NodeJS Modules Imports
 const colors = require(`colors`);
-const moment = require(`moment`);
 const {
     Client,
     Intents
 } = require('discord.js');
+const { REST } = require('@discordjs/rest');
 const discordVoice = require('@discordjs/voice');
 var heapdump = require('heapdump');
 var fs = require('fs');
@@ -34,7 +34,6 @@ const metricsManager = require(`./src/classes/metricsManager`);
 //Main Variables
 const packageJson = require(`./package.json`);
 const globalConfiguration = new configurationManager(client, `../../configuration.json`, `configuration`);
-var configuration = globalConfiguration.configuration;
 
 //Create Objects
 //DiscordJS
@@ -42,10 +41,12 @@ var client = new Client({
     partials: ["CHANNEL"],
     intents: intents
 });
+var rest = undefined;
+const errorCatching = false;
 
 //CommandManagers & PermissionsManagers
 var globalCommands = new commandsManager(client);
-var globalPermissions = new permissionsManager(client, `../../permissions.json`, `guildsPermissions`, `\`guildId\`='global'`);
+var globalPermissions = new permissionsManager(client, `../../permissions.json`, `guildsPermissions`);
 var globalGuilds = new guildsManager(client);
 var globalSqlManager = new sqlManager(client, globalCommands, globalPermissions, globalGuilds);
 var globalMetrics = new metricsManager();
@@ -61,7 +62,7 @@ var botLifeMetric = globalMetrics.createMetric("botLifeMetric");
 client.on('ready', async () => {
     botLifeMetric.addEntry("botReady");
     MainSQLLog.log(`Client Ready`, `Logged in as ${client.user.tag} on version ${packageJson.version}`);
-    MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${configuration.appName.green}v${packageJson.version.green}]`);
+    MainLog.log(`Successfully logged in as ${colors.green(client.user.tag)} ! [${globalConfiguration.configuration.appName.green}v${packageJson.version.green}]`);
     require(`./src/managers/presenceManager`)();
     require(`./src/managers/api`)();
     setInterval(() => globalSqlManager.checkForExpiredModeration(), 20000);
@@ -98,7 +99,10 @@ client.on('error', (code) => {
     botLifeMetric.addEntry("globalPermInit");
     await globalPermissions.initialize();
     botLifeMetric.addEntry("clientLogin");
-    client.login(configuration.botToken);
+    await client.login(globalConfiguration.configuration.botToken);
+    rest = new REST({ version: '9' }).setToken(globalConfiguration.configuration.botToken);
+    botLifeMetric.addEntry("globalCmdsInit");
+    await globalCommands.initialize(globalCommands.commandsFolder, rest);
 })();
 
 process.stdin.resume();
@@ -122,11 +126,11 @@ async function exitHandler(reason, exit) {
     return true;
 }
 
-if (typeof enableCatching == "undefined" || (typeof enableCatching == "boolean" && enableCatching)) process.on('uncaughtException', (error) => {
+if (typeof errorCatching == "undefined" || (typeof errorCatching == "boolean" && errorCatching)) process.on('uncaughtException', (error) => {
     exitHandler("uncaughtException", error);
 });
 
-if (typeof enableCatching == "undefined" || (typeof enableCatching == "boolean" && enableCatching)) process.on('unhandledRejection', (error) => {
+if (typeof errorCatching == "undefined" || (typeof errorCatching == "boolean" && errorCatching)) process.on('unhandledRejection', (error) => {
     exitHandler("unhandledRejection", error);
 });
 
@@ -159,8 +163,7 @@ module.exports.ErrorLog = ErrorLog;
 module.exports.AutoModLog = AutoModLog;
 module.exports.MainSQLLog = MainSQLLog;
 
-//Configurations:
-module.exports.configuration = configuration;
+//Configurations
 module.exports.packageJson = packageJson;
 module.exports.blockedUsers = [
     "793722644016005170",
@@ -168,7 +171,7 @@ module.exports.blockedUsers = [
 ]
 
 //Export managers
-module.exports.globalConfiguration = globalCommands;
+module.exports.globalConfiguration = globalConfiguration;
 module.exports.globalCommands = globalCommands;
 module.exports.globalPermissions = globalPermissions;
 module.exports.globalGuilds = globalGuilds;
@@ -176,6 +179,6 @@ module.exports.globalMetrics = globalMetrics;
 
 //Debug stuff & more
 module.exports.reload = false;
-module.exports.enableCatching = false;
+module.exports.errorCatching = errorCatching;
 module.exports.executionTimes = {};
 module.exports.botLifeMetric = botLifeMetric;
