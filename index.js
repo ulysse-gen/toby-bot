@@ -42,7 +42,7 @@ var client = new Client({
     intents: intents
 });
 var rest = undefined;
-const errorCatching = false;
+const errorCatching = true;
 
 //CommandManagers & PermissionsManagers
 var globalCommands = new commandsManager(client);
