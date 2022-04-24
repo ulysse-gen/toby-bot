@@ -18,8 +18,8 @@ module.exports = {
         let embed = new MessageEmbed({
             title: `Click here to invite me in your server !`,
             color: guild.configurationManager.configuration.colors.main,
-            description: `https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot`,
-            url: `https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot`
+            description: `https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands`,
+            url: `https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands`
         })
         message.reply({
             embeds: [embed],

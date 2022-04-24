@@ -69,21 +69,21 @@ exports.unknownCommand = (message, guild, reply = false, deleteOriginalAfter = -
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
     if (guild.configurationManager.configuration.behaviour.onUnknownCommandIgnore)return true;
-    return this.sendError(message, guild, `${globalConfiguration.configuration.appName} - Unknown Command`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
+    return this.sendError(message, guild, `Unknown Command`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
-exports.cooldownCommand = (message, guild, permission, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
+exports.cooldownCommand = (message, guild, cooldownData, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
     if (typeof message == "undefined") return false;
     if (typeof guild == "undefined") return false;
     if (guild.configurationManager.configuration.behaviour.logOnCooldown && guild.logToChannel.initialized)
         guild.channelEmbedLog(`Command Denied`, `${message.content}`, guild.configurationManager.configuration.colors.error, [
             [`Reason:`, `Cooldown`, true],
-            [`Permission:`, `${permission}`, true],
+            [`Permission:`, `${cooldownData.perm}`, true],
             [`Executor:`, `<@${message.author.id}>`, true],
             [`Channel:`, `<#${message.channel.id}>`, true],
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
     if (guild.configurationManager.configuration.behaviour.onCooldownIgnore)return true;
-    return this.sendError(message, guild, `${globalConfiguration.configuration.appName} - Cooldown`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
+    return this.sendError(message, guild, `Cooldown`, `You will be able to execute this command in ${cooldownData.timeLeft} seconds.`, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 exports.insufficientPermissions = (message, guild, permission, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
     if (typeof message == "undefined") return false;
@@ -97,7 +97,7 @@ exports.insufficientPermissions = (message, guild, permission, reply = false, de
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
     if (guild.configurationManager.configuration.behaviour.onCommandDeniedIgnore)return true;
-    return this.sendError(message, guild, `${globalConfiguration.configuration.appName} - Insufficient Permissions`, `You are missing the permission \`${permission}\``, [], reply, deleteOriginalAfter, deleteItselfAfter);
+    return this.sendError(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permission}\``, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 exports.lockdownDenied = (message, guild, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
     if (typeof message == "undefined") return false;
@@ -110,7 +110,7 @@ exports.lockdownDenied = (message, guild, reply = false, deleteOriginalAfter = -
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
     if (guild.configurationManager.configuration.behaviour.onCommandDeniedIgnore)return true;
-    return this.sendError(message, guild, `${globalConfiguration.configuration.appName} - Command Lockdown`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
+    return this.sendError(message, guild, `Command Lockdown`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 
 exports.getUserPfp = async (user) => {

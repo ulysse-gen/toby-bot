@@ -91,7 +91,7 @@ module.exports = {
       "description": "Enable this to delete the cooldown command error."
     },
     "sendConfigInEmbed": {
-      "deprecated": true,
+      "deprecated": undefined,
       "name": "Send Config In Embed",
       "description": "Enable this to send the config in embed."
     },
@@ -104,11 +104,11 @@ module.exports = {
         "name": "Log To Channel",
         "description": "Enable this to allow the bot to log in the logging channel. Logging channel must be defined before.",
         "checkerFunction": async (client, message, guild, configEntries, configPath, configValue) => {
-          if (configValue == false) return {
-            break: false
+          if (configValue == undefined) return {
+            break: undefined
           }
           if (configEntries[`behaviour.logToChannel.channel`].defaultValue == configEntries[`behaviour.logToChannel.channel`].value) return {
-            break: true,
+            break: undefined,
             title: "Set the logging channel before enabling.",
             description: `Use \`${guild.configurationManager.configuration.prefix}conf set behaviour.logToChannel.channel <#ChannelId>\` to set the channel.`
           };
@@ -116,11 +116,11 @@ module.exports = {
             return fetchedGuild.channels.fetch(configEntries[`behaviour.logToChannel.channel`].value).then(fetchedChannel => {
               return fetchedChannel.send(`Channel logging enabled.`).then(() => {
                 return {
-                  break: false
+                  break: undefined
                 }
               }).catch(err => {
                 return {
-                  break: true,
+                  break: undefined,
                   title: `Could not enable`,
                   description: `Could not use the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                   error: err
@@ -128,7 +128,7 @@ module.exports = {
               })
             }).catch(err => {
               return {
-                break: true,
+                break: undefined,
                 title: `Could not enable`,
                 description: `Could not fetch the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                 error: err
@@ -136,7 +136,7 @@ module.exports = {
             })
           }).catch(err => {
             return {
-              break: true,
+              break: undefined,
               title: `Could not enable`,
               description: `Could not fetch the guild for the logging channel. This should not happen. Please re define the logging channel.`,
               error: err
@@ -154,12 +154,12 @@ module.exports = {
             return fetchedGuild.channels.fetch(newValue).then(fetchedChannel => {
               return fetchedChannel.send(`Channel logging enabled.`).then(() => {
                 return {
-                  break: false,
+                  break: undefined,
                   newValue
                 }
               }).catch(err => {
                 return {
-                  break: true,
+                  break: undefined,
                   title: `Could not enable`,
                   description: `Could not use the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                   error: err
@@ -167,7 +167,7 @@ module.exports = {
               })
             }).catch(err => {
               return {
-                break: true,
+                break: undefined,
                 title: `Could not enable`,
                 description: `Could not fetch the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                 error: err
@@ -175,7 +175,7 @@ module.exports = {
             })
           }).catch(err => {
             return {
-              break: true,
+              break: undefined,
               title: `Could not enable`,
               description: `Could not fetch the guild for the logging channel. This should not happen. Please re define the logging channel.`,
               error: err
@@ -207,22 +207,22 @@ module.exports = {
     },
   },
   "autokick": {
-    "status": false,
-    "trigger": "none",
-    "logKickedUsers": true,
-    "triggerNeeded": 1,
-    "kickReason": "AutoKicked by &{AppName} | &{TriggerReason} by &{TriggerUserTag}",
-    "rolesToKick": [],
-    "blacklist": []
+    "status": undefined,
+    "trigger": undefined,
+    "logKickedUsers": undefined,
+    "triggerNeeded": undefined,
+    "kickReason": undefined,
+    "rolesToKick": undefined,
+    "blacklist": undefined
   },
   "roleadder": {
-    "status": false,
-    "trigger": "none",
-    "logAddedUsers": true,
-    "addReason": "AutoAdded by &{AppName} | &{TriggerReason} by &{TriggerUserTag}",
-    "rolesToAdd": [],
-    "blacklist": [],
-    "whitelist": []
+    "status": undefined,
+    "trigger": undefined,
+    "logAddedUsers": undefined,
+    "addReason": undefined,
+    "rolesToAdd": undefined,
+    "blacklist": undefined,
+    "whitelist": undefined
   },
   "moderation": {
     "logToChannel": {
@@ -230,11 +230,11 @@ module.exports = {
         "name": "Log Moderation To Channel",
         "description": "Enable this to allow the bot to log the moderation in the moderation logging channel. Moderation logging channel must be defined before.",
         "checkerFunction": async (client, message, guild, configEntries, configPath, configValue) => {
-          if (configValue == false) return {
-            break: false
+          if (configValue == undefined) return {
+            break: undefined
           }
           if (configEntries[`moderation.logToChannel.channel`].defaultValue == configEntries[`moderation.logToChannel.channel`].value) return {
-            break: true,
+            break: undefined,
             title: "Set the logging channel before enabling.",
             description: `Use \`${guild.configurationManager.configuration.prefix}conf set moderation.logToChannel.channel <#ChannelId>\` to set the channel.`
           };
@@ -242,11 +242,11 @@ module.exports = {
             return fetchedGuild.channels.fetch(configEntries[`moderation.logToChannel.channel`].value).then(fetchedChannel => {
               return fetchedChannel.send(`Channel logging enabled.`).then(() => {
                 return {
-                  break: false
+                  break: undefined
                 }
               }).catch(err => {
                 return {
-                  break: true,
+                  break: undefined,
                   title: `Could not enable`,
                   description: `Could not use the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                   error: err
@@ -254,7 +254,7 @@ module.exports = {
               })
             }).catch(err => {
               return {
-                break: true,
+                break: undefined,
                 title: `Could not enable`,
                 description: `Could not fetch the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                 error: err
@@ -262,7 +262,7 @@ module.exports = {
             })
           }).catch(err => {
             return {
-              break: true,
+              break: undefined,
               title: `Could not enable`,
               description: `Could not fetch the guild for the logging channel. This should not happen. Please re define the logging channel.`,
               error: err
@@ -280,12 +280,12 @@ module.exports = {
             return fetchedGuild.channels.fetch(newValue).then(fetchedChannel => {
               return fetchedChannel.send(`Channel logging enabled.`).then(() => {
                 return {
-                  break: false,
+                  break: undefined,
                   newValue
                 }
               }).catch(err => {
                 return {
-                  break: true,
+                  break: undefined,
                   title: `Could not enable`,
                   description: `Could not use the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                   error: err
@@ -293,7 +293,7 @@ module.exports = {
               })
             }).catch(err => {
               return {
-                break: true,
+                break: undefined,
                 title: `Could not enable`,
                 description: `Could not fetch the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                 error: err
@@ -301,7 +301,7 @@ module.exports = {
             })
           }).catch(err => {
             return {
-              break: true,
+              break: undefined,
               title: `Could not enable`,
               description: `Could not fetch the guild for the logging channel. This should not happen. Please re define the logging channel.`,
               error: err
@@ -317,11 +317,11 @@ module.exports = {
           "name": "Log AutoModeration To Channel",
           "description": "Enable this to allow the bot to log the moderation in the AutoModeration logging channel. AutoModeration logging channel must be defined before.",
           "checkerFunction": async (client, message, guild, configEntries, configPath, configValue) => {
-            if (configValue == false) return {
-              break: false
+            if (configValue == undefined) return {
+              break: undefined
             }
             if (configEntries[`autoModeration.channel.channel`].defaultValue == configEntries[`autoModeration.channel.channel`].value) return {
-              break: true,
+              break: undefined,
               title: "Set the logging channel before enabling.",
               description: `Use \`${guild.configurationManager.configuration.prefix}conf set autoModeration.channel.channel <#ChannelId>\` to set the channel.`
             };
@@ -329,11 +329,11 @@ module.exports = {
               return fetchedGuild.channels.fetch(configEntries[`autoModeration.channel.channel`].value).then(fetchedChannel => {
                 return fetchedChannel.send(`Channel logging enabled.`).then(() => {
                   return {
-                    break: false
+                    break: undefined
                   }
                 }).catch(err => {
                   return {
-                    break: true,
+                    break: undefined,
                     title: `Could not enable`,
                     description: `Could not use the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                     error: err
@@ -341,7 +341,7 @@ module.exports = {
                 })
               }).catch(err => {
                 return {
-                  break: true,
+                  break: undefined,
                   title: `Could not enable`,
                   description: `Could not fetch the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                   error: err
@@ -349,7 +349,7 @@ module.exports = {
               })
             }).catch(err => {
               return {
-                break: true,
+                break: undefined,
                 title: `Could not enable`,
                 description: `Could not fetch the guild for the logging channel. This should not happen. Please re define the logging channel.`,
                 error: err
@@ -367,12 +367,12 @@ module.exports = {
               return fetchedGuild.channels.fetch(newValue).then(fetchedChannel => {
                 return fetchedChannel.send(`Channel logging enabled.`).then(() => {
                   return {
-                    break: false,
+                    break: undefined,
                     newValue
                   }
                 }).catch(err => {
                   return {
-                    break: true,
+                    break: undefined,
                     title: `Could not enable`,
                     description: `Could not use the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                     error: err
@@ -380,7 +380,7 @@ module.exports = {
                 })
               }).catch(err => {
                 return {
-                  break: true,
+                  break: undefined,
                   title: `Could not enable`,
                   description: `Could not fetch the channel for the logging channel. Please re define the logging channel or fix permissions.`,
                   error: err
@@ -388,7 +388,7 @@ module.exports = {
               })
             }).catch(err => {
               return {
-                break: true,
+                break: undefined,
                 title: `Could not enable`,
                 description: `Could not fetch the guild for the logging channel. This should not happen. Please re define the logging channel.`,
                 error: err
@@ -440,8 +440,12 @@ module.exports = {
             "name": "AutoModeration Links",
             "description": "Enable this to enable AutoModeration links module."
           },
-          "reaction": ["log", "delete"],
-          "ignoredChannels": [],
+          "reaction": undefined,
+          "ignoreNonExistandTDLs": {
+            "name": "Ignore Non Existent Top Domain Level",
+            "description": "Enable this to ingore non existent TDLs (this.isAfakeDomain)."
+          },
+          "ignoredChannels": undefined,
           "allowed": {
             "name": "AutoModeration Allowed Links",
             "description": "Links listed here will not trigger the AutoModeration."
@@ -462,49 +466,49 @@ module.exports = {
             "name": "AutoModeration Email",
             "description": "Enable this to enable AutoModeration emails module."
           },
-          "reaction": ["log", "delete"],
-          "ignoredChannels": []
+          "reaction": undefined,
+          "ignoredChannels": undefined
         },
         "IPs": {
           "status": {
             "name": "AutoModeration IPs",
             "description": "Enable this to enable AutoModeration IPs module."
           },
-          "reaction": ["log", "delete"],
-          "ignoredChannels": []
+          "reaction": undefined,
+          "ignoredChannels": undefined
         },
         "wordsDetection": {
-          "status": false,
-          "log": [],
-          "alert": [],
-          "delete": [],
-          "warn": [],
-          "mute": [],
-          "kick": [],
-          "ban": [],
-          "ignoredChannels": [],
-          "overwriteAllow": []
+          "status": undefined,
+          "log": undefined,
+          "alert": undefined,
+          "delete": undefined,
+          "warn": undefined,
+          "mute": undefined,
+          "kick": undefined,
+          "ban": undefined,
+          "ignoredChannels": undefined,
+          "overwriteAllow": undefined
         },
         "allCaps": {
-          "status": false,
-          "reaction": [],
-          "ignoredChannels": []
+          "status": undefined,
+          "reaction": undefined,
+          "ignoredChannels": undefined
         },
         "duplicateText": {
-          "status": false,
-          "reaction": ["log", "delete"],
-          "ignoredChannels": [],
+          "status": undefined,
+          "reaction": undefined,
+          "ignoredChannels": undefined,
           "threshold": {
-            "amount": 2
+            "amount": undefined
           }
         },
         "fastMessageSpam": {
-          "status": false,
-          "reaction": ["log", "delete"],
-          "ignoredChannels": [],
+          "status": undefined,
+          "reaction": undefined,
+          "ignoredChannels": undefined,
           "threshold": {
-            "time": 5,
-            "amount": 5
+            "time": undefined,
+            "amount": undefined
           }
         },
         "discordInvite": {
@@ -512,42 +516,42 @@ module.exports = {
             "name": "AutoModeration Discord Invite",
             "description": "Enable this to enable AutoModeration discord invite module."
           },
-          "reaction": ["log", "delete"],
-          "ignoredChannels": []
+          "reaction": undefined,
+          "ignoredChannels": undefined
         },
         "massMentions": {
-          "status": false,
-          "reaction": ["log", "delete"],
-          "ignoredChannels": [],
+          "status": undefined,
+          "reaction": undefined,
+          "ignoredChannels": undefined,
           "threshold": {
-            "time": 0,
-            "amount": 5
+            "time": undefined,
+            "amount": undefined
           }
         },
         "imageSpam": {
-          "status": false,
-          "reaction": ["log", "delete"],
-          "ignoredChannels": [],
+          "status": undefined,
+          "reaction": undefined,
+          "ignoredChannels": undefined,
           "threshold": {
-            "time": 10,
-            "amount": 2
+            "time": undefined,
+            "amount": undefined,
           }
         },
         "emojiSpam": {
-          "status": false,
-          "reaction": ["log", "delete"],
-          "ignoredChannels": [],
+          "status": undefined,
+          "reaction": undefined,
+          "ignoredChannels": undefined,
           "threshold": {
-            "amount": 8
+            "amount": undefined,
           }
         },
         "stickerSpam": {
-          "status": false,
-          "reaction": ["log", "delete"],
-          "ignoredChannels": [],
+          "status": undefined,
+          "reaction": undefined,
+          "ignoredChannels": undefined,
           "threshold": {
-            "time": 10,
-            "amount": 3
+            "time": undefined,
+            "amount": undefined,
           }
         },
         "scams": {
@@ -555,8 +559,8 @@ module.exports = {
             "name": "AutoModeration Scams",
             "description": "Enable this to enable AutoModeration scams module."
           },
-          "reaction": ["log", "delete"],
-          "ignoredChannels": [],
+          "reaction": undefined,
+          "ignoredChannels": undefined,
           "links": {
             "name": "AutoModeration Scams Links",
             "description": "Enable this to enable AutoModeration scams links module. (Main scam module need to be enabled)"
@@ -618,8 +622,8 @@ module.exports = {
     }
   },
   "lockdown": {
-    "status": false,
-    "globalLock": [],
-    "currentlyLocked": []
+    "status": undefined,
+    "globalLock": undefined,
+    "currentlyLocked": undefined
   }
 }

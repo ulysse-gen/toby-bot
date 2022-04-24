@@ -28,6 +28,7 @@ module.exports = class moderationManager {
         this.scamLinks = undefined;
         this.scamterms = undefined;
         this.scamSlashes = undefined;
+        this.domainNames = undefined;
         this.refreshDataSets();
 
         setInterval(() => this.refreshDataSets(), 43200000); //Scan toutes les 12H
@@ -78,13 +79,13 @@ module.exports = class moderationManager {
         embed.addField(`**Reason**`, `${(typeof reason == "string") ? reason : `No reason specified.`}`, true);
         if (typeof length != "boolean") embed.addField(`**Expires**`, (typeof length == "number") ? `<t:${moment(expireDate).unix()}>(<t:${moment(expireDate).unix()}:R>)` : (typeof length == "boolean" && !length) ? `N/A` : `Indefinite`, true);
         embed.addField(`**Infos**`, `ID: ${user.user.id} • <t:${moment().unix()}>`, false);
-        if (!silent)message.channel.send({
+        if (!silent) message.channel.send({
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).then(msg => {
             if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         }).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
-        if (typeof guild != "undefined" && guild.configurationManager.configuration.moderation.logToChannel.status && guild.moderationLog.initialized) guild.moderationLog.channel.send({ 
+        if (typeof guild != "undefined" && guild.configurationManager.configuration.moderation.logToChannel.status && guild.moderationLog.initialized) guild.moderationLog.channel.send({
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         }, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
@@ -121,7 +122,7 @@ module.exports = class moderationManager {
             embeds: [embed],
             failIfNotExists: false //If the message deosent exists enymore, just send it without the reply
         };
-        if (alert && guild.configurationManager.configuration.moderation.autoModeration.staffRoleForAlert.length != 0)messageContent.content = `<@&${guild.configurationManager.configuration.moderation.autoModeration.staffRoleForAlert.join("> <@&")}>`;
+        if (alert && guild.configurationManager.configuration.moderation.autoModeration.staffRoleForAlert.length != 0) messageContent.content = `<@&${guild.configurationManager.configuration.moderation.autoModeration.staffRoleForAlert.join("> <@&")}>`;
         if (typeof guild != "undefined" && guild.configurationManager.configuration.moderation.autoModeration.channel.status && guild.autoModerationLog.initialized) guild.autoModerationLog.channel.send(messageContent, false).catch(e => ErrorLog.log(`An error occured in moderation manager. ${e.toString()}`));
         return true;
     }
@@ -194,11 +195,11 @@ module.exports = class moderationManager {
                     ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}]`);
                     res(null);
                 }
-                if (typeof results == "undefined" || results.length == 0 || typeof results[0] == "undefined" || results[0].status == "deleted")return res({
+                if (typeof results == "undefined" || results.length == 0 || typeof results[0] == "undefined" || results[0].status == "deleted") return res({
                     error: `Punishment not found.`
                 });
-                if (["Mute", "Ban"].includes(results[0].type) && ["active","indefinite"].includes(results[0].status)) {
-                    if (moment(results[0].expires).isAfter(moment()) || results[0].status == "indefinite")return res({
+                if (["Mute", "Ban"].includes(results[0].type) && ["active", "indefinite"].includes(results[0].status)) {
+                    if (moment(results[0].expires).isAfter(moment()) || results[0].status == "indefinite") return res({
                         error: `This punishment isnt expired yet. ${(results[0].type == "Mute") ? `Unmute` : `Unban`} then delete the punishment.`
                     });
                 }
@@ -226,6 +227,13 @@ module.exports = class moderationManager {
         this.scamSlashes = await axios.get('https://spen.tk/api/v1/slashes')
             .then(response => {
                 return response.data.slashes
+            })
+            .catch(_error => {
+                return [];
+            });
+        this.domainNames = await axios.get('https://data.iana.org/TLD/tlds-alpha-by-domain.txt')
+            .then(response => {
+                return response.data.split('\n');
             })
             .catch(_error => {
                 return [];

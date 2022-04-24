@@ -37,23 +37,37 @@ module.exports = {
 
         let subCommand = args.shift().toLowerCase();
 
-        if ([`list`].includes(subCommand)) {
+        if ([`list`,`documentation`].includes(subCommand)) {
             return utils.sendMain(message, guild, `Configuration key list`, `You can reach https://tobybot.ubd.ovh/documentation/configuration?prefix=${guild.configurationManager.configuration.prefix} to have a list of all configs keys with some documentation.`, [], true);
         }
 
-        if ([`show`,`value`].includes(subCommand)) {
+        if ([`show`,`value`,`details`].includes(subCommand)) {
             if (args.length == 0)return utils.sendError(message, guild, `No key specified.`, `Please tell me what configuration key you want to see !`, undefined, true);
             let configKey = args.shift();
             if (typeof configEntries[configKey] == "undefined")return utils.sendError(message, guild, `This config key does not exist.`, `You can reach https://tobybot.ubd.ovh/documentation/configuration?prefix=${guild.configurationManager.configuration.prefix} to have a list of all configs keys with some documentation.`, undefined, true);
 
-            let fields = [];
-            fields.push(["**Name**", (typeof configEntries[configKey].documentation != "undefined") ? configEntries[configKey].documentation.name : configEntries[configKey].name, true]);
-            fields.push(["**Current value**", (typeof configEntries[configKey].value == "object") ? JSON.stringify(configEntries[configKey].value) : configEntries[configKey].value, true])
-            fields.push(["**Default value**", (typeof configEntries[configKey].defaultValue == "object") ? JSON.stringify(configEntries[configKey].defaultValue) : configEntries[configKey].defaultValue, true]);
-            fields.push(["**Key**", configKey, true]);
-            fields.push(["**Type**", typeof configEntries[configKey].defaultValue, true]);
+            let data = {
+                name: (typeof configEntries[configKey].documentation != "undefined") ? configEntries[configKey].documentation.name : configEntries[configKey].name,
+                description: (typeof configEntries[configKey].documentation != "undefined") ? configEntries[configKey].documentation.description : `This config key doesnt have a description yet.`,
+                defaultValue: configEntries[configKey].defaultValue,
+                currentValue: configEntries[configKey].value,
+                configKey: configKey,
+                type: typeof configEntries[configKey].defaultValue
+            }
 
-            return utils.sendMain(message, guild, `Configuration key ${configKey}`, (typeof configEntries[configKey].documentation != "undefined") ? configEntries[configKey].documentation.description : `This config key doesnt have a description yet.`, fields, true);
+            if (typeof data.defaultValue == "object") data.defaultValue = JSON.stringify(data.defaultValue);
+            if (typeof data.currentValue == "object") data.currentValue = JSON.stringify(data.currentValue);
+            if (typeof data.defaultValue == "boolean") data.defaultValue = (data.defaultValue) ? `true` : `false`;
+            if (typeof data.currentValue == "boolean") data.currentValue = (data.currentValue) ? `true` : `false`;
+
+            let fields = [];
+            fields.push(["**Name**", data.name, false]);
+            fields.push(["**Description**", data.description, false])
+            fields.push(["**Default value**", data.defaultValue, false]);
+            fields.push(["**Key**", data.configKey, false]);
+            fields.push(["**Type**", data.type, false]);
+
+            return utils.sendMain(message, guild, `Configuration key details`, data.currentValue, fields, true);
         }
 
         if ([`set`,`define`].includes(subCommand)) {
@@ -118,7 +132,7 @@ module.exports = {
             return utils.sendSuccess(message, guild, `Configuration reloaded`, undefined, undefined, true);
         }
 
-        return utils.sendError(message, guild, `Unknown subcommand`, `The command you typed seems wrong. Command format : \`${guild.configurationManager.configuration.prefix}configuration <subcommand> <setting> [options]\``, [], true); /*Updated To New Utils*/
+        return utils.sendError(message, guild, `Unknown subcommand`, `The command you typed seems wrong. Execute \`${guild.configurationManager.configuration.prefix}configuration\` to have more infos on how the configuration module works!`, [], true); /*Updated To New Utils*/
     }
 }
 
