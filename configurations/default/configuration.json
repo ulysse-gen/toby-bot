@@ -77,6 +77,7 @@
         "links": {
           "status": false,
           "reaction": ["log","delete"],
+          "ignoreNonExistandTDLs": true,
           "ignoredChannels": [],
           "allowed": [],
           "overwrite": {

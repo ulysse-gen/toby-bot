@@ -58,7 +58,7 @@ module.exports = async (message, guild = undefined) => {
                 }
 
                 if (guild.configurationManager.configuration.moderation.autoModeration.modules.discordInvite.status) {
-                    if (textContains(linkData.fullLink, "discord.com/invite/")){
+                    if (textContains(linkData.fullLink, "discord.com/invite/")) {
                         violations.push({
                             check: `CustomDiscordInvite`,
                             trigger: "Discord Invite",
@@ -69,7 +69,7 @@ module.exports = async (message, guild = undefined) => {
                 }
 
                 if (guild.configurationManager.configuration.moderation.autoModeration.modules.scams.links && typeof guild.moderationManager.scamLinks != "undefined" &&
-                (guild.moderationManager.scamLinks.includes(linkData.mainDomain) || guild.moderationManager.scamLinks.includes(`*.${linkData.mainDomain}`) || guild.moderationManager.scamLinks.includes(linkData.fullHost))) violations.push({
+                    (guild.moderationManager.scamLinks.includes(linkData.mainDomain) || guild.moderationManager.scamLinks.includes(`*.${linkData.mainDomain}`) || guild.moderationManager.scamLinks.includes(linkData.fullHost))) violations.push({
                     check: `spen.tk`,
                     trigger: "Scam URL",
                     value: element.value,
@@ -85,14 +85,16 @@ module.exports = async (message, guild = undefined) => {
                             action: guild.configurationManager.configuration.moderation.autoModeration.modules.links.reaction
                         });
                     } else if (!guild.configurationManager.configuration.moderation.autoModeration.modules.links.overwrite.allow.includes(`*.${linkData.mainDomain}`) && !guild.configurationManager.configuration.moderation.autoModeration.modules.links.overwrite.allow.includes(linkData.fullHost)) {
-                        if (!guild.configurationManager.configuration.moderation.autoModeration.modules.links.allowed.includes(`*.${linkData.mainDomain}`) && !guild.configurationManager.configuration.moderation.autoModeration.modules.links.allowed.includes(linkData.fullHost)) {
-                            violations.push({
-                                check: `linkify`,
-                                trigger: element.type,
-                                value: element.value,
-                                action: guild.configurationManager.configuration.moderation.autoModeration.modules.links.reaction
-                            });
-                        }
+                        if (typeof guild.moderationManager.domainNames != undefined || !guild.configurationManager.configuration.moderation.autoModeration.modules.links.ignoreNonExistandTDLs ||
+                            guild.moderationManager.domainNames.includes(linkData.mainDomain.split('.')[linkData.mainDomain.split('.') - 1].toUpperCase()))
+                            if (!guild.configurationManager.configuration.moderation.autoModeration.modules.links.allowed.includes(`*.${linkData.mainDomain}`) && !guild.configurationManager.configuration.moderation.autoModeration.modules.links.allowed.includes(linkData.fullHost)) {
+                                violations.push({
+                                    check: `linkify`,
+                                    trigger: element.type,
+                                    value: element.value,
+                                    action: guild.configurationManager.configuration.moderation.autoModeration.modules.links.reaction
+                                });
+                            }
                     }
                 }
             }

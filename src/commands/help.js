@@ -14,6 +14,7 @@ module.exports = {
     aliases: ["?"],
     permission: `commands.help`,
     category: `informations`,
+    cooldown: 10,
     async exec(client, message, args, guild = undefined) {
         if (args.length == 0) {
             let description = `List of ${globalConfiguration.configuration.appName}'s commands *(Only list the commands you can execute)* **[${Object.keys(globalCommands.commands).length}]**: \n`;

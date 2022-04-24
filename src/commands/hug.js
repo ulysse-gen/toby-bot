@@ -14,8 +14,8 @@ module.exports = {
         reply: `commands.hug.reply`
     },
     category: `fun`,
-    cooldown: 130,
-    globalCooldown: 120,
+    cooldown: 45,
+    globalCooldown: 30,
     async exec(client, message, args, guild = undefined) {
         let possibilities = await axios.get('https://g.tenor.com/v1/search?q=hug%20anime&key=LIVDSRZULELA&limit=15').then(data => {
             return data.data.results.map(data => {

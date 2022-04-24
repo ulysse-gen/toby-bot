@@ -18,7 +18,7 @@ const {
 const utils = require(`../utils`);
 
 module.exports = async function (message, guild = undefined) {
-    let messageMetric =  message.customMetric;
+    let messageMetric = message.customMetric;
     messageMetric.addEntry(`CommandHandlerStart`);
     let args = message.content.split(' ');
     args = args.filter(function (e) {
@@ -32,7 +32,7 @@ module.exports = async function (message, guild = undefined) {
     if (typeof guild != "undefined" && cmd.startsWith(guild.configurationManager.configuration.prefix)) cmd = cmd.replace(guild.configurationManager.configuration.prefix, '');
     if (typeof client == "undefined") return utils.sendError(message, guild, undefined, `Client is undefined`, [], true, -1, -1); //This can actually never happen
     if (typeof globalCommands == "undefined") return utils.sendError(message, guild, undefined, `globalCommands is undefined`, [], true, -1, -1); //This error shoud never happen. globalCommands is the main commandManager and if its undefined no commands can work.
-    if (typeof globalPermissions == "undefined") return utils.sendError(message, guild, undefined, `globalPermissions is undefined`, [], true, -1, -1);//This error shoud never happen. globalPermissions is the main permissionsManager and if its undefined no commands can work.
+    if (typeof globalPermissions == "undefined") return utils.sendError(message, guild, undefined, `globalPermissions is undefined`, [], true, -1, -1); //This error shoud never happen. globalPermissions is the main permissionsManager and if its undefined no commands can work.
     //if (false) return utils.lockdownDenied(message, guild, undefined, undefined, [], true, -1, -1)
 
     messageMetric.addEntry(`FetchingCommand`);
@@ -62,25 +62,26 @@ module.exports = async function (message, guild = undefined) {
     let hasSkipCooldownPerms = (hasSkipCooldownGlobalPerms == null) ? hasSkipCooldownGuildPerms : hasSkipCooldownGlobalPerms;
     messageMetric.addEntry(`GotCooldownPermissions`);
 
-    if (command.globalcooldown != 0 && !hasSkipCooldownPerms)
-        if (typeof globalCommands.globalCooldowns[command.name] != "undefined") {
-            return utils.cooldownCommand(message, guild, cooldownPerm, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
-        } else {
-            if (typeof globalCommands.globalCooldowns[command.name] == "undefined") globalCommands.globalCooldowns[command.name] = true;
-            setTimeout(() => {
-                delete globalCommands.globalCooldowns[command.name];
-            }, command.globalCooldown * 1000)
-        }
-    if (command.cooldown != 0 && !hasSkipCooldownPerms)
-        if (typeof globalCommands.cooldowns[message.author.id] != "undefined" && typeof globalCommands.cooldowns[message.author.id][command.name] != "undefined") {
-            return utils.cooldownCommand(message, guild, cooldownPerm, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
-        } else {
-            if (typeof globalCommands.cooldowns[message.author.id] == "undefined") globalCommands.cooldowns[message.author.id] = {};
-            globalCommands.cooldowns[message.author.id][command.name] = true;
-            setTimeout(() => {
-                delete globalCommands.cooldowns[message.author.id][command.name];
-            }, command.globalCooldown * 1000)
-        }
+    if (command.cooldown != 0 && !hasSkipCooldownPerms) {
+        if (typeof globalCommands.cooldowns[message.author.id] != "undefined" && typeof globalCommands.cooldowns[message.author.id][command.name] != "undefined")
+            if (moment().diff(globalCommands.cooldowns[message.author.id][command.name], 'seconds') < command.cooldown)
+                return utils.cooldownCommand(message, guild, {
+                    perm: cooldownPerm,
+                    timeLeft: globalCommands.cooldowns[message.author.id][command.name].diff(moment(), 'seconds')
+                }, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
+        if (typeof globalCommands.cooldowns[message.author.id] == "undefined") globalCommands.cooldowns[message.author.id] = {};
+        globalCommands.cooldowns[message.author.id][command.name] = moment().add(command.cooldown, 'seconds');
+    }
+
+    if (command.globalcooldown != 0 && !hasSkipCooldownPerms) {
+        if (typeof globalCommands.globalCooldowns[command.name] != "undefined")
+            if (moment().diff(globalCommands.globalCooldowns[command.name], 'seconds') < command.globalCooldown)
+                return utils.cooldownCommand(message, guild, {
+                    perm: cooldownPerm,
+                    timeLeft: globalCommands.globalCooldowns[command.name].diff(moment(), 'seconds')
+                }, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
+        globalCommands.globalCooldowns[command.name] = moment().add(command.globalCooldown, 'seconds');
+    }
 
     messageMetric.addEntry(`TypingEventSent`);
     message.channel.sendTyping();

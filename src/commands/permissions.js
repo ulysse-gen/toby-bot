@@ -344,7 +344,7 @@ function sendPermissions(message, guild, args, scope, permissions) {
 
     embedPages = splitArrayIntoChunksOfLen(embedFields, 9);
     embed.footer = {
-        text: `Use \`-page:pageNumber]\` to search thru pages. [1/${embedPages.length}]`
+        text: `Use \`[-page:pageNumber]\` to search thru pages. [1/${embedPages.length}]`
     };
 
     embedFields = embedPages[0];
