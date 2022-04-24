@@ -97,6 +97,6 @@ module.exports = async function (interaction, guild = undefined) {
                 }
         return true;
     } catch (e) {
-        return utils.sendError(interaction, guild, undefined, `An error occured withing the command code.`, [], true, 5000, 5000);
+        return utils.sendError(interaction, guild, undefined, `An error occured within the command code.`, [], true, 5000, 5000);
     }
 }

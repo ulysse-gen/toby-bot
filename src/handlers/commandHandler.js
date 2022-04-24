@@ -62,24 +62,22 @@ module.exports = async function (message, guild = undefined) {
     let hasSkipCooldownPerms = (hasSkipCooldownGlobalPerms == null) ? hasSkipCooldownGuildPerms : hasSkipCooldownGlobalPerms;
     messageMetric.addEntry(`GotCooldownPermissions`);
 
-    if (command.cooldown != 0 && !hasSkipCooldownPerms) {
-        if (typeof globalCommands.cooldowns[message.author.id] != "undefined" && typeof globalCommands.cooldowns[message.author.id][command.name] != "undefined")
-            if (moment().diff(globalCommands.cooldowns[message.author.id][command.name], 'seconds') < command.cooldown)
-                return utils.cooldownCommand(message, guild, {
-                    perm: cooldownPerm,
-                    timeLeft: globalCommands.cooldowns[message.author.id][command.name].diff(moment(), 'seconds')
-                }, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
+
+    if (!hasSkipCooldownPerms) {
+        if (typeof globalCommands.cooldowns[message.author.id] != "undefined" && typeof globalCommands.cooldowns[message.author.id][command.name] != "undefined") {
+            if (globalCommands.cooldowns[message.author.id][command.name].diff(moment(), 'seconds') >= 0) return utils.cooldownCommand(message, guild, {
+                perm: cooldownPerm,
+                timeLeft: globalCommands.cooldowns[message.author.id][command.name].diff(moment(), 'seconds')
+            }, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
+        }
+        if (typeof globalCommands.globalCooldowns[command.name] != "undefined") {
+            if (globalCommands.globalCooldowns[command.name].diff(moment(), 'seconds') >= 0) return utils.cooldownCommand(message, guild, {
+                perm: cooldownPerm,
+                timeLeft: globalCommands.globalCooldowns[command.name].diff(moment(), 'seconds')
+            }, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
+        }
         if (typeof globalCommands.cooldowns[message.author.id] == "undefined") globalCommands.cooldowns[message.author.id] = {};
         globalCommands.cooldowns[message.author.id][command.name] = moment().add(command.cooldown, 'seconds');
-    }
-
-    if (command.globalcooldown != 0 && !hasSkipCooldownPerms) {
-        if (typeof globalCommands.globalCooldowns[command.name] != "undefined")
-            if (moment().diff(globalCommands.globalCooldowns[command.name], 'seconds') < command.globalCooldown)
-                return utils.cooldownCommand(message, guild, {
-                    perm: cooldownPerm,
-                    timeLeft: globalCommands.globalCooldowns[command.name].diff(moment(), 'seconds')
-                }, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
         globalCommands.globalCooldowns[command.name] = moment().add(command.globalCooldown, 'seconds');
     }
 
@@ -96,8 +94,8 @@ module.exports = async function (message, guild = undefined) {
         if (typeof commandResult != "undefined") {
             if (typeof commandResult == "object")
                 if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logCommandExecutions)
-                    if (typeof commandResult.dontLog == "undefined" || commandResult.dontLog == false)
-                        if (guild.logToChannel.initialized == true && cmd != "say" && cmd != "pleasesaythat")
+                    if (typeof commandResult.dontLog == "undefined" || commandResult.dontLog)
+                        if (guild.logToChannel.initialized && cmd != "say" && cmd != "pleasesaythat")
                             if (!guild.configurationManager.configuration.behaviour.logToChannel.embed) {
                                 guild.channelLog(`<@${message.author.id}>(${message.author.id}) executed \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}).`);
                             } else {
@@ -111,7 +109,7 @@ module.exports = async function (message, guild = undefined) {
             if (typeof commandResult == "function") commandResult();
         }
         if (typeof guild != "undefined" && guild.configurationManager.configuration.behaviour.logCommandExecutions)
-            if (guild.logToChannel.initialized == true && cmd != "say" && cmd != "pleasesaythat")
+            if (guild.logToChannel.initialized && cmd != "say" && cmd != "pleasesaythat")
                 if (!guild.configurationManager.configuration.behaviour.logToChannel.embed) {
                     guild.channelLog(`<@${message.author.id}>(${message.author.id}) executed \`${cmd}\` in <#${message.channel.id}>(${message.channel.id}).`);
                 } else {
@@ -123,6 +121,6 @@ module.exports = async function (message, guild = undefined) {
                 }
         return true;
     } catch (e) {
-        return utils.sendError(message, guild, undefined, `An error occured withing the command code.`, [], true, 5000, 5000);
+        return utils.sendError(message, guild, undefined, `An error occured within the command code.`, [], true, 5000, 5000);
     }
 }

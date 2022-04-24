@@ -103,7 +103,7 @@ module.exports = {
       "status": {
         "name": "Log To Channel",
         "description": "Enable this to allow the bot to log in the logging channel. Logging channel must be defined before.",
-        "checkerFunction": async (client, message, guild, configEntries, configPath, configValue) => {
+        "checkerFunction": async (client, message, guild, configEntries, _configPath, configValue) => {
           if (configValue == undefined) return {
             break: undefined
           }
@@ -143,12 +143,12 @@ module.exports = {
             };
           });
         },
-        "execAfter": async (client, message, guild, configEntries, configPath, configValue) => guild.initChannelLogging()
+        "execAfter": async (_client, _message, guild, _configEntries, _configPath, _configValue) => guild.initChannelLogging()
       },
       "channel": {
         "name": "Channel To Log To",
         "description": "Define which channel will be used to log.",
-        "checkerFunction": async (client, message, guild, configEntries, configPath, configValue) => {
+        "checkerFunction": async (client, message, _guild, _configEntries, _configPath, configValue) => {
           let newValue = (configValue.startsWith('<#')) ? configValue.replace('<#', '').replace('>', '') : configValue;
           return client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
             return fetchedGuild.channels.fetch(newValue).then(fetchedChannel => {
@@ -182,7 +182,7 @@ module.exports = {
             };
           });
         },
-        "execAfter": async (client, message, guild, configEntries, configPath, configValue) => guild.initChannelLogging()
+        "execAfter": async (_client, _message, guild, _configEntries, _configPath, _configValue) => guild.initChannelLogging()
       },
       "embed": {
         "name": "Log With Embeds",
@@ -229,7 +229,7 @@ module.exports = {
       "status": {
         "name": "Log Moderation To Channel",
         "description": "Enable this to allow the bot to log the moderation in the moderation logging channel. Moderation logging channel must be defined before.",
-        "checkerFunction": async (client, message, guild, configEntries, configPath, configValue) => {
+        "checkerFunction": async (client, message, guild, configEntries, _configPath, configValue) => {
           if (configValue == undefined) return {
             break: undefined
           }
@@ -269,12 +269,12 @@ module.exports = {
             };
           });
         },
-        "execAfter": async (client, message, guild, configEntries, configPath, configValue) => guild.initModerationLogging()
+        "execAfter": async (_client, _message, guild, _configEntries, _configPath, _configValue) => guild.initModerationLogging()
       },
       "channel": {
         "name": "Channel To Log Moderation To",
         "description": "Define which channel will be used to log the moderation.",
-        "checkerFunction": async (client, message, guild, configEntries, configPath, configValue) => {
+        "checkerFunction": async (client, message, _guild, _configEntries, _configPath, configValue) => {
           let newValue = (configValue.startsWith('<#')) ? configValue.replace('<#', '').replace('>', '') : configValue;
           return client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
             return fetchedGuild.channels.fetch(newValue).then(fetchedChannel => {
@@ -308,7 +308,7 @@ module.exports = {
             };
           });
         },
-        "execAfter": async (client, message, guild, configEntries, configPath, configValue) => guild.initModerationLogging()
+        "execAfter": async (_client, _message, guild, _configEntries, _configPath, _configValue) => guild.initModerationLogging()
       }
     },
     "autoModeration": {
@@ -316,7 +316,7 @@ module.exports = {
         "status": {
           "name": "Log AutoModeration To Channel",
           "description": "Enable this to allow the bot to log the moderation in the AutoModeration logging channel. AutoModeration logging channel must be defined before.",
-          "checkerFunction": async (client, message, guild, configEntries, configPath, configValue) => {
+          "checkerFunction": async (client, message, guild, configEntries, _configPath, configValue) => {
             if (configValue == undefined) return {
               break: undefined
             }
@@ -356,12 +356,12 @@ module.exports = {
               };
             });
           },
-          "execAfter": async (client, message, guild, configEntries, configPath, configValue) => guild.initAutoModerationLogging()
+          "execAfter": async (_client, _message, guild, _configEntries, _configPath, _configValue) => guild.initAutoModerationLogging()
         },
         "channel": {
           "name": "Channel To Log AutoModeration To",
           "description": "Define which channel will be used to log the AutoModeration.",
-          "checkerFunction": async (client, message, guild, configEntries, configPath, configValue) => {
+          "checkerFunction": async (client, message, _guild, _configEntries, _configPath, _configValue) => {
             let newValue = (configValue.startsWith('<#')) ? configValue.replace('<#', '').replace('>', '') : configValue;
             return client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
               return fetchedGuild.channels.fetch(newValue).then(fetchedChannel => {
@@ -395,7 +395,7 @@ module.exports = {
               };
             });
           },
-          "execAfter": async (client, message, guild, configEntries, configPath, configValue) => guild.initAutoModerationLogging()
+          "execAfter": async (_client, _message, guild, _configEntries, _configPath, _configValue) => guild.initAutoModerationLogging()
         }
       },
       "staffRoleForAlert": {
@@ -440,12 +440,18 @@ module.exports = {
             "name": "AutoModeration Links",
             "description": "Enable this to enable AutoModeration links module."
           },
-          "reaction": undefined,
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
           "ignoreNonExistandTDLs": {
             "name": "Ignore Non Existent Top Domain Level",
             "description": "Enable this to ingore non existent TDLs (this.isAfakeDomain)."
           },
-          "ignoredChannels": undefined,
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          },
           "allowed": {
             "name": "AutoModeration Allowed Links",
             "description": "Links listed here will not trigger the AutoModeration."
@@ -466,16 +472,28 @@ module.exports = {
             "name": "AutoModeration Email",
             "description": "Enable this to enable AutoModeration emails module."
           },
-          "reaction": undefined,
-          "ignoredChannels": undefined
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          }
         },
         "IPs": {
           "status": {
             "name": "AutoModeration IPs",
             "description": "Enable this to enable AutoModeration IPs module."
           },
-          "reaction": undefined,
-          "ignoredChannels": undefined
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          }
         },
         "wordsDetection": {
           "status": undefined,
@@ -486,26 +504,47 @@ module.exports = {
           "mute": undefined,
           "kick": undefined,
           "ban": undefined,
-          "ignoredChannels": undefined,
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          },
           "overwriteAllow": undefined
         },
         "allCaps": {
           "status": undefined,
-          "reaction": undefined,
-          "ignoredChannels": undefined
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          }
         },
         "duplicateText": {
           "status": undefined,
-          "reaction": undefined,
-          "ignoredChannels": undefined,
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          },
           "threshold": {
             "amount": undefined
           }
         },
         "fastMessageSpam": {
           "status": undefined,
-          "reaction": undefined,
-          "ignoredChannels": undefined,
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          },
           "threshold": {
             "time": undefined,
             "amount": undefined
@@ -516,13 +555,25 @@ module.exports = {
             "name": "AutoModeration Discord Invite",
             "description": "Enable this to enable AutoModeration discord invite module."
           },
-          "reaction": undefined,
-          "ignoredChannels": undefined
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          }
         },
         "massMentions": {
           "status": undefined,
-          "reaction": undefined,
-          "ignoredChannels": undefined,
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          },
           "threshold": {
             "time": undefined,
             "amount": undefined
@@ -530,8 +581,14 @@ module.exports = {
         },
         "imageSpam": {
           "status": undefined,
-          "reaction": undefined,
-          "ignoredChannels": undefined,
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          },
           "threshold": {
             "time": undefined,
             "amount": undefined,
@@ -539,16 +596,28 @@ module.exports = {
         },
         "emojiSpam": {
           "status": undefined,
-          "reaction": undefined,
-          "ignoredChannels": undefined,
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          },
           "threshold": {
             "amount": undefined,
           }
         },
         "stickerSpam": {
           "status": undefined,
-          "reaction": undefined,
-          "ignoredChannels": undefined,
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          },
           "threshold": {
             "time": undefined,
             "amount": undefined,
@@ -559,8 +628,14 @@ module.exports = {
             "name": "AutoModeration Scams",
             "description": "Enable this to enable AutoModeration scams module."
           },
-          "reaction": undefined,
-          "ignoredChannels": undefined,
+          "reaction": {
+            "name": "Reaction on trigger",
+            "description": "What to do when triggered, can be 'log', 'alert', 'delete', 'warn', 'mute', 'kick', 'ban'."
+          },
+          "ignoredChannels": {
+            "name": "Ignored channels",
+            "description": "Channels added here will be ignored."
+          },
           "links": {
             "name": "AutoModeration Scams Links",
             "description": "Enable this to enable AutoModeration scams links module. (Main scam module need to be enabled)"

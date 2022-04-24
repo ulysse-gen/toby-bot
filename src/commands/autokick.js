@@ -15,7 +15,7 @@ const Logger = require(`../classes/Logger`);
 
 module.exports = {
     name: "autokick",
-    description: `A tool to kick all members withing a certain scope.`,
+    description: `A tool to kick all members within a certain scope.`,
     aliases: ["ak"],
     permission: `commands.autokick`,
     nestedPermissions: {
