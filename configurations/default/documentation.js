@@ -320,13 +320,13 @@ module.exports = {
             if (configValue == undefined) return {
               break: undefined
             }
-            if (configEntries[`autoModeration.channel.channel`].defaultValue == configEntries[`autoModeration.channel.channel`].value) return {
+            if (configEntries[`moderation.autoModeration.channel.channel`].defaultValue == configEntries[`moderation.autoModeration.channel.channel`].value) return {
               break: undefined,
               title: "Set the logging channel before enabling.",
               description: `Use \`${guild.configurationManager.configuration.prefix}conf set autoModeration.channel.channel <#ChannelId>\` to set the channel.`
             };
             return client.guilds.fetch(message.channel.guild.id).then(fetchedGuild => {
-              return fetchedGuild.channels.fetch(configEntries[`autoModeration.channel.channel`].value).then(fetchedChannel => {
+              return fetchedGuild.channels.fetch(configEntries[`moderation.autoModeration.channel.channel`].value).then(fetchedChannel => {
                 return fetchedChannel.send(`Channel logging enabled.`).then(() => {
                   return {
                     break: undefined

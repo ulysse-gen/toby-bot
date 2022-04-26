@@ -30,8 +30,8 @@ module.exports = {
 
         /*await exec("git pull --tags origin develop");
         await exec("npm i -y");*/
-
-        await guild.configurationManager.load();
+        
+        await globalConfiguration.load();
         
         delete require.cache[require.resolve(`../handlers/messageCreate`)];
         delete require.cache[require.resolve(`../handlers/interactionCreate`)];
