@@ -109,12 +109,12 @@ process.stdin.resume();
 
 async function exitHandler(reason, exit) {
     if (reason == "SIGINT" || reason == "SIGUSR1" || reason == "SIGUSR2") {
-        await ErrorLog.log(`[Process Exit][${reason}]Closing process, saving and closing.`);
-        MainSQLLog.error(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
+        await ErrorLog.error(`[Process Exit][${reason}]Closing process, saving and closing.`);
+        MainSQLLog.log(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
     } else if (reason == "uncaughtException" || reason == "unhandledRejection") {
         botLifeMetric.addEntry("uncaughtException", {error: exit});
-        await ErrorLog.log(`[${reason}]Exception catched, error : ${exit.toString()}`);
-        MainSQLLog.error(`[${reason.toString()}]`, `${exit.toString()}`);
+        await ErrorLog.error(`[${reason}]Exception catched, error : ${exit.toString()}`);
+        MainSQLLog.log(`[${reason.toString()}]`, `${exit.toString()}`);
         console.log(exit);
         return true;
     } else {
