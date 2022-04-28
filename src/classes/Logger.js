@@ -17,6 +17,14 @@ module.exports = class Logger {
         });
     }
 
+    async warn(string) {
+        return this.log(string.yellow);
+    }
+
+    async error(string) {
+        return this.log(string.red);
+    }
+
     async log(string) {
         if (typeof string != "string" && string == "") return false;
         let logText = this.pattern.replace(`&{TEXT}`, `${string}`).replace(`&{DATE}`, moment().format(`DD/MM/YYYY`)).replace(`&{HOUR}`, moment().format(`HH:mm:ss:SSS`));

@@ -76,7 +76,7 @@ client.on('ready', async () => {
             selfDeaf: false
         }); //Auto join Members VC
     } catch (e) {
-        MainLog.log(`Could not join VC. This message is normal in dev. ${e.toString()}`.yellow);
+        MainLog.warn(`Could not join VC. This message is normal in dev. ${e.toString()}`);
     }
 });
 
@@ -110,11 +110,11 @@ process.stdin.resume();
 async function exitHandler(reason, exit) {
     if (reason == "SIGINT" || reason == "SIGUSR1" || reason == "SIGUSR2") {
         await ErrorLog.log(`[Process Exit][${reason}]Closing process, saving and closing.`);
-        MainSQLLog.log(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
+        MainSQLLog.error(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
     } else if (reason == "uncaughtException" || reason == "unhandledRejection") {
         botLifeMetric.addEntry("uncaughtException", {error: exit});
         await ErrorLog.log(`[${reason}]Exception catched, error : ${exit.toString()}`);
-        MainSQLLog.log(`[${reason.toString()}]`, `${exit.toString()}`);
+        MainSQLLog.error(`[${reason.toString()}]`, `${exit.toString()}`);
         console.log(exit);
         return true;
     } else {

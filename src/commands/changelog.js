@@ -16,8 +16,7 @@ module.exports = {
     category: `informations`,
     async exec(client, message, args, guild = undefined) {
         var changelog = [
-            "Fixes and improvements, as always.",
-            "Fixed the cooldown being infinite and showing negative values."
+            "F Anna."
         ];
         let description = `- ` + changelog.shift();
         changelog.forEach(line => {
