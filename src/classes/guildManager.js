@@ -72,11 +72,11 @@ module.exports = class guildManager {
         this.moderationManager = new moderationManager(this.client, this.globalGuilds);
         await this.permissionsManager.initialize();
         await this.configurationManager.initialize();
+        this.initialized = true;
         await this.initChannelLogging();
         await this.initModerationLogging();
         await this.initAutoModerationLogging();
         //await this.embedsManager.initialize(); RE ENABLE THIS LATER
-        this.initialized = true;
         return true;
     }
 
