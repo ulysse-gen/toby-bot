@@ -1,17 +1,11 @@
-const {
-    MessageEmbed
-} = require(`discord.js`);
-const colors = require(`colors`);
 const moment = require(`moment`);
 
 const {
     client,
     globalConfiguration,
     MainLog,
-    MainSQLLog,
     globalPermissions,
     globalCommands,
-    executionTimes,
     errorCatching
 } = require(`../../index`);
 
@@ -49,6 +43,9 @@ module.exports = async function (message, guild = undefined, isSlashCommand = fa
         if (cmd.startsWith(globalConfiguration.configuration.globalPrefix)) cmd = cmd.replace(globalConfiguration.configuration.globalPrefix, '');
         if (typeof guild != "undefined" && cmd.startsWith(guild.configurationManager.configuration.prefix)) cmd = cmd.replace(guild.configurationManager.configuration.prefix, '');
     }
+
+    if (isSlashCommand) message.content =  `${cmd} ${args.join(' ')}`;
+
     if (typeof cmd == "undefined" || typeof args == "undefined") return utils.sendError(message, guild, undefined, `wat`, [], (isSlashCommand) ? {ephemeral: true} : true, -1, -1); //This can actually never happen
     if (typeof client == "undefined") return utils.sendError(message, guild, undefined, `Client is undefined`, [], (isSlashCommand) ? {ephemeral: true} : true, -1, -1); //This can actually never happen
     if (typeof globalCommands == "undefined") return utils.sendError(message, guild, undefined, `globalCommands is undefined`, [], (isSlashCommand) ? {ephemeral: true} : true, -1, -1); //This error shoud never happen. globalCommands is the main commandManager and if its undefined no commands can work.
