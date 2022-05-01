@@ -15,6 +15,9 @@ module.exports = {
     description: `Show basic informations about the bot.`,
     subcommands: {},
     aliases: [],
+    slashCommandData: {
+        options: []
+    },
     permission: `commands.about`,
     category: `informations`,
     status: true,
@@ -32,6 +35,6 @@ module.exports = {
             [`**Latency**`, `${Date.now() - message.createdTimestamp}ms`, true],
             [`**API Latency**`, `${Math.round(client.ws.ping)}ms`, true]
         ];
-        return utils.sendMain(message, guild, `About`, undefined, fields, true, (guild.configurationManager.configuration.behaviour.autoDeleteCommands) ? 0 : -1); /*Updated To New Utils*/
+        return utils.sendMain(message, guild, `About`, undefined, fields, (isSlashCommand) ? {ephemeral: false} : true, (guild.configurationManager.configuration.behaviour.autoDeleteCommands) ? 0 : -1); /*Updated To New Utils*/
     }
 }

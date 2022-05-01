@@ -9,6 +9,7 @@ module.exports = {
     permission: `commands.metrics`,
     category: `administration`,
     async exec(client, message, args, guild = undefined, isSlashCommand = false) {
+        return utils.sendError(message, guild, `This command is disabled.`);
         let fields = [];
         let totalMetrics = [];
         let getTheMetrics = new Promise((res, rej) => {

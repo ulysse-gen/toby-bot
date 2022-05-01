@@ -18,6 +18,9 @@ module.exports = {
     name: "reload",
     description: `Reload bot commands, certain modules as well as the configuration.`,
     subcommands: {},
+    slashCommandData: {
+        options: []
+    },
     aliases: ["rcmds"],
     permission: `commands.reload`,
     category: `informations`,
@@ -40,14 +43,8 @@ module.exports = {
         delete require.cache[require.resolve(`../handlers/commandHandler`)];
         delete require.cache[require.resolve(`../utils`)];
         await globalCommands.reload();
-        embed.addField(`**Commands loaded**`, `${globalCommands.commands.length}`, true);
+        let fields = [[`**Commands loaded**`, `${globalCommands.commands.length}`, true]];
 
-        message.reply({
-            embeds: [embed],
-            failIfNotExists: false
-        }, false).then(msg => {
-            if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => utils.messageDeleteFailLogger(message, guild, e));
-        }).catch(e => utils.messageReplyFailLogger(message, guild, e));
-        return true;
+        return utils.sendSuccess(message, guild, `Reloaded`, undefined, fields, (isSlashCommand) ? {ephemeral: true} : true);
     }
 }
