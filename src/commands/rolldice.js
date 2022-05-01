@@ -10,7 +10,7 @@ module.exports = {
     category: `fun`,
     cooldown: 300,
     globalCooldown: 250,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let diceFaces = [
             "xxxxxxxxxxxxxxxx1",
             "xxxxxxxxxxxxxxxx2",

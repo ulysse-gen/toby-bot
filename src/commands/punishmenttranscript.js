@@ -11,14 +11,14 @@ module.exports = {
     aliases: ["punishtranscript", "pt"],
     permission: `commands.punishmenttranscript`,
     category: `moderation`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let user = undefined;
 
-        if (args.length == 0) return utils.sendError(message, guild, `No case ID specified.`, undefined, [], true); /*Updated To New Utils*/
+        if (args.length == 0) return utils.sendError(message, guild, `No case ID specified.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
         let punishmentInfos = await guild.moderationManager.getPunishementByCaseId(args[0], guild.guild.id);
-        if (typeof punishmentInfos == "undefined") return utils.sendError(message, guild, `Could not find punishement.`, undefined, [], true); /*Updated To New Utils*/
-        if (punishmentInfos == false) return utils.sendError(message, guild, `Could not find punishement.`, undefined, [], true); /*Updated To New Utils*/
+        if (typeof punishmentInfos == "undefined") return utils.sendError(message, guild, `Could not find punishement.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
+        if (punishmentInfos == false) return utils.sendError(message, guild, `Could not find punishement.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         user = await message.channel.guild.members.fetch(punishmentInfos.userId, {
             cache: false,
             force: true
@@ -42,10 +42,10 @@ module.exports = {
         try {
             messageHistory = JSON.parse(punishmentInfos.messageHistory);
         } catch (e) {
-            return utils.sendError(message, guild, `An error occured trying to parse the message history.`, undefined, [], true); /*Updated To New Utils*/
+            return utils.sendError(message, guild, `An error occured trying to parse the message history.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         }
 
-        if (typeof messageHistory == "undefined" || messageHistory.length == 0) return utils.sendError(message, guild, `No messages saved.`, undefined, [], true); /*Updated To New Utils*/
+        if (typeof messageHistory == "undefined" || messageHistory.length == 0) return utils.sendError(message, guild, `No messages saved.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
         messageHistory.forEach(indMessage => {
             let fieldBody = `Content: ${indMessage.content}\nAttachments : ${(indMessage.attachments.length == 0) ? `None` : `[**URL**](${indMessage.attachments.join(`) [**URL**](`)})`}\nStickers : ${(typeof indMessage.stickers == "undefined" || indMessage.stickers.length == 0) ? `None` : `[**URL**](${indMessage.stickers.join(`) [**URL**](`)})`}\nSent in : <#${indMessage.channelId}>\nSent at : <t:${moment(indMessage.createdTimestamp).unix()}>`;
@@ -63,12 +63,12 @@ module.exports = {
             try {
                 args[1] = parseInt(args[1]);
             } catch (e) {
-                return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
+                return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
             }
             embed.footer = {
                 text: `Use \`${guild.configurationManager.configuration.prefix}punishmenttranscript <caseId> [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
             };
-            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
+            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
             embedFields = embedPages[args[1] - 1];
         }
 

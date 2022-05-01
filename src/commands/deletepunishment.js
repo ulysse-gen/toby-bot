@@ -18,16 +18,16 @@ module.exports = {
     permission: `commands.deletepunishment`,
     category: `moderation`,
     status: true,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let embed = new MessageEmbed({
             title: `Punishment removed`,
             color: guild.configurationManager.configuration.colors.main
         });
-        if (args.length == 0)return utils.sendError(message, guild, `Wrong command synthax.`, `Use \`deletepunishment <caseId> [reason]\` to delete a punishment.`, [], true); /*Updated To New Utils*/
+        if (args.length == 0)return utils.sendError(message, guild, `Wrong command synthax.`, `Use \`deletepunishment <caseId> [reason]\` to delete a punishment.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         let caseId = args.shift();
         let reason = args.join(' ');
-        if (guild.configurationManager.configuration.moderation.deletePunishmentNeedReason && (typeof reason == "undefined" || reason == "" || reason.replaceAll(' ', '') == "")) return utils.sendError(message, guild, `Could not delete punishment.`, `No reason specified.`, [], true); /*Updated To New Utils*/
-        if (typeof caseId == "undefined" || caseId == "" || caseId.replaceAll(' ', '') == "") return utils.sendError(message, guild, `Could not delete punishment.`, `No caseId specified.`, [], true); /*Updated To New Utils*/
+        if (guild.configurationManager.configuration.moderation.deletePunishmentNeedReason && (typeof reason == "undefined" || reason == "" || reason.replaceAll(' ', '') == "")) return utils.sendError(message, guild, `Could not delete punishment.`, `No reason specified.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
+        if (typeof caseId == "undefined" || caseId == "" || caseId.replaceAll(' ', '') == "") return utils.sendError(message, guild, `Could not delete punishment.`, `No caseId specified.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         let result = await guild.moderationManager.deletePunishment(message, caseId, reason);
         if (typeof result == "object"){
             embed.setTitle(`Could not delete punishment.`).setDescription(result.error).setColor(guild.configurationManager.configuration.colors.error);

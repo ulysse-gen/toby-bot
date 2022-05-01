@@ -14,9 +14,9 @@ module.exports = {
     aliases: ["whatsnew"],
     permission: `commands.changelog`,
     category: `informations`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         var changelog = [
-            "F Anna."
+            "Things, tbh"
         ];
         let description = `- ` + changelog.shift();
         changelog.forEach(line => {

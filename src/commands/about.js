@@ -18,7 +18,7 @@ module.exports = {
     permission: `commands.about`,
     category: `informations`,
     status: true,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let fields = [
             [`**Developer**`, `<@231461358200291330>`, true],
             [`**Original Idea**`, `<@330826518370451457>`, true],

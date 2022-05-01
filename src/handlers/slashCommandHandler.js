@@ -10,7 +10,8 @@ const {
     MainLog,
     globalCommands,
     globalPermissions,
-    errorCatching
+    errorCatching,
+    globalMetrics
 } = require(`../../index`);
 
 const utils = require(`../utils`);

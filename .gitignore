@@ -113,3 +113,4 @@ dist
 /.git-credentials
 /.gitconfig
 .cache/
+/temp

@@ -14,7 +14,7 @@ module.exports = {
     nestedPermissions: {},
     category: `fun`,
     status: true,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let user = undefined;
         let userString = args.shift();
 
@@ -34,7 +34,7 @@ module.exports = {
             }).catch(e => {
                 return undefined;
             });
-            if (typeof user == "undefined") return utils.sendError(message, guild, `Could not get user data`, `User not found`, [], true); /*Updated To New Utils*/
+            if (typeof user == "undefined") return utils.sendError(message, guild, `Could not get user data`, `User not found`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         }
 
         let embed = new MessageEmbed({
@@ -42,7 +42,7 @@ module.exports = {
             color: guild.configurationManager.configuration.colors.success
         });
 
-        if (typeof user == "undefined") return utils.sendError(message, guild, `Could not send DM.`, `User not found.`, [], true); /*Updated To New Utils*/
+        if (typeof user == "undefined") return utils.sendError(message, guild, `Could not send DM.`, `User not found.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
         
         let messageContent = args.join(' ');
@@ -50,7 +50,7 @@ module.exports = {
         message.attachments.forEach(attachment => messageAttachments.push(attachment));
 
         user.send({content: (messageContent != "" && messageContent != " ") ? `${messageContent}` : null, files: messageAttachments}).catch(e => {
-            return utils.sendError(message, guild, `Could not send DM.`, `${e.toString()}`, [], true); /*Updated To New Utils*/
+            return utils.sendError(message, guild, `Could not send DM.`, `${e.toString()}`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         });
 
         message.reply({

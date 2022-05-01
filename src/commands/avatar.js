@@ -23,7 +23,7 @@ module.exports = {
     nestedPermissions: {},
     category: `fun`,
     status: true,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let user = undefined;
 
         if (args.length != 0) user = await guild.grabUser(message, args[0]);

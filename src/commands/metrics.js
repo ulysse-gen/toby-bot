@@ -8,7 +8,7 @@ module.exports = {
     aliases: [],
     permission: `commands.metrics`,
     category: `administration`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let fields = [];
         let totalMetrics = [];
         let getTheMetrics = new Promise((res, rej) => {

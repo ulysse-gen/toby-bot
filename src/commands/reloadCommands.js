@@ -22,7 +22,7 @@ module.exports = {
     permission: `commands.reload`,
     category: `informations`,
     status: true,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let embed = new MessageEmbed({
             title: `Reloaded`,
             color: guild.configurationManager.configuration.colors.success

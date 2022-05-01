@@ -15,7 +15,7 @@ module.exports = {
     aliases: ["embedgen", "genembed", "embed"],
     permission: `commands.makeembed`,
     category: `tools`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let OGMessage = message;
         let embed = new MessageEmbed({
             title: `${(args.length != 0 && args[0].toLowerCase() == "help") ? `Embed Creator Help` : `Initilizing the embed.. Use commands below to set it up !`}`,

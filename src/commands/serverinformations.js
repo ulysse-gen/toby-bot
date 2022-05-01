@@ -15,7 +15,7 @@ module.exports = {
     aliases: ["serverinfos", "serverinfo"],
     permission: `commands.serverinformations`,
     category: `informations`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let user = guild.guild.ownerId;
 
         user = await message.channel.guild.members.fetch(user, {

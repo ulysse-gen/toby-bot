@@ -28,15 +28,37 @@ exports.sendEmbed = (message, guild, title, description = undefined, color = `#F
     if (typeof description != "undefined" && description.replaceAll(' ', '') != "") embed.setDescription(description);
     if (typeof fields == "object" && fields.length > 0)
         fields.forEach(indField => embed.addField(indField[0], indField[1], indField[2]));
-    if (typeof reply == "boolean" && reply == true)
+
+    if (typeof reply == "object") {
+        if (typeof reply.ephemeral != "undefined") {
+            return message.reply({
+                embeds: [embed],
+                ephemeral: reply.ephemeral
+            }).then(msg => execAfter(msg)).catch(e => {
+                return {
+                    error: e
+                };
+            });
+        } else {
+            return message.reply({
+                embeds: [embed],
+                ephemeral: false
+            }).then(msg => execAfter(msg)).catch(e => {
+                return {
+                    error: e
+                };
+            });
+        }
+    } else if (reply) {
         return message.reply({
             embeds: [embed],
             failIfNotExists: false
-        }, false).then(msg =>execAfter(msg)).catch(e => {
+        }, false).then(msg => execAfter(msg)).catch(e => {
             return {
                 error: e
             };
         });
+    }
     return message.channel.send({
         embeds: [embed],
         failIfNotExists: false
@@ -47,8 +69,15 @@ exports.sendEmbed = (message, guild, title, description = undefined, color = `#F
     });
 
     function execAfter(msg) {
-        if (deleteOriginalAfter > -1) setTimeout(() => message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e)), deleteOriginalAfter);
-        if (deleteItselfAfter > -1) setTimeout(() => msg.delete().catch(e => this.messageDeleteFailLogger(message, guild, e)), deleteItselfAfter);
+        if (typeof reply == "object") {
+            return true;
+        }
+        if (deleteOriginalAfter > -1) setTimeout(() => {
+            message.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
+        }, deleteOriginalAfter);
+        if (deleteItselfAfter > -1) setTimeout(() => {
+            msg.delete().catch(e => this.messageDeleteFailLogger(message, guild, e));
+        }, deleteItselfAfter);
         return true;
     }
 }
@@ -68,7 +97,7 @@ exports.unknownCommand = (message, guild, reply = false, deleteOriginalAfter = -
             [`Channel:`, `<#${message.channel.id}>`, true],
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
-    if (guild.configurationManager.configuration.behaviour.onUnknownCommandIgnore)return true;
+    if (guild.configurationManager.configuration.behaviour.onUnknownCommandIgnore) return true;
     return this.sendError(message, guild, `Unknown Command`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 exports.cooldownCommand = (message, guild, cooldownData, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
@@ -82,7 +111,7 @@ exports.cooldownCommand = (message, guild, cooldownData, reply = false, deleteOr
             [`Channel:`, `<#${message.channel.id}>`, true],
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
-    if (guild.configurationManager.configuration.behaviour.onCooldownIgnore)return true;
+    if (guild.configurationManager.configuration.behaviour.onCooldownIgnore) return true;
     return this.sendError(message, guild, `Cooldown`, `You will be able to execute this command in ${cooldownData.timeLeft} seconds.`, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 exports.insufficientPermissions = (message, guild, permission, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
@@ -96,7 +125,7 @@ exports.insufficientPermissions = (message, guild, permission, reply = false, de
             [`Channel:`, `<#${message.channel.id}>`, true],
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
-    if (guild.configurationManager.configuration.behaviour.onCommandDeniedIgnore)return true;
+    if (guild.configurationManager.configuration.behaviour.onCommandDeniedIgnore) return true;
     return this.sendError(message, guild, `Insufficient Permissions`, `You are missing the permission \`${permission}\``, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 exports.lockdownDenied = (message, guild, reply = false, deleteOriginalAfter = -1, deleteItselfAfter = -1) => {
@@ -109,12 +138,12 @@ exports.lockdownDenied = (message, guild, reply = false, deleteOriginalAfter = -
             [`Channel:`, `<#${message.channel.id}>`, true],
             [`**Infos**`, `ID: ${message.author.id} • <t:${moment().unix()}:F>`, false]
         ]);
-    if (guild.configurationManager.configuration.behaviour.onCommandDeniedIgnore)return true;
+    if (guild.configurationManager.configuration.behaviour.onCommandDeniedIgnore) return true;
     return this.sendError(message, guild, `Command Lockdown`, undefined, [], reply, deleteOriginalAfter, deleteItselfAfter);
 }
 
 exports.getUserPfp = async (user) => {
-    if (typeof user == "undefined" || (typeof user.user.avatar == "undefined" && typeof user.avatar == "undefined"))return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
+    if (typeof user == "undefined" || (typeof user.user.avatar == "undefined" && typeof user.avatar == "undefined")) return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
     return await new Promise((res, rej) => {
         let urlBase = (user.avatar != null) ? `https://cdn.discordapp.com/guilds/${user.guild.id}/users/${user.user.id}/avatars/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
         urlExists(`${urlBase}.gif`, function (err, exists) {
