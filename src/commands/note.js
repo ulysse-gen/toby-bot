@@ -23,7 +23,7 @@ module.exports = {
     },
     nestedPermissions: {},
     category: `moderation`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         if (args.length == 0) {
             let description = `**Description:** ${this.description}`;
             if (this.aliases.length >= 1) description += `\n**Aliases:** \`${this.aliases.join('`, `')}\``;
@@ -32,7 +32,7 @@ module.exports = {
             let fields = [];
             fields.push([`**Usage:**`, `${guild.configurationManager.configuration.prefix}${this.name} <user> [reason]`, false]);
             fields.push([`**Example:**`, `${guild.configurationManager.configuration.prefix}${this.name} @DopeUsername Being too cool\n${guild.configurationManager.configuration.prefix}${this.name} 168754125874596348 Being too cool\n${guild.configurationManager.configuration.prefix}${this.name} DopeUsername#0420 Being too cool`, false]);
-            return utils.sendMain(message, guild, `Command: ${guild.configurationManager.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
+            return utils.sendMain(message, guild, `Command: ${guild.configurationManager.configuration.prefix}${this.name}`, `${description}`, fields, (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         }
         let userToWarn = args.shift();
         let reason = args.join(' ');
@@ -46,7 +46,7 @@ module.exports = {
             reason = args.join(' ');
         }*/
         let result = await guild.noteUser(message, userToWarn, reason, time);
-        if (result.errored == true) return utils.sendError(message, guild, `Could not note user`, `${result.reason}`, [], true); /*Updated To New Utils*/
-        return false;
+        if (result.errored == true) return utils.sendError(message, guild, `Could not note user`, `${result.reason}`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
+        return (!isSlashCommand) ? true : utils.sendSuccess(message, guild, `User noted.`, undefined, undefined, {ephemeral: true});
     }
 }

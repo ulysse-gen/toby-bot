@@ -1,9 +1,14 @@
 //Import needs from index
 const {
-    globalGuilds
+    globalGuilds,
+    globalMetrics
 } = require(`../../index`);
 
 module.exports = async function (interaction) {
+    let interactionMetric = globalMetrics.createMetric(interaction.id);
+    interaction.customMetric = interactionMetric;
+    interactionMetric.addEntry(`IteractionCreation`);
+
     let guild = await globalGuilds.getGuild(interaction.member.guild);
 
     if (!guild.initialized) return interaction.reply({
@@ -12,13 +17,9 @@ module.exports = async function (interaction) {
     }).catch(e => {});
 
     if (interaction.isCommand()) {
-        let ran = await require(`./slashCommandHandler`)(interaction, guild);
-        if (typeof ran == "boolean" && ran)return interaction.reply({
-            content: `Command executed.`,
-            ephemeral: true
-        });
-        return interaction.reply({
-            content: `This slash command isnt built yet. Use the regular command system with the \`${guild.configurationManager.configuration.prefix}\` prefix.`,
+        let ran = await require(`./commandHandler`)(interaction, guild, true);
+        return (ran) ? true : interaction.reply({
+            content: `This slash command isnt built yet or the return has failed. Use the regular command system with the \`${guild.configurationManager.configuration.prefix}\` prefix.`,
             ephemeral: true
         }).catch(e => {});
     }else if (interaction.isButton()) {

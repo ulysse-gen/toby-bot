@@ -16,7 +16,7 @@ module.exports = {
     category: `fun`,
     cooldown: 300,
     globalCooldown: 120,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let possibilities = await axios.get('https://g.tenor.com/v1/search?q=embed%20fail&key=LIVDSRZULELA&limit=15').then(data => {
             return data.data.results.map(data => {
                 if (!data.itemurl.includes("double") && !data.itemurl.includes("nigg")) return data.url;

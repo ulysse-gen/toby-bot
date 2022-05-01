@@ -13,7 +13,7 @@ module.exports = {
     aliases: [],
     permission: `commands.notes`,
     category: `moderation`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let user = undefined;
 
         if (args.length != 0) {
@@ -106,7 +106,7 @@ module.exports = {
             embed.footer = {
                 text: `Use \`${guild.configurationManager.configuration.prefix}notes <user> [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
             };
-            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
+            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
             embedFields = embedPages[args[1] - 1];
         }
 

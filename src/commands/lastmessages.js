@@ -11,7 +11,7 @@ module.exports = {
     aliases: ["messagehistory"],
     permission: `commands.lastmessages`,
     category: `moderation`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let user = undefined;
 
         if (args.length != 0) {
@@ -39,7 +39,7 @@ module.exports = {
             return undefined;
         });
 
-        if (typeof user == "undefined") return utils.sendError(message, guild, `User not found.`, undefined, [], true); /*Updated To New Utils*/
+        if (typeof user == "undefined") return utils.sendError(message, guild, `User not found.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
         let embedFields = [];
         let embedPages = [];
@@ -48,7 +48,7 @@ module.exports = {
             color: guild.configurationManager.configuration.colors.main
         });
 
-        if (typeof guild.lastMessages[user.user.id] == "undefined" || guild.lastMessages[user.user.id].length == 0) return utils.sendError(message, guild, `No messages in cache.`, undefined, [], true); /*Updated To New Utils*/
+        if (typeof guild.lastMessages[user.user.id] == "undefined" || guild.lastMessages[user.user.id].length == 0) return utils.sendError(message, guild, `No messages in cache.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
     
         guild.lastMessages[user.user.id].forEach(indMessage => {
             embedFields.push([`**Message Entry**`, `Content: ${indMessage.content}\nAttachments : ${(indMessage.attachments.length == 0) ? `None` : `[**URL**](${indMessage.attachments.join(`) [**URL**](`)})`}\nSent in : <#${indMessage.channelId}>\nSent at : <t:${moment(indMessage.createdTimestamp).unix()}>`, false]);
@@ -64,12 +64,12 @@ module.exports = {
             try {
                 args[1] = parseInt(args[1]);
             } catch (e) {
-                return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
+                return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
             }
             embed.footer = {
                 text: `Use \`${guild.configurationManager.configuration.prefix}lastmessages <user> [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
             };
-            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
+            if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
             embedFields = embedPages[args[1] - 1];
         }
 

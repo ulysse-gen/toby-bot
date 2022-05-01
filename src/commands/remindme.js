@@ -16,7 +16,7 @@ module.exports = {
     aliases: [],
     permission: `commands.remindme`,
     category: `tool`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         if (args.length == 0) {
             let description = `**Description:** ${this.description}`;
             if (this.aliases.length >= 1) description += `\n**Aliases:** \`${this.aliases.join('`, `')}\``;
@@ -26,7 +26,7 @@ module.exports = {
             fields.push([`**Sub Commands:**`, `None yet`, false]);
             fields.push([`**Usage:**`, `${guild.configurationManager.configuration.prefix}${this.name} <time> [reason]`, false]);
             fields.push([`**Example:**`, `${guild.configurationManager.configuration.prefix}${this.name} 24h Tell <@933695613294501888> how much i love him`, false]);
-            return utils.sendMain(message, guild, `Command: ${guild.configurationManager.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
+            return utils.sendMain(message, guild, `Command: ${guild.configurationManager.configuration.prefix}${this.name}`, `${description}`, fields, (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         }
         let reason = '';
         let time = 0;
@@ -46,6 +46,6 @@ module.exports = {
 
         let result = await guild.setReminder(message.channel.guild.id, message.author.id, message.channel.id, time, {text:reason});
         if (result == false)return utils.sendError(message, guild, `Could not set reminder`, `An error occured`);
-        return utils.sendSuccess(message, guild, `Reminder set !`, `I will remind you of that <t:${remindDate.unix()}>`, [], true); /*Updated To New Utils*/
+        return utils.sendSuccess(message, guild, `Reminder set !`, `I will remind you of that <t:${remindDate.unix()}>`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
     }
 }

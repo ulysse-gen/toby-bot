@@ -20,7 +20,7 @@ module.exports = {
     status: true,
     cooldown: 60,
     globalCooldown: 40,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let embed = new MessageEmbed({
             title: (message.mentions.members.size != 0) ? `Hi there ${message.mentions.members.first().user.username}#${message.mentions.members.first().user.discriminator} !` : `Hi there !`,
             color: guild.configurationManager.configuration.colors.main,

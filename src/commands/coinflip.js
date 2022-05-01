@@ -14,7 +14,7 @@ module.exports = {
     category: `fun`,
     cooldown: 300,
     globalCooldown: 250,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let headOrTails = [
             "https://cdn.discordapp.com/attachments/936578361302614018/937820858616008734/heads_ccexpress.png",
             "https://cdn.discordapp.com/attachments/936578361302614018/937820858817323038/tails_ccexpress.png"

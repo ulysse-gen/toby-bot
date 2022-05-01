@@ -23,7 +23,7 @@ module.exports = {
     },
     permission: `commands.choose`,
     category: `fun`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let possibilities = (args.join(' ').includes(',')) ? args.join(' ').split(',') : args;
 
         message.reply(`Lemme think a bit..`, false).then(msg => {

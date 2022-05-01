@@ -85,7 +85,10 @@ client.on(`messageCreate`, async message => {
     if (typeof message.customMetric != "undefined")message.customMetric.end();
 });
 
-client.on(`interactionCreate`, interaction => require(`./src/handlers/interactionCreate`)(interaction));
+client.on(`interactionCreate`, async interaction => {
+    await require(`./src/handlers/interactionCreate`)(interaction);
+    if (typeof interaction.customMetric != "undefined")interaction.customMetric.end();
+});
 
 client.on('error', (code) => {
     botLifeMetric.addEntry("botError", {error: code});

@@ -17,29 +17,49 @@ const {
 
 const utils = require(`../utils`);
 
-module.exports = async function (message, guild = undefined) {
+module.exports = async function (message, guild = undefined, isSlashCommand = false) {
     let messageMetric = message.customMetric;
     messageMetric.addEntry(`CommandHandlerStart`);
-    let args = message.content.split(' ');
-    args = args.filter(function (e) {
-        return e !== ''
-    });
-    args = args.map(e => {
-        if (typeof e == "string") return e.trim()
-    });
-    let cmd = args.shift(args);
-    if (cmd.startsWith(globalConfiguration.configuration.globalPrefix)) cmd = cmd.replace(globalConfiguration.configuration.globalPrefix, '');
-    if (typeof guild != "undefined" && cmd.startsWith(guild.configurationManager.configuration.prefix)) cmd = cmd.replace(guild.configurationManager.configuration.prefix, '');
-    if (typeof client == "undefined") return utils.sendError(message, guild, undefined, `Client is undefined`, [], true, -1, -1); //This can actually never happen
-    if (typeof globalCommands == "undefined") return utils.sendError(message, guild, undefined, `globalCommands is undefined`, [], true, -1, -1); //This error shoud never happen. globalCommands is the main commandManager and if its undefined no commands can work.
-    if (typeof globalPermissions == "undefined") return utils.sendError(message, guild, undefined, `globalPermissions is undefined`, [], true, -1, -1); //This error shoud never happen. globalPermissions is the main permissionsManager and if its undefined no commands can work.
-    //if (false) return utils.lockdownDenied(message, guild, undefined, undefined, [], true, -1, -1)
+    let cmd;
+    let args;
+
+    if (isSlashCommand) {
+        cmd = message.commandName;
+        args = message.options._hoistedOptions.map(o => o.value).join(' ').split(' ');
+
+        message.author = await guild.guild.members.fetch(message.user.id).then(u => u.user).catch((e) => message.user);
+        message.channel = client.channels.fetch(message.channelId).catch(() => {
+            return {
+                id: message.channelId,
+                send: () => {
+                    console.log('Could not send.')
+                }
+            }
+        });
+    } else {
+
+        args = message.content.split(' ');
+        args = args.filter(function (e) {
+            return e !== ''
+        });
+        args = args.map(e => {
+            if (typeof e == "string") return e.trim()
+        });
+        cmd = args.shift(args);
+        if (cmd.startsWith(globalConfiguration.configuration.globalPrefix)) cmd = cmd.replace(globalConfiguration.configuration.globalPrefix, '');
+        if (typeof guild != "undefined" && cmd.startsWith(guild.configurationManager.configuration.prefix)) cmd = cmd.replace(guild.configurationManager.configuration.prefix, '');
+    }
+    if (typeof cmd == "undefined" || typeof args == "undefined") return utils.sendError(message, guild, undefined, `wat`, [], (isSlashCommand) ? {ephemeral: true} : true, -1, -1); //This can actually never happen
+    if (typeof client == "undefined") return utils.sendError(message, guild, undefined, `Client is undefined`, [], (isSlashCommand) ? {ephemeral: true} : true, -1, -1); //This can actually never happen
+    if (typeof globalCommands == "undefined") return utils.sendError(message, guild, undefined, `globalCommands is undefined`, [], (isSlashCommand) ? {ephemeral: true} : true, -1, -1); //This error shoud never happen. globalCommands is the main commandManager and if its undefined no commands can work.
+    if (typeof globalPermissions == "undefined") return utils.sendError(message, guild, undefined, `globalPermissions is undefined`, [], (isSlashCommand) ? {ephemeral: true} : true, -1, -1); //This error shoud never happen. globalPermissions is the main permissionsManager and if its undefined no commands can work.
+    //if (false) return utils.lockdownDenied(message, guild, (isSlashCommand) ? {ephemeral: true} : true, undefined, [], true, -1, -1)
 
     messageMetric.addEntry(`FetchingCommand`);
     let command = globalCommands.fetch(cmd);
     messageMetric.addEntry(`FetchedCommand`);
 
-    if (!command) return utils.unknownCommand(message, guild, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnUnknown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnUnknown) ? 5000 : -1);
+    if (!command) return utils.unknownCommand(message, guild, (isSlashCommand) ? {ephemeral: true} : true, (guild.configurationManager.configuration.behaviour.deleteMessageOnUnknown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnUnknown) ? 5000 : -1);
 
     let permissionToCheck = command.permission;
     messageMetric.addEntry(`GettingGlobalPermissions`);
@@ -50,7 +70,7 @@ module.exports = async function (message, guild = undefined) {
     messageMetric.addEntry(`GotGuildPermissions`);
     let hasPermission = (hasGlobalPermission == null) ? hasGuildPermission : hasGlobalPermission;
     messageMetric.addEntry(`GotPermissions`);
-    if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnDeny) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnDeny) ? 5000 : -1);
+    if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, (isSlashCommand) ? {ephemeral: true} : true, (guild.configurationManager.configuration.behaviour.deleteMessageOnDeny) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnDeny) ? 5000 : -1);
 
     let cooldownPerm = `skipcooldowns.${command.permission}`;
     messageMetric.addEntry(`GettingCooldownGlobalPermission`);
@@ -68,13 +88,13 @@ module.exports = async function (message, guild = undefined) {
             if (globalCommands.cooldowns[message.author.id][command.name].diff(moment(), 'seconds') >= 0) return utils.cooldownCommand(message, guild, {
                 perm: cooldownPerm,
                 timeLeft: globalCommands.cooldowns[message.author.id][command.name].diff(moment(), 'seconds')
-            }, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
+            }, (isSlashCommand) ? {ephemeral: true} : true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
         }
         if (typeof globalCommands.globalCooldowns[command.name] != "undefined") {
             if (globalCommands.globalCooldowns[command.name].diff(moment(), 'seconds') >= 0) return utils.cooldownCommand(message, guild, {
                 perm: cooldownPerm,
                 timeLeft: globalCommands.globalCooldowns[command.name].diff(moment(), 'seconds')
-            }, true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
+            }, (isSlashCommand) ? {ephemeral: true} : true, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1, (guild.configurationManager.configuration.behaviour.deleteMessageOnCooldown) ? 5000 : -1);
         }
         if (typeof globalCommands.cooldowns[message.author.id] == "undefined") globalCommands.cooldowns[message.author.id] = {};
         globalCommands.cooldowns[message.author.id][command.name] = moment().add(command.cooldown, 'seconds');
@@ -86,10 +106,10 @@ module.exports = async function (message, guild = undefined) {
 
     MainLog.log(`${message.author.tag}(${message.author.id}) executed '${cmd}' in [${message.channel.id}@${message.channel.guild.id}].`);
     let commandResult;
-    if (typeof errorCatching == "boolean" && !errorCatching) commandResult = await command.exec(client, message, args, guild);
+    if (typeof errorCatching == "boolean" && !errorCatching) commandResult = await command.exec(client, message, args, guild, isSlashCommand);
     try {
         messageMetric.addEntry(`ExecutingCommand`);
-        if (typeof errorCatching == "boolean" && errorCatching) commandResult = await command.exec(client, message, args, guild);
+        if (typeof errorCatching == "boolean" && errorCatching) commandResult = await command.exec(client, message, args, guild, isSlashCommand);
         messageMetric.addEntry(`ExecutedCommand`);
         if (typeof commandResult != "undefined") {
             if (typeof commandResult == "object")
@@ -121,6 +141,6 @@ module.exports = async function (message, guild = undefined) {
                 }
         return true;
     } catch (e) {
-        return utils.sendError(message, guild, undefined, `An error occured within the command code.`, [], true, 5000, 5000);
+        return utils.sendError(message, guild, undefined, `An error occured within the command code.`, [], (isSlashCommand) ? {ephemeral: true} : true, 5000, 5000);
     }
 }

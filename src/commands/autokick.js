@@ -25,7 +25,7 @@ module.exports = {
     },
     category: `administration`,
     status: true,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let cmd = message.content.replace(args.join(' '), '');
 
         if (args.length == 0) {
@@ -82,7 +82,7 @@ module.exports = {
 
             if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
-            if (args.length == 1)return utils.sendMain(message, guild, `AutoKick Helpfer`, `Usage: \`${guild.configurationManager.configuration.prefix}autokick logKickedUsers <true/false>\``, [], true); /*Updated To New Utils*/
+            if (args.length == 1)return utils.sendMain(message, guild, `AutoKick Helpfer`, `Usage: \`${guild.configurationManager.configuration.prefix}autokick logKickedUsers <true/false>\``, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
             let statusValue = (args[1] == '1' || args[1] == "true" || args[1] == "yes") ? true : false;
             guild.configurationManager.configuration.autokick.logKickedUsers = statusValue;
@@ -98,7 +98,7 @@ module.exports = {
 
             if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `AutoKick Error`, `You must mention at least one role to add.`, [], true); /*Updated To New Utils*/
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `AutoKick Error`, `You must mention at least one role to add.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
             let rolesToAdd = message.mentions.roles;
 
@@ -108,7 +108,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `AutoKick role(s) added`,`Current roles in scope : ${(guild.configurationManager.configuration.autokick.rolesToKick.length == 0) ? `none` : `<@&${(guild.configurationManager.configuration.autokick.rolesToKick.length == 1) ? guild.configurationManager.configuration.autokick.rolesToKick : guild.configurationManager.configuration.autokick.rolesToKick.join(`>, <@&`)}>` }`, [], true); /*Updated To New Utils*/
+            return utils.sendMain(message, guild, `AutoKick role(s) added`,`Current roles in scope : ${(guild.configurationManager.configuration.autokick.rolesToKick.length == 0) ? `none` : `<@&${(guild.configurationManager.configuration.autokick.rolesToKick.length == 1) ? guild.configurationManager.configuration.autokick.rolesToKick : guild.configurationManager.configuration.autokick.rolesToKick.join(`>, <@&`)}>` }`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "removerole") {
@@ -118,7 +118,7 @@ module.exports = {
 
             if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `AutoKick Error`, `You must mention at least one role to remove.`, [], true); /*Updated To New Utils*/
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `AutoKick Error`, `You must mention at least one role to remove.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
             let rolesToRemove = message.mentions.roles;
 
@@ -139,7 +139,7 @@ module.exports = {
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
             if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to add.`, [], true); /*Updated To New Utils*/
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to add.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
             let blacklist = message.mentions.roles;
 
@@ -158,7 +158,7 @@ module.exports = {
             let hasPermission = (hasGlobalPermission == null) ? await guild.permissionsManager.userHasPermission(permissionToCheck, message.author.id, undefined, message.channel.id, message.guild.id) : hasGlobalPermission;
 
             if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
-            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to remove.`, [], true); /*Updated To New Utils*/
+            if (args.length < 2 || message.mentions.roles.size == 0) return utils.sendError(message, guild, `Error`, `You must specify at least one role to remove.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
             let rolesToRemove = message.mentions.roles;
 
@@ -170,7 +170,7 @@ module.exports = {
             });
 
             guild.configurationManager.save();
-            return utils.sendMain(message, guild, `Role(s) removed`, `Blacklisted role(s) are now <@&${(guild.configurationManager.configuration.autokick.blacklist.length == 1) ? guild.configurationManager.configuration.autokick.blacklist : guild.configurationManager.configuration.autokick.blacklist.join(`>, <@&`)}>.`, [], true); /*Updated To New Utils*/
+            return utils.sendMain(message, guild, `Role(s) removed`, `Blacklisted role(s) are now <@&${(guild.configurationManager.configuration.autokick.blacklist.length == 1) ? guild.configurationManager.configuration.autokick.blacklist : guild.configurationManager.configuration.autokick.blacklist.join(`>, <@&`)}>.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "fixroles") {
@@ -180,7 +180,7 @@ module.exports = {
 
             if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
-            if (guild.configurationManager.configuration.autokick.rolesToKick.length == 0) return utils.sendError(message, guild, `AutoKick Error`, `No roles in scope, made it easy to fix. (the joke here is that I had nothing to do haha)`, [], true); /*Updated To New Utils*/
+            if (guild.configurationManager.configuration.autokick.rolesToKick.length == 0) return utils.sendError(message, guild, `AutoKick Error`, `No roles in scope, made it easy to fix. (the joke here is that I had nothing to do haha)`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
             let rolesLeft = guild.configurationManager.configuration.autokick.rolesToKick.length;
 
@@ -197,7 +197,7 @@ module.exports = {
                 rolesLeft--;
                 if (rolesLeft == 0) {
                     guild.configurationManager.save();
-                    return utils.sendMain(message, guild, `AutoKick roles fixed`, undefined, [], true); /*Updated To New Utils*/
+                    return utils.sendMain(message, guild, `AutoKick roles fixed`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
                 }
             });
         }
@@ -211,7 +211,7 @@ module.exports = {
 
             let rolesToKick = guild.configurationManager.configuration.autokick.rolesToKick;
 
-            if (rolesToKick.length == 0) return utils.sendError(message, guild, `AutoKick Error`, `No roles in scope.`, [], true); /*Updated To New Utils*/
+            if (rolesToKick.length == 0) return utils.sendError(message, guild, `AutoKick Error`, `No roles in scope.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
             guild.autokick = {
                 queue: {},
@@ -338,7 +338,7 @@ module.exports = {
 
             if (guild.autokick.ready == false) return utils.sendError(message, guild, `AutoKick Error`, `Fetching is still running.`);
 
-            if (typeof guild.autokick.triggered[message.author.id] != "undefined") return utils.sendError(message, guild, `AutoKick Error`, `You already triggered.`, [], true); /*Updated To New Utils*/
+            if (typeof guild.autokick.triggered[message.author.id] != "undefined") return utils.sendError(message, guild, `AutoKick Error`, `You already triggered.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
             let embed = new MessageEmbed({
                 title: `${globalConfiguration.configuration.appName}'s AutoKick Triggerd`,
@@ -421,10 +421,10 @@ module.exports = {
 
             if (!hasPermission) return utils.insufficientPermissions(message, guild, permissionToCheck, true, 5000, 5000);
 
-            if (typeof guild.autokick == "undefined") return utils.sendError(message, guild, `AutoKick Error`, `Nothing to clear, run \`${(typeof guild == "undefined") ? globalConfiguration.configuration.prefix : guild.configurationManager.configuration.prefix}autokick prepare\` to trigger the fetching.`, [], true); /*Updated To New Utils*/
+            if (typeof guild.autokick == "undefined") return utils.sendError(message, guild, `AutoKick Error`, `Nothing to clear, run \`${(typeof guild == "undefined") ? globalConfiguration.configuration.prefix : guild.configurationManager.configuration.prefix}autokick prepare\` to trigger the fetching.`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
             if (typeof guild.autokick != "undefined") delete guild.autokick;
-            return utils.sendMain(message, guild, `AutoKick pending cleared`, undefined, [], true); /*Updated To New Utils*/
+            return utils.sendMain(message, guild, `AutoKick pending cleared`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         }
 
         if (args[0].toLowerCase() == "reasonhelp" && false) {

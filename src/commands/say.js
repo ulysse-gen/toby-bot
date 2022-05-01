@@ -19,7 +19,7 @@ module.exports = {
         noLogs: `commands.say.nologs`
     },
     category: `fun`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let OGMessage = message;
         if (typeof guild.waitingForMessage.data.say[message.author.id] == "undefined") guild.waitingForMessage.data.say[message.author.id] = {
             toggle: false,

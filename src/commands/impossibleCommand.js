@@ -8,7 +8,7 @@ module.exports = {
     },
     permission: `commands.impossiblecommand`,
     category: `administration`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         if (guild.configurationManager.configuration.behaviour.autoDeleteCommands) message.delete().catch(e => {
             /*console.log(`Could not delete..`);*/
         })

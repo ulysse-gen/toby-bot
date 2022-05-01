@@ -15,7 +15,7 @@ module.exports = {
     permission: `commands.help`,
     category: `informations`,
     cooldown: 10,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         if (args.length == 0) {
             let description = `List of ${globalConfiguration.configuration.appName}'s commands *(Only list the commands you can execute)* **[${Object.keys(globalCommands.commands).length}]**: \n`;
             let embedFields = [];
@@ -56,12 +56,12 @@ module.exports = {
                 try {
                     args[1] = parseInt(args[1]);
                 } catch (e) {
-                    return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
+                    return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
                 }
                 embed.footer = {
                     text: `Use \`${guild.configurationManager.configuration.prefix}help detail [page number]\` to search thru pages. [${args[1]}/${embedPages.length}]`
                 };
-                if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
+                if (typeof embedPages[args[1] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
                 embedFields = embedPages[args[1] - 1];
             }
             embedFields.forEach(embedField => {
@@ -129,12 +129,12 @@ module.exports = {
             try {
                 args[0] = parseInt(args[0]);
             } catch (e) {
-                return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], true); /*Updated To New Utils*/
+                return utils.sendError(message, guild, `Pages must be selected by numbers.`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
             }
             embed.footer = {
                 text: `Use \`${guild.configurationManager.configuration.prefix}help [page number]\` to search thru pages. [${args[0]}/${embedPages.length}]`
             };
-            if (typeof embedPages[args[0] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], true); /*Updated To New Utils*/
+            if (typeof embedPages[args[0] - 1] == "undefined") return utils.sendError(message, guild, `This page does not exist`, undefined, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
             embedFields = embedPages[args[0] - 1];
         }
 

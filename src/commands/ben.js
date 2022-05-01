@@ -54,7 +54,7 @@ module.exports = {
         ]
     },
     category: `moderation`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         if (args.length == 0) {
             let description = `**Description:** ${this.description}`;
             if (this.aliases.length >= 1) description += `\n**Aliases:** \`${this.aliases.join('`, `')}\``;
@@ -64,7 +64,7 @@ module.exports = {
             fields.push([`**Sub Commands:**`, `None yet`, false]);
             fields.push([`**Usage:**`, `${guild.configurationManager.configuration.prefix}${this.name} <user> [time] [reason]`, false]);
             fields.push([`**Example:**`, `${guild.configurationManager.configuration.prefix}${this.name} @DopeUsername Being too cool\n${guild.configurationManager.configuration.prefix}${this.name} 168754125874596348 Being too cool\n${guild.configurationManager.configuration.prefix}${this.name} DopeUsername#0420 30min Being too cool`, false]);
-            return utils.sendMain(message, guild, `Command: ${guild.configurationManager.configuration.prefix}${this.name}`, `${description}`, fields, true); /*Updated To New Utils*/
+            return utils.sendMain(message, guild, `Command: ${guild.configurationManager.configuration.prefix}${this.name}`, `${description}`, fields, (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         }
         let userToBan = args.shift();
         let reason = '';

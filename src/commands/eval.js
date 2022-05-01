@@ -18,14 +18,14 @@ module.exports = {
     aliases: [],
     permission: `commands.eval`,
     category: `danger`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let embed = new MessageEmbed({
             title: `Eval :`,
             color: guild.configurationManager.configuration.colors.success
         });
 
-        if (args.length == 0) return utils.sendError(message, guild, `Could not eval`, `Args empty`, [], true); /*Updated To New Utils*/
-        if (args[0] == "help") return utils.sendMain(message, guild, `Eval quick help`, `Return variable = \`returnValue\``, [], true); /*Updated To New Utils*/
+        if (args.length == 0) return utils.sendError(message, guild, `Could not eval`, `Args empty`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
+        if (args[0] == "help") return utils.sendMain(message, guild, `Eval quick help`, `Return variable = \`returnValue\``, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
 
         embed.description = await new Promise(async (res, rej) => {
             let returnValue = `No return value.`;

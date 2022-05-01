@@ -16,7 +16,7 @@ module.exports = {
     aliases: ["modstats", "howgoodisthismoderator"],
     permission: `commands.moderationstats`,
     category: `moderation`,
-    async exec(client, message, args, guild = undefined) {
+    async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         let user = undefined;
 
         if (args.length != 0) {
@@ -35,7 +35,7 @@ module.exports = {
             }).catch(e => {
                 return undefined;
             });
-            if (typeof user == "undefined") return utils.sendError(message, guild, `Could not get moderator data`, `User not found`, [], true); /*Updated To New Utils*/
+            if (typeof user == "undefined") return utils.sendError(message, guild, `Could not get moderator data`, `User not found`, [], (isSlashCommand) ? {ephemeral: true} : true); /*Updated To New Utils*/
         }
         if (args.length == 0) user = await message.channel.guild.members.fetch(message.author.id, {
             cache: false,
