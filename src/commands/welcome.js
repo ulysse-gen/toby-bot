@@ -29,7 +29,7 @@ module.exports = {
         embed.addField(`**📌 First of all, go read**`, `<#892106114865438721>`, true);
         embed.addField(`**📌 Make sure you get some**`, `<#907859717886447626>`, true);
         embed.addField(`**📌 You can also get**`, `<#920163211074994186>`, true);
-        embed.addField(`**📌 And introduce yourself in**`, `<#944074797468487680>`, true);
+        //embed.addField(`**📌 And introduce yourself in**`, `<#944074797468487680>`, true);
 
         message.reply({
             embeds: [embed],
