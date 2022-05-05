@@ -19,7 +19,7 @@ module.exports = {
     category: `informations`,
     async exec(client, message, args, guild = undefined, isSlashCommand = false) {
         var changelog = [
-            "Added some more slash commands", "Improvements and fixes for slash commands", "Fixed `welcome` (thanks <@613018772545994755> edit queen)"
+            "Now saving up to 50 of the last messages."
         ];
         let description = `- ` + changelog.shift();
         changelog.forEach(line => {
