@@ -8,6 +8,6 @@ Here is a list of things that might be saved by Toby Bot as well as how long it 
 # Todo:
 - Implement t!lockdown  => Will work on it later, dont want to code this now, dont like playing with channels permissions, scary stuff yknow.
 
-- Improve permissions so it works with temporary permission & it scans all at once for better efficiency.
+- Improve permissions so it works with temporary permission & it scans all at once for better efficiency. => Will work on it later
                 
-- Auto Moderation Phase / Version 4. > Working on it
+- Auto Moderation Phase / Version 4. => Working on it
