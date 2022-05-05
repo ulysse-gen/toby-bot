@@ -61,7 +61,7 @@ module.exports = async function (message) {
     message.attachments.forEach(messageAttachement => lastMessagePush.attachments.push(messageAttachement.url));
     message.stickers.forEach(messageSticker => lastMessagePush.stickers.push(messageSticker.url));
     guild.lastMessages[message.author.id].unshift(lastMessagePush);
-    if (guild.lastMessages[message.author.id].length >= 25) guild.lastMessages[message.author.id].splice(24, guild.lastMessages[message.author.id] - 25);
+    if (guild.lastMessages[message.author.id].length >= 50) guild.lastMessages[message.author.id].splice(49, guild.lastMessages[message.author.id] - 50);
     messageMetric.addEntry(`LastMessagesPushed`);
 
     if (message.author.id == client.user.id) return; //Skip if himself

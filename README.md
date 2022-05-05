@@ -1,15 +1,13 @@
 # toby-bot
 Official Toby Bot repo
 
-Things saved by TobyBot:
-- 25 last messages of every guild members is saved in RAM
-- Those messages are saved in a database (Content, Timestamp, GuildID, ChannelID & UserID) after a punishment is made (Warn, Mute, Kick, Ban)
-- Those messages are saved in a channel when a moderator use the command t!lastmessages
-- Those messages are earased from the RAM when the bot is restarted, never to be seen again if not saved in database and/or channel.
+# Data:
+Here is a list of things that might be saved by Toby Bot as well as how long it is saved for :
+- Last 50 messages of every guild members [Saved in RAM, exported to the database in case of a punishement, exported in a channel when the command t!lastmessages is used]
 
 # Todo:
-- Implementation of t!lockdown command. > Will look into it, may take a little bit to get the whole thing in my mind
+- Implement t!lockdown  => Will work on it later, dont want to code this now, dont like playing with channels permissions, scary stuff yknow.
 
-- Make the permission scan all at once not one by one (User, Internal Role, Role, Channel, Guild) > Will work on it later, im tired of playing with permissions rn
+- Improve permissions so it works with temporary permission & it scans all at once for better efficiency.
                 
-- Auto Moderation Phase/ Version 4. > Should start working on it soonish, will take some time, may implement slowly
+- Auto Moderation Phase / Version 4. > Working on it
