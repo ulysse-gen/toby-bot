@@ -107,68 +107,6 @@
           "ignoredChannels": [],
           "overwriteAllow": []
         },
-        "allCaps": {
-          "status": false,
-          "reaction": [],
-          "ignoredChannels": []
-        },
-        "duplicateText": {
-          "status": false,
-          "reaction": ["log","delete"],
-          "ignoredChannels": [],
-          "threshold": {
-            "amount": 2
-          }
-        },
-        "fastMessageSpam": {
-          "status": false,
-          "reaction": ["log","delete"],
-          "ignoredChannels": [],
-          "threshold": {
-            "time": 5,
-            "amount": 5
-          }
-        },
-        "discordInvite": {
-          "status": true,
-          "reaction": ["log","delete"],
-          "ignoredChannels": []
-        },
-        "massMentions": {
-          "status": false,
-          "reaction": ["log","delete"],
-          "ignoredChannels": [],
-          "threshold": {
-            "time": 0,
-            "amount": 5
-          }
-        },
-        "imageSpam": {
-          "status": false,
-          "reaction": ["log","delete"],
-          "ignoredChannels": [],
-          "threshold": {
-            "time": 10,
-            "amount": 2
-          }
-        },
-        "emojiSpam": {
-          "status": false,
-          "reaction": ["log","delete"],
-          "ignoredChannels": [],
-          "threshold": {
-            "amount": 8
-          }
-        },
-        "stickerSpam": {
-          "status": false,
-          "reaction": ["log","delete"],
-          "ignoredChannels": [],
-          "threshold": {
-            "time": 10,
-            "amount": 3
-          }
-        },
         "scams": {
           "status": true,
           "reaction": ["log","delete"],

@@ -113,6 +113,18 @@ module.exports = async (message, guild = undefined) => {
         }
     }
 
+    if (guild.configurationManager.configuration.moderation.autoModeration.modules.language.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.language.ignoredChannels.includes(message.channel.id)) {
+        let LanguageCheckResult = await require(`./chatModerationModules/languageCheck.js`).languageDetect(client, message, guild);
+        if (LanguageCheckResult.result) {
+            violations.push({
+                check: `languagedetect`,
+                trigger: "Wrong Language",
+                value: LanguageCheckResult.value,
+                action: guild.configurationManager.configuration.moderation.autoModeration.modules.language.reaction
+            });
+        }
+    }
+
     if ((guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.ignoredChannels.includes(message.channel.id)) ||
         (guild.configurationManager.configuration.moderation.autoModeration.modules.scams.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.scams.ignoredChannels.includes(message.channel.id))) {
         let customDetect = await require(`./chatModerationModules/detectProfanities`).detectProfanities(client, message, guild, {
@@ -157,7 +169,9 @@ module.exports = async (message, guild = undefined) => {
             return false;
         });
 
-        if (actions.includes('delete')) message.delete().catch({});
+        if (actions.includes('delete')) message.delete().catch(e => {
+            MainLog.error(`[chatModeration] Could not deleted message. ${e.toString()}`);
+        });
         if (actions.includes('ban')) {
             guild.banUser(message, user.id, guild.configurationManager.configuration.moderation.autoModeration.banReason, guild.configurationManager.configuration.moderation.autoModeration.banDuration * 60, true, true);
         } else if (actions.includes('kick')) {

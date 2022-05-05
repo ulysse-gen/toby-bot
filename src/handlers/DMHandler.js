@@ -4,7 +4,7 @@ const {
 const moment = require(`moment`);
 
 module.exports.create = async function (client, message) {
-    let messageMetric =  message.customMetric;
+    let messageMetric = message.customMetric;
     messageMetric.addEntry(`DMHandlerStart`);
     if (message.content.startsWith('dm!') && ["231461358200291330", "330826518370451457"].includes(message.author.id)) {
         let args = message.content.split(' ');
@@ -32,7 +32,7 @@ module.exports.create = async function (client, message) {
         stickers.push(sticker);
     });
     let onlyLogThatToMe = ["456302087207256067"];
-    if (onlyLogThatToMe.includes(message.author.id)){
+    if (onlyLogThatToMe.includes(message.author.id)) {
         client.users.fetch(`231461358200291330`).then(user => {
             user.send({
                 content: `Received a DM from ${message.channel.recipient} :\n${message.content}`,
@@ -41,13 +41,14 @@ module.exports.create = async function (client, message) {
         }).catch(e => {});
         return;
     }
-    client.guilds.fetch("947407448799604766").then(guild => {
+
+    if (!message.content.includes(`Someone said "milky" => `)) client.guilds.fetch("947407448799604766").then(guild => {
         guild.channels.fetch("962842493257396224").then(channel => {
-            if (message.author.id != client.user.id)channel.send({
+            if (message.author.id != client.user.id) channel.send({
                 content: `Incoming DM from ${message.channel.recipient} :\n${(message.content != "") ? message.content : `**Message seems empty, it may be an embed, an attachment or a sticker that i could not grab.**`}`,
                 files: attachments
             }).catch(e => {});
-            if (message.author.id == client.user.id)channel.send({
+            if (message.author.id == client.user.id) channel.send({
                 content: `Outgoing DM to ${message.channel.recipient} :\n${(message.content != "") ? message.content : `**Message seems empty, it may be an embed, an attachment or a sticker that i could not grab.**`}`,
                 files: attachments
             }).catch(e => {});
