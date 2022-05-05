@@ -113,7 +113,7 @@ module.exports = async (message, guild = undefined) => {
         }
     }
 
-    if (guild.configurationManager.configuration.moderation.autoModeration.modules.language.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.language.ignoredChannels.includes(message.channel.id)) {
+    /*if (guild.configurationManager.configuration.moderation.autoModeration.modules.language.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.language.ignoredChannels.includes(message.channel.id)) {
         let LanguageCheckResult = await require(`./chatModerationModules/languageCheck.js`).languageDetect(client, message, guild);
         if (LanguageCheckResult.result) {
             violations.push({
@@ -123,7 +123,7 @@ module.exports = async (message, guild = undefined) => {
                 action: guild.configurationManager.configuration.moderation.autoModeration.modules.language.reaction
             });
         }
-    }
+    }*/
 
     if ((guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.wordsDetection.ignoredChannels.includes(message.channel.id)) ||
         (guild.configurationManager.configuration.moderation.autoModeration.modules.scams.status && !guild.configurationManager.configuration.moderation.autoModeration.modules.scams.ignoredChannels.includes(message.channel.id))) {
