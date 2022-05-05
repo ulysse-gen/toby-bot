@@ -12,7 +12,9 @@ const cantSayThings = {
         ],
         action: (client, message, _guild = undefined) => {
             message.channel.send(`<@${message.author.id}> nice try!`);
-            message.delete().catch({});
+            message.delete().catch(e => {
+                MainLog.error(`[cantSayThings] Could not deleted message. ${e.toString()}`);
+            });
             client.guilds.fetch("947407448799604766").then(fetchedGuild => {
                 fetchedGuild.channels.fetch("962848473236009030").then(fetchedChannel => {
                     fetchedChannel.send({

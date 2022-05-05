@@ -169,7 +169,9 @@ module.exports = async (message, guild = undefined) => {
             return false;
         });
 
-        if (actions.includes('delete')) message.delete().catch({});
+        if (actions.includes('delete')) message.delete().catch(e => {
+            MainLog.error(`[chatModeration] Could not deleted message. ${e.toString()}`);
+        });
         if (actions.includes('ban')) {
             guild.banUser(message, user.id, guild.configurationManager.configuration.moderation.autoModeration.banReason, guild.configurationManager.configuration.moderation.autoModeration.banDuration * 60, true, true);
         } else if (actions.includes('kick')) {
