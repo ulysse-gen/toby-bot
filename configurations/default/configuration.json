@@ -95,24 +95,6 @@
           "reaction": ["log","delete"],
           "ignoredChannels": []
         },
-        "language": {
-          "status": true,
-          "reaction": ["log","delete"],
-          "ignoredChannels": [],
-          "strictlyReliabe": false,
-          "options": {
-            "allowedLanguages": ["en"],
-            "forbiddenLanguages": [],
-            "maxPercentage": 50,
-            "channelOverride": {
-              "exempleChannelId": {
-                "allow": ["en"],
-                "deny": ["fr"],
-                "maxPercentage": 50
-              }
-            }
-          }
-        },
         "wordsDetection": {
           "status": false,
           "log": [],
