@@ -4,7 +4,8 @@ const url = require('url');
 const {
     client,
     AutoModLog,
-    globalPermissions
+    globalPermissions,
+    MainLog
 } = require(`../../index`);
 
 const {
