@@ -1,6 +1,6 @@
 {
   "name": "tobybot",
-  "version": "3.5.4",
+  "version": "3.5.5",
   "description": "Toby Discord Bot",
   "main": "index.js",
   "scripts": {
@@ -13,12 +13,14 @@
     "@discordjs/voice": "^0.8.0",
     "anti-profanity": "^2.0.7",
     "axios": "^0.26.1",
+    "cld": "^2.7.1",
     "colors": "^1.4.0",
     "discord-api-types": "^0.31.2",
     "discord.js": "^13.6.0",
     "express": "^4.17.3",
     "heapdump": "^0.3.15",
     "i18n": "^0.14.1",
+    "languagedetect": "^2.0.0",
     "linkifyjs": "^3.0.5",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",

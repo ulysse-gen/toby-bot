@@ -26,15 +26,13 @@ module.exports = async function (message) {
         message.type; //(DEFAULT, REPLY, APPLICATION_COMMAND)
     */
 
-        
-    messageMetric.addEntry(`BlockedUsersCheck`);
     if (blockedUsers.includes(message.author.id)) {
         if (typeof message.channel.guild != "undefined") return false;
         MainLog.log(`Received DM from blocked user ${message.author.username}#${message.author.discriminator} (${message.author.id}) : ${message.content}`);
         message.author.send(`Ur blocked basically so you can stop lmao`);
         return true;
     }
-    messageMetric.addEntry(`DMHandlerPass`);
+    
     if (typeof message.channel.guild == "undefined") return require(`./DMHandler`).create(client, message);
 
     messageMetric.addEntry(`SkipGuildsCheck`);
@@ -69,9 +67,6 @@ module.exports = async function (message) {
     if (message.author.id == client.user.id) return; //Skip if himself
 
     if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
-    
-    messageMetric.addEntry(`ChatModerationPass`);
-    require(`./chatModeration`)(message, guild); //Same but if thats with guild prefix
 
     messageMetric.addEntry(`WaitingForMessagesChecks`);
     if (typeof guild.waitingForMessage == "object") {
@@ -87,8 +82,17 @@ module.exports = async function (message) {
         }
     }
 
-    messageMetric.addEntry(`CommandHandlerPass`);
-    if (message.content.startsWith(guild.configurationManager.configuration.prefix)) return require(`./commandHandler`)(message, guild); //Same but if thats with guild prefix
-    if (message.content.startsWith(globalConfiguration.configuration.globalPrefix)) return require(`./commandHandler`)(message, guild); //If message starts with global prefix, exec
-    return false;
+    var ChatModeration = new Promise((res, _rej) => {
+        messageMetric.addEntry(`ChatModerationPass`);
+        res(require(`./chatModeration`)(message, guild))
+    });
+
+    var CommandHandling = new Promise((res, _rej) => {
+        messageMetric.addEntry(`CommandHandlerPass`);
+        if (message.content.startsWith(guild.configurationManager.configuration.prefix) || message.content.startsWith(globalConfiguration.configuration.globalPrefix))res(require(`./commandHandler`)(message, guild));
+        res(false);
+    });
+
+
+    return Promise.all([ChatModeration, CommandHandling]);
 }

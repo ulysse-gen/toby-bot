@@ -44,7 +44,7 @@ module.exports = async function (message, guild = undefined, isSlashCommand = fa
         if (typeof guild != "undefined" && cmd.startsWith(guild.configurationManager.configuration.prefix)) cmd = cmd.replace(guild.configurationManager.configuration.prefix, '');
     }
 
-    if (isSlashCommand) message.content =  `${cmd} ${args.join(' ')}`;
+    if (isSlashCommand) message.content =  `/${cmd} ${args.join(' ')}`;
 
     if (typeof cmd == "undefined" || typeof args == "undefined") return utils.sendError(message, guild, undefined, `wat`, [], (isSlashCommand) ? {ephemeral: true} : true, -1, -1); //This can actually never happen
     if (typeof client == "undefined") return utils.sendError(message, guild, undefined, `Client is undefined`, [], (isSlashCommand) ? {ephemeral: true} : true, -1, -1); //This can actually never happen
