@@ -11,18 +11,26 @@ const fs = require('fs');
 const Logger = require('./Logger');
 
 module.exports = class FileLogger extends Logger {
-    constructor(logFile = `./logs/main.log`) {
+    constructor(logFile = `main.log`) {
+        if (typeof logFile != "string")throw `${__filename} => constructor(): Wrong type given for logFile. Expected string received ${typeof logFile}`;
+        if (logFile == "")throw `${__filename} => constructor(): logFile cannot be empty.`;
+
         super();
 
-        this.file = (logFile.startsWith('./')) ? `${process.cwd()}/${logFile.replace('./', '')}` : `${process.cwd()}/logs/${logFile}`;
+        this.file = `${process.cwd()}/logs/${logFile}`;
 
-        this.logCheckUp();
+        this.createPath(this.file);
     }
 
-    logCheckUp() {
-        if (!fs.existsSync(`${process.cwd()}/logs`)) fs.mkdirSync(`${process.cwd()}/logs`);
-        if (!fs.existsSync(this.file)) fs.appendFile(this.file, "", function (err) {
-            if (err) throw err;
+    async createPath(path) {
+        let pathParts = path.replace(process.cwd(), '').split('/').filter(v => v != "").slice(0,-1);
+        let currentPath = process.cwd();
+        return new Promise((res, rej) => {
+            while (pathParts.length > 0){
+                currentPath += `/${pathParts.shift()}`;
+                if (!fs.existsSync(currentPath)) fs.mkdirSync(currentPath);
+                if (pathParts.length <= 0)res(true);
+            } 
         });
     }
 
@@ -35,7 +43,7 @@ module.exports = class FileLogger extends Logger {
     }
 
     fileLog(string) {
-        this.logCheckUp();
+        this.createPath(this.file);
         if (typeof string != "string" && string == "") return false;
         fs.appendFile(this.file, colors.stripColors(`${string}\r\n`), function (err) {
             if (err) throw err;

@@ -1,0 +1,10 @@
+{
+    "appName": "Toby Bot",
+    "appId": 12345678912345678,
+    "token": "thisIsAnObviouslyFakeToken",
+    "prefixes": ["$toby.gg$","tobybot.","tbb."],
+    "blocked": {
+        "users": {},
+        "guilds": {}
+    }
+}

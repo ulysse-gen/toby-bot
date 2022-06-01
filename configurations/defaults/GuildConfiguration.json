@@ -1,0 +1,19 @@
+{
+    "prefix": "t!",
+    "prefixes": [],
+    "style": {
+        "colors": {
+            "success": "#00FF68",
+            "error": "#FF654D",
+            "warning": "#FFD02F",
+            "main": "#EF2FFF"
+          }
+    },
+    "behaviour": {
+        "onCommandErrorReturnError": true,
+        "onCommandDeniedReturnDeny": true,
+        "onCommandUnknownReturnUnknown": true,
+        "onCommandWarningReturnWarning": true,
+        "onCommandCooldownReturnCooldown": true
+    }
+}

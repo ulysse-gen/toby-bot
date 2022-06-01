@@ -1,0 +1,4 @@
+{
+	"interaction.couldNotProcess": "This interaction could not be processed.",
+	"interaction.slashCommand.notBuilt": "This slash command isnt built yet or the return has failed. Use the regular command system with the `{{prefix}}` prefix"
+}

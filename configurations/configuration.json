@@ -1,10 +1,1 @@
-{
-    "MySQL": {
-        "host": "localhost",
-        "user": "tobybot",
-        "password": "dopepassword",
-        "database": "tobybot",
-        "charset": "UTF8MB4_UNICODE_CI",
-        "connectionLimit": 10
-    }
-}
+{"MySQL":{"host":"localhost","user":"tobybot","password":"dopepassword","database":"tobybot-v4","charset":"UTF8MB4_UNICODE_CI","connectionLimit":10}}

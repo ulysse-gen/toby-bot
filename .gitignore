@@ -109,7 +109,6 @@ dist
 .vscode/
 
 #Toby Bot related
-/MySQL.json
+.configurations/
 /.git-credentials
 /.gitconfig
-.cache/

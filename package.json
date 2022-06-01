@@ -1,6 +1,6 @@
 {
   "name": "tobybot",
-  "version": "4",
+  "version": "4.0.0",
   "description": "Toby Bot Discord Utility Bot",
   "main": "index.js",
   "scripts": {
@@ -9,9 +9,13 @@
   "author": "UlysseGenie#9555",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/rest": "^0.4.1",
     "colors": "^1.4.0",
+    "crypto": "^1.0.1",
     "discord.js": "^13.6.0",
     "express": "^4.17.3",
+    "i18n": "^0.15.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "mysql": "^2.18.1"
   }

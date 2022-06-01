@@ -1,0 +1,10 @@
+{
+	"Error": "Error",
+	"commands.say.name": "Say",
+	"commands.say.description": "Make the bot say something, you can attach files such as images too.",
+	"commands.say.option.text.description": "The text to be sent.",
+	"commands.say.error.textMustBeString": "The text must be a string.",
+	"commands.say.error.textCannotBeEmpty": "The text cannot be empty.",
+	"commands.say.sent": "Message Sent",
+	"commands.say.option.channel.description": "You can choose here a specific channel to send to."
+}
