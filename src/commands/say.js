@@ -3,22 +3,20 @@ const { MessageEmbed } = require('discord.js');
 
 module.exports = {
     name: "say",
+    aliases: [],
     permission: "command.say",
     category: "fun",
     enabled: true,
-    async exec(CommandManager, ExecutionContext) {
-        if (typeof ExecutionContext.options.text != "string")throw {title: ExecutionContext.i18n.__('Error'), content: ExecutionContext.i18n.__('commands.say.error.textMustBeString')};
-        if (ExecutionContext.options.text == "")throw {title: ExecutionContext.i18n.__('Error'), content: ExecutionContext.i18n.__('commands.say.error.textCannotBeEmpty')};
-        ExecutionContext.trigger.delete();
+    async execute(CommandExecution) {
+        if (typeof CommandExecution.options.text != "string" || CommandExecution.options.text.replaceAll(' ', '') == "")throw {title: CommandExecution.i18n.__('commands.generic.error.title'), content: CommandExecution.i18n.__('command.say.error.textMustExistNotEmpty')};
 
-        let channelToSendTo = (typeof ExecutionContext.options.channel == "undefined") ? ExecutionContext.channel : await ExecutionContext.trigger.TobyBot.guild.getChannelById(ExecutionContext.options.channel);
+        let channelToSendTo = (typeof CommandExecution.options.channel == "undefined") ? CommandExecution.channel : await CommandExecution.trigger.TobyBot.guild.getChannelById(CommandExecution.options.channel);
 
-        channelToSendTo.send(ExecutionContext.options.text);
-        return ExecutionContext.trigger.reply({
-            embeds: [new MessageEmbed().setTitle(ExecutionContext.i18n.__(`commands.${this.name}.sent`)).setColor(ExecutionContext.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main'))],
-            ephemeral: true,
-            slashOnly: true
-        });
+        channelToSendTo.send(CommandExecution.options.text);
+        CommandExecution.trigger.delete();
+
+        await CommandExecution.returnMainEmbed({ephemeral: true, slashOnly: true}, CommandExecution.i18n.__(`command.${this.name}.sent`));
+        return true;
     },
     optionsFromArgs (args) {
         var options = {};
@@ -32,17 +30,17 @@ module.exports = {
     makeSlashCommand(i18n) {
         let slashCommand = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(i18n.__(`commands.${this.name}.description`));
+            .setDescription(i18n.__(`command.${this.name}.description`));
 
         slashCommand.addStringOption(option => 
             option.setName('text')
-                .setDescription(i18n.__(`commands.${this.name}.option.text.description`))
+                .setDescription(i18n.__(`command.${this.name}.option.text.description`))
                 .setRequired(true)
         );
 
         slashCommand.addChannelOption(option => 
             option.setName('channel')
-                .setDescription(i18n.__(`commands.${this.name}.option.channel.description`))
+                .setDescription(i18n.__(`command.${this.name}.option.channel.description`))
                 .setRequired(false)
         );
 

@@ -4,6 +4,7 @@
 
 //Importing classes
 const FileLogger = require('../classes/FileLogger');
+const CommandExecution = require('../classes/CommandExecution');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -20,20 +21,21 @@ module.exports = {
         if (typeof TobyBot.ConfigurationManager.get('blocked.guilds')[interaction.guildId] != "undefined")return false;
 
         interaction.TobyBot.guild = await TobyBot.GuildManager.getGuild(interaction.member.guild).catch(e => { 
-            return ErrorLog.error(`${__filename}: An error occured trying to fetch the guild.`);
+            ErrorLog.error(`${__filename}: An error occured trying to fetch the guild:`);
+            console.log(e);
+            return undefined;
         });
 
         if (typeof interaction.TobyBot.guild == "undefined" || !interaction.TobyBot.guild.initialized) return false;
 
-        if (interaction.isCommand()) {
-            let commandHandling = await TobyBot.CommandManager.handle(interaction);
-
-
-            return (commandHandling) ? true : interaction.reply({
-                content: interaction.TobyBot.guild.i18n.__('interaction.slashCommand.notBuilt', {prefix:  interaction.TobyBot.guild.ConfigurationManager.get('prefix')}),
-                ephemeral: true
-            }).catch(e => { throw e; });
-        }
+        if (interaction.isCommand())return TobyBot.CommandManager.handleSlash(interaction).catch(e => {
+                                        ErrorLog.error(`${__filename}: An error occured while processing the command:`);
+                                        console.log(e);
+                                        return interaction.reply({
+                                            content: interaction.TobyBot.guild.i18n.__('interaction.slashCommand.notBuilt', {prefix:  interaction.TobyBot.guild.ConfigurationManager.get('prefix')}),
+                                            ephemeral: true
+                                        }).catch(e => { throw e; });
+                                    });
 
         return interaction.reply({
             content: interaction.TobyBot.guild.i18n.__('interaction.couldNotProcess'),

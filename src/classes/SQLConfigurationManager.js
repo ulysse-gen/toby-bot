@@ -24,10 +24,11 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         this.SQLWhere = SQLWhere;
         this.SQLcolumn = SQLColumn;
 
-        this.configuration = defaultConfig;
+        this._configuration = defaultConfig;
         this.defaultConfiguration = (typeof defaultConfig == "object") ? defaultConfig : JSON.parse(defaultConfig);
 
         this.initialized = false;
+        this.changedSince = false;
 
         this.lastLoad = moment();
         this.lastSave = moment();
@@ -35,9 +36,17 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         this.saveCooldown = 10;
     }
 
+    get configuration() {
+        return this._configuration;
+    }
+
+    set configuration(value) {
+        this._configuration = value;
+    }
+
     async initialize(createIfNonExistant = false, guildDependent = undefined) {
         var startTimer = moment();
-        if (this.verbose)MainLog.log(`Initializing ConfigurationManager [${moment().diff(startTimer)}ms]`);
+        if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
 
         if (typeof this.SQLConnectionInfos != "object")throw `${__filename} => initialize(): Wrong type given for SQLConnectionInfos. Expected object received ${typeof this.SQLConnectionInfos}`;
         if (typeof this.SQLConnectionInfos.host != "string")throw `${__filename} => initialize(): Wrong type given for SQLConnectionInfos.host. Expected string received ${typeof this.SQLConnectionInfos.host}`;
@@ -74,7 +83,7 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
             await this.save();
         }
 
-        if (this.verbose)MainLog.log(`Initialized ConfigurationManager [${moment().diff(startTimer)}ms]`);
+        if (this.verbose)MainLog.log(`Initialized ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
         this.initialized = true;
         return true;
     }
@@ -109,6 +118,7 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
                 }
                 if (_this.verbose) MainLog.log(`Saved configuration. [${_this.SQLTable} => ${_this.SQLWhere}][${moment().diff(startTimer)}ms]`);
                 _this.isSaving = false;
+                _this.changedSince = false;
                 res(true);
             });
         });

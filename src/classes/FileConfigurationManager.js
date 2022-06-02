@@ -25,7 +25,7 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
 
     async initialize(createAsEmptyIfNonExistent = false) {
         var startTimer = moment();
-        if (this.verbose)MainLog.log(`Initializing ConfigurationManager [${moment().diff(startTimer)}ms]`);
+        if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
         if (!fs.existsSync(this.file) && !createAsEmptyIfNonExistent) throw `${__filename} => initialize(): Could not find ${this.file}`;
         await this.createPath(this.file);
         if (!fs.existsSync(this.file)) {
@@ -35,7 +35,7 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
         } else {
             await this.load();
         }
-        if (this.verbose)MainLog.log(`Initialized ConfigurationManager [${moment().diff(startTimer)}ms]`);
+        if (this.verbose)MainLog.log(`Initialized ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
         this.initialized = true;
         return true;
     }

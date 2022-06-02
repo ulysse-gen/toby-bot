@@ -38,12 +38,9 @@ module.exports = {
         if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
         if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
 
-        let prefixes = [TobyBot.ConfigurationManager.get('prefixes'), message.TobyBot.guild.ConfigurationManager.get('prefixes'), message.TobyBot.guild.ConfigurationManager.get('prefix')].flat().filter((item, pos, self) => self.indexOf(item) == pos);
-        let isACommand = prefixes.find(e => message.content.startsWith(e));
-
-        if (typeof isACommand != "undefined")await TobyBot.CommandManager.handle(message, isACommand).catch(e => { 
+        let commandExecution = await TobyBot.CommandManager.handle(message).catch(e => {
+            ErrorLog.error(`${__filename}: An error occured during the handling of the CommandManager:`);
             console.log(e);
-            return ErrorLog.error(`${__filename}: An error occured while processing the command.`);
         });
 
         return true;

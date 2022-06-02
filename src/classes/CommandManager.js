@@ -12,6 +12,7 @@ const {
 
 //Importing classes
 const Command = require('./Command');
+const CommandExecution = require('./CommandExecution');
 const FileLogger = require('./FileLogger');
 const { setLocale } = require('i18n');
 
@@ -83,86 +84,20 @@ module.exports = class Metric {
         return this.commands.find(indCommand => (!(typeof indCommand.enabled == "boolean" && !indCommand.enabled) && (indCommand.name == command || (typeof indCommand.aliases == "object" && indCommand.aliases.includes(command)))) ? indCommand : undefined);
     }
 
-    async handle(trigger, prefix = undefined) {
-        let command = undefined;
-        let args = undefined;
-        let slashOptions = undefined;
-        if (typeof prefix != "undefined") {
-            args = trigger.content.split(' ');
-            command = args.shift().replace(prefix, '');
-        }else {
-            command = trigger.commandName;
-            slashOptions = trigger.options._hoistedOptions;
-        }
-
-        var ExecutionContext = await this.ExecutionContextBuilder(command, trigger, args, slashOptions);
-        if (typeof ExecutionContext == "undefined")throw 'Could not execute command.';
-
-        MainLog.log(this.TobyBot.i18n.__((typeof ExecutionContext.spoofing != "undefined") ? 'bot.command.execution.spoofed' : 'bot.command.execution', {user: `${ExecutionContext.executor.username}#${ExecutionContext.executor.discriminator}(${ExecutionContext.executor.id})`, realUser: `${((typeof args == "undefined") ? ExecutionContext.trigger.user : ExecutionContext.trigger.author).username}#${((typeof args == "undefined") ? ExecutionContext.trigger.user : ExecutionContext.trigger.author).discriminator}(${((typeof args == "undefined") ? ExecutionContext.trigger.user : ExecutionContext.trigger.author).id})`, command: `${command}`, location: `${ExecutionContext.channel.id}@${ExecutionContext.channel.guild.id}`, realLocation: `${ExecutionContext.trigger.channel.id}@${ExecutionContext.trigger.channel.guild.id}`}));
-
-        ExecutionContext.fetchedCommand.exec(this, ExecutionContext).catch(e =>{
-            ErrorLog.error(`An error has been catched while executing the command:`);
-            console.log(e)
-;        });
-        return true;
-    }
-
-    async ExecutionContextBuilder(command, trigger, args = undefined, slashOptions = undefined){
+    async handle(message) {
+        let prefixUsed = [this.TobyBot.ConfigurationManager.get('prefixes'), message.TobyBot.guild.ConfigurationManager.get('prefixes'), message.TobyBot.guild.ConfigurationManager.get('prefix')].flat().filter((item, pos, self) => self.indexOf(item) == pos).find(e => message.content.startsWith(e));
+        if (!prefixUsed)return undefined;
+        let commandOptions=message.content.split(' ');
+        let command=commandOptions.shift().replace(prefixUsed, '');
         let fetchedCommand = await this.fetch(command);
         if (typeof fetchedCommand == "undefined")return undefined;
+        return new CommandExecution(message, fetchedCommand, commandOptions, this).execute().catch(e=>{throw e});
+    }
 
-        var ExecutionContext = {
-            executor: (typeof args == "undefined") ? trigger.user : trigger.author,
-            channel: trigger.channel,
-            trigger: trigger,
-            command: command,
-            args: args,
-            slashOptions: slashOptions,
-            i18n: this.i18n,
-            fetchedCommand: fetchedCommand
-        };
-
-        if (typeof args != "undefined") {
-            ExecutionContext.trigger.replyOriginal = ExecutionContext.trigger.reply;
-            ExecutionContext.trigger.reply = async (content) => {
-                if (content.slashOnly)return true;
-                return ExecutionContext.trigger.replyOriginal(content).then(message => {
-                    if (content.ephemeral) setTimeout(()=>{
-                        message.delete();
-                    }, 5000);
-                });
-            }
-
-            for (const arg of ExecutionContext.args) {
-                if (arg.startsWith('--')){
-                    let modifier = arg.replace('--', '').split("=");
-                    let modifierName = modifier.shift();
-                    let modifierValue = modifier.shift();
-    
-                    if (["spoofExecutor"].includes(modifierName)){
-                        ExecutionContext.executor = (await ExecutionContext.trigger.TobyBot.guild.getMemberById(modifierValue)).user;
-    
-                        ExecutionContext.spoofing = true;
-                        ExecutionContext.args = ExecutionContext.args.filter(function(e) { return e !== arg });
-                    }
-    
-                    if (["spoofChannel"].includes(modifierName)){
-                        ExecutionContext.channel = await ExecutionContext.trigger.TobyBot.guild.getChannelById(modifierValue);
-    
-                        ExecutionContext.spoofing = true;
-                        ExecutionContext.args = ExecutionContext.args.filter(function(e) { return e !== arg; });
-                    }
-                }
-            }
-        }
-
-        if (typeof args == "undefined") {
-            ExecutionContext.trigger.delete = async () => true;
-        }
-
-        ExecutionContext.options = (typeof ExecutionContext.args != "undefined") ? ExecutionContext.fetchedCommand.optionsFromArgs(ExecutionContext.args) : ExecutionContext.fetchedCommand.optionsFromSlashOptions(ExecutionContext.slashOptions);
-
-        return ExecutionContext;
+    async handleSlash(interaction) {
+        let fetchedCommand = await this.fetch(interaction.commandName);
+        if (typeof fetchedCommand == "undefined")return undefined;
+        return new CommandExecution(interaction, fetchedCommand, interaction.options._hoistedOptions, this, true).execute().catch(e=>undefined);
     }
 
     checkForExistence(command) { //Check if a command exists (command must be a Command object)
@@ -172,5 +107,11 @@ module.exports = class Metric {
             if (indCommand.aliases.some(r => command.aliases.indexOf(r) >= 0)) return true; //An alias is already used on another command
         }
         return false;
+    }
+
+    async hasPermission(CommandExecution) {
+        let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(CommandExecution.command.permission, CommandExecution.guildExecutor, CommandExecution.channel);
+        let guildPermissions = await CommandExecution.trigger.TobyBot.guild.PermissionManager.userHasPermission(CommandExecution.command.permission, CommandExecution.guildExecutor, CommandExecution.channel, true);
+        return (globalPermissions) ? true : guildPermissions;
     }
 }
