@@ -14,12 +14,20 @@ const MainLog = new FileLogger();
 
 module.exports = class ConfigurationManager {
     constructor() {
-        this.configuration = {};
+        this._configuration = {};
 
         this.initialized = true;
         this.currentlySaving = false;
 
         this.verbose = false;
+    }
+
+    get configuration() {
+        return this._configuration;
+    }
+
+    set configuration(value) {
+        this._configuration = value;
     }
 
     async initialize() {

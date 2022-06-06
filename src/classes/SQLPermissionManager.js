@@ -132,7 +132,7 @@ module.exports = class SQLPermissionManager extends SQLConfigurationManager {
     }
 
     async userHasPermission(permission, guildUser, channel = undefined, useAdmin = false) {
-        if (typeof guildUser != "object")throw 'guildUser must be an GuildMember object';
+        if (typeof guildUser != "object") throw new Error('Wrong type.')
         let isAdmin = (useAdmin) ? await guildUser.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true) : false;
         let permissions = [await this.getUserPermissions(guildUser.id, isAdmin), await this.getChannelPermission(channel.guild.id, channel.id), await this.getGuildPermissions(channel.guild.id), await this.getRolesPermissions(channel.guild.id, guildUser.roles.cache, isAdmin)];
         let finalPermissions = {};
@@ -150,7 +150,7 @@ module.exports = class SQLPermissionManager extends SQLConfigurationManager {
 
     async isPermissionGranted(permissionArray, permission) { //Just a quick function to prevent writing the same code in a loop
         if (!this.initialized) return false;
-        if (typeof permissionArray != "object") throw 'permissionArray must be an Object';
+        if (typeof permissionArray != "object") throw new Error('Wrong type.')
         if (Object.keys(permissionArray).length == 0) return false;
         let totalResults = [];
         let permissionModified = permission.split('.');

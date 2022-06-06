@@ -24,6 +24,15 @@ module.exports = class Guild {
             defaultLocale: 'en-US'
         });
 
+        this.waitingForMessageData = {
+            say: {
+                channels: {}
+            },
+            users: {},
+            channels: {},
+            any: undefined
+        }
+
         this.SQLPool = mysql.createPool(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'));
         
         this.initialized = false;
@@ -39,12 +48,13 @@ module.exports = class Guild {
     }
 
     async createGuildInSQL() {
-        return new Promise((res, rej) => {
+        return new Promise((res, _rej) => {
             this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.guild.id}'`, (error, results) => {
+                if (error)throw error;
                 if (results.length == 0){
                     this.SQLPool.query(`INSERT INTO \`guilds\` (id, name, locale, configuration, permissions) VALUES (?,?,?,?,?)`, [this.guild.id, this.guild.name, this.guild.preferredLocale, JSON.stringify(require('../../configurations/defaults/GuildConfiguration.json')), JSON.stringify(require('../../configurations/defaults/GuildPermissions.json'))], async (error, results) => {
                         if (error)throw error;
-                        if (results.affectedRows != 1) throw `${__filename} => createLine(): Could not create the guild.`;
+                        if (results.affectedRows != 1) throw new Error('Could not create the guild.')
                         res(true);
                     });
                 }else {
@@ -60,5 +70,24 @@ module.exports = class Guild {
 
     async getChannelById(channelId) {
         return this.guild.channels.fetch(channelId).catch(e => undefined);
+    }
+
+    async waitingForMessage(message) {
+        if (typeof this.waitingForMessageData.say.channels[message.channel.id] == "object" && typeof this.waitingForMessageData.say.channels[message.channel.id][message.author.id] == "function")
+            return this.waitingForMessageData.say.channels[message.channel.id][message.author.id](message);
+
+        if (typeof this.waitingForMessageData.users[message.author.id] == "object" && typeof this.waitingForMessageData.users[message.author.id].channels == "object")
+            if (typeof this.waitingForMessageData.users[message.author.id].channels[message.channel.id] == "function")return this.waitingForMessageData.users[message.author.id].channels[message.channel.id](message);
+
+        if (typeof this.waitingForMessageData.channels[message.channel.id] == "object" && typeof this.waitingForMessageData.channels[message.channel.id].users == "object")
+            if (typeof this.waitingForMessageData.channels[message.channel.id].users[message.author.id] == "function")return this.waitingForMessageData.channels[message.channel.id].users[message.author.id](message);
+
+        if (typeof this.waitingForMessageData.users[message.channel.id] == "function")return this.waitingForMessageData.users[message.author.id](message);
+
+        if (typeof this.waitingForMessageData.channels[message.channel.id] == "function")return this.waitingForMessageData.channels[message.channel.id](message);
+
+        if (typeof this.waitingForMessageData.any == "function")return this.waitingForMessageData.any(message);
+        
+        return false;
     }
 }

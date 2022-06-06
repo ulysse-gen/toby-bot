@@ -39,9 +39,18 @@ module.exports = {
         if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
 
         let commandExecution = await TobyBot.CommandManager.handle(message).catch(e => {
-            ErrorLog.error(`${__filename}: An error occured during the handling of the CommandManager:`);
+            ErrorLog.error(`An error occured during the handling of the CommandManager handle:`);
             console.log(e);
         });
+
+        if (!commandExecution){
+            let waitingForMessage = await message.TobyBot.guild.waitingForMessage(message).catch(e => {
+                ErrorLog.error(`An error occured during the handling of the Guild waitingForMessage:`);
+                console.log(e);
+            });
+    
+            if (typeof waitingForMessage == "boolean" && waitingForMessage)return true;
+        }
 
         return true;
     }

@@ -12,10 +12,9 @@ const Logger = require('./Logger');
 
 module.exports = class FileLogger extends Logger {
     constructor(logFile = `main.log`) {
-        if (typeof logFile != "string")throw `${__filename} => constructor(): Wrong type given for logFile. Expected string received ${typeof logFile}`;
-        if (logFile == "")throw `${__filename} => constructor(): logFile cannot be empty.`;
-
         super();
+        
+        if (typeof logFile != "string" || logFile.replaceAll(' ', '') == "") throw new Error('LogFile must be a non empty string.');
 
         this.file = `${process.cwd()}/logs/${logFile}`;
 

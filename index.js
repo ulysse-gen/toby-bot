@@ -32,11 +32,8 @@ const ErrorLog = new FileLogger(`error.log`);
 const GlobalBot = new TobyBot(i18n, PackageInformations, TopConfigurationManager); //This is the bot
 
 GlobalBot.start().catch(e => {
-    if (typeof e == "string"){
-        ErrorLog.error(e.toString());
-    }else {
-        console.log(e);
-    }
+    ErrorLog.log(`An error occured:`);
+    console.log(e);
     process.exit(1);
 });
 

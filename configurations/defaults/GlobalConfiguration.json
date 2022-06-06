@@ -2,7 +2,16 @@
     "appName": "Toby Bot",
     "appId": 12345678912345678,
     "token": "thisIsAnObviouslyFakeToken",
-    "prefixes": ["$toby.gg$","tobybot.","tbb."],
+    "prefix": "$toby.gg$",
+    "prefixes": ["$toby.gg$", "tobybot.", "tbb."],
+    "style": {
+        "colors": {
+            "success": "#00FF68",
+            "error": "#FF654D",
+            "warning": "#FFD02F",
+            "main": "#EF2FFF"
+        }
+    },
     "blocked": {
         "users": {},
         "guilds": {}

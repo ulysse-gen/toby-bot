@@ -47,34 +47,34 @@ module.exports = class TobyBot {
         this.LifeMetric.addEntry("EventAttach");
         await this.attachEvents().catch(e => { throw e }); //Attach events
         this.LifeMetric.addEntry("BotLogin");
-        await this.client.login(this.ConfigurationManager.configuration.token);
+        await this.client.login(this.ConfigurationManager.configuration.token).catch(e => { throw e; });
         this.rest = new REST({ version: '9' }).setToken(this.ConfigurationManager.configuration.token);
-        await this.CommandManager.pushSlashCommands();
-        this.LifeMetric.addEntry("botReady");
+        await this.CommandManager.pushSlashCommands().catch(e => { throw e; });
+        this.LifeMetric.addEntry("botReady").catch(e => { throw e; });
     }
 
     async initManagers() {
-        this.LifeMetric.addEntry("TopConfigurationManagerInit");
+        this.LifeMetric.addEntry("TopConfigurationManagerInit").catch(e => { throw e; });
         await this.TopConfigurationManager.initialize().catch(e => { throw e} );  //Init Top ConfigurationManager
 
-        this.LifeMetric.addEntry("ConfigurationManagerCreate");
+        this.LifeMetric.addEntry("ConfigurationManagerCreate").catch(e => { throw e; });
         this.ConfigurationManager = new SQLConfigurationManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../../configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
-        this.LifeMetric.addEntry("ConfigurationManagerInit");
+        this.LifeMetric.addEntry("ConfigurationManagerInit").catch(e => { throw e; });
         await this.ConfigurationManager.initialize().catch(e => {throw e}); //Init the Global ConfigurationManager
 
         
-        this.LifeMetric.addEntry("PermissionManagerCreate");
+        this.LifeMetric.addEntry("PermissionManagerCreate").catch(e => { throw e; });
         this.PermissionManager = new SQLPermissionManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../../configurations/defaults/GlobalPermissions.json')); //Create the Global PermissionManager
-        this.LifeMetric.addEntry("PermissionManagerInit");
+        this.LifeMetric.addEntry("PermissionManagerInit").catch(e => { throw e; });
         await this.PermissionManager.initialize().catch(e => {throw e}); //Init the Global PermissionManager
 
-        this.LifeMetric.addEntry("CommandManagerCreate");
+        this.LifeMetric.addEntry("CommandManagerCreate").catch(e => { throw e; });
         this.CommandManager = new CommandManager(this); //Create the Global CommandManager
-        this.LifeMetric.addEntry("CommandManagerInit");
+        this.LifeMetric.addEntry("CommandManagerInit").catch(e => { throw e; });
         await this.CommandManager.initialize().catch(e => {throw e}); //Init the Global CommandManager
 
-        this.LifeMetric.addEntry("ManagersAttach");
-        return this.attachManagers();  //Attach the managers
+        this.LifeMetric.addEntry("ManagersAttach").catch(e => { throw e; });
+        return this.attachManagers().catch(e => { throw e; });  //Attach the managers
     }
 
     async attachManagers() {
@@ -87,16 +87,22 @@ module.exports = class TobyBot {
 
     async attachEvents() {
         var _this = this;
-        await new Promise((res, rej) => {
+        await new Promise((res, _rej) => {
             fs.readdir(`./src/events/`, function (err, files) { //Read events folder
                 if (err) throw err;
                 files.filter(file => file.endsWith('.js')).forEach((file, index, array) => { //For each files in the folder
                     let event = require(`../events/${file}`);
 
                     if (event.once) {
-                        _this.client.once(event.name, (...args)=>event.exec(_this, ...args));
+                        _this.client.once(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
+                            ErrorLog.error(`An error occured during the handling of the (once) event ${event.name}:`);
+                            console.log(e);
+                        }));
                     }else {
-                        _this.client.on(event.name, (...args)=>event.exec(_this, ...args));
+                        _this.client.on(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
+                            ErrorLog.error(`An error occured during the handling of the event ${event.name}:`);
+                            console.log(e);
+                        }));
                     }
                     
                     if (index === array.length -1) res();

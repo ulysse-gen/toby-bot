@@ -32,11 +32,7 @@ module.exports = class CommandExecution {
      */
     async execute() {
         await this.buildContext().catch(e => { throw e; });
-        let permission = await this.CommandManager.hasPermission(this).catch(e => { throw e; });
-        if (!permission){
-            this.returnErrorEmbed({}, this.i18n.__(`commands.generic.permissionDenied.title`), this.i18n.__(`commands.generic.permissionDenied.description`, {permission: this.command.permission}));
-            return false;
-        }
+        if (typeof this.options.permissionDenied != "undefined")return this.denyPermission(this.options.permissionDenied);
         MainLog.log(this.TobyBot.i18n.__((typeof this.spoofing != "undefined") ? 'bot.command.execution.spoofed' : 'bot.command.execution', {user: `${this.executor.username}#${this.executor.discriminator}(${this.executor.id})`, realUser: `${this.realExecutor.username}#${this.realExecutor.discriminator}(${this.realExecutor.id})`, command: `${this.command.name}`, location: `${this.channel.id}@${this.channel.guild.id}`, realLocation: `${this.realChannel.id}@${this.realChannel.guild.id}`}));
         return this.command.execute(this).catch(e => { throw e; });
     }
@@ -47,11 +43,11 @@ module.exports = class CommandExecution {
     async buildContext() {
         this.executor = (this.isSlashCommand) ? this.trigger.user : this.trigger.author;
         this.realExecutor = (this.isSlashCommand) ? this.trigger.user : this.trigger.author;
-        this.guildExecutor = await this.trigger.TobyBot.guild.guild.members.fetch(this.executor).catch(e => {
-            throw e;
-        });
+        this.guildExecutor = await this.trigger.TobyBot.guild.guild.members.fetch(this.executor).catch(e => { throw e; });
         this.channel = this.trigger.channel;
         this.realChannel = this.channel;
+        this.guild = this.trigger.TobyBot.guild;
+        this.realGuild = this.guild;
 
         if (this.isSlashCommand) {
             this.trigger.delete = async() => true; //We spoof the delete function so we can just call it anyway and it doesnt crash
@@ -67,13 +63,9 @@ module.exports = class CommandExecution {
                 if (args[0].slashOnly)return true;
                 return this.trigger.replyOriginal(...args).then(message => {
                     if (args[0].ephemeral) setTimeout(()=>{
-                        message.delete().catch(e => { 
-                            ErrorLog.error(`${__filename}: An error occured trying to delete a message, the message is probably deleted already.`);
-                        });
+                        message.delete().catch(e => { throw e; });
                     }, 10000);
-                }).catch(e => { 
-                    ErrorLog.error(`${__filename}: An error occured trying to reply to a message, the message is probably deleted already.`);
-                });
+                }).catch(e => { throw e; });
             }
 
             for (const argument of this.commandOptions) {
@@ -83,14 +75,18 @@ module.exports = class CommandExecution {
                     let modifierValue = modifier.shift();
     
                     if (["spoofExecutor"].includes(modifierName)){
-                        this.executor = (await this.trigger.TobyBot.guild.getMemberById(modifierValue)).user;
+                        let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofExecutor`).catch(e => { throw e; });
+                        if (!checkPermission)return {permissionDenied: `commands.spoofExecutor`};
+                        this.executor = (await this.trigger.TobyBot.guild.getMemberById(modifierValue).catch(e => { throw e; })).user;
     
                         this.spoofing = true;
                         this.commandOptions = this.commandOptions.filter(function(e) { return e !== argument });
                     }
     
                     if (["spoofChannel"].includes(modifierName)){
-                        this.channel = await this.trigger.TobyBot.guild.getChannelById(modifierValue);
+                        let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofChannel`).catch(e => { throw e; });
+                        if (!checkPermission)return {permissionDenied: `commands.spoofChannel`};
+                        this.channel = await this.trigger.TobyBot.guild.getChannelById(modifierValue).catch(e => { throw e; });
     
                         this.spoofing = true;
                         this.commandOptions = this.commandOptions.filter(function(e) { return e !== argument; });
@@ -99,8 +95,16 @@ module.exports = class CommandExecution {
             }
         }
 
-        this.options = (this.isSlashCommand) ? this.command.optionsFromSlashOptions(this.commandOptions) : this.command.optionsFromArgs(this.commandOptions);
-        return this;
+        let checkPermission = await this.CommandManager.hasPermission(this).catch(e => { throw e; });
+        if (!checkPermission)return {permissionDenied: this.command.permission};
+
+        this.options = (this.isSlashCommand) ? await this.command.optionsFromSlashOptions(this, this.commandOptions) : await this.command.optionsFromArgs(this, this.commandOptions);
+        return true;
+    }
+
+    async denyPermission(permission) {
+        MainLog.log(this.TobyBot.i18n.__('bot.command.execution.permissionDenided', {user: `${this.executor.username}#${this.executor.discriminator}(${this.executor.id})`, realUser: `${this.realExecutor.username}#${this.realExecutor.discriminator}(${this.realExecutor.id})`, command: `${this.command.name}`, location: `${this.channel.id}@${this.channel.guild.id}`, realLocation: `${this.realChannel.id}@${this.realChannel.guild.id}`, permission: permission}));
+        return this.returnErrorEmbed({}, this.i18n.__(`commands.generic.permissionDenied.title`), this.i18n.__(`commands.generic.permissionDenied.description`, {permission: this.options.permissionDenied}));
     }
 
     /** Finish the execution by returning an embed
@@ -112,7 +116,7 @@ module.exports = class CommandExecution {
      * @param color Color of the embed
      */
     async returnEmbed(options = {}, title, description = undefined, fields = [], color = this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')){
-        if (typeof title != "string" || title.replaceAll(" ", "") == "")throw `Title must be a non empty string`;
+        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new Error('Title must be a non empty string.');
         var returnOptions = Object.assign({ephemeral: true, slashOnly: false, followUpIfReturned: false}, options);
         if (returnOptions.slashOnly && !this.isSlashCommand)return true;
         let embed = new MessageEmbed().setTitle(title).setColor(color);
@@ -122,9 +126,7 @@ module.exports = class CommandExecution {
 
         returnOptions.embeds = [embed];
         
-        return this.trigger.reply(returnOptions).catch(e => {
-            throw e;
-        });
+        return this.trigger.reply(returnOptions).catch(e => { throw e; });
     }
 
     /** Finish the execution by returning an embed
@@ -135,7 +137,7 @@ module.exports = class CommandExecution {
      * @param fields Fields array of the embed
      */
      async returnMainEmbed(options = {}, title, description = undefined, fields = []){
-        return this.returnEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main'));
+        return this.returnEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')).catch(e => { throw e; });
     }
 
     /** Finish the execution by returning an embed
@@ -146,7 +148,7 @@ module.exports = class CommandExecution {
      * @param fields Fields array of the embed
      */
      async returnErrorEmbed(options = {}, title, description = undefined, fields = []){
-        return this.returnEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error'));
+        return this.returnEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error')).catch(e => { throw e; });
     }
 
     /** Finish the execution by returning an embed
@@ -157,7 +159,7 @@ module.exports = class CommandExecution {
      * @param fields Fields array of the embed
      */
      async returnWarningEmbed(options = {}, title, description = undefined, fields = []){
-        return this.returnEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning'));
+        return this.returnEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning')).catch(e => { throw e; });
     }
 
     /** Reply to the execution by replying an embed
@@ -170,7 +172,7 @@ module.exports = class CommandExecution {
      */
      async replyEmbed(options = {}, title, description = undefined, fields = []){
         args[0] = Object.assign({followUpIfReturned: true}, args[0]);
-        return this.returnEmbed(...args).catch(e=>{throw e;});
+        return this.returnEmbed(...args).catch(e=>{throw e;}).catch(e => { throw e; });
     }
 
     /** Reply to the execution by replying an embed
@@ -181,7 +183,7 @@ module.exports = class CommandExecution {
      * @param fields Fields array of the embed
      */
      async replyMainEmbed(options = {}, title, description = undefined, fields = []){
-        return this.replyEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main'));
+        return this.replyEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')).catch(e => { throw e; });
     }
 
     /** Reply to the execution by replying an embed
@@ -192,7 +194,7 @@ module.exports = class CommandExecution {
      * @param fields Fields array of the embed
      */
      async replyErrorEmbed(options = {}, title, description = undefined, fields = []){
-        return this.replyEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error'));
+        return this.replyEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error')).catch(e => { throw e; });
     }
 
     /** Reply to the execution by replying an embed
@@ -203,7 +205,7 @@ module.exports = class CommandExecution {
      * @param fields Fields array of the embed
      */
      async replyWarningEmbed(options = {}, title, description = undefined, fields = []){
-        return this.replyEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning'));
+        return this.replyEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning')).catch(e => { throw e; });
     }
 
 
@@ -214,15 +216,13 @@ module.exports = class CommandExecution {
      * @param color Color of the embed
      */
      async sendEmbed(title, description = undefined, fields = [], color = this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')){
-        if (typeof title != "string" || title.replaceAll(" ", "") == "")throw `Title must be a non empty string`;
+        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new Error('Title must be a non empty string.');
         let embed = new MessageEmbed().setTitle(title).setColor(color);
         if (typeof description == "string" && description.replaceAll(' ', '') != "") embed.setDescription(description);
         if (typeof fields == "object" && fields.length > 0)
             fields.forEach(indField => embed.addField(indField[0], indField[1], indField[2]));
         
-        return this.channel.send({embeds: [embed]}).catch(e => {
-            throw e;
-        });
+        return this.channel.send({embeds: [embed]}).catch(e => { throw e; });
     }
 
     /** Reply to the execution by replying an embed
@@ -231,7 +231,7 @@ module.exports = class CommandExecution {
      * @param fields Fields array of the embed
      */
      async sendMainEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main'));
+        return this.sendEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')).catch(e => { throw e; });
     }
 
     /** Reply to the execution by replying an embed
@@ -240,7 +240,7 @@ module.exports = class CommandExecution {
      * @param fields Fields array of the embed
      */
      async sendErrorEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error'));
+        return this.sendEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error')).catch(e => { throw e; });
     }
 
     /** Reply to the execution by replying an embed
@@ -249,6 +249,6 @@ module.exports = class CommandExecution {
      * @param fields Fields array of the embed
      */
      async sendWarningEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning'));
+        return this.sendEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning')).catch(e => { throw e; });
     }
 }

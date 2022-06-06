@@ -36,25 +36,17 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         this.saveCooldown = 10;
     }
 
-    get configuration() {
-        return this._configuration;
-    }
-
-    set configuration(value) {
-        this._configuration = value;
-    }
-
     async initialize(createIfNonExistant = false, guildDependent = undefined) {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
 
-        if (typeof this.SQLConnectionInfos != "object")throw `${__filename} => initialize(): Wrong type given for SQLConnectionInfos. Expected object received ${typeof this.SQLConnectionInfos}`;
-        if (typeof this.SQLConnectionInfos.host != "string")throw `${__filename} => initialize(): Wrong type given for SQLConnectionInfos.host. Expected string received ${typeof this.SQLConnectionInfos.host}`;
-        if (typeof this.SQLConnectionInfos.user != "string")throw `${__filename} => initialize(): Wrong type given for SQLConnectionInfos.user. Expected string received ${typeof this.SQLConnectionInfos.user}`;
-        if (typeof this.SQLConnectionInfos.password != "string")throw `${__filename} => initialize(): Wrong type given for SQLConnectionInfos.password. Expected string received ${typeof this.SQLConnectionInfos.password}`;
-        if (typeof this.SQLConnectionInfos.database != "string")throw `${__filename} => initialize(): Wrong type given for SQLConnectionInfos.database. Expected string received ${typeof this.SQLConnectionInfos.database}`;
-        if (typeof this.SQLConnectionInfos.charset != "string")throw `${__filename} => initialize(): Wrong type given for SQLConnectionInfos.charset. Expected string received ${typeof this.SQLConnectionInfos.charset}`;
-        if (typeof this.SQLConnectionInfos.connectionLimit != "number")throw `${__filename} => initialize(): Wrong type given for SQLConnectionInfos.connectionLimit. Expected number received ${typeof this.SQLConnectionInfos.charset}`;
+        if (typeof this.SQLConnectionInfos != "object") throw new Error('Wrong type given for SQLConnectionInfos.');
+        if (typeof this.SQLConnectionInfos.host != "string") throw new Error('Wrong type given for SQLConnectionInfos.host.');
+        if (typeof this.SQLConnectionInfos.user != "string") throw new Error('Wrong type given for SQLConnectionInfos.user.');
+        if (typeof this.SQLConnectionInfos.password != "string") throw new Error('Wrong type given for SQLConnectionInfos.password.');
+        if (typeof this.SQLConnectionInfos.database != "string") throw new Error('Wrong type given for SQLConnectionInfos.database.');
+        if (typeof this.SQLConnectionInfos.charset != "string") throw new Error('Wrong type given for SQLConnectionInfos.charset.');
+        if (typeof this.SQLConnectionInfos.connectionLimit != "number") throw new Error('Wrong type given for SQLConnectionInfos.connectionLimit.');
 
         if (typeof guildDependent != "undefined"){
             this.Guild = guildDependent;
@@ -67,11 +59,11 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         let loaded = await this.load(true).catch(e => { throw e; });
 
         if (!loaded) {
-            if (!createIfNonExistant) throw `${__filename} => initialize(): Could not load configuration`;
+            if (!createIfNonExistant) throw new Error('Could not load configuration');
             if (typeof guildDependent != "undefined"){
                 await this.Guild.createGuildInSQL().then(async () => {
                     await this.load(true).then(loaded => {
-                        if (!loaded) throw `${__filename} => initialize(): Could not load configuration`;
+                        if (!loaded) throw new Error('Could not load configuration');
                     }).catch(e => { throw e; });
                 }).catch(e => { throw e; });
             }
@@ -105,13 +97,9 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         if (!bypass && (typeof this.lastSave != "undefined" && moment().diff(this.lastSave, "seconds") <= this.saveCooldown)) return null;
         this.lastSave = moment();
         if (this.verbose) MainLog.log(`Saving configuration. [${this.SQLTable} => ${this.SQLWhere}][${moment().diff(startTimer)}ms]`);
-        return new Promise((res, rej) => {
+        return new Promise((res, _rej) => {
             this.SQLPool.query(`UPDATE \`${this.SQLTable}\` SET \`${this.SQLcolumn}\`=? WHERE ${this.SQLWhere}`, [JSON.stringify(this.configuration)], async function (error, results, _fields) {
-                if (error) {
-                    if (typeof error.code != "undefined" && error.code == "ENOTFOUND") throw `${__filename} => load(): Could not connect to the host ${error.hostname}`;
-                    if (typeof error.code != "undefined" && error.code == "ER_NO_SUCH_TABLE") throw `${__filename} => load(): ${error.sqlMessage}`;
-                    throw error;
-                }
+                if (error) throw error;
                 if (typeof results == "undefined" || results.affectedRows != 1) {
                     if (_this.verbose) MainLog.log(`Could not save configuration. [${_this.SQLTable} => ${_this.SQLWhere}][${moment().diff(startTimer)}ms]`);
                     return res(false);
@@ -134,11 +122,7 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
 
         return new Promise((res, rej) => {
             this.SQLPool.query(`SELECT * FROM ${this.SQLTable} WHERE ${this.SQLWhere}`, (error, results) => {
-                if (error) {
-                    if (typeof error.code != "undefined" && error.code == "ENOTFOUND") throw `${__filename} => load(): Could not connect to the host ${error.hostname}`;
-                    if (typeof error.code != "undefined" && error.code == "ER_NO_SUCH_TABLE") throw `${__filename} => load(): ${error.sqlMessage}`;
-                    throw error;
-                }
+                if (error) throw error;
                 if (results.length == 0)return res(false);
 
                 try {

@@ -5,5 +5,6 @@
 	"bot.command.execution": "{{user}} executed {{command}} in {{location}}",
 	"bot.command.execution.spoofed": "{{realUser}} executed {{command}} in {{realLocation}} [Spoofed as {{user}} in {{location}}]",
 	"bot.slashCommandRegistered.error": "Could not register slash commands. [{{error}}]",
-	"bot.slashCommandRegistered": "Slash commands registered."
+	"bot.slashCommandRegistered": "Slash commands registered.",
+	"bot.command.execution.permissionDenided": "{{user}} tried {{command}} in {{location}} but has been denied the permission {{permission}}"
 }

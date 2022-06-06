@@ -75,7 +75,7 @@ module.exports = class Metric {
             );
             MainLog.log(this.TobyBot.i18n.__('bot.slashCommandRegistered'));
         } catch (error) {
-            ErrorLog.log(this.TobyBot.i18n.__('bot.slashCommandRegistered.error', {error: error.toString()}));
+            throw error;
         }
         return true;
     }
@@ -97,7 +97,7 @@ module.exports = class Metric {
     async handleSlash(interaction) {
         let fetchedCommand = await this.fetch(interaction.commandName);
         if (typeof fetchedCommand == "undefined")return undefined;
-        return new CommandExecution(interaction, fetchedCommand, interaction.options._hoistedOptions, this, true).execute().catch(e=>undefined);
+        return new CommandExecution(interaction, fetchedCommand, interaction.options._hoistedOptions, this, true).execute().catch(e => { throw e; });
     }
 
     checkForExistence(command) { //Check if a command exists (command must be a Command object)
@@ -110,8 +110,14 @@ module.exports = class Metric {
     }
 
     async hasPermission(CommandExecution) {
-        let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(CommandExecution.command.permission, CommandExecution.guildExecutor, CommandExecution.channel);
-        let guildPermissions = await CommandExecution.trigger.TobyBot.guild.PermissionManager.userHasPermission(CommandExecution.command.permission, CommandExecution.guildExecutor, CommandExecution.channel, true);
+        let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(CommandExecution.command.permission, CommandExecution.guildExecutor, CommandExecution.channel).catch(e => { throw e; });
+        let guildPermissions = await CommandExecution.trigger.TobyBot.guild.PermissionManager.userHasPermission(CommandExecution.command.permission, CommandExecution.guildExecutor, CommandExecution.channel, true).catch(e => { throw e; });
+        return (globalPermissions) ? true : guildPermissions;
+    }
+
+    async hasPermissionPerContext(CommandExecution, permission) {
+        let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(permission, CommandExecution.guildExecutor, CommandExecution.channel).catch(e => { throw e; });
+        let guildPermissions = await CommandExecution.trigger.TobyBot.guild.PermissionManager.userHasPermission(permission, CommandExecution.guildExecutor, CommandExecution.channel, true).catch(e => { throw e; });
         return (globalPermissions) ? true : guildPermissions;
     }
 }

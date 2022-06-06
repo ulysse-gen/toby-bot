@@ -17,7 +17,7 @@ module.exports = class MetricManager {
     }
 
     endMetric(id) {
-        if (typeof this.metrics[id] == "undefined") throw `${__filename} => endMetric(): Unknown metric.`;
+        if (typeof this.metrics[id] == "undefined") throw new Error('Unknown metric.');
         let metricToEnd = this.metrics[id];
         metricToEnd.addEntry(`end`);
     }
