@@ -14,6 +14,7 @@ const SQLPermissionManager = require('./SQLPermissionManager');
 const MetricManager = require('./MetricManager');
 const GuildManager = require('./GuildManager');
 const CommandManager = require('./CommandManager');
+const ChannelLogger = require('./ChannelLogger');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -37,6 +38,8 @@ module.exports = class TobyBot {
         this.MetricManager = new MetricManager();
         this.LifeMetric = this.MetricManager.createMetric("LifeMetric"); //Create the main "LifeMetric" that will follow everything that might happen which is code related (e.g. errors)
 
+        this.loggers = {};
+
         this.catchErrorsPreventClose = false;
     }
 
@@ -51,6 +54,8 @@ module.exports = class TobyBot {
         this.rest = new REST({ version: '9' }).setToken(this.ConfigurationManager.configuration.token);
         await this.CommandManager.pushSlashCommands().catch(e => { throw e; });
         this.LifeMetric.addEntry("botReady").catch(e => { throw e; });
+        this.LifeMetric.addEntry("LoggersInit");
+        await this.initLoggers().catch(e => { throw e }); //Attach events
     }
 
     async initManagers() {
@@ -110,6 +115,15 @@ module.exports = class TobyBot {
             });
         });
         MainLog.log(this.i18n.__('bot.events.attach'));
+        return true;
+    }
+
+    async initLoggers(){
+        this.CommunityGuild = await this.GuildManager.getGuildById(this.ConfigurationManager.get('communityGuild'));
+        for (const logger in this.ConfigurationManager.get('logging')) {
+            this.loggers[logger] = new ChannelLogger(this.CommunityGuild, this.ConfigurationManager.get(`logging.${logger}`))
+            await this.loggers[logger].initialize();
+        }
         return true;
     }
 

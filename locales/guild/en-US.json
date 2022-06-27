@@ -1,4 +1,14 @@
 {
 	"interaction.couldNotProcess": "This interaction could not be processed.",
-	"interaction.slashCommand.notBuilt": "This slash command isnt built yet or has failed. You may want to try the regular command system with the `{{prefix}}` prefix."
+	"interaction.slashCommand.notBuilt": "This slash command isnt built yet or has failed. You may want to try the regular command system with the `{{prefix}}` prefix.",
+	"channelLogging.commandExecution.title": "Command executed",
+	"channelLogging.commandExecution.description": "{{command}}",
+	"channelLogging.commandExecution.field.executor.title": "Executor",
+	"channelLogging.commandExecution.field.executor.description": "<@{{userId}}>",
+	"channelLogging.commandExecution.field.channel.title": "Channel",
+	"channelLogging.commandExecution.field.channel.description": "<#{{channelId}}>",
+	"channelLogging.commandExecution.field.realUser.title": "Real executor",
+	"channelLogging.commandExecution.field.realUser.description": "<@{{realUserId}}>",
+	"channelLogging.commandExecution.field.realChannel.title": "Real channel",
+	"channelLogging.commandExecution.field.realChannel.description": "<#{{realChannelId}}>"
 }

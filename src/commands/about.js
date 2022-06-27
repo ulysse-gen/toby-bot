@@ -37,10 +37,11 @@ module.exports = {
         ];
         return CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.title`), undefined, fields).catch(e => {throw e});
     },
-    optionsFromArgs (CommandExecution) {
+    async optionsFromArgs (CommandExecution) {
+        if (CommandExecution.commandOptions.length == 0)return options;
         return {};
     },
-    optionsFromSlashOptions (CommandExecution) {
+    async optionsFromSlashOptions (CommandExecution) {
         return Object.fromEntries(Object.entries(slashOptions).map(([key, val]) => [val.name, val.value]));
     },
     makeSlashCommand(i18n) {

@@ -4,7 +4,6 @@ const { MessageEmbed } = require('discord.js');
 module.exports = {
     name: "say",
     aliases: [],
-    description: "",
     permission: "command.say",
     category: "fun",
     enabled: true,
@@ -106,7 +105,8 @@ module.exports = {
                                             .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
                                             .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`) + '\n' + Command.CommandManager.i18n.__(`commands.generic.help.argsType`));
 
-                                            tempEmbed.addField('channel', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.channel.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.channel.id`)}));
+        tempEmbed.addField('toggle', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.toggle.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.boolean`)}));
+        tempEmbed.addField('channel', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.channel.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.channel.id`)}));
         tempEmbed.addField('text', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.text.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.text`)}));
 
         returnObject.embeds.push(tempEmbed) 

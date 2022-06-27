@@ -10,6 +10,7 @@ const { I18n } = require('i18n');
 const SQLConfigurationManager = require('./SQLConfigurationManager');
 const SQLPermissionManager = require('./SQLPermissionManager');
 const MessageManager = require('./MessageManager');
+const ChannelLogger = require('./ChannelLogger');
 
 module.exports = class Guild {
     constructor(GuildManager, guild) {
@@ -33,6 +34,8 @@ module.exports = class Guild {
             any: undefined
         }
 
+        this.loggers = {};
+
         this.SQLPool = mysql.createPool(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'));
         
         this.initialized = false;
@@ -43,6 +46,7 @@ module.exports = class Guild {
         this.PermissionManager = new SQLPermissionManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, require('../../configurations/defaults/GuildPermissions.json'));
         await this.ConfigurationManager.initialize(true, this).catch(e => { throw e; });
         await this.PermissionManager.initialize(true, this).catch(e => { throw e; });
+        await this.initLoggers();
         this.initialized = true;
         return true;
     }
@@ -62,6 +66,14 @@ module.exports = class Guild {
                 }
             });
         });
+    }
+
+    async initLoggers(){
+        for (const logger in this.ConfigurationManager.get('logging')) {
+            this.loggers[logger] = new ChannelLogger(this, this.ConfigurationManager.get(`logging.${logger}`));
+            await this.loggers[logger].initialize();
+        }
+        return true;
     }
 
     async getMemberById(userId) {

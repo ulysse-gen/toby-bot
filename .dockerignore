@@ -1,0 +1,8 @@
+!README*.md
+.cache
+.git
+.github/
+*.md
+node_modules
+npm-debug.log
+README-secret.md

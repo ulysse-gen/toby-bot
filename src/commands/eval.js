@@ -2,9 +2,9 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 
 module.exports = {
-    name: "eval",
-    aliases: [],
-    permission: "command.eval",
+    name: "evaluate",
+    aliases: ["eval"],
+    permission: "command.evaluate",
     category: "administration",
     enabled: true,
     async execute(CommandExecution) {
@@ -14,15 +14,16 @@ module.exports = {
             if (typeof evalValue != "undefined")return CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.successExecution.title`), CommandExecution.i18n.__(`command.${this.name}.successExecution.description`, {evalValue: evalValue}));
             return CommandExecution.returnMainEmbed({slashOnly: true}, CommandExecution.i18n.__(`command.${this.name}.successExecution.title.noReturn`));
         } catch (error) {
-            return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.failedExecution.title`), CommandExecution.i18n.__(`command.${this.name}.failedExecution.description`, {error: error}));
+            return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.failedExecution.title`), CommandExecution.i18n.__(`command.${this.name}.error.failedExecution.description`, {error: error}));
         }
     },
-    optionsFromArgs (CommandExecution) {
+    async optionsFromArgs (CommandExecution) {
         var options = {};
-        options.code = args.join(' ');
+        if (CommandExecution.commandOptions.length == 0)return options;
+        options.code = CommandExecution.commandOptions.join(' ');
         return options;
     },
-    optionsFromSlashOptions (CommandExecution) {
+    async optionsFromSlashOptions (CommandExecution) {
         return Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
     },
     makeSlashCommand(i18n) {

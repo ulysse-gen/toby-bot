@@ -32,8 +32,9 @@ module.exports = class CommandExecution {
      */
     async execute() {
         await this.buildContext().catch(e => { throw e; });
+        if (typeof this.command == "undefined")return this.unknownCommand();
         if (typeof this.options.permissionDenied != "undefined")return this.denyPermission(this.options.permissionDenied);
-        MainLog.log(this.TobyBot.i18n.__((typeof this.spoofing != "undefined") ? 'bot.command.execution.spoofed' : 'bot.command.execution', {user: `${this.executor.username}#${this.executor.discriminator}(${this.executor.id})`, realUser: `${this.realExecutor.username}#${this.realExecutor.discriminator}(${this.realExecutor.id})`, command: `${this.command.name}`, location: `${this.channel.id}@${this.channel.guild.id}`, realLocation: `${this.realChannel.id}@${this.realChannel.guild.id}`}));
+        await this.logExecution();
         return this.command.execute(this).catch(e => { throw e; });
     }
 
@@ -49,62 +50,99 @@ module.exports = class CommandExecution {
         this.guild = this.trigger.TobyBot.guild;
         this.realGuild = this.guild;
 
-        if (this.isSlashCommand) {
-            this.trigger.delete = async() => true; //We spoof the delete function so we can just call it anyway and it doesnt crash
-            this.trigger.replyOriginal = this.trigger.reply;
-            this.trigger.reply = async(...args) => {
-                if (this.replied) return (args[0].followUpIfReturned) ? this.trigger.followUp(...args).catch(e => { throw e; }) : false;
-                this.replied = true;
-                return this.trigger.replyOriginal(...args).catch(e => { throw e; });
-            }
-        }else {
-            this.trigger.replyOriginal = this.trigger.reply;
-            this.trigger.reply = async (...args) => {
-                if (args[0].slashOnly)return true;
-                return this.trigger.replyOriginal(...args).then(message => {
-                    if (args[0].ephemeral) setTimeout(()=>{
-                        message.delete().catch(e => { throw e; });
-                    }, 10000);
-                }).catch(e => { throw e; });
-            }
+        if (typeof this.command != "undefined") {
+            if (this.isSlashCommand) {
+                this.trigger.delete = async() => true; //We spoof the delete function so we can just call it anyway and it doesnt crash
+                this.trigger.replyOriginal = this.trigger.reply;
+                this.trigger.reply = async(...args) => {
+                    if (this.replied) return (args[0].followUpIfReturned) ? this.trigger.followUp(...args).catch(e => { throw e; }) : false;
+                    this.replied = true;
+                    return this.trigger.replyOriginal(...args).catch(e => { throw e; });
+                }
+            }else {
+                this.trigger.replyOriginal = this.trigger.reply;
+                this.trigger.reply = async (...args) => {
+                    if (args[0].slashOnly)return true;
+                    return this.trigger.replyOriginal(...args).then(message => {
+                        if (args[0].ephemeral) setTimeout(()=>{
+                            message.delete().catch(e => { throw e; });
+                        }, 10000);
+                    }).catch(e => { throw e; });
+                }
 
-            for (const argument of this.commandOptions) {
-                if (argument.startsWith('--')){
-                    let modifier = argument.replace('--', '').split("=");
-                    let modifierName = modifier.shift();
-                    let modifierValue = modifier.shift();
-    
-                    if (["spoofExecutor"].includes(modifierName)){
-                        let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofExecutor`).catch(e => { throw e; });
-                        if (!checkPermission)return {permissionDenied: `commands.spoofExecutor`};
-                        this.executor = (await this.trigger.TobyBot.guild.getMemberById(modifierValue).catch(e => { throw e; })).user;
-    
-                        this.spoofing = true;
-                        this.commandOptions = this.commandOptions.filter(function(e) { return e !== argument });
-                    }
-    
-                    if (["spoofChannel"].includes(modifierName)){
-                        let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofChannel`).catch(e => { throw e; });
-                        if (!checkPermission)return {permissionDenied: `commands.spoofChannel`};
-                        this.channel = await this.trigger.TobyBot.guild.getChannelById(modifierValue).catch(e => { throw e; });
-    
-                        this.spoofing = true;
-                        this.commandOptions = this.commandOptions.filter(function(e) { return e !== argument; });
+                for (const argument of this.commandOptions) {
+                    if (argument.startsWith('--')){
+                        let modifier = argument.replace('--', '').split("=");
+                        let modifierName = modifier.shift();
+                        let modifierValue = modifier.shift();
+        
+                        if (["spoofExecutor"].includes(modifierName)){
+                            let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofExecutor`).catch(e => { throw e; });
+                            if (!checkPermission)return {permissionDenied: `commands.spoofExecutor`};
+                            this.executor = (await this.guild.getMemberById(modifierValue).catch(e => { throw e; })).user;
+        
+                            this.spoofing = true;
+                            this.commandOptions = this.commandOptions.filter(function(e) { return e !== argument });
+                        }
+        
+                        if (["spoofChannel"].includes(modifierName)){
+                            let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofChannel`).catch(e => { throw e; });
+                            if (!checkPermission)return {permissionDenied: `commands.spoofChannel`};
+                            this.channel = await this.guild.getChannelById(modifierValue).catch(e => { throw e; });
+        
+                            this.spoofing = true;
+                            this.commandOptions = this.commandOptions.filter(function(e) { return e !== argument; });
+                        }
                     }
                 }
             }
+        } else {
+            return true;
         }
 
         let checkPermission = await this.CommandManager.hasPermission(this).catch(e => { throw e; });
-        if (!checkPermission)return {permissionDenied: this.command.permission};
+        if (!checkPermission)return this.options = {permissionDenied: this.command.permission};
 
         this.options = (this.isSlashCommand) ? await this.command.optionsFromSlashOptions(this, this.commandOptions) : await this.command.optionsFromArgs(this, this.commandOptions);
         return true;
     }
 
     async denyPermission(permission) {
-        MainLog.log(this.TobyBot.i18n.__('bot.command.execution.permissionDenided', {user: `${this.executor.username}#${this.executor.discriminator}(${this.executor.id})`, realUser: `${this.realExecutor.username}#${this.realExecutor.discriminator}(${this.realExecutor.id})`, command: `${this.command.name}`, location: `${this.channel.id}@${this.channel.guild.id}`, realLocation: `${this.realChannel.id}@${this.realChannel.guild.id}`, permission: permission}));
-        return this.returnErrorEmbed({}, this.i18n.__(`commands.generic.permissionDenied.title`), this.i18n.__(`commands.generic.permissionDenied.description`, {permission: this.options.permissionDenied}));
+        if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')) && (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.permissionDenided', {user: `${this.executor.username}#${this.executor.discriminator}(${this.executor.id})`, realUser: `${this.realExecutor.username}#${this.realExecutor.discriminator}(${this.realExecutor.id})`, command: `${this.command.name}`, location: `${this.channel.id}@${this.channel.guild.id}`, realLocation: `${this.realChannel.id}@${this.realChannel.guild.id}`, permission: permission}));
+        if ((await this.guild.ConfigurationManager.get('behaviour.returnErrorOnPermissionDenied')))this.returnErrorEmbed({}, this.i18n.__(`commands.generic.permissionDenied.title`), this.i18n.__(`commands.generic.permissionDenied.description`, {permission: this.options.permissionDenied}));
+        return true;
+    }
+
+    async unknownCommand() {
+        if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')) && (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.unknownCommand', {user: `${this.executor.username}#${this.executor.discriminator}(${this.executor.id})`, realUser: `${this.realExecutor.username}#${this.realExecutor.discriminator}(${this.realExecutor.id})`, location: `${this.channel.id}@${this.channel.guild.id}`, realLocation: `${this.realChannel.id}@${this.realChannel.guild.id}`}));
+        if ((await this.guild.ConfigurationManager.get('behaviour.returnErrorOnUnknownCommand'))) this.returnErrorEmbed({}, this.i18n.__(`commands.generic.unknownCommand.title`), this.i18n.__(`commands.generic.unknownCommand.description`));
+        
+        if (await this.guild.ConfigurationManager.get('logging.commandExecution.logFailed') && typeof this.guild.loggers.commandExecution != "undefined"){
+            let embed = new MessageEmbed().setTitle(this.guild.i18n.__('channelLogging.commandExecution.title')).setDescription(this.guild.i18n.__('channelLogging.commandExecution.description', {command: `${this.command.name} ${Object.entries(this.options).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.guild.ConfigurationManager.get('style.colors.main'));
+            embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.executor.title'), this.guild.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.executor.id, realUserId: this.realExecutor.id}), true);
+            embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.channel.title'), this.guild.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.channel.id, realChannelId: this.realChannel.id}), true);
+            if (typeof this.spoofing != "undefined") embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.realUser.title'), this.guild.i18n.__('channelLogging.commandExecution.field.realUser.description', {userId: this.executor.id, realUserId: this.realExecutor.id}), true);
+            if (typeof this.spoofing != "undefined") embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.realChannel.title'), this.guild.i18n.__('channelLogging.commandExecution.field.realChannel.description', {channelId: this.channel.id, realChannelId: this.realChannel.id}), true);
+            this.guild.loggers.commandExecution.logRaw({embeds: [embed]}).catch(e => {throw e;});
+        }
+
+        return true;
+    }
+
+    async logExecution() {
+        if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole'))
+            MainLog.log(this.TobyBot.i18n.__((typeof this.spoofing != "undefined") ? 'bot.command.execution.spoofed' : 'bot.command.execution', {user: `${this.executor.username}#${this.executor.discriminator}(${this.executor.id})`, realUser: `${this.realExecutor.username}#${this.realExecutor.discriminator}(${this.realExecutor.id})`, command: `${this.command.name}`, location: `${this.channel.id}@${this.channel.guild.id}`, realLocation: `${this.realChannel.id}@${this.realChannel.guild.id}`}));
+        
+        if (await this.guild.ConfigurationManager.get('logging.commandExecution.inChannel') && typeof this.guild.loggers.commandExecution != "undefined"){
+            let embed = new MessageEmbed().setTitle(this.guild.i18n.__('channelLogging.commandExecution.title')).setDescription(this.guild.i18n.__('channelLogging.commandExecution.description', {command: `${this.command.name} ${Object.entries(this.options).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.guild.ConfigurationManager.get('style.colors.main'));
+            embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.executor.title'), this.guild.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.executor.id, realUserId: this.realExecutor.id}), true);
+            embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.channel.title'), this.guild.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.channel.id, realChannelId: this.realChannel.id}), true);
+            if (typeof this.spoofing != "undefined") embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.realUser.title'), this.guild.i18n.__('channelLogging.commandExecution.field.realUser.description', {userId: this.executor.id, realUserId: this.realExecutor.id}), true);
+            if (typeof this.spoofing != "undefined") embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.realChannel.title'), this.guild.i18n.__('channelLogging.commandExecution.field.realChannel.description', {channelId: this.channel.id, realChannelId: this.realChannel.id}), true);
+            this.guild.loggers.commandExecution.logRaw({embeds: [embed]}).catch(e => {throw e;});
+        }
+                
+        return true;
     }
 
     /** Finish the execution by returning an embed
@@ -147,7 +185,7 @@ module.exports = class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
-     async returnErrorEmbed(options = {}, title, description = undefined, fields = []){
+     async returnErrorEmbed(options = {}, title = this.i18n.__(`commands.generic.error.title`), description = undefined, fields = []){
         return this.returnEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error')).catch(e => { throw e; });
     }
 
@@ -158,7 +196,7 @@ module.exports = class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
-     async returnWarningEmbed(options = {}, title, description = undefined, fields = []){
+     async returnWarningEmbed(options = {}, title = this.i18n.__(`commands.generic.warning.title`), description = undefined, fields = []){
         return this.returnEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning')).catch(e => { throw e; });
     }
 

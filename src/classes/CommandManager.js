@@ -90,13 +90,11 @@ module.exports = class Metric {
         let commandOptions=message.content.split(' ');
         let command=commandOptions.shift().replace(prefixUsed, '');
         let fetchedCommand = await this.fetch(command);
-        if (typeof fetchedCommand == "undefined")return undefined;
         return new CommandExecution(message, fetchedCommand, commandOptions, this).execute().catch(e=>{throw e});
     }
 
     async handleSlash(interaction) {
         let fetchedCommand = await this.fetch(interaction.commandName);
-        if (typeof fetchedCommand == "undefined")return undefined;
         return new CommandExecution(interaction, fetchedCommand, interaction.options._hoistedOptions, this, true).execute().catch(e => { throw e; });
     }
 

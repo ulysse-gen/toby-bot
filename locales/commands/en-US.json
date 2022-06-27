@@ -16,5 +16,21 @@
 	"commands.generic.permissionDenied.title": "commands.generic.permissionDenied.title",
 	"commands.generic.permissionDenied.description": "commands.generic.permissionDenied.description",
 	"command.say.toggled.on": "command.say.toggled.on",
-	"command.say.toggled.off": "command.say.toggled.off"
+	"command.say.toggled.off": "command.say.toggled.off",
+	"command.avatar.name": "command.avatar.name",
+	"command.avatar.description": "command.avatar.description",
+	"command.avatar.option.user.description": "command.avatar.option.user.description",
+	"command.say.error.textMustExistNotEmpty": "command.say.error.textMustExistNotEmpty",
+	"commands.generic.unknownCommand.title": "commands.generic.unknownCommand.title",
+	"commands.generic.unknownCommand.description": "commands.generic.unknownCommand.description",
+	"command.eval.successExecution.title.noReturn": "command.eval.successExecution.title.noReturn",
+	"command.eval.error.failedExecution.title": "command.eval.error.failedExecution.title",
+	"command.eval.failedExecution.description": "command.eval.failedExecution.description",
+	"command.evaluate.name": "command.evaluate.name",
+	"command.evaluate.description": "command.evaluate.description",
+	"command.evaluate.option.code.description": "command.evaluate.option.code.description",
+	"command.evaluate.successExecution.title": "command.evaluate.successExecution.title",
+	"command.evaluate.successExecution.description": "command.evaluate.successExecution.description",
+	"command.evaluate.successExecution.title.noReturn": "command.evaluate.successExecution.title.noReturn",
+	"command.avatar.error.userMustExistNotEmpty": "command.avatar.error.userMustExistNotEmpty"
 }

@@ -10,10 +10,24 @@
           }
     },
     "behaviour": {
-        "onCommandErrorReturnError": true,
-        "onCommandDeniedReturnDeny": true,
-        "onCommandUnknownReturnUnknown": true,
-        "onCommandWarningReturnWarning": true,
-        "onCommandCooldownReturnCooldown": true
+        "returnErrorOnCommandError": true,
+        "returnErrorOnPermissionDenied": true,
+        "returnErrorOnUnknownCommand": true,
+        "returnErrorOnCommandCooldown": true
+    },
+    "logging": {
+        "commandExecution": {
+            "inChannel": false,
+            "channel": "none",
+            "logFailed": true
+        },
+        "moderationLogs": {
+            "inChannel": false,
+            "channel": "none"
+        },
+        "autoModerationLogs": {
+            "inChannel": false,
+            "channel": "none"
+        }
     }
 }

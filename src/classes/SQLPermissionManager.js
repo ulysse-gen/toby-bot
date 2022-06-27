@@ -30,13 +30,13 @@ module.exports = class SQLPermissionManager extends SQLConfigurationManager {
         this.changedSince = false;
 
         this.allowDevOnly = [
-            "command.eval"
+            "command.evaluate"
         ];
 
         this.neverAllow = [
             "command.impossible",
             "*",
-            "command.eval"
+            "command.evaluate"
         ];
 
         this.neverAllowGuildFocused = [
@@ -133,6 +133,9 @@ module.exports = class SQLPermissionManager extends SQLConfigurationManager {
 
     async userHasPermission(permission, guildUser, channel = undefined, useAdmin = false) {
         if (typeof guildUser != "object") throw new Error('Wrong type.')
+        if (this.allowDevOnly.includes(permission) && guildUser.user.id == "231461358200291330")return true;
+        if (this.neverAllow.includes(permission))return false;
+        if (this.neverAllowGuildFocused.includes(permission) && useAdmin)return false;
         let isAdmin = (useAdmin) ? await guildUser.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true) : false;
         let permissions = [await this.getUserPermissions(guildUser.id, isAdmin), await this.getChannelPermission(channel.guild.id, channel.id), await this.getGuildPermissions(channel.guild.id), await this.getRolesPermissions(channel.guild.id, guildUser.roles.cache, isAdmin)];
         let finalPermissions = {};

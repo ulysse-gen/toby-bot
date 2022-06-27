@@ -4,6 +4,7 @@
     "token": "thisIsAnObviouslyFakeToken",
     "prefix": "$toby.gg$",
     "prefixes": ["$toby.gg$", "tobybot.", "tbb."],
+    "communityGuild": "933416930038136832",
     "style": {
         "colors": {
             "success": "#00FF68",
@@ -15,5 +16,23 @@
     "blocked": {
         "users": {},
         "guilds": {}
+    },
+    "logging": {
+        "commandExecution": {
+            "inConsole": true,
+            "inChannel": true,
+            "channel": "983344031838896199",
+            "logFailed": true
+        },
+        "moderationLogs": {
+            "inConsole": true,
+            "inChannel": false,
+            "channel": "983344031838896199"
+        },
+        "autoModerationLogs": {
+            "inConsole": true,
+            "inChannel": false,
+            "channel": "983344031838896199"
+        }
     }
 }
