@@ -24,7 +24,9 @@ module.exports = {
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {
-        return Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
+        var options = Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
+        if (typeof CommandExecution.trigger.options._subcommand != "undefined" && CommandExecution.trigger.options._subcommand != null) options.subCommand = CommandExecution.trigger.options._subcommand;
+        return options;
     },
     makeSlashCommand(i18n) {
         let slashCommand = new SlashCommandBuilder()

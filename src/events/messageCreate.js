@@ -32,7 +32,9 @@ module.exports = {
         if (typeof message.TobyBot.guild == "undefined" || !message.TobyBot.guild.initialized) return false;
 
         message.TobyBot.guild.MessageManager.addMessage(message).catch(e => { 
-            return ErrorLog.error(`${__filename}: An error occured logging the message.`);
+            ErrorLog.error(`An error occured trying to log the message:`);
+            console.log(e);
+            return;
         }); //Log messages
 
         if (message.author.id == TobyBot.client.user.id) return; //Skip if himself

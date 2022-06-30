@@ -10,5 +10,11 @@
 	"channelLogging.commandExecution.field.realUser.title": "Real executor",
 	"channelLogging.commandExecution.field.realUser.description": "<@{{realUserId}}>",
 	"channelLogging.commandExecution.field.realChannel.title": "Real channel",
-	"channelLogging.commandExecution.field.realChannel.description": "<#{{realChannelId}}>"
+	"channelLogging.commandExecution.field.realChannel.description": "<#{{realChannelId}}>",
+	"channelLogging.commandExecution.error.deny.title": "Command denied",
+	"channelLogging.commandExecution.error.deny.description": "{{command}}",
+	"channelLogging.commandExecution.error.unknown.title": "Unknown command",
+	"channelLogging.commandExecution.error.unknown.description": "{{command}}",
+	"channelLogging.commandExecution.field.permission.title": "Permission",
+	"channelLogging.commandExecution.field.permission.description": "`{{permission}}`"
 }

@@ -32,10 +32,24 @@ module.exports = class CommandExecution {
      */
     async execute() {
         await this.buildContext().catch(e => { throw e; });
+        this.deferIfNeeded();
         if (typeof this.command == "undefined")return this.unknownCommand();
         if (typeof this.options.permissionDenied != "undefined")return this.denyPermission(this.options.permissionDenied);
         await this.logExecution();
         return this.command.execute(this).catch(e => { throw e; });
+    }
+
+    async deferIfNeeded() {
+        let _this = this;
+        return setTimeout(() => {
+            if (!_this.replied && _this.isSlashCommand){
+                _this.replied = true;
+                _this.trigger.reply = async(...args) => {
+                    return _this.trigger.editReply(...args).catch(e => { throw e; });
+                }
+                return _this.trigger.deferReply({ephemeral: true});
+            }
+        }, 2000);
     }
 
     /**Build the command context
@@ -110,6 +124,17 @@ module.exports = class CommandExecution {
     async denyPermission(permission) {
         if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')) && (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.permissionDenided', {user: `${this.executor.username}#${this.executor.discriminator}(${this.executor.id})`, realUser: `${this.realExecutor.username}#${this.realExecutor.discriminator}(${this.realExecutor.id})`, command: `${this.command.name}`, location: `${this.channel.id}@${this.channel.guild.id}`, realLocation: `${this.realChannel.id}@${this.realChannel.guild.id}`, permission: permission}));
         if ((await this.guild.ConfigurationManager.get('behaviour.returnErrorOnPermissionDenied')))this.returnErrorEmbed({}, this.i18n.__(`commands.generic.permissionDenied.title`), this.i18n.__(`commands.generic.permissionDenied.description`, {permission: this.options.permissionDenied}));
+        
+        if (await this.guild.ConfigurationManager.get('logging.commandExecution.logFailed') && typeof this.guild.loggers.commandExecution != "undefined"){
+            let embed = new MessageEmbed().setTitle(this.guild.i18n.__('channelLogging.commandExecution.error.deny.title')).setDescription(this.guild.i18n.__('channelLogging.commandExecution.error.deny.description', {command: `||I need to build this text, for now on, ignore. Try to DM me sometimes when you notice this so like that it kinda force me to work on it lol||`})).setColor(this.guild.ConfigurationManager.get('style.colors.error'));
+            embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.executor.title'), this.guild.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.executor.id, realUserId: this.realExecutor.id}), true);
+            embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.channel.title'), this.guild.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.channel.id, realChannelId: this.realChannel.id}), true);
+            if (typeof this.spoofing != "undefined") embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.realUser.title'), this.guild.i18n.__('channelLogging.commandExecution.field.realUser.description', {userId: this.executor.id, realUserId: this.realExecutor.id}), true);
+            if (typeof this.spoofing != "undefined") embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.realChannel.title'), this.guild.i18n.__('channelLogging.commandExecution.field.realChannel.description', {channelId: this.channel.id, realChannelId: this.realChannel.id}), true);
+            embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.permission.title'), this.guild.i18n.__('channelLogging.commandExecution.field.permission.description', {permission: this.command.permission}), true);
+            this.guild.loggers.commandExecution.logRaw({embeds: [embed]}).catch(e => {throw e;});
+        }
+        
         return true;
     }
 
@@ -118,7 +143,7 @@ module.exports = class CommandExecution {
         if ((await this.guild.ConfigurationManager.get('behaviour.returnErrorOnUnknownCommand'))) this.returnErrorEmbed({}, this.i18n.__(`commands.generic.unknownCommand.title`), this.i18n.__(`commands.generic.unknownCommand.description`));
         
         if (await this.guild.ConfigurationManager.get('logging.commandExecution.logFailed') && typeof this.guild.loggers.commandExecution != "undefined"){
-            let embed = new MessageEmbed().setTitle(this.guild.i18n.__('channelLogging.commandExecution.title')).setDescription(this.guild.i18n.__('channelLogging.commandExecution.description', {command: `${this.command.name} ${Object.entries(this.options).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.guild.ConfigurationManager.get('style.colors.main'));
+            let embed = new MessageEmbed().setTitle(this.guild.i18n.__('channelLogging.commandExecution.error.unknown.title')).setDescription(this.guild.i18n.__('channelLogging.commandExecution.error.unknown.description', {command: `||I need to build this text, for now on, ignore. Try to DM me sometimes when you notice this so like that it kinda force me to work on it lol||`})).setColor(this.guild.ConfigurationManager.get('style.colors.error'));
             embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.executor.title'), this.guild.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.executor.id, realUserId: this.realExecutor.id}), true);
             embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.channel.title'), this.guild.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.channel.id, realChannelId: this.realChannel.id}), true);
             if (typeof this.spoofing != "undefined") embed.addField(this.guild.i18n.__('channelLogging.commandExecution.field.realUser.title'), this.guild.i18n.__('channelLogging.commandExecution.field.realUser.description', {userId: this.executor.id, realUserId: this.realExecutor.id}), true);
@@ -208,7 +233,7 @@ module.exports = class CommandExecution {
      * @param fields Fields array of the embed
      * @param color Color of the embed
      */
-     async replyEmbed(options = {}, title, description = undefined, fields = []){
+     async replyEmbed(...args){
         args[0] = Object.assign({followUpIfReturned: true}, args[0]);
         return this.returnEmbed(...args).catch(e=>{throw e;}).catch(e => { throw e; });
     }

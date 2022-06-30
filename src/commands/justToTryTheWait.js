@@ -2,17 +2,22 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 
 module.exports = {
-    name: "samplecommand",
-    aliases: ["samplecommand"],
-    permission: "command.samplecommand",
-    category: "samplecommand",
+    name: "justtotrythewait",
+    aliases: ["jtttw"],
+    permission: "command.justtotrythewait",
+    category: "administration",
     enabled: true,
     async execute(CommandExecution) {
-        return true;
+        return setTimeout(() => {
+            return CommandExecution.replyMainEmbed({}, 'oui', 'non');
+        }, 5000);
     },
     async optionsFromArgs (CommandExecution) {
         var options = {};
         if (CommandExecution.commandOptions.length == 0)return options;
+        options.subCommand = CommandExecution.commandOptions.shift();
+        if (CommandExecution.commandOptions.length != 0)options.key = CommandExecution.commandOptions.shift();
+        if (CommandExecution.commandOptions.length != 0)options.value = CommandExecution.commandOptions.join(' ');
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {
@@ -25,21 +30,13 @@ module.exports = {
             .setName(this.name)
             .setDescription(i18n.__(`command.${this.name}.description`));
 
-        slashCommand.addStringOption(option => 
-            option.setName('sampleoption')
-                .setDescription(i18n.__(`command.${this.name}.option.sampleoption.description`))
-                .setRequired(true)
-        );
-
         return slashCommand;
     },
     async makeHelp(Command) {
         let returnObject = {embeds: []};
         let tempEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
-                                            .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
-                                            .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`) + '\n' + Command.CommandManager.i18n.__(`commands.generic.help.argsType`));
-
-        tempEmbed.addField('sampleoption', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.sampleoption.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.text`)}));
+                                            .setColor(Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
+                                            .setDescription('**' + Command.CommandManager.i18n.__(`command.${this.name}.description`) + '**\n' + Command.CommandManager.i18n.__(`commands.generic.help.argsType`));
 
         returnObject.embeds.push(tempEmbed) 
 

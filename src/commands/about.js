@@ -38,11 +38,13 @@ module.exports = {
         return CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.title`), undefined, fields).catch(e => {throw e});
     },
     async optionsFromArgs (CommandExecution) {
-        if (CommandExecution.commandOptions.length == 0)return options;
+        if (CommandExecution.commandOptions.length == 0)return {};
         return {};
     },
     async optionsFromSlashOptions (CommandExecution) {
-        return Object.fromEntries(Object.entries(slashOptions).map(([key, val]) => [val.name, val.value]));
+        var options = Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
+        if (typeof CommandExecution.trigger.options._subcommand != "undefined" && CommandExecution.trigger.options._subcommand != null) options.subCommand = CommandExecution.trigger.options._subcommand;
+        return options;
     },
     makeSlashCommand(i18n) {
         return new SlashCommandBuilder()

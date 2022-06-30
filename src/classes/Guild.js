@@ -39,12 +39,14 @@ module.exports = class Guild {
         this.SQLPool = mysql.createPool(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'));
         
         this.initialized = false;
+        this.isSetup = false;
     }
 
     async initialize() {
         this.ConfigurationManager = new SQLConfigurationManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, JSON.stringify(require('../../configurations/defaults/GuildConfiguration.json')));
         this.PermissionManager = new SQLPermissionManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, require('../../configurations/defaults/GuildPermissions.json'));
         await this.ConfigurationManager.initialize(true, this).catch(e => { throw e; });
+        this.isSetup = this.ConfigurationManager.get('system.setup-done');
         await this.PermissionManager.initialize(true, this).catch(e => { throw e; });
         await this.initLoggers();
         this.initialized = true;
