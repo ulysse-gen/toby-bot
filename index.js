@@ -21,7 +21,7 @@ const i18n = new I18n({
     locales: ['en-US'],
     directory: 'locales/backend',
     fallbackLocale: 'en-US',
-    defaultLocale: 'en-US'
+    defaultLocale: 'en-US',
 });
 
 //Creating main variables

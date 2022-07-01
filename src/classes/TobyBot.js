@@ -56,6 +56,8 @@ module.exports = class TobyBot {
         this.LifeMetric.addEntry("botReady").catch(e => { throw e; });
         this.LifeMetric.addEntry("LoggersInit");
         await this.initLoggers().catch(e => { throw e }); //Attach events
+
+        //setInterval(this.reportMemoryUsage, 500); // <-- Enable this to report RAM Usage in console. This is a debug and developpement feature only
     }
 
     async initManagers() {
@@ -134,5 +136,10 @@ module.exports = class TobyBot {
         for (const moduleId of Object.keys(require.cache)) {
             delete require.cache[resolveFrom(directory, moduleId)];
         }
+    }
+
+    async reportMemoryUsage() {
+        const used = process.memoryUsage().heapUsed / 1024 / 1024;
+        MainLog.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
     }
 }

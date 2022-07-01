@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
+const _ = require('lodash');
 const FileConfigurationManager = require('../classes/FileConfigurationManager');
 
 module.exports = {
@@ -13,33 +14,140 @@ module.exports = {
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json');
         await ConfigurationDocumentation.initialize();
 
-
         if (CommandExecution.options.subCommand == "load"){
             await ConfigurationManager.load();
-            CommandExecution.replyMainEmbed({}, CommandExecution.i18n.__(`command.${this.name}.loaded.title`), CommandExecution.i18n.__(`command.${this.name}.loaded.description`, {}));
+            CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.loaded.title`), CommandExecution.i18n.__(`command.${this.name}.loaded.description`, {}));
             return true;
         }
 
         if (CommandExecution.options.subCommand == "save"){
             await ConfigurationManager.save();
-            CommandExecution.replyMainEmbed({}, CommandExecution.i18n.__(`command.${this.name}.saved.title`), CommandExecution.i18n.__(`command.${this.name}.saved.description`, {}));
+            CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.saved.title`), CommandExecution.i18n.__(`command.${this.name}.saved.description`, {}));
             return true;
         }
 
         if (CommandExecution.options.subCommand == "view"){
-            if (typeof CommandExecution.options.key == "undefined")CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noKeySpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noKeySpecified.description`, {}));
+            if (typeof CommandExecution.options.key == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noKeySpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noKeySpecified.description`, {}));
+            
             let KeyDocumentation = ConfigurationDocumentation.get(CommandExecution.options.key);
-            let KeyValue = ConfigurationManager.get(CommandExecution.options.key);
+
+            if (typeof KeyDocumentation != "object" || (typeof KeyDocumentation.editable != "boolean" || !KeyDocumentation.editable) || (typeof KeyDocumentation.name != "string" || typeof KeyDocumentation.description != "string" || typeof KeyDocumentation.type != "string"))return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.keyNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.keyNotFound.description`, {}));
+
+            let KeyName = KeyDocumentation.name;
+            let KeyDescription = KeyDocumentation.description;
+            let KeyType = KeyDocumentation.type;
+            let KeyDefaultValue  = KeyDocumentation.default;
+            let KeyValue = _.cloneDeep(ConfigurationManager.get(CommandExecution.options.key));
+
+            if (["Object","Object(Array)"].includes(KeyType)){
+                KeyValue = JSON.stringify(KeyValue);
+                KeyDefaultValue = JSON.stringify(KeyDefaultValue);
+            }
+
             let fields = [
                 [CommandExecution.i18n.__(`command.${this.name}.view.field.value.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.value.description`, { value: KeyValue }), true],
-                [CommandExecution.i18n.__(`command.${this.name}.view.field.defaultvalue.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.defaultvalue.description`, { defaultValue: KeyDocumentation.default }), true],
-                [CommandExecution.i18n.__(`command.${this.name}.view.field.type.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.type.description`, { type: KeyDocumentation.type }), true]
+                [CommandExecution.i18n.__(`command.${this.name}.view.field.defaultvalue.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.defaultvalue.description`, { defaultValue: KeyDefaultValue }), true],
+                [CommandExecution.i18n.__(`command.${this.name}.view.field.type.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.type.description`, { type: KeyType }), true],
+                //[CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.description`, { guildId: CommandExecution.guild.guild.id, key: CommandExecution.options.key }), true]
             ]
-            CommandExecution.replyMainEmbed({}, CommandExecution.i18n.__(`command.${this.name}.view.title`, { name: KeyDocumentation.name, key: CommandExecution.options.key }), CommandExecution.i18n.__(`command.${this.name}.view.description`, { description: KeyDocumentation.description }), fields);
+            CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.view.title`, { name: KeyName, key: CommandExecution.options.key }), CommandExecution.i18n.__(`command.${this.name}.view.description`, { description: KeyDescription }), fields);
             return true;
         }
 
-        console.log(CommandExecution.options);
+        if (CommandExecution.options.subCommand == "reset"){
+            if (typeof CommandExecution.options.key == "undefined")return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noKeySpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noKeySpecified.description`, {}));
+            
+            let KeyDocumentation = ConfigurationDocumentation.get(CommandExecution.options.key);
+
+            if (typeof KeyDocumentation != "object" || (typeof KeyDocumentation.editable != "boolean" || !KeyDocumentation.editable) || (typeof KeyDocumentation.name != "string" || typeof KeyDocumentation.description != "string" || typeof KeyDocumentation.type != "string"))return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.keyNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.keyNotFound.description`, {}));
+            
+            let KeyName = KeyDocumentation.name;
+            let KeyDefaultValue  = KeyDocumentation.default;
+
+            ConfigurationManager.set(CommandExecution.options.key, KeyDefaultValue);
+
+            CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.reset.title`, { name: KeyName, key: CommandExecution.options.key }), CommandExecution.i18n.__(`command.${this.name}.reset.description`, { name: KeyName, key: CommandExecution.options.key }));
+            return true;
+        }
+
+        if (CommandExecution.options.subCommand == "set"){
+            if (typeof CommandExecution.options.key == "undefined")return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noKeySpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noKeySpecified.description`, {}));
+            if (typeof CommandExecution.options.value == "undefined")return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noValueSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noValueSpecified.description`, {}));
+            
+            let KeyDocumentation = ConfigurationDocumentation.get(CommandExecution.options.key);
+
+            if (typeof KeyDocumentation != "object" || (typeof KeyDocumentation.editable != "boolean" || !KeyDocumentation.editable) || (typeof KeyDocumentation.name != "string" || typeof KeyDocumentation.description != "string" || typeof KeyDocumentation.type != "string"))return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.keyNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.keyNotFound.description`, {}));
+            
+            let KeyName = KeyDocumentation.name;
+            let KeyType = KeyDocumentation.type;
+            let KeyDefaultValue  = KeyDocumentation.default;
+            let KeyValue = _.cloneDeep(ConfigurationManager.get(CommandExecution.options.key));
+
+            let KeyNewValue = CommandExecution.options.value;
+
+            if (KeyType.startsWith('String')){
+                
+            }else if (KeyType.startsWith('Object')){
+                try {
+                    if (KeyNewValue.startsWith('+')) {
+                        let KeyManipulating = _.cloneDeep(KeyValue);
+                        KeyNewValue = KeyNewValue.replace('+', '')
+                        if (KeyType == "Object(Array)"){
+                            KeyManipulating.push(KeyNewValue);
+                        }else if (KeyType == "Object") {
+                            KeyManipulating[KeyNewValue.split(':', 2)[0]] = KeyNewValue.split(':', 2)[1];
+                        }else {
+                            KeyManipulating = KeyNewValue;
+                        }
+                        KeyNewValue = KeyManipulating;
+                    }else if (KeyNewValue.startsWith('-')) {
+                        let KeyManipulating = _.cloneDeep(KeyValue);
+                        KeyNewValue = KeyNewValue.replace('-', '')
+                        if (KeyType == "Object(Array)"){
+                            KeyManipulating = KeyManipulating.filter(arrayItem => arrayItem !== KeyNewValue);
+                        }else if (KeyType == "Object") {
+                            delete KeyManipulating[KeyNewValue.split(':', 1)[0]];
+                        }else {
+                            KeyManipulating = KeyNewValue;
+                        }
+                        KeyNewValue = KeyManipulating;
+                    } else {
+                        KeyNewValue = JSON.parse(KeyNewValue);
+                    }
+                }catch (e) {
+                    return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotParseJSON.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotParseJSON.description`, {error: e}));
+                }
+            }else if (["Integer"].includes(KeyType)){
+                try {
+                    KeyNewValue = parseInt(KeyNewValue);
+                }catch (e) {
+                    return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotParseInt.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotParseInt.description`, {error: e}));
+                }
+            }else if (["Float"].includes(KeyType)){
+                try {
+                    KeyNewValue = parseFloat(KeyNewValue);
+                }catch (e) {
+                    return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotParseFloat.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotParseFloat.description`, {error: e}));
+                }
+            }else if (["Boolean"].includes(KeyType)){
+                if (["true","1","yes","y","oui","o"].includes(KeyNewValue)){
+                    KeyNewValue = true;
+                }else if (["false","0","no","n","non"].includes(KeyNewValue)) {
+                    KeyNewValue = false;
+                } else {
+                    return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotParseBoolean.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotParseBoolean.description`, {}));
+                }
+            }else {
+                return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.configCheckNotDefined.title`), CommandExecution.i18n.__(`command.${this.name}.error.configCheckNotDefined.description`, {}));
+            }
+
+            ConfigurationManager.set(CommandExecution.options.key, KeyNewValue);
+
+            CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.set.title`, { name: KeyName, key: CommandExecution.options.key }), CommandExecution.i18n.__(`command.${this.name}.set.description`, { name: KeyName, key: CommandExecution.options.key }));
+            return true;
+        }
+
+        CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.generic.unknownSubCommand.title`), CommandExecution.i18n.__(`command.generic.unknownSubCommand.description`, {command: this.name}));
         return true;
     },
     async optionsFromArgs (CommandExecution) {
@@ -59,6 +167,11 @@ module.exports = {
         let slashCommand = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(i18n.__(`command.${this.name}.description`));
+
+        slashCommand.addSubcommand(subCommand =>
+            subCommand.setName('help')
+                .setDescription(i18n.__(`command.${this.name}.subcommand.help.description`))
+        );
 
         slashCommand.addSubcommand(subCommand =>
             subCommand.setName('load')
@@ -117,12 +230,13 @@ module.exports = {
 
         return slashCommand;
     },
-    async makeHelp(Command) {
+    async makeHelpEmbed(Command) {
         let returnObject = {embeds: []};
         let tempEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
                                             .setColor(Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
                                             .setDescription('**' + Command.CommandManager.i18n.__(`command.${this.name}.description`) + '**\n' + Command.CommandManager.i18n.__(`commands.generic.help.argsType`));
 
+        tempEmbed.addField('help', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.help.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.subcommand`)}));
         tempEmbed.addField('load', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.load.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.subcommand`)}));
         tempEmbed.addField('save', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.save.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.subcommand`)}));
         tempEmbed.addField('set', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.set.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.subcommand`)}));

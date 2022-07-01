@@ -12,7 +12,7 @@ module.exports = {
             if (typeof CommandExecution.guild.waitingForMessageData.say.channels[CommandExecution.channel.id] == "undefined")CommandExecution.guild.waitingForMessageData.say.channels[CommandExecution.channel.id] = {};
             if (typeof CommandExecution.guild.waitingForMessageData.say.channels[CommandExecution.channel.id][CommandExecution.executor.id] == "function"){
                 delete CommandExecution.guild.waitingForMessageData.say.channels[CommandExecution.channel.id][CommandExecution.executor.id];
-                await CommandExecution.returnMainEmbed({ephemeral: true}, CommandExecution.i18n.__(`command.${this.name}.toggled.off`));
+                await CommandExecution.returnSuccessEmbed({ephemeral: true}, CommandExecution.i18n.__(`command.${this.name}.toggled.off`));
                 return true;
             }else {
                 CommandExecution.guild.waitingForMessageData.say.channels[CommandExecution.channel.id][CommandExecution.executor.id] = async (message) => {
@@ -20,7 +20,7 @@ module.exports = {
                     channelToSendTo.send(message.content);
                     message.delete().catch(e => { throw e; });
                 };
-                await CommandExecution.returnMainEmbed({ephemeral: true}, CommandExecution.i18n.__(`command.${this.name}.toggled.on`));
+                await CommandExecution.returnSuccessEmbed({ephemeral: true}, CommandExecution.i18n.__(`command.${this.name}.toggled.on`));
                 return true;
             }
         }
@@ -32,7 +32,7 @@ module.exports = {
         channelToSendTo.send(CommandExecution.options.text);
         CommandExecution.trigger.delete().catch(e => { throw e; });
 
-        await CommandExecution.returnMainEmbed({ephemeral: true, slashOnly: true}, CommandExecution.i18n.__(`command.${this.name}.sent`));
+        await CommandExecution.returnSuccessEmbed({ephemeral: true, slashOnly: true}, CommandExecution.i18n.__(`command.${this.name}.sent`));
         return true;
     },
     async optionsFromArgs (CommandExecution) {

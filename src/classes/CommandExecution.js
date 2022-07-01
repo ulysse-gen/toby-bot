@@ -5,6 +5,7 @@
 
 //Importing NodeJS Modules
 const { MessageEmbed } = require("discord.js");
+const { I18n } = require('i18n');
 
 //Importing classes
 const FileLogger = require('./FileLogger');
@@ -22,7 +23,12 @@ module.exports = class CommandExecution {
         this.commandOptions = commandOptions;
         this.isSlashCommand = isSlashCommand;
         this.CommandManager = CommandManager;
-        this.i18n = CommandManager.i18n;
+        this.i18n = new I18n({
+            locales: ['en-US'],
+            directory: 'locales/commands',
+            fallbackLocale: 'en-US',
+            defaultLocale: 'en-US'
+        });
 
         this.replied = false;
     }
@@ -210,6 +216,17 @@ module.exports = class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
+     async returnSuccessEmbed(options = {}, title, description = undefined, fields = []){
+        return this.returnEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.success')).catch(e => { throw e; });
+    }
+
+    /** Finish the execution by returning an embed
+     *  Objects will be described as such : {keyName:keyType:Optional?} (e.g. {thisIsAKey:String:true})
+     * @param options {ephemeral:Boolean:true, slashOnly:Boolean:false, followUpIfReturned:Boolean:false}
+     * @param title Title of the embed
+     * @param description Description of the embed
+     * @param fields Fields array of the embed
+     */
      async returnErrorEmbed(options = {}, title = this.i18n.__(`commands.generic.error.title`), description = undefined, fields = []){
         return this.returnEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error')).catch(e => { throw e; });
     }
@@ -267,6 +284,17 @@ module.exports = class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
+     async replySuccessEmbed(options = {}, title, description = undefined, fields = []){
+        return this.replyEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.success')).catch(e => { throw e; });
+    }
+
+    /** Reply to the execution by replying an embed
+     *  Objects will be described as such : {keyName:keyType:Optional?} (e.g. {thisIsAKey:String:true})
+     * @param options {ephemeral:Boolean:true, slashOnly:Boolean:true}
+     * @param title Title of the embed
+     * @param description Description of the embed
+     * @param fields Fields array of the embed
+     */
      async replyWarningEmbed(options = {}, title, description = undefined, fields = []){
         return this.replyEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning')).catch(e => { throw e; });
     }
@@ -295,6 +323,15 @@ module.exports = class CommandExecution {
      */
      async sendMainEmbed(options = {}, title, description = undefined, fields = []){
         return this.sendEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')).catch(e => { throw e; });
+    }
+
+    /** Reply to the execution by replying an embed
+     * @param title Title of the embed
+     * @param description Description of the embed
+     * @param fields Fields array of the embed
+     */
+     async sendSuccessEmbed(options = {}, title, description = undefined, fields = []){
+        return this.sendEmbed(options, title, description, fields, this.trigger.TobyBot.guild.ConfigurationManager.get('style.colors.success')).catch(e => { throw e; });
     }
 
     /** Reply to the execution by replying an embed

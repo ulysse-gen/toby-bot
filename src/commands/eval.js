@@ -11,10 +11,10 @@ module.exports = {
         if (typeof CommandExecution.options.code == "undefined" || CommandExecution.options.code.replaceAll(' ', '') == "") throw {title: CommandExecution.i18n.__('commands.generic.error.title'), content: CommandExecution.i18n.__(`command.${this.name}.error.codeMustExistNotEmpty`)};
         try {
             let evalValue = eval(CommandExecution.options.code);
-            if (typeof evalValue != "undefined")return CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.successExecution.title`), CommandExecution.i18n.__(`command.${this.name}.successExecution.description`, {evalValue: evalValue}));
-            return CommandExecution.returnMainEmbed({slashOnly: true}, CommandExecution.i18n.__(`command.${this.name}.successExecution.title.noReturn`));
+            if (typeof evalValue != "undefined")return CommandExecution.replySuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.successExecution.title`), CommandExecution.i18n.__(`command.${this.name}.successExecution.description`, {evalValue: evalValue}));
+            return CommandExecution.replySuccessEmbed({slashOnly: true}, CommandExecution.i18n.__(`command.${this.name}.successExecution.title.noReturn`));
         } catch (error) {
-            return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.failedExecution.title`), CommandExecution.i18n.__(`command.${this.name}.error.failedExecution.description`, {error: error}));
+            return CommandExecution.replyErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.error.failedExecution.title`), CommandExecution.i18n.__(`command.${this.name}.error.failedExecution.description`, {error: error}));
         }
     },
     async optionsFromArgs (CommandExecution) {

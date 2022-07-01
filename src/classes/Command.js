@@ -16,6 +16,6 @@ module.exports = class Command {
         this.optionsFromSlashOptions = command.optionsFromSlashOptions;
 
         this.slashCommand = command.makeSlashCommand(this.CommandManager.i18n);
-        this.sendHelp = async (channel) => channel.send(await command.makeHelp(this)).catch(e=>{throw e});
+        this.sendHelp = async (channel) => channel.send(await command.makeHelpEmbed(this)).catch(e=>{throw e});
     }
 }
