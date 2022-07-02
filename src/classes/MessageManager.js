@@ -2,7 +2,7 @@
 //MessageManager is the main calss to handle message saving
 /////////////////////////////////
 
-module.exports = class Metric {
+module.exports = class MessageManager {
     constructor(Guild) {
         this.Guild = Guild;
 
@@ -14,12 +14,14 @@ module.exports = class Metric {
     }
 
     getLastMessagesByUser(userId) {
-        return this.messages.byUser[message.author.id];
+        return (typeof this.messages.byUser[userId] == "undefined") ? [] : this.messages.byUser[userId];
     }
 
     async addMessage(message) {
         let MessageEntry = {
             id: `${message.channel.guild.id}-${message.channel.id}-${message.id}`,
+            messageId: message.id,
+            channelId: message.channel.id,
             message: message,
             history: []
         };

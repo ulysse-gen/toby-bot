@@ -1,10 +1,9 @@
 {
     "appName": "Toby Bot",
-    "appId": 12345678912345678,
     "token": "thisIsAnObviouslyFakeToken",
     "prefix": "$toby.gg$",
     "prefixes": ["$toby.gg$", "tobybot.", "tbb."],
-    "communityGuild": "933416930038136832",
+    "communityGuild": "12345678912345678",
     "style": {
         "colors": {
             "success": "#00FF68",
@@ -14,25 +13,29 @@
         }
     },
     "blocked": {
-        "users": {},
-        "guilds": {}
+        "users": [],
+        "guilds": []
     },
     "logging": {
         "commandExecution": {
             "inConsole": true,
-            "inChannel": true,
-            "channel": "983344031838896199",
+            "inChannel": false,
+            "channel": "none",
             "logFailed": true
         },
         "moderationLogs": {
             "inConsole": true,
             "inChannel": false,
-            "channel": "983344031838896199"
+            "channel": "none"
         },
         "autoModerationLogs": {
             "inConsole": true,
             "inChannel": false,
-            "channel": "983344031838896199"
+            "channel": "none"
+        },
+        "updates": {
+            "inChannel": false,
+            "channel": "none"
         }
     }
 }

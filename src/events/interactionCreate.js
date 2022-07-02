@@ -34,12 +34,12 @@ module.exports = {
                                         return interaction.reply({
                                             content: interaction.TobyBot.guild.i18n.__('interaction.slashCommand.notBuilt', {prefix:  interaction.TobyBot.guild.ConfigurationManager.get('prefix')}),
                                             ephemeral: true
-                                        }).catch(e => { throw e; });
+                                        });
                                     });
 
         return interaction.reply({
             content: interaction.TobyBot.guild.i18n.__('interaction.couldNotProcess'),
             ephemeral: true,
-        }).catch(e => { throw e; });
+        });
     }
 }

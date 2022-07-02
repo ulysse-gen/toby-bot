@@ -27,13 +27,13 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
         if (!fs.existsSync(this.file) && !createAsEmptyIfNonExistent) throw new Error('File not found.');
-        await this.createPath(this.file).catch(e => { throw e; });
+        await this.createPath(this.file);
         if (!fs.existsSync(this.file)) {
             fs.appendFile(this.file, JSON.stringify(this.configuration, null, 2), function (err) {
                 if (err) throw err;
             });
         } else {
-            await this.load().catch(e => { throw e; });
+            await this.load();
         }
         if (this.verbose)MainLog.log(`Initialized ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
         this.initialized = true;
@@ -42,12 +42,12 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
 
     async set(path, value) {
         _.set(this.configuration, path, value);
-        return this.save().catch(e => { throw e; });
+        return this.save();
     }
 
     async delete(path) {
         _.unset(this.configuration, path);
-        return this.save().catch(e => { throw e; });
+        return this.save();
     }
 
     async load() {
@@ -59,7 +59,7 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
     async save() {
         let startTimer = moment();
         if (this.verbose) MainLog.log(`Saving configuration. [${this.SQLTable} => ${this.SQLWhere}][${moment().diff(startTimer)}ms]`);
-        await this.createPath(this.file).catch(e => { throw e; });
+        await this.createPath(this.file);
         fs.appendFile(this.file, JSON.stringify(this.configuration, null, 2), function (err) {
             if (err) throw err;
         });
@@ -86,7 +86,7 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
         if (this.verbose && typeof embeded == "undefined")MainLog.log(`[RecursiveMerger] Starting recursive merging [${moment().diff(startTimer)}ms]`);
         for (var p in obj2) {
             if (obj2[p].constructor == Object){
-                obj1[p] = await _this.mergeRecursive(obj1[p], obj2[p], startTimer).catch(e => { throw e; });
+                obj1[p] = await _this.mergeRecursive(obj1[p], obj2[p], startTimer);
             } else {
                 switch (typeof obj1[p]) {
                     case typeof obj2[p]:

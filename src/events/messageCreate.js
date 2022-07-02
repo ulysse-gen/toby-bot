@@ -22,6 +22,7 @@ module.exports = {
             return message.author.send(TobyBot.u18n.__('bot.blockedDm.text'));
         }
 
+        if (typeof message.channel.guild == "undefined") return require(`./DMHandler`).create(TobyBot, message);
 
         if (typeof TobyBot.ConfigurationManager.get('blocked.guilds')[message.channel.guild.id] != "undefined")return false;
 

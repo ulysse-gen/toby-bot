@@ -33,5 +33,12 @@
             "inChannel": false,
             "channel": "none"
         }
+    },
+    "moderation": {
+        "sendWarnInDM": true,
+        "sendMuteInDM": true,
+        "sendKickInDM": false,
+        "sendBanInDM": false,
+        "muteRole": "none"
     }
 }

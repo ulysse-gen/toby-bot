@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/rest": "^0.4.1",
+    "axios": "^0.27.2",
     "colors": "^1.4.0",
     "crypto": "^1.0.1",
     "discord.js": "^13.6.0",
@@ -18,6 +19,8 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
-    "pretty-ms": "^7.0.1"
+    "pretty-ms": "^7.0.1",
+    "timestring": "^6.0.0",
+    "url-exists": "^1.0.3"
   }
 }

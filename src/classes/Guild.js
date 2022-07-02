@@ -5,10 +5,12 @@
 //Importing NodeJS modules
 const mysql = require(`mysql`);
 const { I18n } = require('i18n');
+const urlExists = require('url-exists');
 
 //Importing classes
 const SQLConfigurationManager = require('./SQLConfigurationManager');
 const SQLPermissionManager = require('./SQLPermissionManager');
+const ModerationManager = require('./ModerationManager');
 const MessageManager = require('./MessageManager');
 const ChannelLogger = require('./ChannelLogger');
 
@@ -45,9 +47,10 @@ module.exports = class Guild {
     async initialize() {
         this.ConfigurationManager = new SQLConfigurationManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, JSON.stringify(require('../../configurations/defaults/GuildConfiguration.json')));
         this.PermissionManager = new SQLPermissionManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, require('../../configurations/defaults/GuildPermissions.json'));
-        await this.ConfigurationManager.initialize(true, this).catch(e => { throw e; });
+        this.ModerationManager = new ModerationManager(this);
+        await this.ConfigurationManager.initialize(true, this);
         this.isSetup = this.ConfigurationManager.get('system.setup-done');
-        await this.PermissionManager.initialize(true, this).catch(e => { throw e; });
+        await this.PermissionManager.initialize(true, this);
         await this.initLoggers();
         this.initialized = true;
         return true;
@@ -78,12 +81,46 @@ module.exports = class Guild {
         return true;
     }
 
+    async getUserFromArg(userString) {
+        let user = await this.guild.members.fetch({
+            cache: false,
+            force: true
+        }).then(members => members.find(member => member.user.tag === userString));
+        if (userString.startsWith('<@'))userString = userString.replace('<@', '').slice(0, -1);
+        if (typeof user == "undefined") user = await this.guild.members.fetch(userString, {
+            cache: false,
+            force: true
+        }).catch(e => {
+            return undefined;
+        });
+        return user;
+    }
+
     async getMemberById(userId) {
-        return this.guild.members.fetch(userId).catch(e => undefined);
+        return this.guild.members.fetch(userId, {
+            cache: false,
+            force: true
+        }).catch(e => undefined);
     }
 
     async getChannelById(channelId) {
-        return this.guild.channels.fetch(channelId).catch(e => undefined);
+        return this.guild.channels.fetch(channelId, {
+            cache: false,
+            force: true
+        }).catch(e => undefined);
+    }
+
+    async getRoleById(roleId) {
+        return this.guild.roles.fetch(roleId, {
+            cache: false,
+            force: true
+        }).catch(e => undefined);
+    }
+
+    async autoReMute(User) {
+        let MuteRole = await this.getRoleById(this.ConfigurationManager.get('moderation.muteRole'));
+        if (typeof MuteRole == "undefined" || MuteRole == null) return false;
+        return User.roles.add(MuteRole, this.i18n.__("moderation.auditLog.autoRemute")).then(()=>true).catch(()=>false);
     }
 
     async waitingForMessage(message) {
@@ -103,5 +140,15 @@ module.exports = class Guild {
         if (typeof this.waitingForMessageData.any == "function")return this.waitingForMessageData.any(message);
         
         return false;
+    }
+
+    async getUserPfp(user, publicOnly = false) {
+        if (typeof user == "undefined" || (typeof user.user.avatar == "undefined" && typeof user.avatar == "undefined")) return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
+        return new Promise((res, _rej) => {
+            let urlBase = (user.avatar != null && !publicOnly) ? `https://cdn.discordapp.com/guilds/${user.guild.id}/users/${user.user.id}/avatars/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
+            urlExists(`${urlBase}.gif`, function (_err, exists) {
+                res((exists) ? `${urlBase}.gif` : `${urlBase}.webp`);
+            });
+        });
     }
 }

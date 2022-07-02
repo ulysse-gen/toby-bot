@@ -1,33 +1,38 @@
 {
-    "system": {
-        "config-version": {
-            "name": "Configuration version",
-            "description": "The version of the configuration file",
-            "type": "Float",
-            "editable": false,
-            "default": 0.1
-        },
-        "setup-done": {
-            "name": "Setup done",
-            "description": "If the guild initial setup is done",
-            "type": "Boolean",
-            "editable": false,
-            "default": false
-        }
+    "appName": {
+        "name": "Application name",
+        "description": "The name of the bot.",
+        "type": "String",
+        "editable": true,
+        "default": "Toby Bot"
+    },
+    "token": {
+        "name": "Bot token",
+        "description": "The token for the bot.",
+        "type": "String(token)",
+        "editable": false,
+        "default": "thisIsAnObviouslyFakeToken"
     },
     "prefix": {
         "name": "Prefix",
         "description": "The main bot prefix",
         "type": "String",
         "editable": true,
-        "default": "t!"
+        "default": "$toby.gg$"
     },
     "prefixes": {
         "name": "Prefixes",
         "description": "The alternative prefixes for the bot",
         "type": "Object(Array)",
         "editable": true,
-        "default": []
+        "default": ["$toby.gg$", "tobybot.", "tbb."]
+    },
+    "communityGuild": {
+        "name": "Community guild",
+        "description": "The community guild, which is also the guilds ofthe channel logs",
+        "type": "String(GuildId)",
+        "editable": true,
+        "default": "933416930038136832"
     },
     "style": {
         "colors": {
@@ -61,38 +66,31 @@
             }
           }
     },
-    "behaviour": {
-        "returnErrorOnCommandError": {
-            "name": "Return error on command error",
-            "description": "Enable for the bot to return an error when commands error.",
-            "type": "Boolean",
+    "blocked": {
+        "users": {
+            "name": "Blocked users",
+            "description": "Users defined here will not be entirely ignored by TobyBot (not entirely, i lied, automoderation will still affect them).",
+            "type": "Object(Array)",
             "editable": true,
-            "default": true
+            "default": []
         },
-        "returnErrorOnPermissionDenied": {
-            "name": "Return error on permission deny",
-            "description": "Enable for the bot to return an error when commands is denied.",
-            "type": "Boolean",
+        "guilds": {
+            "name": "Blocked guilds",
+            "description": "Guilds defined here will not be entirely ignored by TobyBot.",
+            "type": "Object(Array)",
             "editable": true,
-            "default": true
-        },
-        "returnErrorOnUnknownCommand": {
-            "name": "Return error on unknown command",
-            "description": "Enable for the bot to return an error when an unknown command is tried. (basically any message starting with one of the prefixes)",
-            "type": "Boolean",
-            "editable": true,
-            "default": true
-        },
-        "returnErrorOnCommandCooldown": {
-            "name": "Return error on command cooldown",
-            "description": "Enable for the bot to return an error on command cooldown.",
-            "type": "Boolean",
-            "editable": true,
-            "default": true
+            "default": []
         }
     },
     "logging": {
         "commandExecution": {
+            "inConsole": {
+                "name": "Log command execution in console",
+                "description": "Should we log the command execution in the console?",
+                "type": "Boolean",
+                "editable": true,
+                "default": true
+            },
             "inChannel": {
                 "name": "Log command execution in channel",
                 "description": "Should we log the command execution in the logging channel?",
@@ -116,6 +114,13 @@
             }
         },
         "moderationLogs": {
+            "inConsole": {
+                "name": "Log auto moderation actions in console",
+                "description": "Should we log the auto moderation actions in the console?",
+                "type": "Boolean",
+                "editable": true,
+                "default": true
+            },
             "inChannel": {
                 "name": "Log moderation actions in channel",
                 "description": "Should we log the moderation actions in the logging channel?",
@@ -132,6 +137,13 @@
             }
         },
         "autoModerationLogs": {
+            "inConsole": {
+                "name": "Log moderation actions in console",
+                "description": "Should we log the moderation actions in the console?",
+                "type": "Boolean",
+                "editable": true,
+                "default": true
+            },
             "inChannel": {
                 "name": "Log moderation actions in channel",
                 "description": "Should we log the moderation actions in the logging channel?",
@@ -146,43 +158,22 @@
                 "editable": true,
                 "default": "none"
             }
-        }
-    },
-    "moderation": {
-        "sendWarnInDM": {
-            "name": "Send warning alert in DM",
-            "description": "Should the warned member be alerted in DM ? (Dont disable this its the whole point of warning.)",
-            "type": "Boolean",
-            "editable": true,
-            "default": true
         },
-        "sendMuteInDM": {
-            "name": "Send mute alert in DM",
-            "description": "Should the muted member be alerted in DM ?",
-            "type": "Boolean",
-            "editable": true,
-            "default": true
-        },
-        "sendKickInDM": {
-            "name": "Send kick alert in DM",
-            "description": "Should the kicked member be alerted in DM ?",
-            "type": "Boolean",
-            "editable": true,
-            "default": false
-        },
-        "sendBanInDM": {
-            "name": "Send ban alert in DM",
-            "description": "Should the banned member be alerted in DM ?",
-            "type": "Boolean",
-            "editable": true,
-            "default": false
-        },
-        "muteRole": {
-            "name": "Muted role",
-            "description": "The role to assign to muted members.",
-            "type": "String(RoleID)",
-            "editable": true,
-            "default": "none"
+        "updates": {
+            "inChannel": {
+                "name": "Log updates in channel",
+                "description": "Should we log the updates in the logging channel?",
+                "type": "Boolean",
+                "editable": true,
+                "default": false
+            },
+            "channel": {
+                "name": "Updates logging channel",
+                "description": "What is the updates logging channel?",
+                "type": "String(ChannelId)",
+                "editable": true,
+                "default": "none"
+            }
         }
     }
 }

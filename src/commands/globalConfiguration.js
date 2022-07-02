@@ -4,14 +4,14 @@ const _ = require('lodash');
 const FileConfigurationManager = require('../classes/FileConfigurationManager');
 
 module.exports = {
-    name: "configuration",
-    aliases: ["config", "conf"],
-    permission: "command.configuration",
+    name: "globalconfiguration",
+    aliases: ["globalconfig", "gconf"],
+    permission: "command.globalconfiguration",
     category: "administration",
     enabled: true,
     async execute(CommandExecution) {
-        let ConfigurationManager = CommandExecution.guild.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json');
+        let ConfigurationManager = CommandExecution.TobyBot.ConfigurationManager;
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
         await ConfigurationDocumentation.initialize();
 
         if (CommandExecution.options.subCommand == "load"){

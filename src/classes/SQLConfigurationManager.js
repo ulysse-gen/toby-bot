@@ -56,7 +56,7 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
             this.SQLPool = mysql.createPool(this.SQLConnectionInfos)
         }
         
-        let loaded = await this.load(true).catch(e => { throw e; });
+        let loaded = await this.load(true);
 
         if (!loaded) {
             if (!createIfNonExistant) throw new Error('Could not load configuration');
@@ -64,8 +64,8 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
                 await this.Guild.createGuildInSQL().then(async () => {
                     await this.load(true).then(loaded => {
                         if (!loaded) throw new Error('Could not load configuration');
-                    }).catch(e => { throw e; });
-                }).catch(e => { throw e; });
+                    });
+                });
             }
         }
 
@@ -82,12 +82,12 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
 
     async set(path, value) {
         _.set(this.configuration, path, value);
-        return this.save().catch(e => { throw e; });
+        return this.save();
     }
 
     async delete(path) {
         _.unset(this.configuration, path);
-        return this.save().catch(e => { throw e; });
+        return this.save();
     }
 
     async save(bypass = true) {

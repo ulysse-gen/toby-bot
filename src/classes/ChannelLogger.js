@@ -14,8 +14,6 @@ module.exports = class ChannelLogger {
             this.channel = channel;
             this.initialized = true;
             return true;
-        }).catch(e => {
-            throw e;
         });
     }
 
@@ -26,12 +24,12 @@ module.exports = class ChannelLogger {
     async log(content) {
         if (!this.initialized)return false;
         if (typeof content != "string" || content.replaceAll(" ", "") == "") throw new Error('Content must be a non empty string.');
-        return this.channel.send(content).catch(e => {throw e;});
+        return this.channel.send(content);
     }
 
     async logRaw(options) {
         if (!this.initialized)return false;
-        return this.channel.send(options).catch(e => {throw e;});
+        return this.channel.send(options);
     }
 
     /** Log with an embed
@@ -49,7 +47,7 @@ module.exports = class ChannelLogger {
         if (typeof fields == "object" && fields.length > 0)
             fields.forEach(indField => embed.addField(indField[0], indField[1], indField[2]));
         
-        return this.channel.send({embeds: [embed]}).catch(e => {throw e;});
+        return this.channel.send({embeds: [embed]});
     }
 
     /** Log with an embed with main color
@@ -58,7 +56,7 @@ module.exports = class ChannelLogger {
      * @param fields Fields array of the embed
      */
      async logMainEmbed(title, description = undefined, fields = []){
-        return this.logEmbed(title, description, fields, this.Guild.ConfigurationManager.get('style.colors.main')).catch(e => { throw e; });
+        return this.logEmbed(title, description, fields, this.Guild.ConfigurationManager.get('style.colors.main'));
     }
 
     /** Log with an embed with error color
@@ -67,7 +65,7 @@ module.exports = class ChannelLogger {
      * @param fields Fields array of the embed
      */
      async logErrorEmbed(title, description = undefined, fields = []){
-        return this.logEmbed(title, description, fields, this.Guild.ConfigurationManager.get('style.colors.error')).catch(e => { throw e; });
+        return this.logEmbed(title, description, fields, this.Guild.ConfigurationManager.get('style.colors.error'));
     }
 
     /** Log with an embed with warning color
@@ -76,7 +74,7 @@ module.exports = class ChannelLogger {
      * @param fields Fields array of the embed
      */
      async logWarningEmbed(title, description = undefined, fields = []){
-        return this.logEmbed(title, description, fields, this.Guild.ConfigurationManager.get('style.colors.warning')).catch(e => { throw e; });
+        return this.logEmbed(title, description, fields, this.Guild.ConfigurationManager.get('style.colors.warning'));
     }
 
     /** Log with an embed with success color
@@ -85,6 +83,6 @@ module.exports = class ChannelLogger {
      * @param fields Fields array of the embed
      */
      async logSuccessEmbed(title, description = undefined, fields = []){
-        return this.logEmbed(title, description, fields, this.Guild.ConfigurationManager.get('style.colors.success')).catch(e => { throw e; });
+        return this.logEmbed(title, description, fields, this.Guild.ConfigurationManager.get('style.colors.success'));
     }
 }

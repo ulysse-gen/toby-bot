@@ -16,5 +16,15 @@
 	"channelLogging.commandExecution.error.unknown.title": "Unknown command",
 	"channelLogging.commandExecution.error.unknown.description": "{{{command}}}",
 	"channelLogging.commandExecution.field.permission.title": "Permission",
-	"channelLogging.commandExecution.field.permission.description": "`{{{permission}}}`"
+	"channelLogging.commandExecution.field.permission.description": "`{{{permission}}}`",
+	"moderation.Warn.dmAlert": "You have been warned in {{{guildName}}}",
+	"moderation.Mute.dmAlert": "You have been muted in {{{guildName}}}",
+	"moderation.Kick.dmAlert": "You have been kicked in {{{guildName}}}",
+	"moderation.Ban.dmAlert": "You have been banned in {{{guildName}}}",
+	"moderation.auditLog.muteReason": "Muted by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
+	"moderation.auditLog.unMuteReason": "Unmuted by {{{updaterTag}}}({{{updaterId}}}) for {{{updateReason}}}",
+	"moderation.auditLog.kickReason": "Kicked by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
+	"moderation.auditLog.banReason": "Banned by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
+	"moderation.auditLog.unbanReason": "Unbanned by {{{updaterTag}}}({{{updaterId}}}) for {{{updateReason}}}",
+	"moderation.auditLog.autoRemute": "Mute auto applied after re-join."
 }

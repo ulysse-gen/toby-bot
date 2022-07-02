@@ -35,7 +35,7 @@ module.exports = {
             [CommandExecution.i18n.__(`command.${this.name}.fields.latency.title`), CommandExecution.i18n.__(`command.${this.name}.fields.latency.content`, {latency: Date.now() - CommandExecution.trigger.createdTimestamp}), true],
             [CommandExecution.i18n.__(`command.${this.name}.fields.apiLatency.title`), CommandExecution.i18n.__(`command.${this.name}.fields.apiLatency.content`, {apiLatency: Math.round(CommandExecution.TobyBot.client.ws.ping)}), true]
         ];
-        return CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.title`), undefined, fields).catch(e => {throw e});
+        return CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.title`), undefined, fields);
     },
     async optionsFromArgs (CommandExecution) {
         if (CommandExecution.commandOptions.length == 0)return {};

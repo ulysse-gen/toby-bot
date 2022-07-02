@@ -14,7 +14,7 @@ const SQLConfigurationManager = require('./SQLConfigurationManager');
 const MainLog = new FileLogger();
 
 module.exports = class SQLPermissionManager extends SQLConfigurationManager {
-    constructor(SQLConnectionInfos, SQLTable, SQLWhere = `\`numId\` = 1`, SQLColumn = 'permissions', defaultConfig = {}) {
+    constructor(SQLConnectionInfos, SQLTable, SQLWhere = `\`numId\` = 1`, SQLColumn = 'permissions', defaultConfig = {}, neverAutoChange = false) {
         super();
 
         this.SQLPool = undefined;
@@ -28,6 +28,7 @@ module.exports = class SQLPermissionManager extends SQLConfigurationManager {
 
         this.initialized = false;
         this.changedSince = false;
+        this.neverAutoChange = neverAutoChange;
 
         this.allowDevOnly = [
             "command.evaluate"
@@ -84,13 +85,13 @@ module.exports = class SQLPermissionManager extends SQLConfigurationManager {
         if (isAdmin){
             if (typeof this.configuration.roles[guildId] != "object")this.configuration.roles[guildId] = {};
             if (typeof this.configuration.roles[guildId][roleId] != "object")this.configuration.roles[guildId][roleId] = {};
-            if (typeof this.configuration.roles[guildId][roleId]['*'] != "object"){
+            if (typeof this.configuration.roles[guildId][roleId]['*'] != "object" && !this.neverAutoChange){
                 this.configuration.roles[guildId][roleId]['*'] = {value: true, priority: 0, temporary: false};
                 this.changedSince = true;
             }
         }else {
             if (typeof this.configuration.roles[guildId] == "object" && typeof this.configuration.roles[guildId][roleId] == "object")
-                if(typeof this.configuration.roles[guildId][roleId]['*'] != "undefined"){
+                if(typeof this.configuration.roles[guildId][roleId]['*'] != "undefined" && !this.neverAutoChange){
                     delete this.configuration.roles[guildId][roleId]['*'];
                     this.changedSince = true;
                 }

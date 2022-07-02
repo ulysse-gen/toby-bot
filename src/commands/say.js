@@ -18,7 +18,7 @@ module.exports = {
                 CommandExecution.guild.waitingForMessageData.say.channels[CommandExecution.channel.id][CommandExecution.executor.id] = async (message) => {
                     let channelToSendTo = (typeof CommandExecution.options.channel == "undefined") ? message.channel : await CommandExecution.trigger.TobyBot.guild.getChannelById(CommandExecution.options.channel);
                     channelToSendTo.send(message.content);
-                    message.delete().catch(e => { throw e; });
+                    message.delete();
                 };
                 await CommandExecution.returnSuccessEmbed({ephemeral: true}, CommandExecution.i18n.__(`command.${this.name}.toggled.on`));
                 return true;
@@ -30,7 +30,7 @@ module.exports = {
         let channelToSendTo = (typeof CommandExecution.options.channel == "undefined") ? CommandExecution.channel : await CommandExecution.trigger.TobyBot.guild.getChannelById(CommandExecution.options.channel);
 
         channelToSendTo.send(CommandExecution.options.text);
-        CommandExecution.trigger.delete().catch(e => { throw e; });
+        CommandExecution.trigger.delete();
 
         await CommandExecution.returnSuccessEmbed({ephemeral: true, slashOnly: true}, CommandExecution.i18n.__(`command.${this.name}.sent`));
         return true;
@@ -40,25 +40,25 @@ module.exports = {
         if (CommandExecution.commandOptions.length == 0)return options;
 
         if (CommandExecution.commandOptions[0].startsWith('--channel:<#')){
-            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.channel`).catch(e => { throw e; }))return {permissionDenied: `${this.permission}.channel`};
+            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.channel`))return {permissionDenied: `${this.permission}.channel`};
             options.channel = CommandExecution.commandOptions[0].replace('--channel:<#', '').replace('>', '');
             CommandExecution.commandOptions = CommandExecution.commandOptions.filter(function(e) { return e !== CommandExecution.commandOptions[0]; });
         }
 
         if (CommandExecution.commandOptions[0].startsWith('-<#')){
-            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.channel`).catch(e => { throw e; }))return {permissionDenied: `${this.permission}.channel`};
+            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.channel`))return {permissionDenied: `${this.permission}.channel`};
             options.channel = CommandExecution.commandOptions[0].replace('-<#', '').replace('>', '');
             CommandExecution.commandOptions = CommandExecution.commandOptions.filter(function(e) { return e !== CommandExecution.commandOptions[0]; });
         }
 
         if (CommandExecution.commandOptions[0].startsWith('--toggle')){
-            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.toggle`).catch(e => { throw e; }))return {permissionDenied: `${this.permission}.toggle`};
+            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.toggle`))return {permissionDenied: `${this.permission}.toggle`};
             options.toggle = true;
             CommandExecution.commandOptions = CommandExecution.commandOptions.filter(function(e) { return e !== CommandExecution.commandOptions[0]; });
         }
 
         if (CommandExecution.commandOptions[0].startsWith('-t')){
-            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.toggle`).catch(e => { throw e; }))return {permissionDenied: `${this.permission}.toggle`};
+            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.toggle`))return {permissionDenied: `${this.permission}.toggle`};
             options.toggle = true;
             CommandExecution.commandOptions = CommandExecution.commandOptions.filter(function(e) { return e !== CommandExecution.commandOptions[0]; });
         }
@@ -69,9 +69,9 @@ module.exports = {
     async optionsFromSlashOptions (CommandExecution) {
         let options = Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
         if (typeof options.channel != "undefined")
-            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.channel`).catch(e => { throw e; }))return {permissionDenied: `${this.permission}.channel`};
+            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.channel`))return {permissionDenied: `${this.permission}.channel`};
         if (typeof options.toggle != "undefined")
-            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.toggle`).catch(e => { throw e; }))return {permissionDenied: `${this.permission}.toggle`};
+            if (!await CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, `${this.permission}.toggle`))return {permissionDenied: `${this.permission}.toggle`};
         return options;
     },
     makeSlashCommand(i18n) {
