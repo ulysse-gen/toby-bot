@@ -87,7 +87,7 @@ module.exports = class Metric {
     async handle(message) {
         let prefixUsed = [this.TobyBot.ConfigurationManager.get('prefixes'), message.TobyBot.guild.ConfigurationManager.get('prefixes'), message.TobyBot.guild.ConfigurationManager.get('prefix')].flat().filter((item, pos, self) => self.indexOf(item) == pos).find(e => message.content.startsWith(e));
         if (!prefixUsed)return undefined;
-        let commandOptions=message.content.split(' ');
+        let commandOptions=message.content.replace(/\s+/g, ' ').trim().split(' ');
         let command=commandOptions.shift().replace(prefixUsed, '');
         let fetchedCommand = await this.fetch(command);
         return new CommandExecution(message, fetchedCommand, commandOptions, this).execute().catch(e=>{throw e});

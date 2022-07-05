@@ -129,7 +129,10 @@ module.exports = class TobyBot {
     }
 
     async initLoggers(){
-        this.CommunityGuild = await this.GuildManager.getGuildById(this.ConfigurationManager.get('communityGuild'));
+        this.CommunityGuild = await this.GuildManager.getGuildById(this.ConfigurationManager.get('communityGuild')).catch(e => {
+            ErrorLog.error(this.i18n.__('bot.communityguild.cannotfetch'));
+            process.exit();
+        });
         for (const logger in this.ConfigurationManager.get('logging')) {
             this.loggers[logger] = new ChannelLogger(this.CommunityGuild, this.ConfigurationManager.get(`logging.${logger}`))
             await this.loggers[logger].initialize();
