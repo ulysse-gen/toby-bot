@@ -10,17 +10,6 @@ module.exports = {
     enabled: true,
     async execute(CommandExecution) {
         CommandExecution.returnMainEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.mainEmbed.title`), CommandExecution.i18n.__(`command.${this.name}.mainEmbed.description`));
-        
-        
-        /*
-        How config will be done: 
-        
-        let temp = await CommandExecution.CommandManager.fetch('configuration');
-        console.log(temp.slashCommand.toJSON());
-        */
-
-        return true;
-        CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.generic.nothingHandling.title`), CommandExecution.i18n.__(`command.generic.nothingHandling.description`, {command: this.name}));
         return true;
     },
     async optionsFromArgs (CommandExecution) {

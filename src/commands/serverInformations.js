@@ -57,7 +57,9 @@ module.exports = {
 
         await CommandExecution.TobyBot.client.guilds.fetch(CommandExecution.guild.guild.id).then(fetchedGuild => {
             emojis = fetchedGuild.emojis.cache.map(e => e.toString());
-        }).catch(e => console.log(e));
+        }).catch(e => {
+            return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotGetEmojis.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotGetEmojis.description`));
+        });
 
         let BoostTier = `None`;
         if (CommandExecution.guild.guild.premiumTier.premiumTier == "TIER_1")BoostTier = `1`;

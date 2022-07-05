@@ -21,7 +21,7 @@ module.exports = {
             try {
                 PunishDuration = timestring(CommandExecution.options.duration.replaceAll('mn', 'min').replaceAll('mo', 'mon'))
             } catch (e) {
-                console.log(e);
+                throw e;
             }
         }else {
             PunishReason = PunishReason.split(' ');

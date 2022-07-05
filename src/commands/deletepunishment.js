@@ -12,7 +12,7 @@ module.exports = {
         if (typeof CommandExecution.options.reason == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noReasonSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noReasonSpecified.description`, {}));
     
         let Punishment = await CommandExecution.guild.ModerationManager.getPunishementByCaseId(CommandExecution.options.caseid);
-        if (typeof Punishment == "undefined" || Punishment.status == "deleted")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.punishmentNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.punishmentNotFound.description`, {}));
+        if (typeof Punishment == "undefined" || Punishment.status == "deleted")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.punishmentNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.punishmentNotFound.description`));
 
         if (["Mute", "Ban"].includes(Punishment.type) && ["active", "indefinite"].includes(Punishment.status))return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.punishmentActive.title`), CommandExecution.i18n.__(`command.${this.name}.error.punishmentActive.description`, {}));
         await CommandExecution.guild.ModerationManager.deletePunishment(CommandExecution, CommandExecution.options.caseid, CommandExecution.options.reason);

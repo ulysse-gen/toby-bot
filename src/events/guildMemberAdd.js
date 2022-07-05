@@ -27,7 +27,7 @@ module.exports = {
 
         if (Guild.ModerationManager.isUserPunished(GuildMember.guild.id, 'Mute'))await Guild.autoReMute(GuildMember);
         
-        console.log(`${GuildMember.user.username} just joined ${GuildMember.guild.name}`);
+        //MainLog.log(`${GuildMember.user.username} just joined ${GuildMember.guild.name}`);
         return true;
     }
 }

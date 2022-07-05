@@ -29,6 +29,7 @@ module.exports = {
         message.TobyBot.guild = await TobyBot.GuildManager.getGuild(message.channel.guild).catch(e => { 
             ErrorLog.error(`${__filename}: An error occured trying to fetch the guild:`);
             console.log(e);
+            return undefined;
         });
 
         if (typeof message.TobyBot.guild == "undefined" || !message.TobyBot.guild.initialized) return false;
@@ -36,12 +37,12 @@ module.exports = {
         message.TobyBot.user = await TobyBot.UserManager.getUser(message.author).catch(e => { 
             ErrorLog.error(`${__filename}: An error occured trying to fetch the user:`);
             console.log(e);
+            return undefined;
         });
 
         message.TobyBot.guild.MessageManager.addMessage(message).catch(e => { 
             ErrorLog.error(`An error occured trying to log the message:`);
             console.log(e);
-            return;
         }); //Log messages
 
         if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
@@ -50,12 +51,14 @@ module.exports = {
         let commandExecution = await TobyBot.CommandManager.handle(message).catch(e => {
             ErrorLog.error(`An error occured during the handling of the CommandManager handle:`);
             console.log(e);
+            return undefined;
         });
 
         if (!commandExecution){
             let waitingForMessage = await message.TobyBot.guild.waitingForMessage(message).catch(e => {
                 ErrorLog.error(`An error occured during the handling of the Guild waitingForMessage:`);
                 console.log(e);
+                return undefined;
             });
     
             if (typeof waitingForMessage == "boolean" && waitingForMessage)return true;

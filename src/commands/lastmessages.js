@@ -16,7 +16,6 @@ module.exports = {
         let UserPFP = await CommandExecution.guild.getUserPfp(User);
 
         let logs = CommandExecution.guild.MessageManager.getLastMessagesByUser(User.user.id);
-        console.log(logs)
         if (typeof logs == "undefined" || logs.length == 0)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noLogs.title`), CommandExecution.i18n.__(`command.${this.name}.error.noLogs.description`, {}));
 
         let embedFields = [];
