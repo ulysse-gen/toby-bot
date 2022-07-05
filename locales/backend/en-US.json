@@ -2,6 +2,7 @@
 	"bot.start": "Toby Bot Starting on version {{{version}}}.",
 	"bot.events.attach": "Events hooked.",
 	"bot.login": "Logged in {{{tag}}} on version {{{version}}}.",
+	"bot.api.started": "API Started on port {{{port}}}.",
 	"bot.command.execution": "{{{user}}} executed {{{command}}} in {{{location}}}",
 	"bot.command.execution.spoofed": "{{{realUser}}} executed {{{command}}} in {{{realLocation}}} [Spoofed as {{{user}}} in {{{location}}}]",
 	"bot.slashCommandRegistered.error": "Could not register slash commands. [{{{error}}}]",

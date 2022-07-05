@@ -1,4 +1,8 @@
 {
+    "system": {
+        "config-version": 0.1,
+        "config-type": "permission"
+    },
     "users": {},
     "channels": {},
     "roles": {},

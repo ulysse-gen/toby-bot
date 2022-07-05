@@ -13,15 +13,22 @@ const SQLPermissionManager = require('./SQLPermissionManager');
 const ModerationManager = require('./ModerationManager');
 const MessageManager = require('./MessageManager');
 const ChannelLogger = require('./ChannelLogger');
+const FileLogger = require('./FileLogger');
+
+const MainLog = new FileLogger();
 
 module.exports = class Guild {
     constructor(GuildManager, guild) {
         this.GuildManager = GuildManager;
 
         this.guild = guild;
+
+        this.name = guild.name;
+        this.locale = 'en-US';
+
         this.MessageManager = new MessageManager(this);
         this.i18n = new I18n({
-            locales: ['en-US'],
+            locales: ['en-US','fr-FR'],
             directory: 'locales/guild',
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US'
@@ -38,10 +45,22 @@ module.exports = class Guild {
 
         this.loggers = {};
 
-        this.SQLPool = mysql.createPool(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'));
+        this.SQLPool = this.GuildManager.SQLPool;
         
         this.initialized = false;
         this.isSetup = false;
+    }
+
+    apiVersion (){
+        if (!this.initialized)return undefined;
+        let apiVersion = {};
+        apiVersion.numId = this.numId;
+        apiVersion.guild = this.guild;
+        apiVersion.locale = this.locale;
+        apiVersion.configuration = this.ConfigurationManager.configuration;
+        apiVersion.permissions = this.ConfigurationManager.permissions;
+        apiVersion.isSetup = this.isSetup;
+        return apiVersion;
     }
 
     async initialize() {
@@ -52,11 +71,27 @@ module.exports = class Guild {
         this.isSetup = this.ConfigurationManager.get('system.setup-done');
         await this.PermissionManager.initialize(true, this);
         await this.initLoggers();
+        await this.loadSQLContent();
         this.initialized = true;
         return true;
     }
 
-    async createGuildInSQL() {
+    async loadSQLContent() {
+        return new Promise((res, _rej) => {
+            this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.guild.id}'`, (error, results) => {
+                if (error)throw error;
+                if (results.length != 0){
+                    this.numId = results[0].numId;
+                    this.locale = results[0].locale;
+                    this.i18n.setLocale(this.locale);
+                    res(true)
+                }
+                res(true);
+            });
+        });
+    }
+
+    async createInSQL() {
         return new Promise((res, _rej) => {
             this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.guild.id}'`, (error, results) => {
                 if (error)throw error;
@@ -120,6 +155,24 @@ module.exports = class Guild {
             cache: false,
             force: true
         }).catch(e => undefined);
+    }
+
+    async getGuildPfp() {
+        return new Promise((res, rej) => {
+            let baseOfUrl = `https://cdn.discordapp.com/icons/${this.guild.id}/${this.guild.icon}`;
+            urlExists(`${baseOfUrl}.gif`, function (err, exists) {
+                res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
+            });
+        });
+    }
+
+    async getGuildBanner() {
+        return new Promise((res, rej) => {
+            let baseOfUrl = `https://cdn.discordapp.com/banners/${this.guild.id}/${this.guild.banner}`;
+            urlExists(`${baseOfUrl}.gif`, function (err, exists) {
+                res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
+            });
+        });
     }
 
     async autoReMute(User) {

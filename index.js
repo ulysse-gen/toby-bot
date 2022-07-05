@@ -18,7 +18,7 @@ const TobyBot = require('./src/classes/TobyBot');
 //Creating main objects
 const TopConfigurationManager = new FileConfigurationManager('configuration.json'); //This is the main -- top level -- config. Containing the MySQL details
 const i18n = new I18n({
-    locales: ['en-US'],
+    locales: ['en-US','fr-FR'],
     directory: 'locales/backend',
     fallbackLocale: 'en-US',
     defaultLocale: 'en-US',

@@ -1,20 +1,4 @@
 {
-    "system": {
-        "config-version": {
-            "name": "Configuration version",
-            "description": "The version of the configuration file",
-            "type": "Float",
-            "editable": false,
-            "default": 0.1
-        },
-        "setup-done": {
-            "name": "Setup done",
-            "description": "If the guild initial setup is done",
-            "type": "Boolean",
-            "editable": false,
-            "default": false
-        }
-    },
     "prefix": {
         "name": "Prefix",
         "description": "The main bot prefix",
@@ -89,6 +73,13 @@
             "type": "Boolean",
             "editable": true,
             "default": true
+        },
+        "allowUserLocale": {
+            "name": "Allow user locale",
+            "description": "Should the bot reply in the user defined locale or stick with the guild locale.",
+            "type": "Boolean",
+            "editable": true,
+            "default": false
         }
     },
     "logging": {

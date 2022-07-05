@@ -1,6 +1,7 @@
 {
     "system": {
         "config-version": 0.1,
+        "config-type": "guild",
         "setup-done": false
     },
     "prefix": "t!",
@@ -17,7 +18,8 @@
         "returnErrorOnCommandError": true,
         "returnErrorOnPermissionDenied": true,
         "returnErrorOnUnknownCommand": true,
-        "returnErrorOnCommandCooldown": true
+        "returnErrorOnCommandCooldown": true,
+        "allowUserLocale": false
     },
     "logging": {
         "commandExecution": {

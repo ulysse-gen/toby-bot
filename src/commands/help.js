@@ -9,7 +9,7 @@ module.exports = {
     category: "informations",
     enabled: true,
     async execute(CommandExecution) {
-        CommandExecution.returnMainEmbed({}, CommandExecution.i18n.__(`command.${this.name}.mainEmbed.title`), CommandExecution.i18n.__(`command.${this.name}.mainEmbed.description`));
+        CommandExecution.returnMainEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.mainEmbed.title`), CommandExecution.i18n.__(`command.${this.name}.mainEmbed.description`));
         
         
         /*

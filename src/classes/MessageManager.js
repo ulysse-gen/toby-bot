@@ -22,11 +22,12 @@ module.exports = class MessageManager {
             id: `${message.channel.guild.id}-${message.channel.id}-${message.id}`,
             messageId: message.id,
             channelId: message.channel.id,
+            guildId: message.channel.guild.id,
             message: message,
             history: []
         };
         if (typeof this.messages.byUser[message.author.id] == "undefined")this.messages.byUser[message.author.id] = [];
-        this.messages.byUser[message.author.id].push(MessageEntry);
+        this.messages.byUser[message.author.id].unshift(MessageEntry);
         if (this.messages.byUser[message.author.id].length >= this.maxMessagesStoredByUser) guild.lastMessages[message.author.id].splice(this.maxMessagesStoredByUser-1, this.messages.byUser[message.author.id] - this.maxMessagesStoredByUser);
         return true;
     }

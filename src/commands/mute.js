@@ -19,12 +19,15 @@ module.exports = {
         let PunishDuration = true;
         if (typeof CommandExecution.options.duration != "undefined"){
             try {
-                PunishDuration = timestring(CommandExecution.options.duration)
-            } catch (e) {}
+                PunishDuration = timestring(CommandExecution.options.duration.replaceAll('mn', 'min').replaceAll('mo', 'mon'))
+            } catch (e) {
+                console.log(e);
+            }
         }else {
             PunishReason = PunishReason.split(' ');
             try {
-                PunishDuration = timestring(PunishReason[0])
+                let Timestring = PunishReason[0].replaceAll('mn', 'min').replaceAll('mo', 'mon');
+                PunishDuration = timestring(Timestring)
                 delete PunishReason[0];
                 PunishReason = PunishReason.join(' ');
             } catch (e) {

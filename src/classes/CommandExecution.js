@@ -24,7 +24,7 @@ module.exports = class CommandExecution {
         this.isSlashCommand = isSlashCommand;
         this.CommandManager = CommandManager;
         this.i18n = new I18n({
-            locales: ['en-US'],
+            locales: ['en-US','fr-FR'],
             directory: 'locales/commands',
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US'
@@ -69,6 +69,13 @@ module.exports = class CommandExecution {
         this.realChannel = this.channel;
         this.guild = this.trigger.TobyBot.guild;
         this.realGuild = this.guild;
+        this.user = this.trigger.TobyBot.user;
+        this.realUser = this.user;
+
+        this.i18n.setLocale(this.guild.locale);
+        if (typeof this.user.ConfigurationManager != "undefined" && this.user.ConfigurationManager.initialized && typeof this.user.ConfigurationManager.get('locale') != "undefined" && this.user.ConfigurationManager.get('locale') != "followGuild"){
+            if (this.guild.ConfigurationManager.get('behaviour.allowUserLocale'))this.i18n.setLocale(this.user.ConfigurationManager.get('locale'));
+        }
 
         if (typeof this.command != "undefined") {
             if (this.isSlashCommand) {

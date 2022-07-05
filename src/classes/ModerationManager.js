@@ -77,7 +77,7 @@ module.exports = class ModerationManager {
         embed.addField(`**Moderator**`, `<@${Punisher.user.id}>`, true);
         embed.addField(`**Reason**`, `${(typeof reason == "string") ? reason : `No reason specified.`}`, true);
         if (typeof length != "boolean") embed.addField(`**Expires**`, (typeof length == "number") ? `<t:${expireDate.unix()}>(<t:${expireDate.unix()}:R>)` : (typeof length == "boolean" && !length) ? `N/A` : `Indefinite`, true);
-        embed.addField(`**Infos**`, `UserID:: ${Punished.user.id} • <t:${moment().unix()}>`, false);
+        embed.addField(`**Infos**`, `UserID: ${Punished.user.id} • <t:${moment().unix()}>`, false);
 
         let sendOption = {ephemeral: false, embeds: [embed]};
         if (silent){
@@ -287,26 +287,15 @@ module.exports = class ModerationManager {
         });
     }
 
-    async deletePunishment(caseId, PunisherId, reason) {
-        let _this = this;
-        return new Promise((res, _rej) => {
-            _this.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`numId\`=${caseId} AND \`guildId\`='${this.Guild.guild.id}'`, async (error, results) => {
-                if (error) {
-                    ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}]`);
-                    res(null);
-                }
-                if (typeof results == "undefined" || results.length == 0 || typeof results[0] == "undefined" || results[0].status == "deleted") return res({
-                    error: `Punishment not found.`
-                });
-                if (["Mute", "Ban"].includes(results[0].type) && ["active", "indefinite"].includes(results[0].status)) {
-                    if (moment(results[0].expires).isAfter(moment()) || results[0].status == "indefinite") return res({
-                        error: `This punishment isnt expired yet. ${(results[0].type == "Mute") ? `Unmute` : `Unban`} then delete the punishment.`
-                    });
-                }
-                _this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='deleted', \`updaterId\`='${PunisherId}', \`updateReason\`='${reason}', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${caseId}`);
-                res(true);
-            });
+    async deletePunishment(CommandExecution, caseId, removeReason) {
+        let unPunisher = await this.Guild.getMemberById(CommandExecution.executor.id);
+        await this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='deleted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`numId\`='${caseId}'`, [unPunisher.user.id, removeReason, moment().format(`YYYY-MM-DD HH:mm-ss`)], async (error, results, _fields) => {
+            if (error) {
+                ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}]`);
+                return null;
+            }
         });
+        return true;
     }
 
     async clearExpired() {

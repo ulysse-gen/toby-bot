@@ -18,4 +18,16 @@ module.exports = class Command {
         this.slashCommand = command.makeSlashCommand(this.CommandManager.i18n);
         this.sendHelp = async (channel) => channel.send(await command.makeHelpEmbed(this)).catch(e=>{throw e});
     }
+
+    apiVersion (){
+        let apiVersion = {};
+        apiVersion.title = this.title;
+        apiVersion.description = this.description;
+        apiVersion.name = this.name;
+        apiVersion.aliases = this.aliases;
+        apiVersion.category = this.category;
+        apiVersion.enabled = this.enabled;
+        apiVersion.permission = this.permission;
+        return apiVersion;
+    }
 }

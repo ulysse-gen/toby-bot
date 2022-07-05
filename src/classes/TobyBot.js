@@ -15,9 +15,11 @@ const SQLConfigurationManager = require('./SQLConfigurationManager');
 const SQLPermissionManager = require('./SQLPermissionManager');
 const MetricManager = require('./MetricManager');
 const GuildManager = require('./GuildManager');
+const UserManager = require('./UserManager');
 const CommandManager = require('./CommandManager');
 const ChannelLogger = require('./ChannelLogger');
 const ModerationManager = require('./ModerationManager');
+const API = require('./API');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -37,7 +39,6 @@ module.exports = class TobyBot {
         this.TopConfigurationManager = TopConfigurationManager;
         this.ConfigurationManager = undefined;
         this.PermissionManager = undefined;
-        this.GuildManager = new GuildManager(this);
         this.MetricManager = new MetricManager();
         this.LifeMetric = this.MetricManager.createMetric("LifeMetric"); //Create the main "LifeMetric" that will follow everything that might happen which is code related (e.g. errors)
 
@@ -87,8 +88,15 @@ module.exports = class TobyBot {
         this.LifeMetric.addEntry("CommandManagerInit");
         await this.CommandManager.initialize(); //Init the Global CommandManager
 
+        this.LifeMetric.addEntry("CreateSQLPool");
+        this.SQLPool = mysql.createPool(this.TopConfigurationManager.get('MySQL'));
+ 
+        this.UserManager = new UserManager(this);
+        this.GuildManager = new GuildManager(this);
+
         this.LifeMetric.addEntry("ManagersAttach");
-        return this.attachManagers();  //Attach the managers
+        await this.attachManagers();  //Attach the managers
+        return true;
     }
 
     async attachManagers() {
@@ -145,7 +153,13 @@ module.exports = class TobyBot {
         this.ModerationManager = new ModerationManager(this.CommunityGuild); //Create the Global CommandManager
 
         setInterval(() => this.ModerationManager.clearExpired(), 10000); //Clear expired punishments every 10 seconds
-        this.ModerationManager.clearExpired()
+        this.ModerationManager.clearExpired();
+
+        this.LifeMetric.addEntry("APIStarting");
+        this.API = new API(this);
+        await this.API.initialize();
+        await this.UserManager.initialize();
+
         return true;
     }
 

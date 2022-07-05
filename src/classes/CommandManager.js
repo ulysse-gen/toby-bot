@@ -29,7 +29,7 @@ module.exports = class Metric {
         this.slashCommands = []; //The main commands array
 
         this.i18n = new I18n({
-            locales: ['en-US'],
+            locales: ['en-US','fr-FR'],
             directory: 'locales/commands',
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US'

@@ -12,7 +12,10 @@ module.exports = {
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.TobyBot.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
+        let ConfigurationFunctions = require('../../configurations/functions/GlobalConfiguration');
         await ConfigurationDocumentation.initialize();
+
+        if (!ConfigurationManager.initialized)return CommandExecution.returnWarningEmbed({}, CommandExecution.i18n.__(`command.generic.configuration.first-init.title`), CommandExecution.i18n.__(`command.generic.configuration.first-init.description`, {}));
 
         if (CommandExecution.options.subCommand == "load"){
             await ConfigurationManager.load().catch(e => {
@@ -41,9 +44,10 @@ module.exports = {
             let KeyDescription = KeyDocumentation.description;
             let KeyType = KeyDocumentation.type;
             let KeyDefaultValue  = KeyDocumentation.default;
-            let KeyValue = _.cloneDeep(ConfigurationManager.get(CommandExecution.options.key));
+            let KeyValue = ConfigurationManager.get(CommandExecution.options.key)
 
             if (["Object","Object(Array)"].includes(KeyType)){
+                KeyValue = _.cloneDeep(KeyValue);
                 KeyValue = JSON.stringify(KeyValue);
                 KeyDefaultValue = JSON.stringify(KeyDefaultValue);
             }
@@ -54,6 +58,7 @@ module.exports = {
                 [CommandExecution.i18n.__(`command.${this.name}.view.field.type.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.type.description`, { type: KeyType }), true],
                 //[CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.description`, { guildId: CommandExecution.guild.guild.id, key: CommandExecution.options.key }), true]
             ]
+
             CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.view.title`, { name: KeyName, key: CommandExecution.options.key }), CommandExecution.i18n.__(`command.${this.name}.view.description`, { description: KeyDescription }), fields);
             return true;
         }

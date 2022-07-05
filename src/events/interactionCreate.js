@@ -26,6 +26,12 @@ module.exports = {
             return undefined;
         });
 
+        interaction.TobyBot.user = await TobyBot.UserManager.getUser(interaction.user).catch(e => { 
+            ErrorLog.error(`${__filename}: An error occured trying to fetch the guild:`);
+            console.log(e);
+            return undefined;
+        });
+
         if (typeof interaction.TobyBot.guild == "undefined" || !interaction.TobyBot.guild.initialized) return false;
 
         if (interaction.isCommand())return TobyBot.CommandManager.handleSlash(interaction).catch(e => {

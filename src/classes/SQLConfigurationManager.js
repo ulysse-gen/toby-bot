@@ -36,7 +36,7 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         this.saveCooldown = 10;
     }
 
-    async initialize(createIfNonExistant = false, guildDependent = undefined) {
+    async initialize(createIfNonExistant = false, guildDependent = undefined, userDependent = undefined) {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
 
@@ -51,7 +51,12 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         if (typeof guildDependent != "undefined"){
             this.Guild = guildDependent;
             this.SQLPool = guildDependent.SQLPool;
-        }else {
+        }
+        if (typeof userDependent != "undefined"){
+            this.User = userDependent;
+            this.SQLPool = userDependent.UserManager.SQLPool;
+        }
+        if (typeof this.SQLPool == "undefined") {
             if (this.verbose)MainLog.log(`Creating SQL Pool [${moment().diff(startTimer)}ms]`);
             this.SQLPool = mysql.createPool(this.SQLConnectionInfos)
         }
@@ -59,9 +64,17 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         let loaded = await this.load(true);
 
         if (!loaded) {
-            if (!createIfNonExistant) throw new Error('Could not load configuration');
+            if (!createIfNonExistant) return false;
             if (typeof guildDependent != "undefined"){
-                await this.Guild.createGuildInSQL().then(async () => {
+                await this.Guild.createInSQL().then(async () => {
+                    await this.load(true).then(loaded => {
+                        if (!loaded) throw new Error('Could not load configuration');
+                    });
+                });
+            }
+
+            if (typeof userDependent != "undefined"){
+                await this.User.createInSQL().then(async () => {
                     await this.load(true).then(loaded => {
                         if (!loaded) throw new Error('Could not load configuration');
                     });

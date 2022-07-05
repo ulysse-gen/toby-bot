@@ -27,10 +27,16 @@ module.exports = {
         if (typeof TobyBot.ConfigurationManager.get('blocked.guilds')[message.channel.guild.id] != "undefined")return false;
 
         message.TobyBot.guild = await TobyBot.GuildManager.getGuild(message.channel.guild).catch(e => { 
-            return ErrorLog.error(`${__filename}: An error occured trying to fetch the guild.`);
+            ErrorLog.error(`${__filename}: An error occured trying to fetch the guild:`);
+            console.log(e);
         });
 
         if (typeof message.TobyBot.guild == "undefined" || !message.TobyBot.guild.initialized) return false;
+
+        message.TobyBot.user = await TobyBot.UserManager.getUser(message.author).catch(e => { 
+            ErrorLog.error(`${__filename}: An error occured trying to fetch the user:`);
+            console.log(e);
+        });
 
         message.TobyBot.guild.MessageManager.addMessage(message).catch(e => { 
             ErrorLog.error(`An error occured trying to log the message:`);
