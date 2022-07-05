@@ -131,6 +131,7 @@ module.exports = class TobyBot {
     async initLoggers(){
         this.CommunityGuild = await this.GuildManager.getGuildById(this.ConfigurationManager.get('communityGuild')).catch(e => {
             ErrorLog.error(this.i18n.__('bot.communityguild.cannotfetch'));
+            console.log(e)
             process.exit();
         });
         for (const logger in this.ConfigurationManager.get('logging')) {
@@ -146,15 +147,6 @@ module.exports = class TobyBot {
         setInterval(() => this.ModerationManager.clearExpired(), 10000); //Clear expired punishments every 10 seconds
         this.ModerationManager.clearExpired()
         return true;
-    }
-
-    async reload() {
-        //Code from https://github.com/sindresorhus/clear-module/blob/main/index.js
-        const directory = path.dirname('../../');
-
-        for (const moduleId of Object.keys(require.cache)) {
-            delete require.cache[resolveFrom(directory, moduleId)];
-        }
     }
 
     async reportMemoryUsage() {

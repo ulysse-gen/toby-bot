@@ -81,6 +81,11 @@ module.exports = class Guild {
         return true;
     }
 
+    async initLogger(loggerName, loggerConfig){
+        this.loggers[loggerName] = new ChannelLogger(this, loggerConfig);
+        return await this.loggers[loggerName].initialize();
+    }
+
     async getUserFromArg(userString) {
         let user = await this.guild.members.fetch({
             cache: false,

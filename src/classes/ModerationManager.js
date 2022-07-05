@@ -77,7 +77,7 @@ module.exports = class ModerationManager {
         embed.addField(`**Moderator**`, `<@${Punisher.user.id}>`, true);
         embed.addField(`**Reason**`, `${(typeof reason == "string") ? reason : `No reason specified.`}`, true);
         if (typeof length != "boolean") embed.addField(`**Expires**`, (typeof length == "number") ? `<t:${expireDate.unix()}>(<t:${expireDate.unix()}:R>)` : (typeof length == "boolean" && !length) ? `N/A` : `Indefinite`, true);
-        embed.addField(`**Infos**`, `User ID: ${Punished.user.id} • <t:${moment().unix()}>`, false);
+        embed.addField(`**Infos**`, `UserID:: ${Punished.user.id} • <t:${moment().unix()}>`, false);
 
         let sendOption = {ephemeral: false, embeds: [embed]};
         if (silent){
@@ -87,10 +87,10 @@ module.exports = class ModerationManager {
 
         CommandExecution.returnRaw(sendOption);
 
-        if (this.Guild.ConfigurationManager.get("logging.moderation.inChannel") && typeof this.Guild.loggers.moderation != "undefined")
-            this.Guild.loggers.moderation.logRaw({embeds: [embed]});
-        if (CommandExecution.TobyBot.ConfigurationManager.get("logging.moderation.inChannel") && typeof CommandExecution.TobyBot.loggers.moderation != "undefined")
-            CommandExecution.TobyBot.loggers.moderation.logRaw({embeds: [embed]});
+        if (this.Guild.ConfigurationManager.get("logging.moderationLogs.inChannel") && typeof this.Guild.loggers.moderationLogs != "undefined")
+            this.Guild.loggers.moderationLogs.logRaw({embeds: [embed]});
+        if (CommandExecution.TobyBot.ConfigurationManager.get("logging.moderationLogs.inChannel") && typeof CommandExecution.TobyBot.loggers.moderationLogs != "undefined")
+            CommandExecution.TobyBot.loggers.moderationLogs.logRaw({embeds: [embed]});
         return true;
     }
 
@@ -161,6 +161,44 @@ module.exports = class ModerationManager {
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Mute`, PunishReason, PunishDuration, silent);
         MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.mute`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
         if (this.Guild.ConfigurationManager.get("moderation.sendMuteInDM"))this.sendPlayerPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Mute`, PunishReason, PunishDuration);
+        return true;
+    }
+
+    async unMuteUser(CommandExecution, unPunished, unPunishReason) {
+        let unPunisher = await this.Guild.getMemberById(CommandExecution.executor.id);
+
+        let MuteRole = await this.Guild.getRoleById(this.Guild.ConfigurationManager.get('moderation.muteRole'));
+
+        await unPunished.roles.remove(MuteRole, this.Guild.i18n.__("moderation.auditLog.unMuteReason", {punishedId: unPunished.user.id, updaterTag: `${unPunisher.user.username}#${unPunisher.user.discriminator}`, updaterId: unPunisher.user.id, updateReason: unPunishReason, guildId: this.Guild.guild.id})).then(async () => {
+            this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unmuted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.guild.id}' AND \`type\`='Mute' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
+            MainLog.log(this.Guild.GuildManager.TobyBot.i18n.__("bot.moderation.unmute", {punishedId: unPunished.user.id, updaterTag: `${unPunisher.user.username}#${unPunisher.user.discriminator}`, updaterId: unPunisher.user.id, updateReason: unPunishReason, guildId: this.Guild.guild.id}));
+        }).catch((e) => {
+            if (!e.fatal)this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unmuted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.guild.id}' AND \`type\`='Mute' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
+            if (e.code == 100) {
+                ErrorLog.error(`Could not fetch the mute role, the mute role should be defined again. [Guild ${this.Guild.guild.id}]`);
+            } else {
+                console.log("1", e);
+            }
+        });
+        return true;
+    }
+
+    async unBanUser(CommandExecution, unPunished, unPunishReason) {
+        let unPunisher = await this.Guild.getMemberById(CommandExecution.executor.id);
+
+        let MuteRole = await this.Guild.getRoleById(this.Guild.ConfigurationManager.get('moderation.muteRole'));
+
+        await PunishmentGuild.guild.bans.remove(indPunishment.userId, this.Guild.i18n.__("moderation.auditLog.unbanReason", {updaterTag: `${Updater.user.username}#${Updater.user.discriminator}`, updaterId: Updater.user.id, punishReason: PunishReason, updateReason: UpdateReason, guildId: indPunishment.guildId})).then(async () => {
+            this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unbanned', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.guild.id}' AND \`type\`='Ban' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
+            MainLog.log(this.Guild.GuildManager.TobyBot.i18n.__("bot.moderation.unban", {punishedId: unPunished.user.id, updaterTag: `${unPunisher.user.username}#${unPunisher.user.discriminator}`, updaterId: unPunisher.user.id, updateReason: unPunishReason, guildId: this.Guild.guild.id}));
+        }).catch((e) => {
+            if (!e.fatal)this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unmuted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.guild.id}' AND \`type\`='Ban' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
+            if (e.code == 10026) {
+                ErrorLog.error(`Could not fetch ban. The ban is probably already removed. [Guild ${this.Guild.guild.id}]`);
+            } else {
+                console.log("2", e);
+            }
+        });
         return true;
     }
 

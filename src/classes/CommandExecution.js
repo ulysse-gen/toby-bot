@@ -75,6 +75,7 @@ module.exports = class CommandExecution {
                 this.trigger.delete = async() => true; //We spoof the delete function so we can just call it anyway and it doesnt crash
                 this.trigger.replyOriginal = this.trigger.reply;
                 this.trigger.reply = async(...args) => {
+                    args[0].ephemeral = (typeof args[0].ephemeral == "boolean") ? args[0].ephemeral : true;
                     if (this.replied) return (args[0].followUpIfReturned) ? this.trigger.followUp(...args) : false;
                     this.replied = true;
                     return this.trigger.replyOriginal(...args);
@@ -84,7 +85,7 @@ module.exports = class CommandExecution {
                 this.trigger.reply = async (...args) => {
                     if (args[0].slashOnly)return true;
                     return this.trigger.replyOriginal(...args).then(message => {
-                        if (args[0].ephemeral) setTimeout(()=>{
+                        if (typeof args[0].ephemeral == "boolean" && args[0].ephemeral) setTimeout(()=>{
                             message.delete();
                         }, 10000);
                     });
@@ -128,6 +129,7 @@ module.exports = class CommandExecution {
     }
 
     async denyPermission(permission) {
+        this.replied = true;
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')) {
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.permissionDenied', {user: `${this.executor.username}#${this.executor.discriminator}(${this.executor.id})`, realUser: `${this.realExecutor.username}#${this.realExecutor.discriminator}(${this.realExecutor.id})`, location: `${this.channel.id}@${this.channel.guild.id}`, realLocation: `${this.realChannel.id}@${this.realChannel.guild.id}`}));
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel')) && typeof this.TobyBot.loggers.commandExecution != "undefined"){
@@ -161,6 +163,7 @@ module.exports = class CommandExecution {
     }
 
     async unknownCommand() {
+        this.replied = true;
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')) {
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.unknownCommand', {user: `${this.executor.username}#${this.executor.discriminator}(${this.executor.id})`, realUser: `${this.realExecutor.username}#${this.realExecutor.discriminator}(${this.realExecutor.id})`, location: `${this.channel.id}@${this.channel.guild.id}`, realLocation: `${this.realChannel.id}@${this.realChannel.guild.id}`}));
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel')) && typeof this.TobyBot.loggers.commandExecution != "undefined"){

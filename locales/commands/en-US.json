@@ -169,5 +169,19 @@
 	"command.avatar.name": "Avatar",
 	"command.avatar.description": "Show a member's avatar in bigger !",
 	"command.avatar.option.target.description": "The target.",
-	"command.avatar.option.public.description": "Show the main avatar, not the server avatar."
+	"command.avatar.option.public.description": "Show the main avatar, not the server avatar.",
+	"command.avatar.error.userNotFound.title": "command.avatar.error.userNotFound.title",
+	"command.avatar.error.userNotFound.description": "command.avatar.error.userNotFound.description",
+	"command.unmute.name": "Unmute",
+	"command.unmute.description": "Unmute a member.",
+	"command.unmute.option.target.description": "The target.",
+	"command.unmute.option.reason.description": "The reason.",
+	"command.unmute.userUnmuted.title": "User unmuted!",
+	"command.reload.name": "command.reload.name",
+	"command.reload.description": "command.reload.description",
+	"command.unban.name": "command.unban.name",
+	"command.unban.description": "command.unban.description",
+	"command.unban.option.target.description": "command.unban.option.target.description",
+	"command.unban.option.reason.description": "command.unban.option.reason.description",
+	"command.reload.reloaded.title": "command.reload.reloaded.title"
 }

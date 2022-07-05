@@ -7,7 +7,7 @@
 	"bot.slashCommandRegistered.error": "Could not register slash commands. [{{{error}}}]",
 	"bot.slashCommandRegistered": "Slash commands registered.",
 	"bot.command.execution.permissionDenied": "{{{user}}} tried executing {{{command}}} in {{{location}}} but has been denied the permission {{{permission}}}",
-	"bot.command.execution.unknownCommand": "{{{realUser}}} tried to execute an unknown command in {{{realLocation}}} [Spoofed as {{{user}}} in {{{location}}}]",
+	"bot.command.execution.unknownCommand": "{{{realUser}}} tried to execute an unknown command in {{{realLocation}}}",
 	"bot.joinedGuild": "Joined the guild {{{guildName}}} ({{{guildId}}})",
 	"channelLogging.commandExecution.title": "Command executed",
 	"channelLogging.commandExecution.description": "{{{command}}}",
@@ -36,5 +36,6 @@
 	"bot.moderation.kick": "{{{punishedTag}}}({{{punishedId}}}) has been kicked by {{{punisherTag}}}({{{punisherId}}}) in [{{{guildId}}}] for {{{punishReason}}} | CaseID: {{{caseId}}}",
 	"bot.moderation.ban": "{{{punishedTag}}}({{{punishedId}}}) has been banned by {{{punisherTag}}}({{{punisherId}}}) in [{{{guildId}}}] for {{{punishReason}}} | CaseID: {{{caseId}}}",
 	"bot.moderation.unban": "({{{punishedId}}}) has been unbanned by {{{updaterTag}}}({{{updaterId}}}) in [{{{guildId}}}] for {{{updateReason}}}",
-	"bot.moderation.unmute": "({{{punishedId}}}) has been unmuted by {{{updaterTag}}}({{{updaterId}}}) in [{{{guildId}}}] for {{{updateReason}}}"
+	"bot.moderation.unmute": "({{{punishedId}}}) has been unmuted by {{{updaterTag}}}({{{updaterId}}}) in [{{{guildId}}}] for {{{updateReason}}}",
+	"bot.communityguild.cannotfetch": "Could not fetch the community guild."
 }

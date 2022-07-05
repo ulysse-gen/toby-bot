@@ -15,7 +15,7 @@ module.exports = {
         let Punished = await CommandExecution.guild.getUserFromArg(CommandExecution.options.target);
         
         let PunishReason = CommandExecution.options.reason;
-        let PunishDuration = 0;
+        let PunishDuration = true;
         if (typeof CommandExecution.options.duration != "undefined"){
             PunishReason = CommandExecution.options.reason;
             PunishDuration = CommandExecution.options.duration;

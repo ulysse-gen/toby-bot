@@ -12,6 +12,7 @@ module.exports = {
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.guild.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json');
+        let ConfigurationFunctions = require('../../configurations/functions/GuildConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (CommandExecution.options.subCommand == "load"){
@@ -85,13 +86,14 @@ module.exports = {
             let KeyName = KeyDocumentation.name;
             let KeyType = KeyDocumentation.type;
             let KeyDefaultValue  = KeyDocumentation.default;
-            let KeyValue = _.cloneDeep(ConfigurationManager.get(CommandExecution.options.key));
+            let KeyValue = ConfigurationManager.get(CommandExecution.options.key)
 
             let KeyNewValue = CommandExecution.options.value;
 
             if (KeyType.startsWith('String')){
                 
             }else if (KeyType.startsWith('Object')){
+                KeyValue = _.cloneDeep(KeyValue);
                 try {
                     if (KeyNewValue.startsWith('+')) {
                         let KeyManipulating = _.cloneDeep(KeyValue);
@@ -147,11 +149,22 @@ module.exports = {
 
             ConfigurationManager.set(CommandExecution.options.key, KeyNewValue);
 
-            CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.set.title`, { name: KeyName, key: CommandExecution.options.key }), CommandExecution.i18n.__(`command.${this.name}.set.description`, { name: KeyName, key: CommandExecution.options.key }));
+            if (typeof _.get(ConfigurationFunctions, CommandExecution.options.key) == "function"){
+                let updateFunction = await _.get(ConfigurationFunctions, CommandExecution.options.key)(CommandExecution.TobyBot, ConfigurationManager, CommandExecution.guild, CommandExecution);
+                if (typeof updateFunction == "object") {
+                    if (typeof updateFunction.status == "boolean" && updateFunction.status == false){
+                        ConfigurationManager.set(CommandExecution.options.key, KeyValue);
+                        return CommandExecution.replyErrorEmbed({ephemeral: null}, updateFunction.title, (typeof updateFunction.description == "string") ? updateFunction.description : undefined, (typeof updateFunction.fields == "object") ? updateFunction.fields : undefined);
+                    }
+                    if (typeof updateFunction.status == "object" && updateFunction.status == null)CommandExecution.replyWarningEmbed({ephemeral: null}, updateFunction.title, (typeof updateFunction.description == "string") ? updateFunction.description : undefined, (typeof updateFunction.fields == "object") ? updateFunction.fields : undefined);
+                }
+            }
+
+            CommandExecution.returnSuccessEmbed({followUpIfReturned: true}, CommandExecution.i18n.__(`command.${this.name}.set.title`, { name: KeyName, key: CommandExecution.options.key }), CommandExecution.i18n.__(`command.${this.name}.set.description`, { name: KeyName, key: CommandExecution.options.key }));
             return true;
         }
 
-        CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.generic.unknownSubCommand.title`), CommandExecution.i18n.__(`command.generic.unknownSubCommand.description`, {command: this.name}));
+        CommandExecution.returnErrorEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.generic.unknownSubCommand.title`), CommandExecution.i18n.__(`command.generic.unknownSubCommand.description`, {command: this.name}));
         return true;
     },
     async optionsFromArgs (CommandExecution) {

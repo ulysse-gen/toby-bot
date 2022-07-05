@@ -26,5 +26,17 @@
 	"moderation.auditLog.kickReason": "Kicked by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
 	"moderation.auditLog.banReason": "Banned by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
 	"moderation.auditLog.unbanReason": "Unbanned by {{{updaterTag}}}({{{updaterId}}}) for {{{updateReason}}}",
-	"moderation.auditLog.autoRemute": "Mute auto applied after re-join."
+	"moderation.auditLog.autoRemute": "Mute auto applied after re-join.",
+	"configuration.logging.enablingWithoutChannel.title": "Cannot enable channel logging.",
+	"configuration.logging.enablingWithoutChannel.description": "You must first set a channel on the configuration key `{{{otherKey}}}`",
+	"configuration.logging.settingWhileChannelDisabled.title": "You may now enable channel logging.",
+	"configuration.logging.settingWhileChannelDisabled.description": "We're almost set ! Now enable channel logging with `{{{otherKey}}}`",
+	"configuration.logging.cannotFetchChannel.title": "Could not fetch logging channel.",
+	"configuration.logging.cannotFetchChannel.description": "Could not fetch the specified channel. Check that you typed the right ID.",
+	"configuration.logging.noChannelPermission.title": "Cannot type in there.",
+	"configuration.logging.noChannelPermission.description": "I dont have the permission to type in that channel.",
+	"configuration.logging.couldNotInitLogger.title": "Could not initialize the logger.",
+	"configuration.logging.couldNotInitLogger.description": "An error occured while initializing the logger.",
+	"configuration.role.cannotFetchRole.title": "Could not fetch role.",
+	"configuration.role.cannotFetchRole.description": "Could not fetch the specified role. Check that you typed the right ID."
 }

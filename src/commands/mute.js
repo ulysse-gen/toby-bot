@@ -16,7 +16,7 @@ module.exports = {
         if (typeof Punished == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.description`, {}));
         
         let PunishReason = CommandExecution.options.reason;
-        let PunishDuration = 0;
+        let PunishDuration = true;
         if (typeof CommandExecution.options.duration != "undefined"){
             try {
                 PunishDuration = timestring(CommandExecution.options.duration)
