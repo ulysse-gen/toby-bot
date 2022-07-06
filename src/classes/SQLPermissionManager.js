@@ -132,6 +132,36 @@ module.exports = class SQLPermissionManager extends SQLConfigurationManager {
         return {};
     }
 
+    async setUserPermission(userId, permissionKey, permissionValue = true, permissionPriority = 0, permissionTemporary = false){
+        if (!this.initialized) return false; //If the permissionManager is not initialized, return an enmpty permission array
+        if (typeof this.configuration.users[userId] != "object")this.configuration.users[userId] = {};
+        this.configuration.users[userId][permissionKey] = {value: permissionValue, priority: permissionPriority, temporary: permissionTemporary}
+        return this.save();
+    }
+
+    async deleteUserPermission(userId, permissionKey){
+        if (!this.initialized) return false; //If the permissionManager is not initialized, return an enmpty permission array
+        if (typeof this.configuration.users[userId] != "object")this.configuration.users[userId] = {};
+        if (typeof this.configuration.users[userId][permissionKey] != "undefined") delete this.configuration.users[userId][permissionKey];
+        return this.save();
+    }
+
+    async setRolePermission(guildId, roleId, permissionKey, permissionValue = true, permissionPriority = 0, permissionTemporary = false){
+        if (!this.initialized) return false; //If the permissionManager is not initialized, return an enmpty permission array
+        if (typeof this.configuration.roles[guildId] != "object")this.configuration.roles[guildId] = {};
+        if (typeof this.configuration.roles[guildId][roleId] != "object")this.configuration.roles[guildId][roleId] = {};
+        this.configuration.roles[guildId][roleId][permissionKey] = {value: permissionValue, priority: permissionPriority, temporary: permissionTemporary}
+        return this.save();
+    }
+
+    async deleteRolePermission(guildId, roleId, permissionKey){
+        if (!this.initialized) return false; //If the permissionManager is not initialized, return an enmpty permission array
+        if (typeof this.configuration.roles[guildId] != "object")this.configuration.roles[guildId] = {};
+        if (typeof this.configuration.roles[guildId][roleId] != "object")this.configuration.roles[guildId][roleId] = {};
+        if (typeof this.configuration.roles[guildId][roleId][permissionKey] != "undefined") delete this.configuration.roles[guildId][roleId][permissionKey];
+        return this.save();
+    }
+
     async userHasPermission(permission, guildUser, channel = undefined, useAdmin = false) {
         if (typeof guildUser != "object") throw new Error('Wrong type.')
         if (this.allowDevOnly.includes(permission) && guildUser.user.id == "231461358200291330")return true;

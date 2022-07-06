@@ -136,6 +136,18 @@ module.exports = class Guild {
         return user;
     }
 
+    async getRoleFromArg(roleSrting) {
+        let role = await this.guild.roles.fetch().then(roles => roles.find(role => role.name === roleSrting));
+        if (roleSrting.startsWith('<@&'))roleSrting = roleSrting.replace('<@&', '').slice(0, -1);
+        if (typeof role == "undefined") role = await this.guild.roles.fetch(roleSrting, {
+            cache: false,
+            force: true
+        }).catch(e => {
+            return undefined;
+        });
+        return role;
+    }
+
     async getMemberById(userId) {
         return this.guild.members.fetch(userId, {
             cache: false,
@@ -155,6 +167,18 @@ module.exports = class Guild {
             cache: false,
             force: true
         }).catch(e => undefined);
+    }
+
+    async getMentionnableByArg(mentionnableId) {
+        let user = await this.getUserFromArg(mentionnableId);
+        let role = await this.getRoleFromArg(mentionnableId);
+        return (typeof user != "undefined") ? user : (typeof role != "undefined") ? role : undefined;
+    }
+
+    async getMentionnableById(mentionnableId) {
+        let user = await this.getMemberById(mentionnableId);
+        let role = await this.getRoleById(mentionnableId);
+        return (typeof user != "undefined") ? user : (typeof role != "undefined") ? role : undefined;
     }
 
     async getGuildPfp() {

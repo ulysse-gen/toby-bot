@@ -6,6 +6,7 @@ const guildController = require('./guild');
 const infosController = require('./infos');
 const commandController = require('./command');
 const configurationController = require('./configuration');
+const systemController = require('./system');
 
 router.get('/', async (req, res) => {
     res.status(200).json({
@@ -23,5 +24,6 @@ module.exports = (API) => {
     router.use('/infos', infosController(router.API));
     router.use('/commands', commandController(router.API));
     router.use('/configuration', configurationController(router.API));
+    //router.use('/system', systemController(router.API));
     return router;
 };

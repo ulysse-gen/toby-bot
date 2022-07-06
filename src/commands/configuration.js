@@ -168,6 +168,11 @@ module.exports = {
             return true;
         }
 
+        if (CommandExecution.options.subCommand == "help"){
+            CommandExecution.returnWarningEmbed({}, CommandExecution.i18n.__(`command.${this.name}.help.title`), CommandExecution.i18n.__(`command.${this.name}.help.description`));
+            return true;
+        }
+
         CommandExecution.returnErrorEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.generic.unknownSubCommand.title`), CommandExecution.i18n.__(`command.generic.unknownSubCommand.description`, {command: this.name}));
         return true;
     },

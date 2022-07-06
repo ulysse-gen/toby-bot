@@ -6,15 +6,25 @@ module.exports = class MessageManager {
     constructor(Guild) {
         this.Guild = Guild;
 
-        this.maxMessagesStoredByUser = 50;
+        this.maxMessagesStored = 250;
 
-        this.messages = {
-            byUser: {}
-        };
+        this.allMessages = [];
+    }
+
+    getLastMEssagesByGuild(guildId) {
+        return (this.allMessages.filter(x=>x.guildId == guildId));
+    }
+
+    getLastMEssagesByChannel(channelId) {
+        return (this.allMessages.filter(x=>x.channelId == channelId));
     }
 
     getLastMessagesByUser(userId) {
-        return (typeof this.messages.byUser[userId] == "undefined") ? [] : this.messages.byUser[userId];
+        return (this.allMessages.filter(x=>x.userId == userId));
+    }
+
+    getMessageById(messageId) {
+        return (this.allMessages.filter(x=>x.messageId == messageId));
     }
 
     async addMessage(message) {
@@ -23,12 +33,12 @@ module.exports = class MessageManager {
             messageId: message.id,
             channelId: message.channel.id,
             guildId: message.channel.guild.id,
+            userId: message.author.id,
             message: message,
             history: []
         };
-        if (typeof this.messages.byUser[message.author.id] == "undefined")this.messages.byUser[message.author.id] = [];
-        this.messages.byUser[message.author.id].unshift(MessageEntry);
-        if (this.messages.byUser[message.author.id].length >= this.maxMessagesStoredByUser) guild.lastMessages[message.author.id].splice(this.maxMessagesStoredByUser-1, this.messages.byUser[message.author.id] - this.maxMessagesStoredByUser);
+        this.allMessages.unshift(MessageEntry);
+        if (this.allMessages.length >= this.maxMessagesStored) this.allMessages.splice(this.maxMessagesStored-1, this.allMessages.length - this.maxMessagesStored);
         return true;
     }
 }

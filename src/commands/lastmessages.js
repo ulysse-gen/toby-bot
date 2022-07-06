@@ -48,12 +48,12 @@ module.exports = {
             try {
                 CommandExecution.options.page = parseInt(CommandExecution.options.page);
             } catch (e) {
-                return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.pageUseNumber`));
+                return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.generic.pageUseNumber`));
             }
             embed.footer = {
                 text: CommandExecution.i18n.__(`command.${this.name}.searchThruPages`, {currentPage: CommandExecution.options.page, totalPages: embedPages.length})
             };
-            if (typeof embedPages[CommandExecution.options.page - 1] == "undefined") return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.pageDontExist`));
+            if (typeof embedPages[CommandExecution.options.page - 1] == "undefined") return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.generic.pageDontExist`));
             embedFields = embedPages[CommandExecution.options.page - 1];
         }
 

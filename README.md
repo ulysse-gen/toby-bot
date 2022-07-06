@@ -2,10 +2,18 @@
 Toby Bot v4 is on its way, rebuilding from the ground up.
 
 # Todo & Ideas:
+
 - Token scanner (check for token in messages [& reset them ?])
 
 - Auto setup (auto grab log channels, mute role etc..) [Discord-made & Web-Gui-made ?]
 
+- Configuration converter (switching between configuration version without losing data)
+
+- (Message edits & remove) saving
+
+- Saving configuration & permission history (+rollback?)
+
+- Web GUI (gosh i suck at making GUIs i swear..)
 
 # Update docker image:
 
@@ -24,7 +32,6 @@ docker build . -t ulyssegen-toby-bot
 - Choose
 - Coinflip
 - Embedfail
-- Permission (& global permission)
 - Hi
 - Hug
 - Invitelink?
