@@ -375,12 +375,12 @@
 	"command.purge.error.noAmountSpecified.description": "You must specify the amont of messages to be purged.",
 	"command.purge.error.couldNotFetchMessages.title": "Could not fetch messages.",
 	"command.purge.error.couldNotFetchMessages.description": "{{{error}}}",
-	"command.purge.error.couldNotPurge.title": "Could not puge.",
+	"command.purge.error.couldNotPurge.title": "Could not purge.",
 	"command.purge.error.couldNotPurge.description": "An error occured trying to purge.",
 	"command.purge.purging.match.title": "Purging {{{amount}}} messages.",
 	"command.purge.purging.match.description": "The channel is being purged of {{{amount}}} messages matching `{{{match}}}`.",
 	"command.purge.purged.match.title": "Purged {{{amount}}} messages.",
 	"command.purge.purged.match.description": "The channel has been purged of {{{amount}}} messages matching `{{{match}}}`.",
-	"command.purge.error.cantParseAmount.title": "command.purge.error.cantParseAmount.title",
-	"command.purge.error.cantParseAmount.description": "command.purge.error.cantParseAmount.description"
+	"command.purge.error.cantParseAmount.title": "Cannot parse amount.",
+	"command.purge.error.cantParseAmount.description": "Could not parse the amount."
 }
