@@ -362,7 +362,7 @@
 	"command.purge.subcommand.user.description": "Remove a number of messages from the channel sent by a certain user.",
 	"command.purge.option.user.target.description": "The messsages sender.",
 	"command.purge.subcommand.match.description": "Remove a number of messages from the channel containing certain text.",
-	"command.purge.option.match.text.description": "The text to search for.",
+	"command.purge.option.match.target.description": "The text to search for.",
 	"command.purge.purged.any.title": "Purged {{{amount}}} messages.",
 	"command.purge.purged.any.description": "The channel has successfully been purged of {{{realAmount}}} messages.",
 	"command.purge.purging.any.title": "Purging {{{amount}}} messages.",

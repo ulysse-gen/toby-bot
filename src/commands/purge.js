@@ -59,7 +59,7 @@ module.exports = {
 
         let purgeMatch = async () => {
             if (typeof CommandExecution.options.amount == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noAmountSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noAmountSpecified.description`, {}));
-            if (typeof CommandExecution.options.text == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTextSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTextSpecified.description`, {}));
+            if (typeof CommandExecution.options.target == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTextSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTextSpecified.description`, {}));
             if (typeof CommandExecution.options.amount == "string")try {
                 let amount = parseInt(CommandExecution.options.amount)
                 if (isNaN(amount)) return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.cantParseAmount.title`), CommandExecution.i18n.__(`command.${this.name}.error.cantParseAmount.description`, {}));
@@ -67,13 +67,13 @@ module.exports = {
             } catch {
                 return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.cantParseAmount.title`), CommandExecution.i18n.__(`command.${this.name}.error.cantParseAmount.description`, {}));
             }
-            await CommandExecution.replyMainEmbed({}, CommandExecution.i18n.__(`command.${this.name}.purging.match.title`, { match: CommandExecution.options.text, amount: CommandExecution.options.amount }), CommandExecution.i18n.__(`command.${this.name}.purging.match.description`, { match: CommandExecution.options.text, amount: CommandExecution.options.amount }));
+            await CommandExecution.replyMainEmbed({}, CommandExecution.i18n.__(`command.${this.name}.purging.match.title`, { match: CommandExecution.options.target, amount: CommandExecution.options.amount }), CommandExecution.i18n.__(`command.${this.name}.purging.match.description`, { match: CommandExecution.options.target, amount: CommandExecution.options.amount }));
             
-            let filterFunction = (!CommandExecution.IsSlashCommand) ? (message) => message.content.toLowerCase().includes(CommandExecution.options.text.toLowerCase()) : (message) => (message.content.toLowerCase().includes(CommandExecution.options.text.toLowerCase()) && message.id != CommandExecution.Trigger.id);
+            let filterFunction = (!CommandExecution.IsSlashCommand) ? (message) => message.content.toLowerCase().includes(CommandExecution.options.target.toLowerCase()) : (message) => (message.content.toLowerCase().includes(CommandExecution.options.target.toLowerCase()) && message.id != CommandExecution.Trigger.id);
             
             let PurgedAmount = await purgeMessages(CommandExecution.Channel, CommandExecution.options.amount, filterFunction, lastMessage.id);
             if (typeof PurgedAmount == "boolean")return CommandExecution.returnErrorEmbed({followUpIfReturned: true}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotPurge.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotPurge.description`));
-            return CommandExecution.returnSuccessEmbed({followUpIfReturned: true, ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.purged.match.title`, { match: CommandExecution.options.text, amount: CommandExecution.options.amount, realAmount: PurgedAmount }), CommandExecution.i18n.__(`command.${this.name}.purged.match.description`, { match: CommandExecution.options.text, amount: CommandExecution.options.amount, realAmount: PurgedAmount }));
+            return CommandExecution.returnSuccessEmbed({followUpIfReturned: true, ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.purged.match.title`, { match: CommandExecution.options.target, amount: CommandExecution.options.amount, realAmount: PurgedAmount }), CommandExecution.i18n.__(`command.${this.name}.purged.match.description`, { match: CommandExecution.options.target, amount: CommandExecution.options.amount, realAmount: PurgedAmount }));
         }
 
         if (typeof CommandExecution.options.subCommand == "string"){
@@ -92,10 +92,8 @@ module.exports = {
         var options = {};
         if (CommandExecution.CommandOptions.length == 0)return options;
         options.subCommand = CommandExecution.CommandOptions.shift();
-        options.target = CommandExecution.CommandOptions.shift();
-        options.text = options.target;
-        options.amount = options.target;
-        if (CommandExecution.CommandOptions.length != 0)options.amount = CommandExecution.CommandOptions.shift();
+        options.amount = CommandExecution.CommandOptions.pop();
+        if (CommandExecution.CommandOptions.length != 0)options.target = CommandExecution.CommandOptions.shift();
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {
@@ -145,8 +143,8 @@ module.exports = {
                     .setDescription(i18n.__(`command.${this.name}.subcommand.match.description`));
 
                 subCommand.addStringOption(option => 
-                    option.setName('text')
-                        .setDescription(i18n.__(`command.${this.name}.option.match.text.description`))
+                    option.setName('target')
+                        .setDescription(i18n.__(`command.${this.name}.option.match.target.description`))
                         .setRequired(true)
                 )
     
