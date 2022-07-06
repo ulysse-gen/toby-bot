@@ -3,9 +3,9 @@ const { MessageEmbed } = require('discord.js');
 const moment = require('moment');
 
 module.exports = {
-    name: "userinformations",
-    aliases: ["userinfos"],
-    permission: "command.userinformations",
+    name: "whois",
+    aliases: ["userinformations","userinfos"],
+    permission: "command.whois",
     category: "infos",
     enabled: true,
     async execute(CommandExecution) {

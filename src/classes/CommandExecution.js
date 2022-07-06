@@ -29,8 +29,6 @@ module.exports = class CommandExecution {
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US'
         });
-
-        this.replied = false;
     }
 
     /**Execute the command
@@ -48,8 +46,7 @@ module.exports = class CommandExecution {
     async deferIfNeeded() {
         let _this = this;
         return setTimeout(() => {
-            if (!_this.replied && _this.IsSlashCommand){
-                _this.replied = true;
+            if (!_this.Trigger.replied && _this.IsSlashCommand){
                 _this.Trigger.reply = async(...args) => {
                     return _this.Trigger.editReply(...args);
                 }
@@ -83,8 +80,7 @@ module.exports = class CommandExecution {
                 this.Trigger.replyOriginal = this.Trigger.reply;
                 this.Trigger.reply = async(...args) => {
                     args[0].ephemeral = (typeof args[0].ephemeral == "boolean") ? args[0].ephemeral : true;
-                    if (this.replied) return (args[0].followUpIfReturned) ? this.Trigger.followUp(...args) : false;
-                    this.replied = true;
+                    if (this.Trigger.replied) return (args[0].followUpIfReturned) ? this.Trigger.followUp(...args) : false;
                     return this.Trigger.replyOriginal(...args);
                 }
             }else {
@@ -93,7 +89,7 @@ module.exports = class CommandExecution {
                     if (args[0].slashOnly)return true;
                     return this.Trigger.replyOriginal(...args).then(message => {
                         if (typeof args[0].ephemeral == "boolean" && args[0].ephemeral) setTimeout(()=>{
-                            message.delete();
+                            message.delete().catch(e => false);
                         }, 10000);
                     });
                 }
@@ -136,7 +132,6 @@ module.exports = class CommandExecution {
     }
 
     async denyPermission(permission) {
-        this.replied = true;
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')) {
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.permissionDenied', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel')) && typeof this.TobyBot.loggers.commandExecution != "undefined"){
@@ -170,7 +165,6 @@ module.exports = class CommandExecution {
     }
 
     async unknownCommand() {
-        this.replied = true;
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')) {
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.unknownCommand', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel')) && typeof this.TobyBot.loggers.commandExecution != "undefined"){

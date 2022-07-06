@@ -1,4 +1,5 @@
 # toby-bot
+
 Toby Bot v4 is on its way, rebuilding from the ground up.
 
 # Todo & Ideas:
@@ -44,7 +45,6 @@ docker build . -t ulyssegen-toby-bot
 - Invitelink?
 - Kiss
 - Makeembed?
-- Purge
 - Remindme
 - Rockpaperscissors
 - Roleadder
