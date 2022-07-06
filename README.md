@@ -15,6 +15,14 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 - Web GUI (gosh i suck at making GUIs i swear..)
 
+- Auto moderation
+
+- DM Handling?
+
+- Presence
+
+- Changelog of some kind (& update alert in channel?)
+
 # Update docker image:
 
 cd /temporary/toby-bot
@@ -28,7 +36,6 @@ docker build . -t ulyssegen-toby-bot
 # Commands to build:
 
 - Autokick
-- Changelog?
 - Choose
 - Coinflip
 - Embedfail
@@ -46,3 +53,4 @@ docker build . -t ulyssegen-toby-bot
 - SendDM
 - Slap
 - Welcome
+- Lockdown?
