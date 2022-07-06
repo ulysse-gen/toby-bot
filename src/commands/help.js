@@ -13,12 +13,12 @@ module.exports = {
         return true;
     },
     async optionsFromArgs (CommandExecution) {
-        if (CommandExecution.commandOptions.length == 0)return {};
+        if (CommandExecution.CommandOptions.length == 0)return {};
         return {};
     },
     async optionsFromSlashOptions (CommandExecution) {
-        var options = Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
-        if (typeof CommandExecution.trigger.options._subcommand != "undefined" && CommandExecution.trigger.options._subcommand != null) options.subCommand = CommandExecution.trigger.options._subcommand;
+        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [val.name, val.value]));
+        if (typeof CommandExecution.Trigger.options._subcommand != "undefined" && CommandExecution.Trigger.options._subcommand != null) options.subCommand = CommandExecution.Trigger.options._subcommand;
         return options;
     },
     makeSlashCommand(i18n) {

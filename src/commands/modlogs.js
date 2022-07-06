@@ -11,7 +11,7 @@ module.exports = {
     async execute(CommandExecution) {
         if (typeof CommandExecution.options.target == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.description`, {}));
     
-        let User = await CommandExecution.guild.getUserFromArg(CommandExecution.options.target);
+        let User = await CommandExecution.Guild.getUserFromArg(CommandExecution.options.target);
         if (typeof User == "undefined"){
             if (CommandExecution.options.target.length != 18 && !(CommandExecution.options.target == 21 && CommandExecution.options.target.startsWith('<@')))return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.description`, {}));
             User = {
@@ -22,13 +22,13 @@ module.exports = {
                 }
             }
         }
-        let UserPFP = await CommandExecution.guild.getUserPfp(User);
+        let UserPFP = await CommandExecution.Guild.getUserPfp(User);
 
         let embedFields = [];
         let embedPages = [];
         let embed = new MessageEmbed({
             title: CommandExecution.i18n.__(`command.${this.name}.mainembed.title`),
-            color: CommandExecution.guild.ConfigurationManager.get('style.colors.main'),
+            color: CommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
             author: {
                 name: User.user.tag,
                 iconURL: `${UserPFP}?size=64`
@@ -36,7 +36,7 @@ module.exports = {
         });
 
         let makeTheStats = new Promise((res, rej) => {
-            CommandExecution.guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`userId\`='${User.user.id}' AND status!='deleted' AND \`guildId\`='${CommandExecution.guild.guild.id}'`, async (error, results) => {
+            CommandExecution.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`userId\`='${User.user.id}' AND status!='deleted' AND \`guildId\`='${CommandExecution.Guild.guild.id}'`, async (error, results) => {
                 if (error) {
                     ErrorLog.log(`An error occured trying to query the SQL pool.`);
                     res(null);
@@ -102,14 +102,14 @@ module.exports = {
     },
     async optionsFromArgs (CommandExecution) {
         var options = {};
-        if (CommandExecution.commandOptions.length == 0)return options;
-        options.target = CommandExecution.commandOptions.shift();
-        options.page = CommandExecution.commandOptions.shift();
+        if (CommandExecution.CommandOptions.length == 0)return options;
+        options.target = CommandExecution.CommandOptions.shift();
+        options.page = CommandExecution.CommandOptions.shift();
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {
-        var options = Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
-        if (typeof CommandExecution.trigger.options._subcommand != "undefined" && CommandExecution.trigger.options._subcommand != null) options.subCommand = CommandExecution.trigger.options._subcommand;
+        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [val.name, val.value]));
+        if (typeof CommandExecution.Trigger.options._subcommand != "undefined" && CommandExecution.Trigger.options._subcommand != null) options.subCommand = CommandExecution.Trigger.options._subcommand;
         return options;
     },
     makeSlashCommand(i18n) {

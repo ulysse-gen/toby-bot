@@ -108,14 +108,14 @@ module.exports = class Metric {
     }
 
     async hasPermission(CommandExecution) {
-        let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(CommandExecution.command.permission, CommandExecution.guildExecutor, CommandExecution.channel);
-        let guildPermissions = await CommandExecution.trigger.TobyBot.guild.PermissionManager.userHasPermission(CommandExecution.command.permission, CommandExecution.guildExecutor, CommandExecution.channel, true);
+        let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(CommandExecution.Command.permission, CommandExecution.GuildExecutor, CommandExecution.Channel);
+        let guildPermissions = await CommandExecution.Trigger.TobyBot.guild.PermissionManager.userHasPermission(CommandExecution.Command.permission, CommandExecution.GuildExecutor, CommandExecution.Channel, true);
         return (globalPermissions) ? true : guildPermissions;
     }
 
     async hasPermissionPerContext(CommandExecution, permission) {
-        let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(permission, CommandExecution.guildExecutor, CommandExecution.channel);
-        let guildPermissions = await CommandExecution.trigger.TobyBot.guild.PermissionManager.userHasPermission(permission, CommandExecution.guildExecutor, CommandExecution.channel, true);
+        let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(permission, CommandExecution.GuildExecutor, CommandExecution.Channel);
+        let guildPermissions = await CommandExecution.Trigger.TobyBot.guild.PermissionManager.userHasPermission(permission, CommandExecution.GuildExecutor, CommandExecution.Channel, true);
         return (globalPermissions) ? true : guildPermissions;
     }
 }

@@ -12,7 +12,7 @@ module.exports = {
         if (typeof CommandExecution.options.target == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.description`, {}));
         if (typeof CommandExecution.options.reason == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noReasonSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noReasonSpecified.description`, {}));
 
-        let Punished = await CommandExecution.guild.getUserFromArg(CommandExecution.options.target);
+        let Punished = await CommandExecution.Guild.getUserFromArg(CommandExecution.options.target);
         if (typeof Punished == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.description`, {}));
         
         let PunishReason = CommandExecution.options.reason;
@@ -34,19 +34,19 @@ module.exports = {
                 PunishReason = PunishReason.join(' ');
             }
         }
-        let Punishment = await CommandExecution.guild.ModerationManager.muteUser(CommandExecution, Punished, PunishReason, PunishDuration);
+        let Punishment = await CommandExecution.Guild.ModerationManager.muteUser(CommandExecution, Punished, PunishReason, PunishDuration);
         return true;
     },
     async optionsFromArgs (CommandExecution) {
         var options = {};
-        if (CommandExecution.commandOptions.length == 0)return options;
-        options.target = CommandExecution.commandOptions.shift();
-        if (CommandExecution.commandOptions.length != 0)options.reason = CommandExecution.commandOptions.join(' ');
+        if (CommandExecution.CommandOptions.length == 0)return options;
+        options.target = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.reason = CommandExecution.CommandOptions.join(' ');
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {
-        var options = Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
-        if (typeof CommandExecution.trigger.options._subcommand != "undefined" && CommandExecution.trigger.options._subcommand != null) options.subCommand = CommandExecution.trigger.options._subcommand;
+        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [val.name, val.value]));
+        if (typeof CommandExecution.Trigger.options._subcommand != "undefined" && CommandExecution.Trigger.options._subcommand != null) options.subCommand = CommandExecution.Trigger.options._subcommand;
         return options;
     },
     makeSlashCommand(i18n) {

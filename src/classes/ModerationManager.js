@@ -115,7 +115,7 @@ module.exports = class ModerationManager {
     }
 
     async noteUser(CommandExecution, Punished, PunishReason, silent = false, asBot = false) {
-        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.executor.id : this.Guild.TobyBot.client.id));
+        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Note`, PunishReason);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Note`, PunishReason, undefined, silent);
         MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.note`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
@@ -123,7 +123,7 @@ module.exports = class ModerationManager {
     }
 
     async stickyUser(CommandExecution, Punished, PunishReason, silent = false, asBot = false) {
-        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.executor.id : this.Guild.TobyBot.client.id));
+        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Sticky`, PunishReason);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Sticky`, PunishReason, undefined, silent);
         MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.sticky`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
@@ -131,7 +131,7 @@ module.exports = class ModerationManager {
     }
 
     async warnUser(CommandExecution, Punished, PunishReason, silent = false, asBot = false) {
-        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.executor.id : this.Guild.TobyBot.client.id));
+        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Warn`, PunishReason);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Warn`, PunishReason, undefined, silent);
         MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.warn`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
@@ -140,7 +140,7 @@ module.exports = class ModerationManager {
     }
 
     async muteUser(CommandExecution, Punished, PunishReason, PunishDuration, silent = false, asBot = false) {
-        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.executor.id : this.Guild.TobyBot.client.id));
+        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
 
         let MuteRole = await this.Guild.getRoleById(this.Guild.ConfigurationManager.get('moderation.muteRole'));
         let sendOption = {ephemeral: false};
@@ -165,7 +165,7 @@ module.exports = class ModerationManager {
     }
 
     async unMuteUser(CommandExecution, unPunished, unPunishReason) {
-        let unPunisher = await this.Guild.getMemberById(CommandExecution.executor.id);
+        let unPunisher = await this.Guild.getMemberById(CommandExecution.Executor.id);
 
         let MuteRole = await this.Guild.getRoleById(this.Guild.ConfigurationManager.get('moderation.muteRole'));
 
@@ -184,7 +184,7 @@ module.exports = class ModerationManager {
     }
 
     async unBanUser(CommandExecution, unPunished, unPunishReason) {
-        let unPunisher = await this.Guild.getMemberById(CommandExecution.executor.id);
+        let unPunisher = await this.Guild.getMemberById(CommandExecution.Executor.id);
 
         let MuteRole = await this.Guild.getRoleById(this.Guild.ConfigurationManager.get('moderation.muteRole'));
 
@@ -203,7 +203,7 @@ module.exports = class ModerationManager {
     }
 
     async kickUser(CommandExecution, Punished, PunishReason, silent = false, asBot = false) {
-        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.executor.id : this.Guild.TobyBot.client.id));
+        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
 
         let Continue = await Punished.kick(this.Guild.i18n.__("moderation.auditLog.kickReason", {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id})).then(()=>true).catch(e => {
             CommandExecution.returnErrorEmbed(sendOption, CommandExecution.i18n.__("moderation.cannotKick.title"), CommandExecution.i18n.__("moderation.cannotKick.description", {error: e}));
@@ -220,7 +220,7 @@ module.exports = class ModerationManager {
     }
 
     async banUser(CommandExecution, Punished, PunishReason, PunishDuration, silent = false, asBot = false) {
-        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.executor.id : this.Guild.TobyBot.client.id));
+        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
 
         let Continue = await Punished.ban({
             days: 7,
@@ -240,7 +240,7 @@ module.exports = class ModerationManager {
     }
 
     async banById(CommandExecution, PunishedID, PunishReason, silent = false, asBot = false) {
-        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.executor.id : this.Guild.TobyBot.client.id));
+        let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
         let Punished = await CommandExecution.TobyBot.client.users.fetch(PunishedID).then(user => { return { user: user}}).catch(e => { return {user: { username: 'UnknownTag', discriminator: 'XXXX', id: PunishedID, tag: 'UnknownTag#XXXX'}}; });
 
         let Continue = await this.Guild.guild.bans.create(Punished.user.id, {
@@ -288,7 +288,7 @@ module.exports = class ModerationManager {
     }
 
     async deletePunishment(CommandExecution, caseId, removeReason) {
-        let unPunisher = await this.Guild.getMemberById(CommandExecution.executor.id);
+        let unPunisher = await this.Guild.getMemberById(CommandExecution.Executor.id);
         await this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='deleted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`numId\`='${caseId}'`, [unPunisher.user.id, removeReason, moment().format(`YYYY-MM-DD HH:mm-ss`)], async (error, results, _fields) => {
             if (error) {
                 ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}]`);

@@ -36,7 +36,7 @@ module.exports = {
         if (CommandExecution.options.subCommand == "view"){
             if (typeof CommandExecution.options.target == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.description`, {}));
             
-            let Target = await CommandExecution.guild.getMentionnableByArg(CommandExecution.options.target);
+            let Target = await CommandExecution.Guild.getMentionnableByArg(CommandExecution.options.target);
             if (typeof Target == "undefined" || Target == null)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTargetFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTargetFound.description`, {}));
             let TargetType = (typeof Target.user == "undefined") ? 0 : 1;
             let TargetPermissions = {};
@@ -70,7 +70,7 @@ module.exports = {
             let embed = new MessageEmbed({
                 title: CommandExecution.i18n.__(`command.${this.name}.view.all.title`),
                 description: CommandExecution.i18n.__(`command.${this.name}.view.all.description`, {targetName: (typeof Target.user == "undefined") ? Target.name : Target.user.tag}),
-                color: CommandExecution.guild.ConfigurationManager.get('style.colors.main')
+                color: CommandExecution.Guild.ConfigurationManager.get('style.colors.main')
             });
 
             for (const individualPermission in TargetPermissions){
@@ -127,7 +127,7 @@ module.exports = {
                 }
             }
 
-            let Target = await CommandExecution.guild.getMentionnableByArg(CommandExecution.options.target);
+            let Target = await CommandExecution.Guild.getMentionnableByArg(CommandExecution.options.target);
             if (typeof Target == "undefined" || Target == null)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTargetFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTargetFound.description`, {}));
             let TargetType = (typeof Target.user == "undefined") ? 0 : 1;
 
@@ -155,7 +155,7 @@ module.exports = {
             if (typeof CommandExecution.options.permission == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noPermissionSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noPermissionSpecified.description`, {}));
             
 
-            let Target = await CommandExecution.guild.getMentionnableByArg(CommandExecution.options.target);
+            let Target = await CommandExecution.Guild.getMentionnableByArg(CommandExecution.options.target);
             if (typeof Target == "undefined" || Target == null)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTargetFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTargetFound.description`, {}));
             let TargetType = (typeof Target.user == "undefined") ? 0 : 1;
 
@@ -183,17 +183,17 @@ module.exports = {
     },
     async optionsFromArgs (CommandExecution) {
         var options = {};
-        if (CommandExecution.commandOptions.length == 0)return options;
-        options.subCommand = CommandExecution.commandOptions.shift();
-        options.target = CommandExecution.commandOptions.shift();
-        if (CommandExecution.commandOptions.length != 0)options.permission = CommandExecution.commandOptions.shift();
-        if (CommandExecution.commandOptions.length != 0)options.value = CommandExecution.commandOptions.shift();
-        if (CommandExecution.commandOptions.length != 0)options.priority = CommandExecution.commandOptions.shift();
+        if (CommandExecution.CommandOptions.length == 0)return options;
+        options.subCommand = CommandExecution.CommandOptions.shift();
+        options.target = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.permission = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.value = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.priority = CommandExecution.CommandOptions.shift();
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {
-        var options = Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
-        if (typeof CommandExecution.trigger.options._subcommand != "undefined" && CommandExecution.trigger.options._subcommand != null) options.subCommand = CommandExecution.trigger.options._subcommand;
+        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [val.name, val.value]));
+        if (typeof CommandExecution.Trigger.options._subcommand != "undefined" && CommandExecution.Trigger.options._subcommand != null) options.subCommand = CommandExecution.Trigger.options._subcommand;
         return options;
     },
     makeSlashCommand(i18n) {

@@ -3,14 +3,14 @@ const {MessageEmbed, Permissions} = require('discord.js');
 module.exports = class ChannelLogger {
     constructor(Guild, channelLoggingConfig) {
         this.Guild = Guild;
-        this.config = channelLoggingConfig;
+        this.Config = channelLoggingConfig;
 
         this.initialized = false;
     }
 
     async initialize() {
-        if (!this.config.inChannel || this.config.channel == "none")return false;
-        return this.Guild.guild.channels.fetch(this.config.channel).then(async channel => {
+        if (!this.Config.inChannel || this.Config.channel == "none")return false;
+        return this.Guild.guild.channels.fetch(this.Config.channel).then(async channel => {
             let CanSend = await channel.permissionsFor(this.Guild.GuildManager.TobyBot.client.user.id).has(Permissions.FLAGS.SEND_MESSAGES);
             if (typeof CanSend != "boolean" ||!CanSend)return false;
             this.channel = channel;

@@ -56,7 +56,7 @@ module.exports = {
                 [CommandExecution.i18n.__(`command.${this.name}.view.field.value.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.value.description`, { value: KeyValue }), true],
                 [CommandExecution.i18n.__(`command.${this.name}.view.field.defaultvalue.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.defaultvalue.description`, { defaultValue: KeyDefaultValue }), true],
                 [CommandExecution.i18n.__(`command.${this.name}.view.field.type.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.type.description`, { type: KeyType }), true],
-                //[CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.description`, { guildId: CommandExecution.guild.guild.id, key: CommandExecution.options.key }), true]
+                //[CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.description`, { guildId: CommandExecution.Guild.guild.id, key: CommandExecution.options.key }), true]
             ]
 
             CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.view.title`, { name: KeyName, key: CommandExecution.options.key }), CommandExecution.i18n.__(`command.${this.name}.view.description`, { description: KeyDescription }), fields);
@@ -154,7 +154,7 @@ module.exports = {
             ConfigurationManager.set(CommandExecution.options.key, KeyNewValue);
 
             if (typeof _.get(ConfigurationFunctions, CommandExecution.options.key) == "function"){
-                let updateFunction = await _.get(ConfigurationFunctions, CommandExecution.options.key)(CommandExecution.TobyBot, ConfigurationManager, CommandExecution.guild, CommandExecution);
+                let updateFunction = await _.get(ConfigurationFunctions, CommandExecution.options.key)(CommandExecution.TobyBot, ConfigurationManager, CommandExecution.Guild, CommandExecution);
                 if (typeof updateFunction == "object") {
                     if (typeof updateFunction.status == "boolean" && updateFunction.status == false){
                         ConfigurationManager.set(CommandExecution.options.key, KeyValue);
@@ -173,15 +173,15 @@ module.exports = {
     },
     async optionsFromArgs (CommandExecution) {
         var options = {};
-        if (CommandExecution.commandOptions.length == 0)return options;
-        options.subCommand = CommandExecution.commandOptions.shift();
-        if (CommandExecution.commandOptions.length != 0)options.key = CommandExecution.commandOptions.shift();
-        if (CommandExecution.commandOptions.length != 0)options.value = CommandExecution.commandOptions.join(' ');
+        if (CommandExecution.CommandOptions.length == 0)return options;
+        options.subCommand = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.key = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.value = CommandExecution.CommandOptions.join(' ');
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {
-        var options = Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
-        if (typeof CommandExecution.trigger.options._subcommand != "undefined" && CommandExecution.trigger.options._subcommand != null) options.subCommand = CommandExecution.trigger.options._subcommand;
+        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [val.name, val.value]));
+        if (typeof CommandExecution.Trigger.options._subcommand != "undefined" && CommandExecution.Trigger.options._subcommand != null) options.subCommand = CommandExecution.Trigger.options._subcommand;
         return options;
     },
     makeSlashCommand(i18n) {

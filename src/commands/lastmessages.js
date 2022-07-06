@@ -11,18 +11,18 @@ module.exports = {
     async execute(CommandExecution) {
         if (typeof CommandExecution.options.target == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.description`, {}));
 
-        let User = await CommandExecution.guild.getMemberById(CommandExecution.options.target);
+        let User = await CommandExecution.Guild.getMemberById(CommandExecution.options.target);
         if (typeof User == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.description`, {}));
-        let UserPFP = await CommandExecution.guild.getUserPfp(User);
+        let UserPFP = await CommandExecution.Guild.getUserPfp(User);
 
-        let logs = CommandExecution.guild.MessageManager.getLastMessagesByUser(User.user.id);
+        let logs = CommandExecution.Guild.MessageManager.getLastMessagesByUser(User.user.id);
         if (typeof logs == "undefined" || logs.length == 0)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noLogs.title`), CommandExecution.i18n.__(`command.${this.name}.error.noLogs.description`, {}));
 
         let embedFields = [];
         let embedPages = [];
         let embed = new MessageEmbed({
             title: CommandExecution.i18n.__(`command.${this.name}.embed.title`),
-            color: CommandExecution.guild.ConfigurationManager.get('style.colors.main'),
+            color: CommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
             description: CommandExecution.i18n.__(`command.${this.name}.embed.description`, {userId: User.user.id}),
             author: {
                 name: User.user.tag,
@@ -66,14 +66,14 @@ module.exports = {
     },
     async optionsFromArgs (CommandExecution) {
         var options = {};
-        if (CommandExecution.commandOptions.length == 0)return options;
-        options.target = CommandExecution.commandOptions.shift();
-        options.page = CommandExecution.commandOptions.shift();
+        if (CommandExecution.CommandOptions.length == 0)return options;
+        options.target = CommandExecution.CommandOptions.shift();
+        options.page = CommandExecution.CommandOptions.shift();
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {
-        var options = Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
-        if (typeof CommandExecution.trigger.options._subcommand != "undefined" && CommandExecution.trigger.options._subcommand != null) options.subCommand = CommandExecution.trigger.options._subcommand;
+        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [val.name, val.value]));
+        if (typeof CommandExecution.Trigger.options._subcommand != "undefined" && CommandExecution.Trigger.options._subcommand != null) options.subCommand = CommandExecution.Trigger.options._subcommand;
         return options;
     },
     makeSlashCommand(i18n) {

@@ -14,15 +14,15 @@ module.exports = {
     },
     async optionsFromArgs (CommandExecution) {
         var options = {};
-        if (CommandExecution.commandOptions.length == 0)return options;
-        options.subCommand = CommandExecution.commandOptions.shift();
-        if (CommandExecution.commandOptions.length != 0)options.key = CommandExecution.commandOptions.shift();
-        if (CommandExecution.commandOptions.length != 0)options.value = CommandExecution.commandOptions.join(' ');
+        if (CommandExecution.CommandOptions.length == 0)return options;
+        options.subCommand = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.key = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.value = CommandExecution.CommandOptions.join(' ');
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {
-        var options = Object.fromEntries(Object.entries(CommandExecution.commandOptions).map(([key, val]) => [val.name, val.value]));
-        if (typeof CommandExecution.trigger.options._subcommand != "undefined" && CommandExecution.trigger.options._subcommand != null) options.subCommand = CommandExecution.trigger.options._subcommand;
+        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [val.name, val.value]));
+        if (typeof CommandExecution.Trigger.options._subcommand != "undefined" && CommandExecution.Trigger.options._subcommand != null) options.subCommand = CommandExecution.Trigger.options._subcommand;
         return options;
     },
     makeSlashCommand(i18n) {
