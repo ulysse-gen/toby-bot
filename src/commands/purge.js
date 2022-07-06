@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed, Collection } = require('discord.js');
+const moment = require('moment');
 
 module.exports = {
     name: "purge",
@@ -27,12 +28,18 @@ module.exports = {
                 return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.cantParseAmount.title`), CommandExecution.i18n.__(`command.${this.name}.error.cantParseAmount.description`, {}));
             }
             if (typeof number == "number")CommandExecution.options.amount = number;
-            await CommandExecution.replyMainEmbed({}, CommandExecution.i18n.__(`command.${this.name}.purging.any.title`, { amount: CommandExecution.options.amount }), CommandExecution.i18n.__(`command.${this.name}.purging.any.description`, { amount: CommandExecution.options.amount }));
+            await CommandExecution.replyMainEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.purging.any.title`, { amount: CommandExecution.options.amount }), CommandExecution.i18n.__(`command.${this.name}.purging.any.description`, { amount: CommandExecution.options.amount }));
             
             let filterFunction = (message) => message.id != CommandExecution.Trigger.id;
 
-            let PurgedAmount = await purgeMessages(CommandExecution.Channel, CommandExecution.options.amount, filterFunction, lastMessage.id);
-            if (typeof PurgedAmount == "boolean")return CommandExecution.returnErrorEmbed({followUpIfReturned: true}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotPurge.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotPurge.description`));
+            let PurgedStatus = await purgeMessages(CommandExecution.Channel, CommandExecution.options.amount, filterFunction, lastMessage.id);
+            let PurgedAmount = PurgedStatus.amount;
+
+            if (typeof PurgedStatus.error != "undefined"){
+                if (PurgedStatus.error.fatal)return CommandExecution.returnErrorEmbed({followUpIfReturned: true, ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.fatalError.title`), CommandExecution.i18n.__(`command.${this.name}.error.fatalError.description`, {error: CommandExecution.i18n.__(`command.commandError.${PurgedStatus.error.name}`)}));
+                CommandExecution.returnWarningEmbed({followUpIfReturned: true, ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.nonFatalError.title`), CommandExecution.i18n.__(`command.${this.name}.error.nonFatalError.description`, {error: CommandExecution.i18n.__(`command.commandError.${PurgedStatus.error.name}`)}));
+            }
+
             return CommandExecution.returnSuccessEmbed({followUpIfReturned: true, ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.purged.any.title`, { amount: CommandExecution.options.amount, realAmount: PurgedAmount }), CommandExecution.i18n.__(`command.${this.name}.purged.any.description`, { amount: CommandExecution.options.amount, realAmount: PurgedAmount }));
         }
 
@@ -48,12 +55,17 @@ module.exports = {
             }
             let User = await CommandExecution.Guild.getUserFromArg(CommandExecution.options.target);
             if (typeof User == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.description`, {}));
-            await CommandExecution.replyMainEmbed({}, CommandExecution.i18n.__(`command.${this.name}.purging.user.title`, { userTag: User.user.tag, amount: CommandExecution.options.amount }), CommandExecution.i18n.__(`command.${this.name}.purging.user.description`, { userTag: User.user.tag, amount: CommandExecution.options.amount }));
+            await CommandExecution.replyMainEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.purging.user.title`, { userTag: User.user.tag, amount: CommandExecution.options.amount }), CommandExecution.i18n.__(`command.${this.name}.purging.user.description`, { userTag: User.user.tag, amount: CommandExecution.options.amount }));
             
             let filterFunction = (!CommandExecution.IsSlashCommand) ? (message) => message.author.id == User.user.id : (message) => (message.author.id == User.user.id && message.id != CommandExecution.Trigger.id);
             
-            let PurgedAmount = await purgeMessages(CommandExecution.Channel, CommandExecution.options.amount, filterFunction, lastMessage.id);
-            if (typeof PurgedAmount == "boolean")return CommandExecution.returnErrorEmbed({followUpIfReturned: true}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotPurge.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotPurge.description`));
+            let PurgedStatus = await purgeMessages(CommandExecution.Channel, CommandExecution.options.amount, filterFunction, lastMessage.id);
+            let PurgedAmount = PurgedStatus.amount;
+
+            if (typeof PurgedStatus.error != "undefined"){
+                if (PurgedStatus.error.fatal)return CommandExecution.returnErrorEmbed({followUpIfReturned: true, ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.fatalError.title`), CommandExecution.i18n.__(`command.${this.name}.error.fatalError.description`, {error: CommandExecution.i18n.__(`command.commandError.${PurgedStatus.error.name}`)}));
+                CommandExecution.returnWarningEmbed({followUpIfReturned: true, ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.nonFatalError.title`), CommandExecution.i18n.__(`command.${this.name}.error.nonFatalError.description`, {error: CommandExecution.i18n.__(`command.commandError.${PurgedStatus.error.name}`)}));
+            }
             return CommandExecution.returnSuccessEmbed({followUpIfReturned: true, ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.purged.user.title`, { userTag: User.user.tag, amount: CommandExecution.options.amount, realAmount: PurgedAmount }), CommandExecution.i18n.__(`command.${this.name}.purged.user.description`, { userTag: User.user.tag, amount: CommandExecution.options.amount, realAmount: PurgedAmount }));
         }
 
@@ -67,12 +79,17 @@ module.exports = {
             } catch {
                 return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.cantParseAmount.title`), CommandExecution.i18n.__(`command.${this.name}.error.cantParseAmount.description`, {}));
             }
-            await CommandExecution.replyMainEmbed({}, CommandExecution.i18n.__(`command.${this.name}.purging.match.title`, { match: CommandExecution.options.target, amount: CommandExecution.options.amount }), CommandExecution.i18n.__(`command.${this.name}.purging.match.description`, { match: CommandExecution.options.target, amount: CommandExecution.options.amount }));
+            await CommandExecution.replyMainEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.purging.match.title`, { match: CommandExecution.options.target, amount: CommandExecution.options.amount }), CommandExecution.i18n.__(`command.${this.name}.purging.match.description`, { match: CommandExecution.options.target, amount: CommandExecution.options.amount }));
             
             let filterFunction = (!CommandExecution.IsSlashCommand) ? (message) => message.content.toLowerCase().includes(CommandExecution.options.target.toLowerCase()) : (message) => (message.content.toLowerCase().includes(CommandExecution.options.target.toLowerCase()) && message.id != CommandExecution.Trigger.id);
             
-            let PurgedAmount = await purgeMessages(CommandExecution.Channel, CommandExecution.options.amount, filterFunction, lastMessage.id);
-            if (typeof PurgedAmount == "boolean")return CommandExecution.returnErrorEmbed({followUpIfReturned: true}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotPurge.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotPurge.description`));
+            let PurgedStatus = await purgeMessages(CommandExecution.Channel, CommandExecution.options.amount, filterFunction, lastMessage.id);
+            let PurgedAmount = PurgedStatus.amount;
+
+            if (typeof PurgedStatus.error != "undefined"){
+                if (PurgedStatus.error.fatal)return CommandExecution.returnErrorEmbed({followUpIfReturned: true, ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.fatalError.title`), CommandExecution.i18n.__(`command.${this.name}.error.fatalError.description`, {error: CommandExecution.i18n.__(`command.commandError.${PurgedStatus.error.name}`)}));
+                CommandExecution.returnWarningEmbed({followUpIfReturned: true, ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.nonFatalError.title`), CommandExecution.i18n.__(`command.${this.name}.error.nonFatalError.description`, {error: CommandExecution.i18n.__(`command.commandError.${PurgedStatus.error.name}`)}));
+            }
             return CommandExecution.returnSuccessEmbed({followUpIfReturned: true, ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.purged.match.title`, { match: CommandExecution.options.target, amount: CommandExecution.options.amount, realAmount: PurgedAmount }), CommandExecution.i18n.__(`command.${this.name}.purged.match.description`, { match: CommandExecution.options.target, amount: CommandExecution.options.amount, realAmount: PurgedAmount }));
         }
 
@@ -168,17 +185,26 @@ async function purgeMessages(Channel, Amount, filterFunction = undefined, lastMe
                                                         let FetchedMessagesMap = await fetchedMessages.entries();
                                                         let FetchedMessagesArray = Array.from(FetchedMessagesMap).slice(0, Amount);
                                                         fetchedMessages = new Collection(new Map(FetchedMessagesArray));
-                                                        return Channel.bulkDelete(fetchedMessages.filter(message => !message.pinned)).catch(e =>-1).then(()=>fetchedMessages.size)
+                                                        if (moment().subtract(14, 'days').isAfter(fetchedMessages.first().createdTimestamp))return {error:{fatal: false, name: 'some14Days'}, amount: 0};
+                                                        return Channel.bulkDelete(fetchedMessages.filter(message => (!message.pinned && moment().subtract(14, 'days').isBefore(message.createdTimestamp)))).catch(e =>-1).then(()=>fetchedMessages.filter(message => (!message.pinned && moment().subtract(14, 'days').isBefore(message.createdTimestamp))).size)
                                                     }).catch(e=>{
                                                         console.log(e);
-                                                        return -1;
+                                                        return {error:{fatal: false, name: 'someNotDeleted'}, amount: 0};
                                                     });
-                  
-    let totalRemoved = 0;
+
+       
+    let returnValue = {
+        amount: 0
+    };
     for (let currentlyRemoved = 0; currentlyRemoved <= Amount;) {
-        currentlyRemoved = await purgeMessages(Channel, (Amount-currentlyRemoved > runPer) ? runPer : Amount-currentlyRemoved, filterFunction);
-        totalRemoved += currentlyRemoved;
+        currentlyRemoved = await purgeMessages(Channel, (Amount-currentlyRemoved > runPer) ? runPer : Amount-currentlyRemoved, filterFunction, lastMessageId);
+        if (typeof currentlyRemoved == "object"){
+            returnValue.amount += currentlyRemoved.amount;
+            returnValue.error = currentlyRemoved.error;
+        }else {
+            returnValue.amount += currentlyRemoved;
+        }
         if (currentlyRemoved <= 0)break;
     }
-    return (totalRemoved >= 0) ? totalRemoved : false;
+    return returnValue;
 }

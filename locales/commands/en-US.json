@@ -376,11 +376,16 @@
 	"command.purge.error.couldNotFetchMessages.title": "Could not fetch messages.",
 	"command.purge.error.couldNotFetchMessages.description": "{{{error}}}",
 	"command.purge.error.couldNotPurge.title": "Could not purge.",
-	"command.purge.error.couldNotPurge.description": "An error occured trying to purge.",
+	"command.purge.error.couldNotPurge.description": "An error occured trying to purge. {{{error}}}",
 	"command.purge.purging.match.title": "Purging {{{amount}}} messages.",
 	"command.purge.purging.match.description": "The channel is being purged of {{{amount}}} messages matching `{{{match}}}`.",
 	"command.purge.purged.match.title": "Purged {{{amount}}} messages.",
 	"command.purge.purged.match.description": "The channel has been purged of {{{amount}}} messages matching `{{{match}}}`.",
 	"command.purge.error.cantParseAmount.title": "Cannot parse amount.",
-	"command.purge.error.cantParseAmount.description": "Could not parse the amount."
+	"command.purge.error.cantParseAmount.description": "Could not parse the amount.",
+	"command.commandError.some14Days": "Cannot remove messages older than two weeks.",
+	"command.purge.error.nonFatalError.title": "Non fatal error",
+	"command.purge.error.nonFatalError.description": "An error occured while purging. {{{error}}}",
+	"command.purge.error.fatalError.title": "Fatal error",
+	"command.purge.error.fatalError.description": "An error occured while purging. {{{error}}}"
 }
