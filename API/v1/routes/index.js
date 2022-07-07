@@ -24,6 +24,6 @@ module.exports = (API) => {
     router.use('/infos', infosController(router.API));
     router.use('/commands', commandController(router.API));
     router.use('/configuration', configurationController(router.API));
-    //router.use('/system', systemController(router.API));
+    router.use('/system', systemController(router.API));
     return router;
 };

@@ -391,5 +391,7 @@
 	"command.lastmessages.embed.fieldBody.deletedKeyword": "\n`Deleted message`",
 	"command.lastmessages.embed.fieldBody.editedKeyword": "\n`Edited message`",
 	"command.punishmenttranscript.embed.fieldBody.deletedKeyword": "\n`Deleted message`",
-	"command.punishmenttranscript.embed.fieldBody.editedKeyword": "\n`Edited message`"
+	"command.punishmenttranscript.embed.fieldBody.editedKeyword": "\n`Edited message`",
+	"command.mute.error.noReasonSpecified.title": "command.mute.error.noReasonSpecified.title",
+	"command.mute.error.noReasonSpecified.description": "command.mute.error.noReasonSpecified.description"
 }

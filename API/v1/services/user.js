@@ -69,3 +69,13 @@ exports.auth = async (API, req, res, next) => {
         return res.status(501).json('error');
     }
 }
+
+exports.genPassword = async (API, req, res, next) => {
+    const { password } = req.body;
+
+    try {
+        res.status(200).json(bcrypt.hashSync(password, 10));
+    } catch (error) {
+        return res.status(501).json('error');
+    }
+}

@@ -25,6 +25,7 @@ module.exports = class User {
         apiVersion.numId = this.numId;
         apiVersion.id = this.id;
         apiVersion.user = this.user;
+        apiVersion.authToken = this.authToken;
         apiVersion.configuration = this.ConfigurationManager.configuration;
         apiVersion.permissionLevel = this.permissionLevel;
         return apiVersion;

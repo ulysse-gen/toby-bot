@@ -54,3 +54,7 @@ docker build . -t ulyssegen-toby-bot
 - Slap
 - Welcome
 - Lockdown?
+
+# Current errors to fix: 
+
+- none

@@ -103,7 +103,7 @@ module.exports = class CommandExecution {
                         if (["spoofExecutor"].includes(modifierName)){
                             let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofExecutor`);
                             if (!checkPermission)return {permissionDenied: `commands.spoofExecutor`};
-                            this.Executor = (await this.Guild.getMemberById(modifierValue).user);
+                            this.Executor = (await this.Guild.getMemberById(modifierValue));
         
                             this.spoofing = true;
                             this.CommandOptions = this.CommandOptions.filter(function(e) { return e !== argument });

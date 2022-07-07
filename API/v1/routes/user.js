@@ -10,6 +10,8 @@ router.get('/:id', (...args)=>security.checkJWT(router.API, ...args), (...args)=
 
 router.post('/auth', (...args)=>service.auth(router.API, ...args));
 
+router.post('/genpassword', (...args)=>service.genPassword(router.API, ...args));
+
 module.exports = (API) => {
     router.API = API;
     return router;

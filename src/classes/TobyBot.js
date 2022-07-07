@@ -241,6 +241,7 @@ module.exports = class TobyBot {
 
     async checkCommunityGuild(attempt = 0) {
         let tryFetch = async () => {
+            if (this.ConfigurationManager.get('communityGuild').replaceAll(' ', '') == "")return false;
             this.CommunityGuild = await this.GuildManager.getGuildById(this.ConfigurationManager.get('communityGuild'));
             return (typeof this.CommunityGuild == "undefined") ? false : true;
         }
