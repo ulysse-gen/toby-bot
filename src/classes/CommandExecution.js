@@ -46,7 +46,7 @@ module.exports = class CommandExecution {
     async deferIfNeeded() {
         let _this = this;
         return setTimeout(() => {
-            if (!_this.Trigger.replied && _this.IsSlashCommand){
+            if (!_this.Trigger.replied && !_this.Trigger.deferred && _this.IsSlashCommand){
                 _this.Trigger.reply = async(...args) => {
                     return _this.Trigger.editReply(...args);
                 }

@@ -141,7 +141,7 @@
 	"command.justtotrythewait.name": "command.justtotrythewait.name",
 	"command.lastmessages.description": "List the last X messages sent by the user",
 	"command.lastmessages.embed.description": "Last messages sent by <@{{{userId}}}>.",
-	"command.lastmessages.embed.fieldBody": "Content: {{{content}}}\nAttachments: {{{attachments}}}\nStickers: {{{stickers}}}\nSent in: <#{{{channelId}}}>\nSent at: <t:{{{timestamp}}}>",
+	"command.lastmessages.embed.fieldBody": "Content: {{{content}}}\nAttachments: {{{attachments}}}\nStickers: {{{stickers}}}\nSent in: <#{{{channelId}}}>\nSent at: <t:{{{timestamp}}}>{{{deleted}}}{{{edited}}}",
 	"command.lastmessages.embed.fieldName": "**Message Entry**",
 	"command.lastmessages.embed.title": "Last messages",
 	"command.lastmessages.error.noLogs.description": "The bot did not log any of the use messages since last startup.",
@@ -216,7 +216,7 @@
 	"command.permission.view.single.title": "Permission state",
 	"command.punishmenttranscript.description": "List the last X messages sent by the user before the punishment",
 	"command.punishmenttranscript.embed.description": "Last messages sent by <@{{{userId}}}> before the {{{punishmentType}}}.",
-	"command.punishmenttranscript.embed.fieldBody": "Content: {{{content}}}\nAttachments: {{{attachments}}}\nStickers: {{{stickers}}}\nSent in: <#{{{channelId}}}>\nSent at: <t:{{{timestamp}}}>",
+	"command.punishmenttranscript.embed.fieldBody": "Content: {{{content}}}\nAttachments: {{{attachments}}}\nStickers: {{{stickers}}}\nSent in: <#{{{channelId}}}>\nSent at: <t:{{{timestamp}}}>{{{deleted}}}{{{edited}}}",
 	"command.punishmenttranscript.embed.fieldName": "**Message Entry**",
 	"command.punishmenttranscript.embed.title": "Last messages",
 	"command.punishmenttranscript.name": "Punishment transcript",
@@ -387,5 +387,9 @@
 	"command.purge.error.nonFatalError.title": "Non fatal error",
 	"command.purge.error.nonFatalError.description": "An error occured while purging. {{{error}}}",
 	"command.purge.error.fatalError.title": "Fatal error",
-	"command.purge.error.fatalError.description": "An error occured while purging. {{{error}}}"
+	"command.purge.error.fatalError.description": "An error occured while purging. {{{error}}}",
+	"command.lastmessages.embed.fieldBody.deletedKeyword": "\n`Deleted message`",
+	"command.lastmessages.embed.fieldBody.editedKeyword": "\n`Edited message`",
+	"command.punishmenttranscript.embed.fieldBody.deletedKeyword": "\n`Deleted message`",
+	"command.punishmenttranscript.embed.fieldBody.editedKeyword": "\n`Edited message`"
 }

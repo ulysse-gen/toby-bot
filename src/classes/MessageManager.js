@@ -24,7 +24,21 @@ module.exports = class MessageManager {
     }
 
     getMessageById(messageId) {
-        return (this.allMessages.filter(x=>x.messageId == messageId));
+        return (this.allMessages.filter(x=>x.messageId == messageId))[0];
+    }
+
+    async updateMessage(oldMessage, newMessage) {
+        let messageToUpdate = this.getMessageById(oldMessage.id);
+        if (typeof messageToUpdate == "undefined")return this.addMessage(newMessage);
+        messageToUpdate.history.push(oldMessage);
+        messageToUpdate.message = newMessage;
+        return true;
+    }
+
+    async deleteMessage(message) {
+        let messageToUpdate = this.getMessageById(message.id);
+        messageToUpdate.deleted = true;
+        return true;
     }
 
     async addMessage(message) {
@@ -34,6 +48,7 @@ module.exports = class MessageManager {
             channelId: message.channel.id,
             guildId: message.channel.guild.id,
             userId: message.author.id,
+            deleted: false,
             message: message,
             history: []
         };
