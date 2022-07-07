@@ -1,4 +1,4 @@
-# toby-bot
+# Toby Bot
 
 Toby Bot v4 is on its way, rebuilding from the ground up.
 
@@ -15,7 +15,6 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - DM Handling?
 - Presence
 - Changelog of some kind (& update alert in channel?)
-- Logs on SQL
 
 ### Commands:
 

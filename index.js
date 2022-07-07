@@ -52,6 +52,7 @@ process.stdin.resume();
 //Exit handling function
 async function exitHandler(reason, exit) {
     if (reason == "SIGINT" || reason == "SIGUSR1" || reason == "SIGUSR2") {
+        if (GlobalBot.shuttingDown)return false;
         await MainLog.log(`[Process Exit][${reason}]Closing process, saving and closing.`);
     } else if (reason == "uncaughtException" || reason == "unhandledRejection") {
         GlobalBot.LifeMetric.addEntry("uncaughtException", {error: exit});
@@ -61,8 +62,7 @@ async function exitHandler(reason, exit) {
     } else {
         MainSQLLog.log(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
     }
-    await GlobalBot.LifeMetric.end();
-    process.exit();
+    await GlobalBot.shutdown(reason, exit);
 }
 
 //do something when app is closing

@@ -20,5 +20,6 @@ module.exports = class MetricManager {
         if (typeof this.metrics[id] == "undefined") throw new Error('Unknown metric.');
         let metricToEnd = this.metrics[id];
         metricToEnd.addEntry(`end`);
+        return metricToEnd;
     }
 }

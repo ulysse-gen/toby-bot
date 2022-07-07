@@ -23,17 +23,20 @@
     "logging": {
         "commandExecution": {
             "inConsole": true,
+            "inSQL": true,
             "inChannel": false,
             "channel": "none",
             "logFailed": true
         },
         "moderationLogs": {
             "inConsole": true,
+            "inSQL": true,
             "inChannel": false,
             "channel": "none"
         },
         "autoModerationLogs": {
             "inConsole": true,
+            "inSQL": true,
             "inChannel": false,
             "channel": "none"
         },

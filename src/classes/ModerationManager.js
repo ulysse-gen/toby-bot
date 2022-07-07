@@ -40,8 +40,12 @@ module.exports = class ModerationManager {
 
         let expireDate = (typeof length == "number") ? moment().add(length, 'seconds').format(`YYYY-MM-DD HH:mm-ss`) : moment().format(`YYYY-MM-DD HH:mm-ss`);
 
-        let values = [type, (typeof length == "number") ? `active` : (typeof length == "boolean") ? (length == false) ? "info" : "indefinite" : "indefinite", this.Guild.guild.id, PunishedId, PunisherId, reason, JSON.stringify(await this.Guild.MessageManager.getLastMessagesByUser(PunishedId)), expireDate];
+        let historyLog = JSON.stringify(await this.Guild.MessageManager.getLastMessagesByUser(PunishedId));
+
+        let values = [type, (typeof length == "number") ? `active` : (typeof length == "boolean") ? (length == false) ? "info" : "indefinite" : "indefinite", this.Guild.guild.id, PunishedId, PunisherId, reason, historyLog, expireDate];
         let valueNames = ["type", "status", "guildId", "userId", "moderatorId", "reason", "logs", "expires"];
+
+        if (await this.Guild.GuildManager.TobyBot.ConfigurationManager.get('logging.commandExecution.inSQL'))await this.Guild.GuildManager.TobyBot.SQLLogger.logModerationAction(PunishedId, PunisherId, type, reason, length, historyLog);
 
         return new Promise((res, rej) => {
             _this.Guild.SQLPool.query(`INSERT INTO \`moderation\` (\`${valueNames.join('`,`')}\`) VALUES (?,?,?,?,?,?,?,?)`, values, async (error, results) => {

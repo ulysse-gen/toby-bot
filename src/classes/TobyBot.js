@@ -7,10 +7,12 @@ const { Client,Intents } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 const fs = require(`fs`);
 const mysql = require(`mysql`);
+const colors = require(`colors`);
 const _ = require(`lodash`);
 
 //Importing classes
 const FileLogger = require('./FileLogger');
+const SQLLogger = require('./SQLLogger');
 const SQLConfigurationManager = require('./SQLConfigurationManager');
 const SQLPermissionManager = require('./SQLPermissionManager');
 const MetricManager = require('./MetricManager');
@@ -47,6 +49,7 @@ module.exports = class TobyBot {
         this.loggers = {};
 
         this.catchErrorsPreventClose = false;
+        this.shuttingDown = false;
     }
 
     async start() {
@@ -56,7 +59,7 @@ module.exports = class TobyBot {
         this.LifeMetric.addEntry("SQLInit");
         await this.SQLInit();
 
-        MainLog.log(this.i18n.__('bot.start', {version: this.PackageInformations.version}));
+        MainLog.log(this.i18n.__('bot.start', {version: this.PackageInformations.version.green}));
         this.LifeMetric.addEntry("ManagersInit");
         await this.initManagers().catch(e => { throw e }); //Init the managers
         this.LifeMetric.addEntry("EventAttach");
@@ -98,6 +101,9 @@ module.exports = class TobyBot {
 
         this.LifeMetric.addEntry("ManagersAttach");
         await this.attachManagers();  //Attach the managers
+
+        
+        this.SQLLogger = new SQLLogger(this.TopConfigurationManager.get('MySQL'), 'logs'); //Cheat cuz i need this here
         return true;
     }
 
@@ -253,5 +259,13 @@ module.exports = class TobyBot {
             MainLog.log(this.i18n.__('bot.inputCommunityGuild.defined'));
             return this.checkCommunityGuild(attempt+1);
         }else return true;
+    }
+
+    async shutdown(reason = "undefined", exit = "undefined") {
+        if (this.shuttingDown)return true;
+        this.shuttingDown = true;
+        await this.LifeMetric.end();
+        if (typeof this.SQLLogger != "undefined")await this.SQLLogger.logShutdown(this, reason, exit);
+        process.exit();
     }
 }

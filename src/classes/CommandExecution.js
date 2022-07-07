@@ -133,6 +133,7 @@ module.exports = class CommandExecution {
 
     async denyPermission(permission) {
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')) {
+            if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inSQL'))await this.TobyBot.SQLLogger.logCommandExecution(this, 'denied');
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.permissionDenied', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel')) && typeof this.TobyBot.loggers.commandExecution != "undefined"){
                 let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.commandExecution.error.deny.title')).setDescription(this.TobyBot.i18n.__('channelLogging.commandExecution.error.deny.description', {command: `||Need to work on this. (should be showing command details e.g. args)||`})).setColor(this.TobyBot.ConfigurationManager.get('style.colors.error'));
@@ -166,6 +167,7 @@ module.exports = class CommandExecution {
 
     async unknownCommand() {
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')) {
+            if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inSQL'))await this.TobyBot.SQLLogger.logCommandExecution(this, 'unknown');
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.unknownCommand', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel')) && typeof this.TobyBot.loggers.commandExecution != "undefined"){
                 let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.commandExecution.error.unknown.title')).setDescription(this.TobyBot.i18n.__('channelLogging.commandExecution.error.unknown.description', {command: `||Need to work on this. (should be showing command details e.g. args)||`})).setColor(this.TobyBot.ConfigurationManager.get('style.colors.error'));
@@ -197,6 +199,7 @@ module.exports = class CommandExecution {
     }
 
     async logExecution() {
+        if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inSQL'))await this.TobyBot.SQLLogger.logCommandExecution(this);
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole'))MainLog.log(this.TobyBot.i18n.__((typeof this.spoofing != "undefined") ? 'bot.command.execution.spoofed' : 'bot.command.execution', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, command: `${this.Command.name}`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel') && typeof this.TobyBot.loggers.commandExecution != "undefined"){
             let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.commandExecution.title')).setDescription(this.Guild.i18n.__('channelLogging.commandExecution.description', {command: `${this.Command.name} ${Object.entries(this.options).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.Guild.ConfigurationManager.get('style.colors.main'));
@@ -223,6 +226,40 @@ module.exports = class CommandExecution {
         }
                 
         return true;
+    }
+
+    async makeSQLLog(type, specificity = undefined) {
+        let contextReturn = {guildId: this.Guild.guild.id, channelId: this.Channel.id, triggerId: this.Trigger.id, executorId: this.Executor.id, IsSlashCommand: this.IsSlashCommand};
+        if (typeof this.spoofing == "boolean" && this.spoofing)contextReturn = Object.assign({spoofedFrom: {guildId: this.RealGuild.guild.id, channelId: this.RealChannel.id, executorId: this.RealExecutor.id} }, locationReturn);
+
+        let contentReturn = {};
+
+        switch (specificity) {
+            case 'unknown':
+                contextReturn = Object.assign({unknownCommand: true}, contextReturn);
+                contentReturn = (this.IsSlashCommand) ? { trigger: this.Trigger.commandName, isSlashCommand: this.IsSlashCommand } : { trigger: this.Trigger.content, isSlashCommand: this.IsSlashCommand }
+                break;
+
+            case 'denied':
+                contextReturn = Object.assign({permissionDenied: true}, contextReturn);
+                contentReturn = {command: this.Command.name, options: this.options, IsSlashCommand: this.IsSlashCommand};
+                break;
+        
+            default:
+                contentReturn = {command: this.Command.name, options: this.options, IsSlashCommand: this.IsSlashCommand};
+                break;
+        }
+
+        switch (type) {
+            case 'context':
+                return JSON.stringify(contextReturn);
+
+            case 'content':
+                return JSON.stringify(contentReturn);
+        
+            default:
+                return '{}';
+        }
     }
 
     /** Finish the execution by returning an embed

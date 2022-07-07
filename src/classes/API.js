@@ -3,12 +3,10 @@
 /////////////////////////////////
 
 //Importing NodeJS Modules
-const mysql = require(`mysql`);
-const _ = require(`lodash`);
 const express = require('express');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const colors = require('colors');
 
 //Importing classes
 const FileLogger = require('./FileLogger');
@@ -48,7 +46,7 @@ module.exports = class API {
 
     async start() {
         return this.app.listen(this.TobyBot.TopConfigurationManager.get('API.port'), () => {
-            MainLog.log(this.i18n.__('bot.api.started', {port: this.TobyBot.TopConfigurationManager.get('API.port')}));
+            MainLog.log(this.i18n.__('bot.api.started', {port: this.TobyBot.TopConfigurationManager.get('API.port').toString().green}));
         });
     }
 }

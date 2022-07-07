@@ -5,6 +5,7 @@
 
 //Importing NodeJS Modules
 const fs = require(`fs`);
+const colors = require(`colors`);
 const { I18n } = require('i18n');
 const {
     Routes
@@ -73,7 +74,7 @@ module.exports = class Metric {
                     body: this.slashCommands
                 },
             );
-            MainLog.log(this.TobyBot.i18n.__('bot.slashCommandRegistered'));
+            MainLog.log(this.TobyBot.i18n.__('bot.slashCommandRegistered', {amount: this.slashCommands.length.toString().green}));
         } catch (error) {
             throw error;
         }
