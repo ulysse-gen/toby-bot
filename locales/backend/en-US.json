@@ -38,5 +38,11 @@
 	"bot.moderation.ban": "{{{punishedTag}}}({{{punishedId}}}) has been banned by {{{punisherTag}}}({{{punisherId}}}) in [{{{guildId}}}] for {{{punishReason}}} | CaseID: {{{caseId}}}",
 	"bot.moderation.unban": "({{{punishedId}}}) has been unbanned by {{{updaterTag}}}({{{updaterId}}}) in [{{{guildId}}}] for {{{updateReason}}}",
 	"bot.moderation.unmute": "({{{punishedId}}}) has been unmuted by {{{updaterTag}}}({{{updaterId}}}) in [{{{guildId}}}] for {{{updateReason}}}",
-	"bot.communityguild.cannotfetch": "Could not fetch the community guild."
+	"bot.communityguild.cannotfetch": "Could not fetch the community guild.",
+	"bot.inputToken.question": "Please enter the bot token:",
+	"bot.inputToken.defined": "New token defined.",
+	"bot.inputToken.couldNotLogin": "Could not login with the provided token.",
+	"bot.inputCommunityGuild.question": "Please enter the community guild ID:",
+	"bot.inputCommunityGuild.defined": "Community guild defined.",
+	"bot.inputCommunityGuild.couldNotFetch": "Could not fetch the provided community guild."
 }

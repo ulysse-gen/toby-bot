@@ -20,6 +20,7 @@ const CommandManager = require('./CommandManager');
 const ChannelLogger = require('./ChannelLogger');
 const ModerationManager = require('./ModerationManager');
 const API = require('./API');
+const Console = require('./Console');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -40,6 +41,7 @@ module.exports = class TobyBot {
         this.ConfigurationManager = undefined;
         this.PermissionManager = undefined;
         this.MetricManager = new MetricManager();
+        this.Console = new Console(this);
         this.LifeMetric = this.MetricManager.createMetric("LifeMetric"); //Create the main "LifeMetric" that will follow everything that might happen which is code related (e.g. errors)
 
         this.loggers = {};
@@ -48,9 +50,9 @@ module.exports = class TobyBot {
     }
 
     async start() {
-
         this.LifeMetric.addEntry("TopConfigurationManagerInit");
         await this.TopConfigurationManager.initialize().catch(e => { throw e} );  //Init Top ConfigurationManager
+
         this.LifeMetric.addEntry("SQLInit");
         await this.SQLInit();
 
@@ -60,8 +62,7 @@ module.exports = class TobyBot {
         this.LifeMetric.addEntry("EventAttach");
         await this.attachEvents().catch(e => { throw e }); //Attach events
         this.LifeMetric.addEntry("BotLogin");
-        await this.client.login(this.ConfigurationManager.configuration.token);
-        this.rest = new REST({ version: '9' }).setToken(this.ConfigurationManager.configuration.token);
+        await this.attemptLogin();
         await this.CommandManager.pushSlashCommands();
         this.LifeMetric.addEntry("botReady");
         this.LifeMetric.addEntry("LoggersInit");
@@ -72,24 +73,25 @@ module.exports = class TobyBot {
     }
 
     async initManagers() {
+        this.LifeMetric.addEntry("CreateSQLPool");
+        this.SQLPool = mysql.createPool(this.TopConfigurationManager.get('MySQL'));
+
+
         this.LifeMetric.addEntry("ConfigurationManagerCreate");
         this.ConfigurationManager = new SQLConfigurationManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../../configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
         this.LifeMetric.addEntry("ConfigurationManagerInit");
-        await this.ConfigurationManager.initialize(); //Init the Global ConfigurationManager
+        await this.ConfigurationManager.initialize(true, undefined, undefined, this); //Init the Global ConfigurationManager
 
         
         this.LifeMetric.addEntry("PermissionManagerCreate");
         this.PermissionManager = new SQLPermissionManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../../configurations/defaults/GlobalPermissions.json'), true); //Create the Global PermissionManager
         this.LifeMetric.addEntry("PermissionManagerInit");
-        await this.PermissionManager.initialize(); //Init the Global PermissionManager
+        await this.PermissionManager.initialize(true, undefined, undefined, this); //Init the Global PermissionManager
 
         this.LifeMetric.addEntry("CommandManagerCreate");
         this.CommandManager = new CommandManager(this); //Create the Global CommandManager
         this.LifeMetric.addEntry("CommandManagerInit");
         await this.CommandManager.initialize(); //Init the Global CommandManager
-
-        this.LifeMetric.addEntry("CreateSQLPool");
-        this.SQLPool = mysql.createPool(this.TopConfigurationManager.get('MySQL'));
  
         this.UserManager = new UserManager(this);
         this.GuildManager = new GuildManager(this);
@@ -137,11 +139,7 @@ module.exports = class TobyBot {
     }
 
     async initLoggers(){
-        this.CommunityGuild = await this.GuildManager.getGuildById(this.ConfigurationManager.get('communityGuild')).catch(e => {
-            ErrorLog.error(this.i18n.__('bot.communityguild.cannotfetch'));
-            console.log(e)
-            process.exit();
-        });
+        await this.checkCommunityGuild();
         for (const logger in this.ConfigurationManager.get('logging')) {
             this.loggers[logger] = new ChannelLogger(this.CommunityGuild, this.ConfigurationManager.get(`logging.${logger}`))
             await this.loggers[logger].initialize();
@@ -169,21 +167,90 @@ module.exports = class TobyBot {
     }
 
     async SQLInit() {
-        let con = mysql.createConnection(_.omit(_.cloneDeep(this.TopConfigurationManager.get('MySQL')), ['database']));
-        con.connect((err) => {
-            if (err && err.code == "ECONNREFUSED")ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). Check that your SQL is running and your configuration.`);
+        let _this = this;
+        let con = mysql.createConnection(Object.assign({multipleStatements: true}, _.omit(_.cloneDeep(this.TopConfigurationManager.get('MySQL')), ['database'])));
+        return new Promise((res, rej) => {
+            con.connect(async (err) => {
+                if (err){
+                    console.log(err);
+                    switch (err.code) {
+                        case "ECONNREFUSED":
+                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). Check that your SQL is running and your configuration.`);
+                            break;
+    
+                        case "ER_ACCESS_DENIED_ERROR":
+                            ErrorLog.error(`Could not login to the database. Check your configuration.`);
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                    process.exit();
+                }
+    
+                return con.query(`SELECT schema_name FROM information_schema.schemata WHERE schema_name = '${_this.TopConfigurationManager.get('MySQL.database')}';`, async (err, result, fields) => {
+                    if (result.length == 0){
+                        return con.query(`CREATE DATABASE \`${_this.TopConfigurationManager.get('MySQL.database')}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`, async (err, result) => {
+                            if (err) throw err;
+                            return con.query(`USE \`${_this.TopConfigurationManager.get('MySQL.database')}\`; ` + fs.readFileSync(`${process.cwd()}/tobybot-structure.sql`).toString(), async (err, result) => {
+                                if (err) throw err;
+                                MainLog.log(`Created database and imported structure.`);
+                                res(true);
+                            });
+                        });
+                    }else {
+                        res(true);
+                    }
+                });
+            });
+        })
+    }
 
-            con.query(`USE \`${this.TopConfigurationManager.get('MySQL.database')}\``, (err, result, fields) => {
-                if (err && err.code == "ER_BAD_DB_ERROR") {
-                    ErrorLog.error(`Missing database (${this.TopConfigurationManager.get('MySQL.database')}), creating it.`);
-                    con.query(`CREATE DATABASE \`${this.TopConfigurationManager.get('MySQL.database')}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`, function (err, result) {
-                        if (err) throw err;
-                        ErrorLog.error(`Database created, you may now import the structure with the basics infos before restarting.`);
-                        process.exit();
+    async createInSQL() {
+        return new Promise((res, _rej) => {
+            this.SQLPool.query(`SELECT * FROM \`tobybot\` WHERE numId=1`, (error, results) => {
+                if (error)throw error;
+                if (results.length == 0){
+                    this.SQLPool.query(`INSERT INTO \`tobybot\` (numId, configuration, permissions) VALUES (?,?,?)`, [1, JSON.stringify(require('../../configurations/defaults/GlobalConfiguration.json')), JSON.stringify(require('../../configurations/defaults/GlobalPermissions.json'))], async (error, results) => {
+                        if (error)throw error;
+                        if (results.affectedRows != 1) throw new Error('Could not create tobybot.')
+                        res(true);
                     });
+                }else {
+                    res(true);
                 }
             });
         });
+    }
+    
+    async attemptLogin(attempt = 0) {
+        let tryLogin = async () => {
+            let loggedIn = await this.client.login(this.ConfigurationManager.get('token')).then(()=>true).catch(()=>false);
+            if (loggedIn)this.rest = new REST({ version: '9' }).setToken(this.ConfigurationManager.get('token'));
+            return loggedIn;
+        }
 
+
+        if (!await tryLogin()){
+            MainLog.log(this.i18n.__('bot.inputToken.couldNotLogin'));
+            await this.ConfigurationManager.set('token', await this.Console.askForToken());
+            MainLog.log(this.i18n.__('bot.inputToken.defined'));
+            return this.attemptLogin(attempt+1);
+        }else return true;
+    }
+
+    async checkCommunityGuild(attempt = 0) {
+        let tryFetch = async () => {
+            this.CommunityGuild = await this.GuildManager.getGuildById(this.ConfigurationManager.get('communityGuild'));
+            return (typeof this.CommunityGuild == "undefined") ? false : true;
+        }
+
+
+        if (!await tryFetch()){
+            MainLog.log(this.i18n.__('bot.inputCommunityGuild.couldNotFetch'));
+            await this.ConfigurationManager.set('communityGuild', await this.Console.askForCommunityGuild());
+            MainLog.log(this.i18n.__('bot.inputCommunityGuild.defined'));
+            return this.checkCommunityGuild(attempt+1);
+        }else return true;
     }
 }

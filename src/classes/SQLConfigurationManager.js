@@ -36,7 +36,7 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         this.saveCooldown = 10;
     }
 
-    async initialize(createIfNonExistant = false, guildDependent = undefined, userDependent = undefined) {
+    async initialize(createIfNonExistant = false, guildDependent = undefined, userDependent = undefined, tobybotDependent = undefined) {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
 
@@ -49,12 +49,16 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         if (typeof this.SQLConnectionInfos.connectionLimit != "number") throw new Error('Wrong type given for SQLConnectionInfos.connectionLimit.');
 
         if (typeof guildDependent != "undefined"){
-            this.Guild = guildDependent;
+            this.Dependency = guildDependent;
             this.SQLPool = guildDependent.SQLPool;
         }
         if (typeof userDependent != "undefined"){
-            this.User = userDependent;
+            this.Dependency = userDependent;
             this.SQLPool = userDependent.UserManager.SQLPool;
+        }
+        if (typeof tobybotDependent != "undefined"){
+            this.Dependency = tobybotDependent;
+            this.SQLPool = tobybotDependent.SQLPool;
         }
         if (typeof this.SQLPool == "undefined") {
             if (this.verbose)MainLog.log(`Creating SQL Pool [${moment().diff(startTimer)}ms]`);
@@ -65,16 +69,8 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
 
         if (!loaded) {
             if (!createIfNonExistant) return false;
-            if (typeof guildDependent != "undefined"){
-                await this.Guild.createInSQL().then(async () => {
-                    await this.load(true).then(loaded => {
-                        if (!loaded) throw new Error('Could not load configuration');
-                    });
-                });
-            }
-
-            if (typeof userDependent != "undefined"){
-                await this.User.createInSQL().then(async () => {
+            if (typeof this.Dependency != "undefined"){
+                await this.Dependency.createInSQL().then(async () => {
                     await this.load(true).then(loaded => {
                         if (!loaded) throw new Error('Could not load configuration');
                     });

@@ -1,20 +1,13 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
 
 CREATE TABLE `guilds` (
   `numId` int(11) NOT NULL,
   `id` varchar(18) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'en',
+  `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'en-US',
   `configuration` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`configuration`)),
-  `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL
+  `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`permissions`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `moderation` (
@@ -35,12 +28,17 @@ CREATE TABLE `moderation` (
 
 CREATE TABLE `tobybot` (
   `numId` int(11) NOT NULL,
-  `configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `configuration` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`configuration`)),
   `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`permissions`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `tobybot` (`numId`, `configuration`, `permissions`) VALUES
-(1, '{\"appName\":\"Toby Bot\",\"token\":\"XXXXXXXXX\",\"prefix\":\"$toby.gg$\",\"prefixes\":[\"$toby.gg$\",\"tobybot.\",\"tbb.\",\"tbb!\"],\"communityGuild\":\"947407448799604766\",\"style\":{\"colors\":{\"success\":\"#00FF68\",\"error\":\"#FF654D\",\"warning\":\"#FFD02F\",\"main\":\"#EF2FFF\"}},\"blocked\":{\"users\":{},\"guilds\":{}},\"logging\":{\"commandExecution\":{\"inConsole\":true,\"inChannel\":true,\"channel\":\"992538311900004502\",\"logFailed\":true},\"moderationLogs\":{\"inConsole\":true,\"inChannel\":true,\"channel\":\"992538592972910674\"},\"autoModerationLogs\":{\"inConsole\":true,\"inChannel\":true,\"channel\":\"992538592972910674\"}}}', '{\"users\":{},\"channels\":{},\"roles\":{},\"guilds\":{}}');
+CREATE TABLE `users` (
+  `numId` int(11) NOT NULL,
+  `id` varchar(18) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `authToken` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `configuration` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`configuration`)),
+  `permissionLevel` int(11) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 ALTER TABLE `guilds`
@@ -52,6 +50,9 @@ ALTER TABLE `moderation`
 ALTER TABLE `tobybot`
   ADD PRIMARY KEY (`numId`);
 
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`numId`);
+
 
 ALTER TABLE `guilds`
   MODIFY `numId` int(11) NOT NULL AUTO_INCREMENT;
@@ -60,9 +61,8 @@ ALTER TABLE `moderation`
   MODIFY `numId` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `tobybot`
-  MODIFY `numId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `numId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `users`
+  MODIFY `numId` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

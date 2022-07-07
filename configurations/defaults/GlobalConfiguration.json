@@ -1,9 +1,13 @@
 {
+    "system": {
+        "config-version": 0.1,
+        "config-type": "global"
+    },
     "appName": "Toby Bot",
-    "token": "thisIsAnObviouslyFakeToken",
+    "token": "",
     "prefix": "$toby.gg$",
     "prefixes": ["$toby.gg$", "tobybot.", "tbb."],
-    "communityGuild": "12345678912345678",
+    "communityGuild": "",
     "style": {
         "colors": {
             "success": "#00FF68",
