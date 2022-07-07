@@ -1,5 +1,5 @@
 /////////////////////////////////
-//Message create event handler
+//Message delete event handler
 /////////////////////////////////
 
 //Importing classes
@@ -16,7 +16,7 @@ module.exports = {
         if (typeof TobyBot == "undefined")throw `${__filename}(): TobyBot is undefined.`;
         message.TobyBot = {TobyBot: TobyBot};
 
-        if (typeof message.channel.guild == "undefined") return require(`./DMHandler`).create(TobyBot, message);
+        if (typeof message.channel.guild == "undefined") return require(`./DMHandler`).delete(TobyBot, message);
 
         if (typeof TobyBot.ConfigurationManager.get('blocked.guilds')[message.channel.guild.id] != "undefined")return false;
 
