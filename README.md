@@ -10,8 +10,6 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 - Configuration converter (switching between configuration version without losing data)
 
-- (Message edits & remove) saving
-
 - Saving configuration & permission history (+rollback?)
 
 - Web GUI (gosh i suck at making GUIs i swear..)
