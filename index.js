@@ -37,48 +37,28 @@ GlobalBot.start().catch(e => {
     process.exit(1);
 });
 
-if (GlobalBot.catchErrorsPreventClose){
-    process.on('uncaughtException', (error) => {
-        exitHandler("uncaughtException", error);
-    });
-    process.on('unhandledRejection', (error) => {
-        exitHandler("unhandledRejection", error);
-    });
-}
+//More debug stuff
 
-//Exit and crash thingy
 process.stdin.resume();
 
-//Exit handling function
-async function exitHandler(reason, exit) {
-    if (reason == "SIGINT" || reason == "SIGUSR1" || reason == "SIGUSR2") {
-        if (GlobalBot.shuttingDown)return false;
-        await MainLog.log(`[Process Exit][${reason}]Closing process, saving and closing.`);
-    } else if (reason == "uncaughtException" || reason == "unhandledRejection") {
-        GlobalBot.LifeMetric.addEntry("uncaughtException", {error: exit});
-        await ErrorLog.error(`[${reason}]Exception catched, error : ${exit.toString()}`);
-        console.log(exit);
-        return true;
-    } else {
-        MainSQLLog.log(`Process Exit`, `[${reason.toString()}] ${exit.toString()}`);
-    }
-    await GlobalBot.shutdown(reason, exit);
+process.on('uncaughtException', (error)=>errorHandle('uncaughtException', error)); //Catch uncaughtExceptions
+process.on('unhandledRejection', (error)=>errorHandle('unhandledRejection', error)); //Catch unhandledRejections
+
+process.on('exit', (code)=>shudownHandle("exit", code)); //Global closing, this will be the LAST executed thing
+process.on('SIGINT', (code)=>shudownHandle("SIGINT", code)); //Catch CTRL + C in console (already catched by TobyBot.Console, but keep it as a fallback)
+process.on('SIGUSR1', (code)=>shudownHandle("SIGUSR1", code)); //Catch 'PID kills'
+process.on('SIGUSR2', (code)=>shudownHandle("SIGUSR2", code)); //Catch 'PID kills'
+
+async function errorHandle(type, error) {
+    MainLog.log(`Catched an ${type}:`);
+    console.log(error);
+    if (!GlobalBot.catchErrorsPreventClose)await GlobalBot.shutdown(type, error);
 }
 
-//do something when app is closing
-process.on('exit', (code) => {
-    exitHandler("exit", code);
-});
-
-//catches ctrl+c event
-process.on('SIGINT', (code) => {
-    exitHandler("SIGINT", code);
-});
-
-// catches "kill pid" (for example: nodemon restart)
-process.on('SIGUSR1', (code) => {
-    exitHandler("SIGUSR1", code);
-});
-process.on('SIGUSR2', (code) => {
-    exitHandler("SIGUSR2", code);
-});
+async function shudownHandle(type, code) {
+    if (type != "exit"){
+        MainLog.log(`Recived an ${type}:`);
+        console.log(code);
+        await GlobalBot.shutdown(type, code);
+    }
+}

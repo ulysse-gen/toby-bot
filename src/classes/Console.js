@@ -21,7 +21,7 @@ module.exports = class Consle {
             output: process.stdout,
         });
 
-        this.rl.on('line', this.readConsoleInput);
+        this.AttachEvents();
     }
 
     async readConsoleInput(line, lineCount, byteCount) {
@@ -43,5 +43,32 @@ module.exports = class Consle {
     async askForCommunityGuild() {
         MainLog.log(this.TobyBot.i18n.__('bot.inputCommunityGuild.question'))
         return this.question('');
+    }
+
+    async AttachEvents() {
+        let _this = this;
+        this.rl.on('line', this.readConsoleInput);
+
+        this.rl.on('SIGCONT', (...args) => {
+            MainLog.log(`Received SIGCONT with arguments:`);
+            if (args.length != 0)console.log(args);
+        });
+        this.rl.on('SIGTSTP', (...args) => {
+            MainLog.log(`Received SIGTSTP with arguments:`);
+            if (args.length != 0)console.log(args);
+        });
+        
+        this.rl.on('SIGINT', (...args) => {
+            if (_this.TobyBot.shuttingDown)return false;
+            if (args.length != 0)console.log(args);
+            _this.TobyBot.shutdown('SIGINT');
+        });
+        
+        this.rl.on('close', (...args) => {
+            if (_this.TobyBot.shuttingDown)return false;
+            if (args.length != 0)console.log(args);
+            _this.TobyBot.shutdown('ConsoleClose');
+        });
+        return true;
     }
 }
