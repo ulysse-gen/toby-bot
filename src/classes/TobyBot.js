@@ -191,6 +191,7 @@ module.exports = class TobyBot {
                         default:
                             break;
                     }
+                    con.end();
                     process.exit();
                 }
     
@@ -201,10 +202,12 @@ module.exports = class TobyBot {
                             return con.query(`USE \`${_this.TopConfigurationManager.get('MySQL.database')}\`; ` + fs.readFileSync(`${process.cwd()}/tobybot-structure.sql`).toString(), async (err, result) => {
                                 if (err) throw err;
                                 MainLog.log(`Created database and imported structure.`);
+                                con.end();
                                 res(true);
                             });
                         });
                     }else {
+                        con.end();
                         res(true);
                     }
                 });
