@@ -152,6 +152,10 @@ module.exports = {
                 return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.configCheckNotDefined.title`), CommandExecution.i18n.__(`command.${this.name}.error.configCheckNotDefined.description`, {}));
             }
 
+            if (KeyType.startsWith('Object')) {
+                if (_.isEqual(KeyValue, KeyNewValue))return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.configUnchanged.title`), CommandExecution.i18n.__(`command.${this.name}.error.configUnchanged.description`, {}));
+            } else if (KeyValue == KeyNewValue)return CommandExecution.replyErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.configUnchanged.title`), CommandExecution.i18n.__(`command.${this.name}.error.configUnchanged.description`, {}));
+
             ConfigurationManager.set(CommandExecution.options.key, KeyNewValue);
 
             if (typeof _.get(ConfigurationFunctions, CommandExecution.options.key) == "function"){

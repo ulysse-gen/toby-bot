@@ -372,7 +372,7 @@
 	"command.purge.purging.user.title": "Purging {{{amount}}} messages from {{{userTag}}}.",
 	"command.purge.purging.user.description": "The channel is being purged of {{{amount}}} messages.",
 	"command.purge.error.noAmountSpecified.title": "No amount specified.",
-	"command.purge.error.noAmountSpecified.description": "You must specify the amont of messages to be purged.",
+	"command.purge.error.noAmountSpecified.description": "You must set the amont of messages to be purged.",
 	"command.purge.error.couldNotFetchMessages.title": "Could not fetch messages.",
 	"command.purge.error.couldNotFetchMessages.description": "{{{error}}}",
 	"command.purge.error.couldNotPurge.title": "Could not purge.",
@@ -392,6 +392,17 @@
 	"command.lastmessages.embed.fieldBody.editedKeyword": "\n`Edited message`",
 	"command.punishmenttranscript.embed.fieldBody.deletedKeyword": "\n`Deleted message`",
 	"command.punishmenttranscript.embed.fieldBody.editedKeyword": "\n`Edited message`",
-	"command.mute.error.noReasonSpecified.title": "command.mute.error.noReasonSpecified.title",
-	"command.mute.error.noReasonSpecified.description": "command.mute.error.noReasonSpecified.description"
+	"command.mute.error.noReasonSpecified.title": "Could not mute.",
+	"command.mute.error.noReasonSpecified.description": "You must set a reason to mute.",
+	"command.unmute.error.noReasonSpecified.title": "Could not unmute.",
+	"command.unmute.error.noReasonSpecified.description": "You must set a reason to unmute.",
+	"command.mute.error.noTargetSpecified.title": "Could not mute.",
+	"command.mute.error.noTargetSpecified.description": "No target specified.",
+	"command.unmute.error.noTargetSpecified.title": "Could not umute.",
+	"command.unmute.error.noTargetSpecified.description": "No target specified.",
+	"command.getapitoken.name": "Get API Token",
+	"command.getapitoken.description": "Get a link to grab an API token",
+	"command.getapitoken.error.onlyslash": "This can only be used in slash commands for security reasons.",
+	"command.getapitoken.mainembed.title": "Get your API Token here",
+	"command.getapitoken.mainembed.description": "[Click here to get your API token]({{{link}}})"
 }

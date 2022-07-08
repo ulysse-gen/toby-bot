@@ -1,73 +1,81 @@
-const bcrypt   = require('bcryptjs');
-const jwt    = require('jsonwebtoken');
 const CommandExecution = require('../../../src/classes/CommandExecution');
 
 
-exports.listAll = async (API, req, res, next) => {
+exports.listAll = async (req, res, next) => {
     try {
-        let RequestUser = req.decoded.User
-        if (RequestUser.permissionLevel < 8)return res.status(403).json('no_permission');
-        let commands = API.TobyBot.CommandManager.commands.map(indCommand => indCommand.apiVersion());
-        return res.status(200).json(commands);
+        return res.status(200).json(req.API.TobyBot.CommandManager.commands.map(indCommand => indCommand.apiVersion()));
     } catch (error) {
-        return res.status(501).json('error');
+        return res.status(501).json(req.__('error.unknown'));
     }
 }
 
 
-exports.getByName = async (API, req, res, next) => {
-    const { name } = req.params;
+exports.getByName = async (req, res, next) => {
+    const { commandName } = req.params;
+
+    if (!commandName)return res.status(401).json(req.__('error.required', {required: 'commandName'}));
 
     try {
-        let Command = await API.TobyBot.CommandManager.fetch(name);
-        Command = Command.apiVersion();
+        let Command = await req.API.TobyBot.CommandManager.fetch(commandName);
+        Command = Command;
 
         if (Command) {
-            return res.status(200).json(Command);
+            return res.status(200).json(Command.apiVersion());
         }else {
-            return res.status(404).json('command_not_found');
+            return res.status(404).json(req.__('error.command_not_found'));
         }
     } catch (error) {
-        return res.status(501).json('error');
+        return res.status(501).json(req.__('error.unknown'));
     }
 }
 
-exports.execute = async (API, req, res, next) => {
-    const { name, options, guild, channel } = req.body;
+exports.execute = async (req, res, next) => {
+    const { commandName } = req.params;
+    const { guildId, channelId, options } = req.body;
+
+    if (!commandName)return res.status(401).json(req.__('error.required', {required: 'commandName'}));
+    if (!guildId)return res.status(401).json(req.__('error.required', {required: 'guildId'}));
+    if (!channelId)return res.status(401).json(req.__('error.required', {required: 'channelId'}));
 
     try {
-        let RequestUser = req.decoded.User;
-        if (RequestUser.permissionLevel < 9)return res.status(403).json('no_permission');
-        if (typeof name == "undefined")return res.status(401).json('missing_name');
-        if (typeof guild == "undefined")return res.status(401).json('missing_guild');
-        if (typeof channel == "undefined")return res.status(401).json('missing_channel');
+        let Command = await req.API.TobyBot.CommandManager.fetch(commandName);
+        if (!Command)return res.status(404).json(req.__('error.command_not_found'));
 
-        let Command = await API.TobyBot.CommandManager.fetch(name);
-        let Guild = await API.TobyBot.GuildManager.getGuildById(guild);
-        let Channel = await Guild.getChannelById(channel);
-        let User = await Guild.getMemberById(RequestUser.id);
+        let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
+        if (!Guild)return res.status(404).json(req.__('error.guild_not_found'));
+
+        let Channel = await Guild.getChannelById(channelId);
+        if (!Channel)return res.status(404).json(req.__('error.channel_not_found'));
+
+        let User = req.User;
         let commandOptions = ((typeof options != "undefined") ? options : '').replace(/\s+/g, ' ').trim().split(' ');
 
-        if (Command && Guild && Channel) {
-            let Trigger = await Channel.send(Guild.ConfigurationManager.get('prefix') + Command.name + ' ' + commandOptions.join(' ')).then(message => {
-                message.TobyBot = {
-                    TobyBot: API.TobyBot,
-                    guild: Guild,
-                    user: User
-                };
-                message.author = User.user;
-                return message;
-            }).catch(e => {
-                return res.status(401).json('could_not_initiate');
-            })
 
-            let execution = await new CommandExecution(Trigger, Command, commandOptions, API.TobyBot.CommandManager).execute().catch(e=>{throw e});
-            return res.status(401).json(execution);
-        }else {
-            return res.status(401).json('could_not_build_context');
+        let FakeTrigger = await Channel.send(Guild.ConfigurationManager.get('prefix') + Command.name + ' ' + commandOptions.join(' ')).then(message => {
+            message.TobyBot = {
+                TobyBot: req.API.TobyBot,
+                guild: Guild,
+                user: User
+            };
+            message.author = User.user;
+            return message;
+        }).catch(e => {
+            return res.status(501).json(req.__('error.commands.cannot_initiate'));
+        })
+
+        let CommandExecutionObject = new CommandExecution(FakeTrigger, Command, commandOptions, req.API.TobyBot.CommandManager);
+        await CommandExecutionObject.buildContext();
+        if (typeof CommandExecutionObject.options.permissionDenied != "undefined"){
+            CommandExecutionObject.denyPermission(CommandExecutionObject.options.permissionDenied);
+            return res.status(501).json(req.__('error.commands.permission_denied'));
         }
+        await CommandExecutionObject.logExecution();
+        CommandExecutionObject.deferIfNeeded();
+        let CommandExecutionProcess = await CommandExecutionObject.Command.execute(CommandExecutionObject);
+
+        return res.status(401).json(CommandExecutionProcess);
     } catch (error) {
         console.log(error)
-        return res.status(501).json('error');
+        return res.status(501).json(req.__('error.unknown'));
     }
 }

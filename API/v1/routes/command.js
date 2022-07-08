@@ -4,13 +4,10 @@ const router = express.Router();
 const service = require('../services/command');
 const security = require('../middlewares/security');
 
-router.get('/', (...args)=>security.checkJWT(router.API, ...args), (...args)=>service.listAll(router.API, ...args));
+router.get('/', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.USER), service.listAll);
 
-router.get('/:name', (...args)=>service.getByName(router.API, ...args));
+router.get('/:commandName', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.USER), service.getByName);
 
-router.post('/execute', (...args)=>security.checkJWT(router.API, ...args), (...args)=>service.execute(router.API, ...args));
+router.post('/:commandName/execute', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.ADMIN), service.execute);
 
-module.exports = (API) => {
-    router.API = API;
-    return router;
-};
+module.exports = router;

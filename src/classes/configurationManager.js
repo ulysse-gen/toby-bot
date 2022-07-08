@@ -8,12 +8,14 @@ const moment = require('moment');
 
 //Importing classes
 const FileLogger = require('./FileLogger');
+let EventEmitter = require('events').EventEmitter
 
 //Creating objects
 const MainLog = new FileLogger();
 
-module.exports = class ConfigurationManager {
+module.exports = class ConfigurationManager extends EventEmitter {
     constructor() {
+        super();
         this._configuration = {};
 
         this.initialized = true;

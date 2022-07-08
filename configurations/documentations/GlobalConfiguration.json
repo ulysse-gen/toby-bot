@@ -27,6 +27,13 @@
         "editable": true,
         "default": ["$toby.gg$", "tobybot.", "tbb."]
     },
+    "domainName": {
+        "name": "Domain name",
+        "description": "The domain name for Toby Bot's API & Website.",
+        "type": "String",
+        "editable": true,
+        "default": "tobybot.xyz"
+    },
     "communityGuild": {
         "name": "Community guild",
         "description": "The community guild, which is also the guilds ofthe channel logs",

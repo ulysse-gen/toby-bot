@@ -1,7 +1,7 @@
 {
     "locale": {
         "name": "Locale",
-        "description": "The lang will bot will reply to you in. (if enabled in guild)",
+        "description": "The lang the bot will reply to you in. (if enabled in guild)",
         "type": "String",
         "editable": true,
         "default": "followGuild"

@@ -35,7 +35,7 @@ CREATE TABLE `tobybot` (
 CREATE TABLE `users` (
   `numId` int(11) NOT NULL,
   `id` varchar(18) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `authToken` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `configuration` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`configuration`)),
   `permissionLevel` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

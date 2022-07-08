@@ -44,5 +44,6 @@
 	"bot.inputToken.couldNotLogin": "Could not login with the provided token.",
 	"bot.inputCommunityGuild.question": "Please enter the community guild ID:",
 	"bot.inputCommunityGuild.defined": "Community guild defined.",
-	"bot.inputCommunityGuild.couldNotFetch": "Could not fetch the provided community guild."
+	"bot.inputCommunityGuild.couldNotFetch": "Could not fetch the provided community guild.",
+	"bot.api.stopped": "API stopped."
 }

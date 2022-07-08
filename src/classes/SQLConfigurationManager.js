@@ -51,10 +51,12 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         if (typeof guildDependent != "undefined"){
             this.Dependency = guildDependent;
             this.SQLPool = guildDependent.SQLPool;
+            this.i18n = guildDependent.i18n;
         }
         if (typeof userDependent != "undefined"){
             this.Dependency = userDependent;
             this.SQLPool = userDependent.UserManager.SQLPool;
+            this.i18n = userDependent.UserManager.TobyBot.CommunityGuild.i18n;
         }
         if (typeof tobybotDependent != "undefined"){
             this.Dependency = tobybotDependent;

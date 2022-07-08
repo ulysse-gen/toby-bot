@@ -23,6 +23,7 @@ const ChannelLogger = require('./ChannelLogger');
 const ModerationManager = require('./ModerationManager');
 const API = require('./API');
 const Console = require('./Console');
+const MYSQLWatcher = require('./MYSQLWatcher');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -66,7 +67,7 @@ module.exports = class TobyBot {
         await this.attachEvents().catch(e => { throw e }); //Attach events
         this.LifeMetric.addEntry("BotLogin");
         await this.attemptLogin();
-        await this.CommandManager.pushSlashCommands();
+        this.CommandManager.pushSlashCommands();
         this.LifeMetric.addEntry("botReady");
         this.LifeMetric.addEntry("LoggersInit");
         await this.initLoggers().catch(e => { throw e }); //Attach loggers
@@ -163,6 +164,7 @@ module.exports = class TobyBot {
         this.API = new API(this);
         await this.API.initialize();
         await this.UserManager.initialize();
+        this.SQLWatcher = new MYSQLWatcher(this);
 
         return true;
     }
@@ -194,6 +196,8 @@ module.exports = class TobyBot {
                     con.end();
                     process.exit();
                 }
+
+                con.query(`GRANT REPLICATION SLAVE, REPLICATION CLIENT, SELECT ON *.* TO '${_this.TopConfigurationManager.get('MySQL.user')}'@'%'`);
     
                 return con.query(`SELECT schema_name FROM information_schema.schemata WHERE schema_name = '${_this.TopConfigurationManager.get('MySQL.database')}';`, async (err, result, fields) => {
                     if (result.length == 0){
@@ -252,6 +256,9 @@ module.exports = class TobyBot {
         let tryFetch = async () => {
             if (this.ConfigurationManager.get('communityGuild').replaceAll(' ', '') == "")return false;
             this.CommunityGuild = await this.GuildManager.getGuildById(this.ConfigurationManager.get('communityGuild'));
+            this.TopConfigurationManager.i18n = this.CommunityGuild.i18n; //Attach Top ConfigurationManager to the client objects
+            this.ConfigurationManager.i18n = this.CommunityGuild.i18n; //Attach Global PermissionManager to the client objects
+            this.PermissionManager.i18n = this.CommunityGuild.i18n; //Attach Global PermissionManager to the client objects
             return (typeof this.CommunityGuild == "undefined") ? false : true;
         }
 
@@ -270,5 +277,21 @@ module.exports = class TobyBot {
         await this.LifeMetric.end();
         if (typeof this.SQLLogger != "undefined")await this.SQLLogger.logShutdown(this, reason, exit);
         process.exit();
+    }
+
+    async loadSQLContent(checkForUpdate = false) {
+        return new Promise((res, _rej) => {
+            this.SQLPool.query(`SELECT * FROM \`tobybot\` WHERE numId=1`, (error, results) => {
+                if (error)throw error;
+                if (results.length != 0){
+                    this.locale = results[0].locale;
+                    if (checkForUpdate && JSON.stringify(this.ConfigurationManager.configuration) != results[0].configuration)this.ConfigurationManager.load();
+                    if (checkForUpdate && JSON.stringify(this.PermissionManager.permissions) != results[0].permissions)this.PermissionManager.load();
+                    this.i18n.setLocale(this.locale);
+                    res(true)
+                }
+                res(true);
+            });
+        });
     }
 }

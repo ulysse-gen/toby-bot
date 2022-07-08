@@ -4,18 +4,12 @@ const router = express.Router();
 const service = require('../services/system');
 const security = require('../middlewares/security');
 
-router.get('/', (req, res, next)=>{
-    let API = router.API;
-    try {
-        return res.status(404).json('nothing_yet');
-    } catch (error) {
-        return res.status(501).json('error');
-    }
-});
+router.get('/status', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.ADMIN), service.status);
 
-router.post('/evaluate', (...args)=>security.checkJWT(router.API, ...args), (...args)=>service.evaluate(router.API, ...args));
+router.get('/uptime', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.ADMIN), service.uptime);
 
-module.exports = (API) => {
-    router.API = API;
-    return router;
-};
+router.get('/configuration', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.ADMIN), service.getConfiguration);
+router.get('/configuration/:configurationKey', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.ADMIN), service.getConfigurationKey);
+router.patch('/configuration/:configurationKey', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.ADMIN), service.patchConfigurationKey);
+
+module.exports = router;

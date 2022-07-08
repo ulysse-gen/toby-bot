@@ -6,6 +6,7 @@
 const mysql = require(`mysql`);
 const { I18n } = require('i18n');
 const urlExists = require('url-exists');
+const { Permissions } = require('discord.js');
 
 //Importing classes
 const SQLConfigurationManager = require('./SQLConfigurationManager');
@@ -51,6 +52,12 @@ module.exports = class Guild {
         this.isSetup = false;
     }
 
+    async userCanManage(userId) {
+        let GuildMember = await this.getMemberById(userId);
+        if (!GuildMember)return false;
+        return GuildMember.permissions.has(Permissions.FLAGS.MANAGE_GUILD);
+    }
+
     apiVersion (){
         if (!this.initialized)return undefined;
         let apiVersion = {};
@@ -76,13 +83,16 @@ module.exports = class Guild {
         return true;
     }
 
-    async loadSQLContent() {
+    async loadSQLContent(checkForUpdate = false) {
         return new Promise((res, _rej) => {
             this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.guild.id}'`, (error, results) => {
                 if (error)throw error;
                 if (results.length != 0){
                     this.numId = results[0].numId;
                     this.locale = results[0].locale;
+                    this.lastUpdated = results[0].lastUpdated;
+                    if (checkForUpdate && JSON.stringify(this.ConfigurationManager.configuration) != results[0].configuration)this.ConfigurationManager.load();
+                    if (checkForUpdate && JSON.stringify(this.PermissionManager.permissions) != results[0].permissions)this.PermissionManager.load();
                     this.i18n.setLocale(this.locale);
                     res(true)
                 }
