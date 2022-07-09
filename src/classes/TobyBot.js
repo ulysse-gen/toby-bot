@@ -55,7 +55,7 @@ module.exports = class TobyBot {
 
     async start() {
         this.LifeMetric.addEntry("TopConfigurationManagerInit");
-        await this.TopConfigurationManager.initialize().catch(e => { throw e} );  //Init Top ConfigurationManager
+        await this.TopConfigurationManager.initialize(true).catch(e => { throw e} );  //Init Top ConfigurationManager
 
         this.LifeMetric.addEntry("SQLInit");
         await this.SQLInit();
@@ -82,13 +82,13 @@ module.exports = class TobyBot {
 
 
         this.LifeMetric.addEntry("ConfigurationManagerCreate");
-        this.ConfigurationManager = new SQLConfigurationManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../../configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
+        this.ConfigurationManager = new SQLConfigurationManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
         this.LifeMetric.addEntry("ConfigurationManagerInit");
         await this.ConfigurationManager.initialize(true, undefined, undefined, this); //Init the Global ConfigurationManager
 
         
         this.LifeMetric.addEntry("PermissionManagerCreate");
-        this.PermissionManager = new SQLPermissionManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../../configurations/defaults/GlobalPermissions.json'), true); //Create the Global PermissionManager
+        this.PermissionManager = new SQLPermissionManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../configurations/defaults/GlobalPermissions.json'), true); //Create the Global PermissionManager
         this.LifeMetric.addEntry("PermissionManagerInit");
         await this.PermissionManager.initialize(true, undefined, undefined, this); //Init the Global PermissionManager
 
@@ -228,7 +228,7 @@ module.exports = class TobyBot {
             this.SQLPool.query(`SELECT * FROM \`tobybot\` WHERE numId=1`, (error, results) => {
                 if (error)throw error;
                 if (results.length == 0){
-                    this.SQLPool.query(`INSERT INTO \`tobybot\` (numId, configuration, permissions) VALUES (?,?,?)`, [1, JSON.stringify(require('../../configurations/defaults/GlobalConfiguration.json')), JSON.stringify(require('../../configurations/defaults/GlobalPermissions.json'))], async (error, results) => {
+                    this.SQLPool.query(`INSERT INTO \`tobybot\` (numId, configuration, permissions) VALUES (?,?,?)`, [1, JSON.stringify(require('../configurations/defaults/GlobalConfiguration.json')), JSON.stringify(require('../configurations/defaults/GlobalPermissions.json'))], async (error, results) => {
                         if (error)throw error;
                         if (results.affectedRows != 1) throw new Error('Could not create tobybot.')
                         res(true);

@@ -49,7 +49,7 @@ exports.getGuildConfigurationKey = async (req, res, next) => {
 
         let ConfigurationManager = Guild.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json');
-        let ConfigurationFunctions = require('../../../../configurations/functions/GuildConfiguration');
+        let ConfigurationFunctions = require('../../../configurations/functions/GuildConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)
@@ -85,7 +85,7 @@ exports.patchGuildConfigurationKey = async (req, res, next) => {
 
         let ConfigurationManager = Guild.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json');
-        let ConfigurationFunctions = require('../../../../configurations/functions/GuildConfiguration');
+        let ConfigurationFunctions = require('../../../configurations/functions/GuildConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)

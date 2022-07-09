@@ -49,7 +49,6 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 cd /docker/toby-bot
 git checkout <branch>
 git pull origin <branch>
-docker build --rm --pull -f "/docker/toby-bot/Dockerfile" -t "tobybot:latest" "/docker/toby-bot"
-> ^ Need to check if this is actually needed
+docker-compose build --no-cache
 docker-compose up
 ```

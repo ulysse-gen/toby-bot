@@ -57,7 +57,7 @@ exports.getUserConfigurationKey = async (req, res, next) => {
 
         let ConfigurationManager = User.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json');
-        let ConfigurationFunctions = require('../../../../configurations/functions/UserConfiguration');
+        let ConfigurationFunctions = require('../../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)
@@ -93,7 +93,7 @@ exports.patchConfigurationKey = async (req, res, next) => {
 
         let ConfigurationManager = User.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json');
-        let ConfigurationFunctions = require('../../../../configurations/functions/UserConfiguration');
+        let ConfigurationFunctions = require('../../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)

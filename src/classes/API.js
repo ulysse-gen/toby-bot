@@ -24,7 +24,7 @@ module.exports = class API {
 
         this.i18n = new I18n({
             locales: ['en-US'],
-            directory: 'locales/API',
+            directory: 'src/locales/API',
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US',
             autoReload: true,

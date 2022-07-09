@@ -12,7 +12,7 @@ module.exports = {
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.TobyBot.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
-        let ConfigurationFunctions = require('../../configurations/functions/GlobalConfiguration');
+        let ConfigurationFunctions = require('../configurations/functions/GlobalConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)return CommandExecution.returnWarningEmbed({}, CommandExecution.i18n.__(`command.generic.configuration.first-init.title`), CommandExecution.i18n.__(`command.generic.configuration.first-init.description`, {}));

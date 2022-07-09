@@ -33,7 +33,7 @@ exports.getConfigurationKey = async (req, res, next) => {
     try {
         let ConfigurationManager = req.API.TobyBot.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
-        let ConfigurationFunctions = require('../../../../../configurations/functions/GlobalConfiguration');
+        let ConfigurationFunctions = require('../../../../configurations/functions/GlobalConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)
@@ -65,7 +65,7 @@ exports.patchConfigurationKey = async (req, res, next) => {
     try {
         let ConfigurationManager = req.API.TobyBot.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
-        let ConfigurationFunctions = require('../../../../configurations/functions/GlobalConfiguration');
+        let ConfigurationFunctions = require('../../../configurations/functions/GlobalConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)

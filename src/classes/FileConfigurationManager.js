@@ -18,16 +18,16 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
     constructor(configurationFile, defaultConfiguration = {}) {
         super();
 
-        this.file = `${process.cwd()}/configurations/${configurationFile}`;
+        this.file = `/data/configs/${configurationFile}`;
         this.defaultConfiguration = defaultConfiguration;
 
         this.initialized = false;
     }
 
-    async initialize(createAsEmptyIfNonExistent = false) {
+    async initialize(createIfNonExistant = false) {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
-        if (!fs.existsSync(this.file) && !createAsEmptyIfNonExistent) throw new Error('File not found.');
+        if (!fs.existsSync(this.file) && !createIfNonExistant) throw new Error('File not found.');
         await this.createPath(this.file);
         if (!fs.existsSync(this.file)) {
             fs.appendFileSync(this.file, JSON.stringify(this.defaultConfiguration, null, 2));
@@ -73,10 +73,10 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
     }
 
     async createPath(path) {
-        if (typeof path != "string" || path.replaceAll(' ', '') == "") throw new Error('Path must be a non empty string.');
-        let pathParts = path.replace(process.cwd(), '').split('/').filter(v => v != "").slice(0,-1);
-        let currentPath = process.cwd();
-        return new Promise((res, _rej) => {
+        let pathParts = path.replace('/data/', '').split('/').filter(v => v != "").slice(0,-1);
+        let currentPath = '/data';
+        if (pathParts.length == 0)return true;
+        return new Promise((res, rej) => {
             while (pathParts.length > 0){
                 currentPath += `/${pathParts.shift()}`;
                 if (!fs.existsSync(currentPath)) fs.mkdirSync(currentPath);

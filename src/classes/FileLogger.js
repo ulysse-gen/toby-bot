@@ -16,14 +16,15 @@ module.exports = class FileLogger extends Logger {
         
         if (typeof logFile != "string" || logFile.replaceAll(' ', '') == "") throw new Error('LogFile must be a non empty string.');
 
-        this.file = `${process.cwd()}/logs/${logFile}`;
+        this.file = `/data/logs/${logFile}`;
 
         this.createPath(this.file);
     }
 
     async createPath(path) {
-        let pathParts = path.replace(process.cwd(), '').split('/').filter(v => v != "").slice(0,-1);
-        let currentPath = process.cwd();
+        let pathParts = path.replace('/data/', '').split('/').filter(v => v != "").slice(0,-1);
+        let currentPath = '/data';
+        if (pathParts.length == 0)return true;
         return new Promise((res, rej) => {
             while (pathParts.length > 0){
                 currentPath += `/${pathParts.shift()}`;

@@ -25,7 +25,7 @@ module.exports = class CommandExecution {
         this.CommandManager = CommandManager;
         this.i18n = new I18n({
             locales: ['en-US','fr-FR'],
-            directory: 'locales/commands',
+            directory: 'src/locales/commands',
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US',
             autoReload: true,
