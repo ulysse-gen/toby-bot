@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node
 LABEL authors="UlysseGen"
 
 WORKDIR /app
