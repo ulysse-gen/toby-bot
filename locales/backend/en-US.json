@@ -45,5 +45,6 @@
 	"bot.inputCommunityGuild.question": "Please enter the community guild ID:",
 	"bot.inputCommunityGuild.defined": "Community guild defined.",
 	"bot.inputCommunityGuild.couldNotFetch": "Could not fetch the provided community guild.",
-	"bot.api.stopped": "API stopped."
+	"bot.api.stopped": "API stopped.",
+	"bot.APIOnly": "Running on 'API Only'. Bot will not listen to any command."
 }

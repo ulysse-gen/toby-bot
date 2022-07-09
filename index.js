@@ -16,7 +16,7 @@ const FileConfigurationManager = require('./src/classes/FileConfigurationManager
 const TobyBot = require('./src/classes/TobyBot');
 
 //Creating main objects
-const TopConfigurationManager = new FileConfigurationManager('configuration.json', {MySQL:{host:"localhost",user:"tobybot",password:"dopepassword",database:"tobybot-v4",charset:"UTF8MB4_UNICODE_CI",connectionLimit:10},API:{port:6845,secret:"dopesecret"}}); //This is the main -- top level -- config. Containing the MySQL details
+const TopConfigurationManager = new FileConfigurationManager('configuration.json', {MySQL:{host:"localhost",user:"tobybot",password:"dopepassword",database:"tobybot-v4",charset:"UTF8MB4_UNICODE_CI",connectionLimit:10},API:{port:6845,secret:"dopesecret",only:false}}); //This is the main -- top level -- config. Containing the MySQL details
 const i18n = new I18n({
     locales: ['en-US','fr-FR'],
     directory: 'locales/backend',

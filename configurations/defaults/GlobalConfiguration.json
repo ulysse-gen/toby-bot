@@ -8,6 +8,7 @@
     "prefix": "$toby.gg$",
     "prefixes": ["$toby.gg$", "tobybot.", "tbb."],
     "domainName": "tobybot.xyz",
+    "apiDomain": "api.tobybot.xyz",
     "communityGuild": "",
     "style": {
         "colors": {

@@ -44,7 +44,9 @@ module.exports = class Metric {
     async initialize() {
         let _this = this;
         if (this.verbose) MainLog.log(`Initializing CommandManager [${this.commandsFolder}]`);
-        await new Promise((res, _rej) => {
+        if (this.TobyBot.TopConfigurationManager.get('API.only')) MainLog.warning(this.TobyBot.i18n.__('bot.APIOnly'));
+
+        if (!this.TobyBot.TopConfigurationManager.get('API.only'))await new Promise((res, _rej) => {
             fs.readdir(`./src/commands${_this.commandsFolder}`, function (err, files) { //Read events folder
                 if (err) throw err;
                 files.forEach((file, index, array) => { //For each files in the folder
@@ -87,6 +89,7 @@ module.exports = class Metric {
     }
 
     async handle(message) {
+        if (this.TobyBot.TopConfigurationManager.get('API.only'))return true;
         let prefixUsed = [this.TobyBot.ConfigurationManager.get('prefixes'), message.TobyBot.guild.ConfigurationManager.get('prefixes'), message.TobyBot.guild.ConfigurationManager.get('prefix')].flat().filter((item, pos, self) => self.indexOf(item) == pos).find(e => message.content.startsWith(e));
         if (!prefixUsed)return undefined;
         let commandOptions=message.content.replace(/\s+/g, ' ').trim().split(' ');

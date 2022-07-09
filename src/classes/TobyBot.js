@@ -67,7 +67,7 @@ module.exports = class TobyBot {
         await this.attachEvents().catch(e => { throw e }); //Attach events
         this.LifeMetric.addEntry("BotLogin");
         await this.attemptLogin();
-        this.CommandManager.pushSlashCommands();
+        if (!this.TopConfigurationManager.get('API.only'))this.CommandManager.pushSlashCommands();
         this.LifeMetric.addEntry("botReady");
         this.LifeMetric.addEntry("LoggersInit");
         await this.initLoggers().catch(e => { throw e }); //Attach loggers

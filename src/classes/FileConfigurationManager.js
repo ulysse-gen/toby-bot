@@ -35,6 +35,11 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
         } else {
             await this.load();
         }
+        let integrityCheck = await this.mergeRecursive(this.configuration, this.defaultConfiguration);
+        if (integrityCheck.updated){
+            this.configuration = integrityCheck.result;
+            await this.save();
+        }
         if (this.verbose)MainLog.log(`Initialized ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
         this.initialized = true;
         return true;

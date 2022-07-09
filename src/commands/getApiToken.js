@@ -25,7 +25,7 @@ module.exports = {
         });
 
 
-        let link = `http://tobybot.localhost:6845/v1/users/authByTempToken/764011827109298187/${token}`;
+        let link = 'http://' + CommandExecution.TobyBot.ConfigurationManager.get('apiDomain') + `/v1/users/authByTempToken/764011827109298187/${token}`;
 
         return CommandExecution.returnSuccessEmbed({ephemeral: true}, CommandExecution.i18n.__(`command.${this.name}.mainembed.title`), CommandExecution.i18n.__(`command.${this.name}.mainembed.description`,{link: link}));
     },

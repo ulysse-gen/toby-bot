@@ -9,6 +9,7 @@
   },
   "API": {
     "port": 6845,
-    "secret": "dopesecret"
+    "secret": "dopesecret",
+    "only": true
   }
 }
