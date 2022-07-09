@@ -7,11 +7,11 @@ WORKDIR /app
 
 VOLUME /app
 
-COPY . .
-
-RUN npm install --production
-
 COPY . /app
+
+RUN npm install
+
+COPY . .
 
 EXPOSE 6845
 
