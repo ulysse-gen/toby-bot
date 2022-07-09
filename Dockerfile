@@ -1,18 +1,18 @@
 FROM node:alpine
-ENV NODE_ENV=production
-
 LABEL authors="UlysseGen"
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-VOLUME /app
-
-COPY . /app
-
-RUN npm install
-
 COPY . .
 
-EXPOSE 6845
+RUN npm install -g npm-check-updates \
+    ncu -u \
+    npm install
 
-CMD [ "node", "index.js" ]
+COPY . /app
+EXPOSE 6845
+CMD npm start
