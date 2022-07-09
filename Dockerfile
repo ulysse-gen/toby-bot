@@ -1,19 +1,13 @@
-FROM node:10-alpine
+FROM node
 
-RUN chown -R node:node /home/node/app
-
-WORKDIR /home/node/app
-
-RUN ls
+WORKDIR /app
 
 COPY . /app
 
 RUN npm install
 
-COPY --chown=node:node . .
+COPY . .
 
-VOLUME /home/node/app
+VOLUME /app
 
 EXPOSE 6845
-
-CMD [ "node", "index.js" ]
