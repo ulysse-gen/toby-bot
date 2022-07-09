@@ -19,5 +19,5 @@ volumes:
   data:
 networks:
   default:
-    name: phpmyadmin
-    external: true
+    external: 
+      name: phpmyadmin
