@@ -50,5 +50,6 @@ cd /docker/toby-bot
 git checkout <branch>
 git pull origin <branch>
 docker build --rm --pull -f "/docker/toby-bot/Dockerfile" -t "tobybot:latest" "/docker/toby-bot"
+> ^ Need to check if this is actually needed
 docker-compose up
 ```
