@@ -10,6 +10,6 @@
   "API": {
     "port": 6845,
     "secret": "dopesecret",
-    "only": true
+    "only": false
   }
 }
