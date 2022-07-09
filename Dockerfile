@@ -1,6 +1,7 @@
 FROM alpine:3.16
 
-RUN apk add --update nodejs npm
+RUN mkdir -p /app \
+    && apk add --no-cache git
 
 ENV NODE_VERSION 18.5.0
 
@@ -8,12 +9,13 @@ VOLUME /app
 
 WORKDIR /app
 
-COPY . .
+COPY . /app
 
-RUN npm install
+RUN npm install --unsafe-perm
 
 COPY . /app
 
 EXPOSE 6845
 
-CMD ["node", "index.js"]
+ENTRYPOINT ["npm"]
+CMD ["start"]
