@@ -16,7 +16,7 @@ const FileLogger = require('./FileLogger');
 const MainLog = new FileLogger();
 const ErrorLog = new FileLogger('error.log');
 
-const APIRoutesV1 = require('../../API/v1/routes/index');
+const APIRoutesV1 = require('../API/v1/routes/index');
 
 module.exports = class API {
     constructor(TobyBot) {

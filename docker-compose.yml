@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  tobybot:
+    image: tobybot
+    container_name: TobyBot
+    tty: true
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 6845:6845
+    volumes:
+      - data:/app
+volumes:
+  data:

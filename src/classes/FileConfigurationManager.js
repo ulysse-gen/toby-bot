@@ -15,10 +15,11 @@ const ConfigurationManager = require('./ConfigurationManager');
 const MainLog = new FileLogger();
 
 module.exports = class FileConfigurationManager extends ConfigurationManager {
-    constructor(configurationFile) {
+    constructor(configurationFile, defaultConfiguration = {}) {
         super();
 
         this.file = `${process.cwd()}/configurations/${configurationFile}`;
+        this.defaultConfiguration = defaultConfiguration;
 
         this.initialized = false;
     }
@@ -29,9 +30,8 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
         if (!fs.existsSync(this.file) && !createAsEmptyIfNonExistent) throw new Error('File not found.');
         await this.createPath(this.file);
         if (!fs.existsSync(this.file)) {
-            fs.appendFile(this.file, JSON.stringify(this.configuration, null, 2), function (err) {
-                if (err) throw err;
-            });
+            fs.appendFileSync(this.file, JSON.stringify(this.defaultConfiguration, null, 2));
+            await this.load();
         } else {
             await this.load();
         }

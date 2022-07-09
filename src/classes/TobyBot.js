@@ -183,7 +183,11 @@ module.exports = class TobyBot {
                     console.log(err);
                     switch (err.code) {
                         case "ECONNREFUSED":
-                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). Check that your SQL is running and your configuration.`);
+                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here: \nIs your SQL Running ?\nIs TobyBot's Container in the same network as the database ?\nIs your configuration right ?`);
+                            break;
+
+                        case "ECONNREFUSED":
+                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here: \nIs your SQL Running ?\nIs TobyBot's Container in the same network as the database ?\nIs your configuration right ?`);
                             break;
     
                         case "ER_ACCESS_DENIED_ERROR":

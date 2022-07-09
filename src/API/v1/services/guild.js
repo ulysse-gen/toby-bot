@@ -1,39 +1,55 @@
 const _    = require('lodash');
-const FileConfigurationManager = require('../../../src/classes/FileConfigurationManager');
+const FileConfigurationManager = require('../../../classes/FileConfigurationManager');
 
-exports.status = async (req, res, next) => {
+exports.getGuildById = async (req, res, next) => {
+    const { guildId } = req.params;
+
+    if (!guildId)return res.status(401).json(req.__('error.required', {required: 'guildId'}));
+
     try {
-        return res.status(200).json({status: 'running', uptime: parseFloat((process.uptime() * 1000).toFixed(2))});
+        let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
+
+        if (Guild) {
+            return res.status(200).json(Guild.apiVersion());
+        } else {
+            return res.status(404).json(req.__('error.guild_not_found'));
+        }
     } catch (error) {
         return res.status(501).json(req.__('error.unknown'));
     }
 }
 
-exports.uptime = async (req, res, next) => {
-    try {
-        return res.status(200).json(parseFloat((process.uptime() * 1000).toFixed(2)));
-    } catch (error) {
-        return res.status(501).json(req.__('error.unknown'));
-    }
-}
+exports.getGuildConfiguration = async (req, res, next) => {
+    const { guildId } = req.params;
 
-exports.getConfiguration = async (req, res, next) => {
+    if (!guildId)return res.status(401).json(req.__('error.required', {required: 'guildId'}));
+
     try {
-        return res.status(200).json(_.omit(req.API.TobyBot.ConfigurationManager.configuration, ['token']));
+        let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
+
+        if (Guild) {
+            return res.status(200).json(Guild.ConfigurationManager.configuration);
+        } else {
+            return res.status(404).json(req.__('error.guild_not_found'));
+        }
     } catch (error) {
         return res.status(401).json(req.__('error.unknown'));
     }
 }
 
-exports.getConfigurationKey = async (req, res, next) => {
-    const { configurationKey } = req.params;
+exports.getGuildConfigurationKey = async (req, res, next) => {
+    const { guildId, configurationKey } = req.params;
 
+    if (!guildId)return res.status(401).json(req.__('error.required', {required: 'guildId'}));
     if (!configurationKey)return res.status(401).json(req.__('error.required', {required: 'configurationKey'}));
 
     try {
-        let ConfigurationManager = req.API.TobyBot.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
-        let ConfigurationFunctions = require('../../../configurations/functions/GlobalConfiguration');
+        let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
+        if (!Guild)return res.status(404).json(req.__('error.guild_not_found'));
+
+        let ConfigurationManager = Guild.ConfigurationManager;
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json');
+        let ConfigurationFunctions = require('../../../../configurations/functions/GuildConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)
@@ -54,18 +70,22 @@ exports.getConfigurationKey = async (req, res, next) => {
     }
 }
 
-exports.patchConfigurationKey = async (req, res, next) => {
-    const { configurationKey } = req.params;
+exports.patchGuildConfigurationKey = async (req, res, next) => {
+    const { guildId, configurationKey } = req.params;
 
     const { value } = req.body;
 
+    if (!guildId)return res.status(401).json(req.__('error.required', {required: 'guildId'}));
     if (!configurationKey)return res.status(401).json(req.__('error.required', {required: 'configurationKey'}));
     if (!value)return res.status(401).json(req.__('error.required', {required: 'value'}));
 
     try {
-        let ConfigurationManager = req.API.TobyBot.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
-        let ConfigurationFunctions = require('../../../configurations/functions/GlobalConfiguration');
+        let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
+        if (!Guild)return res.status(404).json(req.__('error.guild_not_found'));
+
+        let ConfigurationManager = Guild.ConfigurationManager;
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json');
+        let ConfigurationFunctions = require('../../../../configurations/functions/GuildConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)

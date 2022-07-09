@@ -1,21 +1,22 @@
-FROM alpine:3.16
+FROM node:lts-alpine
 
-RUN mkdir -p /app \
-    && apk add --no-cache git
+ENV NODE_ENV=production
 
-ENV NODE_VERSION 18.5.0
+ENV NODE_VERSION=18.4.0
 
-VOLUME /app
-
+ENV CI=true
 WORKDIR /app
 
-COPY . /app
+COPY ["package.json", "package-lock.json*", "./"]
 
-RUN npm install --unsafe-perm
+RUN npm install --production --silent && mv node_modules /app/
 
-COPY . /app
+COPY . .
 
 EXPOSE 6845
 
-ENTRYPOINT ["npm"]
-CMD ["start"]
+RUN chown -R node /app
+
+USER node
+
+CMD ["npm", "start"]
