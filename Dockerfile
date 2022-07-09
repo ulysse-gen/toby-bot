@@ -1,11 +1,13 @@
 FROM node:10-alpine
 LABEL authors="UlysseGen"
 
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+WORKDIR /app
 
-WORKDIR /home/node/app
-VOLUME /home/node/app
-COPY . ./
+RUN chown -R node:node /app
+
+VOLUME /app
+
+COPY . /app
 
 USER node
 
