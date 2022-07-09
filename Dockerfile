@@ -1,4 +1,6 @@
-FROM node:apline
+FROM alpine:3.16
+
+ENV NODE_VERSION 18.5.0
 
 VOLUME /app
 
