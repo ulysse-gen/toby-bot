@@ -1,6 +1,6 @@
-FROM node:latest
+FROM node:apline
 
-RUN mkdir -p /app
+VOLUME /app
 
 WORKDIR /app
 
@@ -9,8 +9,6 @@ COPY . /app
 RUN npm install
 
 COPY . /app
-
-VOLUME /app
 
 EXPOSE 6845
 
