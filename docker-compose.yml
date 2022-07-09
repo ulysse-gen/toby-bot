@@ -17,3 +17,7 @@ services:
       - data:/app
 volumes:
   data:
+networks:
+  default:
+    name: phpmyadmin
+    external: true
