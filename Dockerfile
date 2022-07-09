@@ -1,5 +1,7 @@
 FROM alpine:3.16
 
+RUN apk add --update nodejs npm
+
 ENV NODE_VERSION 18.5.0
 
 VOLUME /app
