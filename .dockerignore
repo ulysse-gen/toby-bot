@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 **/.classpath
 **/.dockerignore
 **/.env
@@ -25,13 +24,3 @@
 /.github
 sonar-project.properties
 README.md
-=======
-!README*.md
-.cache
-.git
-.github/
-*.md
-node_modules
-npm-debug.log
-README-secret.md
->>>>>>> 0888e4ccca01e633aef9720583a2176a656a1060
