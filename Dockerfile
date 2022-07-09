@@ -1,9 +1,9 @@
 FROM node:10-alpine
 LABEL authors="UlysseGen"
 
-WORKDIR /app
+RUN mkdir -p /app/node_modules && chown -R node:node /app
 
-RUN chown -R node:node /app
+WORKDIR /app
 
 VOLUME /app
 
