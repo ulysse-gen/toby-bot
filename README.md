@@ -49,5 +49,5 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 cd /temporary/toby-bot
 git checkout <branch>
 git pull origin <branch>
-docker build . -t ulyssegen-toby-bot
+docker build . -t ulyssegen/toby-bot
 ```

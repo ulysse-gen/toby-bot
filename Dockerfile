@@ -16,10 +16,7 @@ VOLUME /app
 # This will copy everything from the source path 
 # --more of a convenience when testing locally.
 COPY . .
-# update each dependency in package.json to the latest version
-RUN npm install -g npm-check-updates \
-    npm install
 # Bundle app source
 COPY . /app
 EXPOSE 6845
-CMD [ "index.js" ]
+CMD [ "npm install -g npm-check-updates", "npm install", "index.js" ]
