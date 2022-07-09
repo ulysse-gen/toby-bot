@@ -27,7 +27,8 @@ module.exports = class CommandExecution {
             locales: ['en-US','fr-FR'],
             directory: 'locales/commands',
             fallbackLocale: 'en-US',
-            defaultLocale: 'en-US'
+            defaultLocale: 'en-US',
+            autoReload: true,
         });
     }
 

@@ -33,7 +33,8 @@ module.exports = class Metric {
             locales: ['en-US','fr-FR'],
             directory: 'locales/commands',
             fallbackLocale: 'en-US',
-            defaultLocale: 'en-US'
+            defaultLocale: 'en-US',
+            autoReload: true,
         });
 
         this.initialized = false; //Set the main initialized variable to false

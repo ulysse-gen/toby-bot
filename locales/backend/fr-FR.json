@@ -1,10 +1,1 @@
-{
-	"bot.command.execution": "bot.command.execution",
-	"channelLogging.commandExecution.title": "channelLogging.commandExecution.title",
-	"channelLogging.commandExecution.field.executor.title": "channelLogging.commandExecution.field.executor.title",
-	"channelLogging.commandExecution.field.executor.description": "channelLogging.commandExecution.field.executor.description",
-	"channelLogging.commandExecution.field.channel.title": "channelLogging.commandExecution.field.channel.title",
-	"channelLogging.commandExecution.field.channel.description": "channelLogging.commandExecution.field.channel.description",
-	"channelLogging.commandExecution.field.guild.title": "channelLogging.commandExecution.field.guild.title",
-	"channelLogging.commandExecution.field.guild.description": "channelLogging.commandExecution.field.guild.description"
-}
+{}

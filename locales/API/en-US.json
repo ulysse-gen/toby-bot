@@ -19,6 +19,5 @@
 	"error.command_not_found": "Command not found.",
 	"error.configuration_first_init": "error.configuration_first_init",
 	"error.configuration_key_not_found": "Configuration key not found.",
-	"error.configuration_unchanged": "Configuration enchanged.",
-	"namee": "namee"
+	"error.configuration_unchanged": "Configuration enchanged."
 }

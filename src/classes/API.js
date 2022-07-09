@@ -23,10 +23,12 @@ module.exports = class API {
         this.TobyBot = TobyBot;
 
         this.i18n = new I18n({
-            locales: ['en-US','fr-FR'],
+            locales: ['en-US'],
             directory: 'locales/API',
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US',
+            autoReload: true,
+            header: null,
         });
 
         this.version = TobyBot.PackageInformations.apiVersion;
@@ -55,7 +57,7 @@ module.exports = class API {
         this.app.use('/v1', APIRoutesV1);
 
         this.app.use(function(req, res, next) {
-            res.status(404).json({name: req.__('namee'), version: req.API.version, status: 404, message: req.__('route.unknown')});
+            res.status(404).json({name: req.__('name'), version: req.API.version, status: 404, message: req.__('route.unknown')});
         });        
 
         this.server = await this.start();

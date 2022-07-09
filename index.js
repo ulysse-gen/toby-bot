@@ -22,6 +22,7 @@ const i18n = new I18n({
     directory: 'locales/backend',
     fallbackLocale: 'en-US',
     defaultLocale: 'en-US',
+    autoReload: true,
 });
 
 //Creating main variables

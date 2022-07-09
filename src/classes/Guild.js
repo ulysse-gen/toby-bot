@@ -32,7 +32,8 @@ module.exports = class Guild {
             locales: ['en-US','fr-FR'],
             directory: 'locales/guild',
             fallbackLocale: 'en-US',
-            defaultLocale: 'en-US'
+            defaultLocale: 'en-US',
+            autoReload: true,
         });
 
         this.waitingForMessageData = {
