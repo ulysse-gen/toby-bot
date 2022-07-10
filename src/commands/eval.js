@@ -8,7 +8,7 @@ module.exports = {
     category: "administration",
     enabled: true,
     async execute(CommandExecution) {
-        if (typeof CommandExecution.options.code == "undefined" || CommandExecution.options.code.replaceAll(' ', '') == "") throw {title: CommandExecution.i18n.__('commands.generic.error.title'), content: CommandExecution.i18n.__(`command.${this.name}.error.codeMustExistNotEmpty`)};
+        if (typeof CommandExecution.options.code == "undefined" || CommandExecution.options.code.replaceAll(' ', '') == "")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noCodeSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noCodeSpecified.description`, {}));
         try {
             let evalValue = eval(CommandExecution.options.code);
             if (typeof evalValue != "undefined")return CommandExecution.replySuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.successExecution.title`), CommandExecution.i18n.__(`command.${this.name}.successExecution.description`, {evalValue: evalValue}));

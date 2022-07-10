@@ -9,9 +9,7 @@ module.exports = {
     category: "infos",
     enabled: true,
     async execute(CommandExecution) {
-        if (typeof CommandExecution.options.target == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.description`, {}));
-    
-        let User = await CommandExecution.Guild.getUserFromArg(CommandExecution.options.target);
+        let User = await CommandExecution.Guild.getUserFromArg(CommandExecution.options.target, CommandExecution.GuildExecutor);
         if (typeof User == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.description`, {}));
         let UserPFP = await CommandExecution.Guild.getUserPfp(User);
 
@@ -73,7 +71,7 @@ module.exports = {
         slashCommand.addUserOption(option => 
             option.setName('target')
                 .setDescription(i18n.__(`command.${this.name}.option.target.description`))
-                .setRequired(true)
+                .setRequired(false)
         );
 
         return slashCommand;

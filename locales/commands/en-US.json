@@ -404,5 +404,9 @@
 	"command.getapitoken.description": "Get a link to grab an API token",
 	"command.getapitoken.error.onlyslash": "This can only be used in slash commands for security reasons.",
 	"command.getapitoken.mainembed.title": "Get your API Token here",
-	"command.getapitoken.mainembed.description": "[Click here to get your API token]({{{link}}})"
+	"command.getapitoken.mainembed.description": "[Click here to get your API token]({{{link}}})",
+	"contextCommandExecution.generic.unknownCommand.description": "Could not find this context menu command.",
+	"contextCommandExecution.generic.unknownCommand.title": "Unknown context menu command.",
+	"command.evaluate.error.noCodeSpecified.title": "MiSsiNg ArGumEnT 'code'",
+	"command.evaluate.error.noCodeSpecified.description": "Please. PLEASE. Type in the code you want to eval. Thanks."
 }

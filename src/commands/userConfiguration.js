@@ -13,7 +13,7 @@ module.exports = {
         let ConfigurationManager = CommandExecution.RealUser.ConfigurationManager;
         if (!ConfigurationManager.initialized)await CommandExecution.RealUser.initialize(true);
         let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json');
-        let ConfigurationFunctions = require('../configurations/functions/UserConfiguration');
+        let ConfigurationFunctions = require('../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)return CommandExecution.returnWarningEmbed({}, CommandExecution.i18n.__(`command.generic.configuration.first-init.title`), CommandExecution.i18n.__(`command.generic.configuration.first-init.description`, {}));

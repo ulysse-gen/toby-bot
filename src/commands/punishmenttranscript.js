@@ -76,7 +76,7 @@ module.exports = {
         var options = {};
         if (CommandExecution.CommandOptions.length == 0)return options;
         options.caseid = CommandExecution.CommandOptions.shift();
-        options.page = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length == 0)options.page = CommandExecution.CommandOptions.shift();
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {

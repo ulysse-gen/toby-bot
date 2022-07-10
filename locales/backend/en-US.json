@@ -7,6 +7,8 @@
 	"bot.command.execution.spoofed": "{{{realUser}}} executed {{{command}}} in {{{realLocation}}} [Spoofed as {{{user}}} in {{{location}}}]",
 	"bot.slashCommandRegistered.error": "Could not register slash commands. [{{{error}}}]",
 	"bot.slashCommandRegistered": "Registered {{{amount}}} slash commands.",
+	"bot.contextMenuCommandRegistered.error": "Could not register context commands. [{{{error}}}]",
+	"bot.contextMenuCommandRegistered": "Registered {{{amount}}} context commands",
 	"bot.command.execution.permissionDenied": "{{{user}}} tried executing {{{command}}} in {{{location}}} but has been denied the permission {{{permission}}}",
 	"bot.command.execution.unknownCommand": "{{{realUser}}} tried to execute an unknown command in {{{realLocation}}}",
 	"bot.joinedGuild": "Joined the guild {{{guildName}}} ({{{guildId}}})",
@@ -46,5 +48,15 @@
 	"bot.inputCommunityGuild.defined": "Community guild defined.",
 	"bot.inputCommunityGuild.couldNotFetch": "Could not fetch the provided community guild.",
 	"bot.api.stopped": "API stopped.",
-	"bot.APIOnly": "Running on 'API Only'. Bot will not listen to any command."
+	"bot.APIOnly": "Running on 'API Only'. Bot will not listen to any command.",
+	"channelLogging.contextCommandExecution.title": "Context menu command executed",
+	"bot.contextcommand.execution.unknownCommand": "{{{realUser}}} tried to execute an unknown command in {{{realLocation}}}",
+	"channelLogging.contextCommandExecution.error.unknown.title": "Unknown context menu command",
+	"channelLogging.contextCommandExecution.error.unknown.description": "{{{command}}}",
+	"bot.APIOnly.normal": "Running on 'API Only'. Bot will not listen to any command.",
+	"bot.APIOnly.context": "Running on 'API Only'. Bot will not listen to any context menu command.",
+	"bot.contextCommandExecution.execution": "{{{user}}} (context menu) executed {{{command}}} in {{{location}}}",
+	"bot.contextCommandExecution.execution.spoofed": "{{{realUser}}} (context menu) executed {{{command}}} in {{{realLocation}}} [Spoofed as {{{user}}} in {{{location}}}]",
+	"bot.contextCommandExecution.execution.permissionDenied": "{{{user}}} tried (context menu) executing {{{command}}} in {{{location}}} but has been denied the permission {{{permission}}}",
+	"bot.contextCommandExecution.execution.unknownCommand": "{{{realUser}}} tried to (context menu) execute an unknown command in {{{realLocation}}}"
 }

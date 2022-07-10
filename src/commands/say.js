@@ -63,7 +63,7 @@ module.exports = {
             CommandExecution.CommandOptions = CommandExecution.CommandOptions.filter(function(e) { return e !== CommandExecution.CommandOptions[0]; });
         }
 
-        options.text = CommandExecution.CommandOptions.join(' ');
+        if (CommandExecution.CommandOptions.length == 0)options.text = CommandExecution.CommandOptions.join(' ');
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {

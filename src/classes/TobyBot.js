@@ -19,6 +19,7 @@ const MetricManager = require('./MetricManager');
 const GuildManager = require('./GuildManager');
 const UserManager = require('./UserManager');
 const CommandManager = require('./CommandManager');
+const ContextMenuCommandManager = require('./ContextMenuCommandManager');
 const ChannelLogger = require('./ChannelLogger');
 const ModerationManager = require('./ModerationManager');
 const API = require('./API');
@@ -68,6 +69,7 @@ module.exports = class TobyBot {
         this.LifeMetric.addEntry("BotLogin");
         await this.attemptLogin();
         if (!this.TopConfigurationManager.get('API.only'))this.CommandManager.pushSlashCommands();
+        if (!this.TopConfigurationManager.get('API.only'))this.ContextMenuCommandManager.pushContextCommands();
         this.LifeMetric.addEntry("botReady");
         this.LifeMetric.addEntry("LoggersInit");
         await this.initLoggers().catch(e => { throw e }); //Attach loggers
@@ -82,13 +84,13 @@ module.exports = class TobyBot {
 
 
         this.LifeMetric.addEntry("ConfigurationManagerCreate");
-        this.ConfigurationManager = new SQLConfigurationManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
+        this.ConfigurationManager = new SQLConfigurationManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../../configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
         this.LifeMetric.addEntry("ConfigurationManagerInit");
         await this.ConfigurationManager.initialize(true, undefined, undefined, this); //Init the Global ConfigurationManager
 
         
         this.LifeMetric.addEntry("PermissionManagerCreate");
-        this.PermissionManager = new SQLPermissionManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../configurations/defaults/GlobalPermissions.json'), true); //Create the Global PermissionManager
+        this.PermissionManager = new SQLPermissionManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../../configurations/defaults/GlobalPermissions.json'), true); //Create the Global PermissionManager
         this.LifeMetric.addEntry("PermissionManagerInit");
         await this.PermissionManager.initialize(true, undefined, undefined, this); //Init the Global PermissionManager
 
@@ -96,6 +98,11 @@ module.exports = class TobyBot {
         this.CommandManager = new CommandManager(this); //Create the Global CommandManager
         this.LifeMetric.addEntry("CommandManagerInit");
         await this.CommandManager.initialize(); //Init the Global CommandManager
+
+        this.LifeMetric.addEntry("CommandManagerCreate");
+        this.ContextMenuCommandManager = new ContextMenuCommandManager(this); //Create the Global ContextMenuCommandManager
+        this.LifeMetric.addEntry("CommandManagerInit");
+        await this.ContextMenuCommandManager.initialize(); //Init the Global ContextMenuCommandManager
  
         this.UserManager = new UserManager(this);
         this.GuildManager = new GuildManager(this);
@@ -125,17 +132,18 @@ module.exports = class TobyBot {
                 files.filter(file => file.endsWith('.js')).forEach((file, index, array) => { //For each files in the folder
                     let event = require(`../events/${file}`);
 
-                    if (event.once) {
-                        _this.client.once(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
-                            ErrorLog.error(`An error occured during the handling of the (once) event ${event.name}:`);
-                            console.log(e);
-                        }));
-                    }else {
-                        _this.client.on(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
-                            ErrorLog.error(`An error occured during the handling of the event ${event.name}:`);
-                            console.log(e);
-                        }));
-                    }
+                    if ((typeof event.enabled == "boolean") ? event.enabled : true)
+                        if (event.once) {
+                            _this.client.once(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
+                                ErrorLog.error(`An error occured during the handling of the (once) event ${event.name}:`);
+                                console.log(e);
+                            }));
+                        }else {
+                            _this.client.on(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
+                                ErrorLog.error(`An error occured during the handling of the event ${event.name}:`);
+                                console.log(e);
+                            }));
+                        }
                     
                     if (index === array.length -1) res();
                 });
@@ -183,11 +191,13 @@ module.exports = class TobyBot {
                     console.log(err);
                     switch (err.code) {
                         case "ECONNREFUSED":
-                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here: \nIs your SQL Running ?\nIs TobyBot's Container in the same network as the database ?\nIs your configuration right ?`);
+                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here:`);
+                            ErrorLog.error(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/help/MySQL_not_`);
                             break;
 
                         case "ETIMEDOUT":
-                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here: \nIs your SQL Running ?\nIs TobyBot's Container in the same network as the database ?\nIs your configuration right ?`);
+                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here:`);
+                            ErrorLog.error(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/help/MySQL_not_connecting`);
                             break;
     
                         case "ER_ACCESS_DENIED_ERROR":
@@ -228,7 +238,7 @@ module.exports = class TobyBot {
             this.SQLPool.query(`SELECT * FROM \`tobybot\` WHERE numId=1`, (error, results) => {
                 if (error)throw error;
                 if (results.length == 0){
-                    this.SQLPool.query(`INSERT INTO \`tobybot\` (numId, configuration, permissions) VALUES (?,?,?)`, [1, JSON.stringify(require('../configurations/defaults/GlobalConfiguration.json')), JSON.stringify(require('../configurations/defaults/GlobalPermissions.json'))], async (error, results) => {
+                    this.SQLPool.query(`INSERT INTO \`tobybot\` (numId, configuration, permissions) VALUES (?,?,?)`, [1, JSON.stringify(require('../../configurations/defaults/GlobalConfiguration.json')), JSON.stringify(require('../../configurations/defaults/GlobalPermissions.json'))], async (error, results) => {
                         if (error)throw error;
                         if (results.affectedRows != 1) throw new Error('Could not create tobybot.')
                         res(true);

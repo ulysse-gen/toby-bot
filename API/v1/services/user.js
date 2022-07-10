@@ -1,39 +1,63 @@
+const bcrypt   = require('bcryptjs');
+const crypto   = require('crypto');
+const jwt    = require('jsonwebtoken');
 const _    = require('lodash');
-const FileConfigurationManager = require('../../../classes/FileConfigurationManager');
+const FileConfigurationManager = require('../../../src/classes/FileConfigurationManager');
 
-exports.status = async (req, res, next) => {
-    try {
-        return res.status(200).json({status: 'running', uptime: parseFloat((process.uptime() * 1000).toFixed(2))});
-    } catch (error) {
-        return res.status(501).json(req.__('error.unknown'));
-    }
+exports.getMine = async (req, res, next) => {
+    req.params.userId = req.User.id;
+    next();
 }
 
-exports.uptime = async (req, res, next) => {
-    try {
-        return res.status(200).json(parseFloat((process.uptime() * 1000).toFixed(2)));
-    } catch (error) {
-        return res.status(501).json(req.__('error.unknown'));
-    }
-}
+exports.getUserById = async (req, res, next) => {
+    const { userId } = req.params;
 
-exports.getConfiguration = async (req, res, next) => {
+    if (!userId)return res.status(401).json(req.__('error.required', {required: 'userId'}));
+
     try {
-        return res.status(200).json(_.omit(req.API.TobyBot.ConfigurationManager.configuration, ['token']));
+        let User = await req.API.TobyBot.UserManager.getUserById(userId);
+
+        if (User) {
+            return res.status(200).json(User.apiVersion());
+        } else {
+            return res.status(404).json(req.__('error.user_not_found'));
+        }
     } catch (error) {
         return res.status(401).json(req.__('error.unknown'));
     }
 }
 
-exports.getConfigurationKey = async (req, res, next) => {
-    const { configurationKey } = req.params;
+exports.getUserConfiguration = async (req, res, next) => {
+    const { userId } = req.params;
 
+    if (!userId)return res.status(401).json(req.__('error.required', {required: 'userId'}));
+
+    try {
+        let User = await req.API.TobyBot.UserManager.getUserById(userId);
+
+        if (User) {
+            return res.status(200).json(User.ConfigurationManager.configuration);
+        } else {
+            return res.status(404).json(req.__('error.user_not_found'));
+        }
+    } catch (error) {
+        return res.status(401).json(req.__('error.unknown'));
+    }
+}
+
+exports.getUserConfigurationKey = async (req, res, next) => {
+    const { userId, configurationKey } = req.params;
+
+    if (!userId)return res.status(401).json(req.__('error.required', {required: 'userId'}));
     if (!configurationKey)return res.status(401).json(req.__('error.required', {required: 'configurationKey'}));
 
     try {
-        let ConfigurationManager = req.API.TobyBot.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
-        let ConfigurationFunctions = require('../../../../configurations/functions/GlobalConfiguration');
+        let User = await req.API.TobyBot.UserManager.getUserById(userId);
+        if (!User)return res.status(404).json(req.__('error.user_not_found'));
+
+        let ConfigurationManager = User.ConfigurationManager;
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json');
+        let ConfigurationFunctions = require('../../../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)
@@ -55,17 +79,21 @@ exports.getConfigurationKey = async (req, res, next) => {
 }
 
 exports.patchConfigurationKey = async (req, res, next) => {
-    const { configurationKey } = req.params;
+    const { userId, configurationKey } = req.params;
 
     const { value } = req.body;
 
+    if (!userId)return res.status(401).json(req.__('error.required', {required: 'userId'}));
     if (!configurationKey)return res.status(401).json(req.__('error.required', {required: 'configurationKey'}));
     if (!value)return res.status(401).json(req.__('error.required', {required: 'value'}));
 
     try {
-        let ConfigurationManager = req.API.TobyBot.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
-        let ConfigurationFunctions = require('../../../configurations/functions/GlobalConfiguration');
+        let User = await req.API.TobyBot.UserManager.getUserById(userId);
+        if (!User)return res.status(404).json(req.__('error.user_not_found'));
+
+        let ConfigurationManager = User.ConfigurationManager;
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json');
+        let ConfigurationFunctions = require('../../../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)
@@ -158,6 +186,90 @@ exports.patchConfigurationKey = async (req, res, next) => {
         return res.status(200).json({before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
     } catch (error) {
         console.log(error)
+        return res.status(401).json(req.__('error.unknown'));
+    }
+}
+
+
+
+
+exports.genToken = async (req, res, next) => {
+    const { password } = req.body;
+
+    if (!password)return res.status(401).json(req.__('error.required', {required: 'password'}));
+
+    try {
+        res.status(200).json(bcrypt.hashSync(password, 10));
+    } catch (error) {
+        return res.status(401).json(req.__('error.unknown'));
+    }
+}
+
+exports.auth = async (req, res, next) => {
+    const { userId, password } = req.body;
+
+    if (!userId)return res.status(401).json(req.__('error.required', {required: 'userId'}));
+    if (!password)return res.status(401).json(req.__('error.required', {required: 'password'}));
+
+    try {
+        let User = await req.API.TobyBot.UserManager.getUserById(userId);
+
+        if (User) {
+            if (!User.password)return res.status(401).json(req.__('error.no_api_account'));
+
+            bcrypt.compare(password, User.password, function(err, response) {
+                if (err) throw err;
+                if (response) {
+                    User = User.tokenVersion();
+
+                    const expireIn = 24 * 60 * 60;
+                    const token    = jwt.sign({
+                        tokenIdentifier: crypto.randomBytes(8).toString('hex'),
+                        User: User
+                    },
+                    req.API.secret,
+                    {
+                        expiresIn: expireIn
+                    });
+
+                    res.header('Authorization', 'Bearer ' + token);
+
+                    return res.status(200).json({user: User, token: {token: token, expireIn: expireIn}});
+                }
+
+                return res.status(403).json(req.__('error.wrong_credentials'));
+            });
+        } else {
+            return res.status(404).json(req.__('error.user_not_found'));
+        }
+    } catch (error) {
+        return res.status(401).json(req.__('error.unknown'));
+    }
+}
+
+exports.authByTempToken = async (req, res, next) => {
+    const { userId, tempToken } = req.params;
+
+    if (!userId)return res.status(401).json(req.__('error.required', {required: 'userId'}));
+    if (!tempToken)return res.status(401).json(req.__('error.required', {required: 'tempToken'}));
+
+    try {
+        User = req.User.tokenVersion();
+
+        const expireIn = 24 * 60 * 60;
+        const token    = jwt.sign({
+            tokenIdentifier: crypto.randomBytes(8).toString('hex'),
+            User: User
+        },
+        req.API.secret,
+        {
+            expiresIn: expireIn
+        });
+
+        res.header('Authorization', 'Bearer ' + token);
+
+        return res.status(200).json({user: User, token: {token: token, expireIn: expireIn}});
+    } catch (error) {
         return res.status(401).json(req.__('error.unknown'));
     }
 }

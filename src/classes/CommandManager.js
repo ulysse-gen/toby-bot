@@ -21,7 +21,7 @@ const { setLocale } = require('i18n');
 const MainLog = new FileLogger();
 const ErrorLog = new FileLogger('error.log');
 
-module.exports = class Metric {
+module.exports = class CommandManager {
     constructor(TobyBot, commandsFolder = "/") {
         this.TobyBot = TobyBot;
 
@@ -31,7 +31,7 @@ module.exports = class Metric {
 
         this.i18n = new I18n({
             locales: ['en-US','fr-FR'],
-            directory: 'src/locales/commands',
+            directory: 'locales/commands',
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US',
             autoReload: true,
@@ -44,7 +44,7 @@ module.exports = class Metric {
     async initialize() {
         let _this = this;
         if (this.verbose) MainLog.log(`Initializing CommandManager [${this.commandsFolder}]`);
-        if (this.TobyBot.TopConfigurationManager.get('API.only')) MainLog.warning(this.TobyBot.i18n.__('bot.APIOnly'));
+        if (this.TobyBot.TopConfigurationManager.get('API.only')) MainLog.warning(this.TobyBot.i18n.__('bot.APIOnly.normal'));
 
         if (!this.TobyBot.TopConfigurationManager.get('API.only'))await new Promise((res, _rej) => {
             fs.readdir(`./src/commands${_this.commandsFolder}`, function (err, files) { //Read events folder
@@ -79,7 +79,8 @@ module.exports = class Metric {
             );
             MainLog.log(this.TobyBot.i18n.__('bot.slashCommandRegistered', {amount: this.slashCommands.length.toString().green}));
         } catch (error) {
-            throw error;
+            MainLog.log(this.TobyBot.i18n.__('bot.slashCommandRegistered.error', {amount: this.slashCommands.length.toString().green, error: error.toString()}));
+            return false;
         }
         return true;
     }

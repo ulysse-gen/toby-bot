@@ -16,10 +16,10 @@ const FileConfigurationManager = require('./src/classes/FileConfigurationManager
 const TobyBot = require('./src/classes/TobyBot');
 
 //Creating main objects
-const TopConfigurationManager = new FileConfigurationManager('configuration.json', require('./src/configurations/defaults/TopConfiguration.json')); //This is the main -- top level -- config. Containing the MySQL details
+const TopConfigurationManager = new FileConfigurationManager('configuration.json', require('./configurations/defaults/TopConfiguration.json')); //This is the main -- top level -- config. Containing the MySQL details
 const i18n = new I18n({
     locales: ['en-US','fr-FR'],
-    directory: 'src/locales/backend',
+    directory: 'locales/backend',
     fallbackLocale: 'en-US',
     defaultLocale: 'en-US',
     autoReload: true,

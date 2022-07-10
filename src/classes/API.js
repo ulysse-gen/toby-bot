@@ -16,7 +16,7 @@ const FileLogger = require('./FileLogger');
 const MainLog = new FileLogger();
 const ErrorLog = new FileLogger('error.log');
 
-const APIRoutesV1 = require('../API/v1/routes/index');
+const APIRoutesV1 = require('../../API/v1/routes/index');
 
 module.exports = class API {
     constructor(TobyBot) {
@@ -24,7 +24,7 @@ module.exports = class API {
 
         this.i18n = new I18n({
             locales: ['en-US'],
-            directory: 'src/locales/API',
+            directory: 'locales/API',
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US',
             autoReload: true,

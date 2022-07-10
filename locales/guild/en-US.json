@@ -40,5 +40,10 @@
 	"configuration.role.cannotFetchRole.title": "Could not fetch role.",
 	"configuration.role.cannotFetchRole.description": "Could not fetch the specified role. Check that you typed the right ID.",
 	"configuration.locale.notPossibleLocale.title": "Localization not available",
-	"configuration.locale.notPossibleLocale.description": "This lang is not available, available languages are currently {{{possibleLocales}}}."
+	"configuration.locale.notPossibleLocale.description": "This lang is not available, available languages are currently {{{possibleLocales}}}.",
+	"interaction.contextMenu.notBuilt": "This context menu command isnt built yet or has failed.",
+	"channelLogging.contextCommandExecution.title": "Context menu command executed",
+	"channelLogging.contextCommandExecution.description": "{{{command}}}",
+	"channelLogging.contextCommandExecution.error.unknown.title": "Unknown context menu command",
+	"channelLogging.contextCommandExecution.error.unknown.description": "{{{command}}}"
 }

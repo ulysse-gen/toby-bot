@@ -30,7 +30,7 @@ module.exports = class Guild {
         this.MessageManager = new MessageManager(this);
         this.i18n = new I18n({
             locales: ['en-US','fr-FR'],
-            directory: 'src/locales/guild',
+            directory: 'locales/guild',
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US',
             autoReload: true,
@@ -72,8 +72,8 @@ module.exports = class Guild {
     }
 
     async initialize() {
-        this.ConfigurationManager = new SQLConfigurationManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, JSON.stringify(require('../configurations/defaults/GuildConfiguration.json')));
-        this.PermissionManager = new SQLPermissionManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, require('../configurations/defaults/GuildPermissions.json'));
+        this.ConfigurationManager = new SQLConfigurationManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, JSON.stringify(require('../../configurations/defaults/GuildConfiguration.json')));
+        this.PermissionManager = new SQLPermissionManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, require('../../configurations/defaults/GuildPermissions.json'));
         this.ModerationManager = new ModerationManager(this);
         await this.ConfigurationManager.initialize(true, this);
         this.isSetup = this.ConfigurationManager.get('system.setup-done');
@@ -107,7 +107,7 @@ module.exports = class Guild {
             this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.guild.id}'`, (error, results) => {
                 if (error)throw error;
                 if (results.length == 0){
-                    this.SQLPool.query(`INSERT INTO \`guilds\` (id, name, locale, configuration, permissions) VALUES (?,?,?,?,?)`, [this.guild.id, this.guild.name, this.guild.preferredLocale, JSON.stringify(require('../configurations/defaults/GuildConfiguration.json')), JSON.stringify(require('../configurations/defaults/GuildPermissions.json'))], async (error, results) => {
+                    this.SQLPool.query(`INSERT INTO \`guilds\` (id, name, locale, configuration, permissions) VALUES (?,?,?,?,?)`, [this.guild.id, this.guild.name, this.guild.preferredLocale, JSON.stringify(require('../../configurations/defaults/GuildConfiguration.json')), JSON.stringify(require('../../configurations/defaults/GuildPermissions.json'))], async (error, results) => {
                         if (error)throw error;
                         if (results.affectedRows != 1) throw new Error('Could not create the guild.')
                         res(true);
@@ -132,7 +132,8 @@ module.exports = class Guild {
         return await this.loggers[loggerName].initialize();
     }
 
-    async getUserFromArg(userString) {
+    async getUserFromArg(userString, fallbackUser = undefined) {
+        if (!userString)return fallbackUser;
         let user = await this.guild.members.fetch({
             cache: false,
             force: true
@@ -142,7 +143,7 @@ module.exports = class Guild {
             cache: false,
             force: true
         }).catch(e => {
-            return undefined;
+            return fallbackUser;
         });
         return user;
     }

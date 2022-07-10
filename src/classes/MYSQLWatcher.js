@@ -75,7 +75,8 @@ module.exports = class API {
 
     async ZongJiError(err) {
         if (err.code && err.code == 'ER_NO_BINARY_LOGGING'){
-            ErrorLog.error(`Binary logging is not enabled, MySQL Watching disabled.`);
+            ErrorLog.warning(`Binary logging is not enabled, MySQL Watching disabled. You might find your solution in there:`);
+            ErrorLog.warning(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/help/MySQL_Watching_disabled`);
             return true;
         }
         console.log(err);

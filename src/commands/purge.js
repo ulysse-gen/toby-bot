@@ -109,7 +109,7 @@ module.exports = {
         var options = {};
         if (CommandExecution.CommandOptions.length == 0)return options;
         options.subCommand = CommandExecution.CommandOptions.shift();
-        options.amount = CommandExecution.CommandOptions.pop();
+        if (CommandExecution.CommandOptions.length == 0)options.amount = CommandExecution.CommandOptions.pop();
         if (CommandExecution.CommandOptions.length != 0)options.target = CommandExecution.CommandOptions.shift();
         return options;
     },

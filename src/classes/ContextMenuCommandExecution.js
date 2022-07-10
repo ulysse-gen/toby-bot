@@ -14,15 +14,13 @@ const FileLogger = require('./FileLogger');
 const MainLog = new FileLogger();
 const ErrorLog = new FileLogger('error.log');
 
-module.exports = class CommandExecution {
-    constructor(trigger, command, commandOptions, CommandManager, isSlashCommand = false) {
+module.exports = class ContextMenuCommandExecution {
+    constructor(trigger, command, ContextMenuCommandManager) {
         this.TobyBot = trigger.TobyBot.TobyBot;
 
         this.Trigger = trigger;
         this.Command = command;
-        this.CommandOptions = commandOptions;
-        this.IsSlashCommand = isSlashCommand;
-        this.CommandManager = CommandManager;
+        this.ContextMenuCommandManager = ContextMenuCommandManager;
         this.i18n = new I18n({
             locales: ['en-US','fr-FR'],
             directory: 'locales/commands',
@@ -38,8 +36,8 @@ module.exports = class CommandExecution {
     async execute() {
         await this.buildContext();
         this.deferIfNeeded();
-        if (typeof this.Command == "undefined")return this.unknownCommand((this.IsSlashCommand) ? this.Trigger.commandName : this.Trigger.content);
-        if (typeof this.options.permissionDenied != "undefined")return this.denyPermission(this.options.permissionDenied);
+        if (typeof this.Command == "undefined")return this.unknownCommand(this.Trigger.commandName);
+        if (typeof this.options != "undefined" && typeof this.options.permissionDenied != "undefined")return this.denyPermission(this.options.permissionDenied);
         await this.logExecution();
         return this.Command.execute(this);
     }
@@ -47,7 +45,7 @@ module.exports = class CommandExecution {
     async deferIfNeeded() {
         let _this = this;
         return setTimeout(() => {
-            if (!_this.Trigger.replied && !_this.Trigger.deferred && _this.IsSlashCommand){
+            if (!_this.Trigger.replied && !_this.Trigger.deferred){
                 _this.Trigger.reply = async(...args) => {
                     return _this.Trigger.editReply(...args);
                 }
@@ -60,8 +58,8 @@ module.exports = class CommandExecution {
      * No arguments needed
      */
     async buildContext() {
-        this.Executor = (this.IsSlashCommand) ? this.Trigger.user : this.Trigger.author;
-        this.RealExecutor = (this.IsSlashCommand) ? this.Trigger.user : this.Trigger.author;
+        this.Executor = this.Trigger.user;
+        this.RealExecutor = this.Trigger.user;
         this.GuildExecutor = await this.Trigger.TobyBot.guild.guild.members.fetch(this.Executor);
         this.Channel = this.Trigger.channel;
         this.RealChannel = this.Channel;
@@ -76,71 +74,28 @@ module.exports = class CommandExecution {
         }
 
         if (typeof this.Command != "undefined") {
-            if (this.IsSlashCommand) {
-                this.Trigger.delete = async() => true; //We spoof the delete function so we can just call it anyway and it doesnt crash
+            this.Trigger.delete = async() => true; //We spoof the delete function so we can just call it anyway and it doesnt crash
                 this.Trigger.replyOriginal = this.Trigger.reply;
                 this.Trigger.reply = async(...args) => {
-                    args[0].ephemeral = (typeof args[0].ephemeral == "boolean") ? args[0].ephemeral : true;
+                    args[0].ephemeral = true;
                     if (this.Trigger.replied) return (args[0].followUpIfReturned) ? this.Trigger.followUp(...args) : false;
                     return this.Trigger.replyOriginal(...args);
                 }
-            }else {
-                this.Trigger.replyOriginal = this.Trigger.reply;
-                this.Trigger.reply = async (...args) => {
-                    if (args[0].slashOnly)return true;
-                    return this.Trigger.replyOriginal(...args).then(message => {
-                        if (typeof args[0].ephemeral == "boolean" && args[0].ephemeral) setTimeout(()=>{
-                            message.delete().catch(e => false);
-                        }, 10000);
-                    });
-                }
-
-                for (const argument of this.CommandOptions) {
-                    if (argument.startsWith('--')){
-                        let modifier = argument.replace('--', '').split("=");
-                        let modifierName = modifier.shift();
-                        let modifierValue = modifier.shift();
-        
-                        if (["spoofExecutor"].includes(modifierName)){
-                            let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofExecutor`);
-                            if (!checkPermission)return {permissionDenied: `commands.spoofExecutor`};
-                            this.Executor = (await this.Guild.getMemberById(modifierValue));
-        
-                            this.spoofing = true;
-                            this.CommandOptions = this.CommandOptions.filter(function(e) { return e !== argument });
-                        }
-        
-                        if (["spoofChannel"].includes(modifierName)){
-                            let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofChannel`);
-                            if (!checkPermission)return {permissionDenied: `commands.spoofChannel`};
-                            this.Channel = await this.Guild.getChannelById(modifierValue);
-        
-                            this.spoofing = true;
-                            this.CommandOptions = this.CommandOptions.filter(function(e) { return e !== argument; });
-                        }
-                    }
-                }
-            }
         } else {
             return true;
         }
 
-        let checkPermission = await this.CommandManager.hasPermission(this);
-        if (!checkPermission){
-            this.optionsBackup = (this.IsSlashCommand) ? await this.Command.optionsFromSlashOptions(this, this.CommandOptions) : await this.Command.optionsFromArgs(this, this.CommandOptions);
-            if (!checkPermission)return this.options = {permissionDenied: this.Command.permission};
-        }
-
-        this.options = (this.IsSlashCommand) ? await this.Command.optionsFromSlashOptions(this, this.CommandOptions) : await this.Command.optionsFromArgs(this, this.CommandOptions);
+        let checkPermission = await this.ContextMenuCommandManager.hasPermission(this);
+        if (!checkPermission)return this.options = {permissionDenied: this.Command.permission};
         return true;
     }
 
     async denyPermission(permission) {
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')) {
             if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inSQL'))await this.TobyBot.SQLLogger.logCommandExecution(this, 'denied');
-            if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.permissionDenied', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
+            if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')))MainLog.log(this.TobyBot.i18n.__('bot.contextCommandExecution.execution.permissionDenied', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel')) && typeof this.TobyBot.loggers.commandExecution != "undefined"){
-                let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.commandExecution.error.deny.title')).setDescription(this.TobyBot.i18n.__('channelLogging.commandExecution.error.deny.description', {command: `${this.Command.name} ${Object.entries(this.optionsBackup).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.TobyBot.ConfigurationManager.get('style.colors.error'));
+                let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.contextCommandExecution.error.deny.title')).setDescription(this.TobyBot.i18n.__('channelLogging.contextCommandExecution.error.deny.description', {command: `${this.Command.name}`})).setColor(this.TobyBot.ConfigurationManager.get('style.colors.error'));
                 embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.executor.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.Executor.id, realUserId: this.RealExecutor.id}), true);
                 embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.channel.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.Channel.id, realChannelId: this.RealChannel.id}), true);
                 embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.guild.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.guild.description', {guildId: this.Guild.guild.id, realGuildId: this.RealGuild.guild.id}), true);
@@ -152,10 +107,10 @@ module.exports = class CommandExecution {
                 this.TobyBot.loggers.commandExecution.logRaw({embeds: [embed]});
             }
         }
-        if ((await this.Guild.ConfigurationManager.get('behaviour.returnErrorOnPermissionDenied')))this.returnErrorEmbed({}, this.i18n.__(`commands.generic.permissionDenied.title`), this.i18n.__(`commands.generic.permissionDenied.description`, {permission: this.options.permissionDenied}));
+        if ((await this.Guild.ConfigurationManager.get('behaviour.returnErrorOnPermissionDenied')))this.returnErrorEmbed({}, this.i18n.__(`contextCommandExecution.generic.permissionDenied.title`), this.i18n.__(`contextCommandExecution.generic.permissionDenied.description`, {permission: this.options.permissionDenied}));
         
         if (await this.Guild.ConfigurationManager.get('logging.commandExecution.logFailed') && typeof this.Guild.loggers.commandExecution != "undefined"){
-            let embed = new MessageEmbed().setTitle(this.Guild.i18n.__('channelLogging.commandExecution.error.deny.title')).setDescription(this.Guild.i18n.__('channelLogging.commandExecution.error.deny.description', {command: `${this.Command.name} ${Object.entries(this.optionsBackup).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.Guild.ConfigurationManager.get('style.colors.error'));
+            let embed = new MessageEmbed().setTitle(this.Guild.i18n.__('channelLogging.contextCommandExecution.error.deny.title')).setDescription(this.Guild.i18n.__('channelLogging.contextCommandExecution.error.deny.description', {command: `${this.Command.name}`})).setColor(this.Guild.ConfigurationManager.get('style.colors.error'));
             embed.addField(this.Guild.i18n.__('channelLogging.commandExecution.field.executor.title'), this.Guild.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.Executor.id, realUserId: this.RealExecutor.id}), true);
             embed.addField(this.Guild.i18n.__('channelLogging.commandExecution.field.channel.title'), this.Guild.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.Channel.id, realChannelId: this.RealChannel.id}), true);
             if (typeof this.spoofing != "undefined") {
@@ -172,9 +127,9 @@ module.exports = class CommandExecution {
     async unknownCommand(commandDetails) {
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.logFailed')) {
             if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inSQL'))await this.TobyBot.SQLLogger.logCommandExecution(this, 'unknown');
-            if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')))MainLog.log(this.TobyBot.i18n.__('bot.command.execution.unknownCommand', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
+            if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole')))MainLog.log(this.TobyBot.i18n.__('bot.contextCommandExecution.execution.unknownCommand', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
             if ((await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel')) && typeof this.TobyBot.loggers.commandExecution != "undefined"){
-                let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.commandExecution.error.unknown.title')).setDescription(this.TobyBot.i18n.__('channelLogging.commandExecution.error.unknown.description', {command: commandDetails})).setColor(this.TobyBot.ConfigurationManager.get('style.colors.error'));
+                let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.contextCommandExecution.error.unknown.title')).setDescription(this.TobyBot.i18n.__('channelLogging.contextCommandExecution.error.unknown.description', {command: commandDetails})).setColor(this.TobyBot.ConfigurationManager.get('style.colors.error'));
                 embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.executor.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.Executor.id, realUserId: this.RealExecutor.id}), true);
                 embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.channel.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.Channel.id, realChannelId: this.RealChannel.id}), true);
                 embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.guild.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.guild.description', {guildId: this.Guild.guild.id, realGuildId: this.RealGuild.guild.id}), true);
@@ -186,10 +141,10 @@ module.exports = class CommandExecution {
                 this.TobyBot.loggers.commandExecution.logRaw({embeds: [embed]});
             }
         }
-        if ((await this.Guild.ConfigurationManager.get('behaviour.returnErrorOnUnknownCommand'))) this.returnErrorEmbed({}, this.i18n.__(`commands.generic.unknownCommand.title`), this.i18n.__(`commands.generic.unknownCommand.description`));
+        if ((await this.Guild.ConfigurationManager.get('behaviour.returnErrorOnUnknownCommand'))) this.returnErrorEmbed({}, this.i18n.__(`contextCommandExecution.generic.unknownCommand.title`), this.i18n.__(`contextCommandExecution.generic.unknownCommand.description`));
         
         if (await this.Guild.ConfigurationManager.get('logging.commandExecution.logFailed') && typeof this.Guild.loggers.commandExecution != "undefined"){
-            let embed = new MessageEmbed().setTitle(this.Guild.i18n.__('channelLogging.commandExecution.error.unknown.title')).setDescription(this.Guild.i18n.__('channelLogging.commandExecution.error.unknown.description', {command: commandDetails})).setColor(this.Guild.ConfigurationManager.get('style.colors.error'));
+            let embed = new MessageEmbed().setTitle(this.Guild.i18n.__('channelLogging.contextCommandExecution.error.unknown.title')).setDescription(this.Guild.i18n.__('channelLogging.contextCommandExecution.error.unknown.description', {command: commandDetails})).setColor(this.Guild.ConfigurationManager.get('style.colors.error'));
             embed.addField(this.Guild.i18n.__('channelLogging.commandExecution.field.executor.title'), this.Guild.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.Executor.id, realUserId: this.RealExecutor.id}), true);
             embed.addField(this.Guild.i18n.__('channelLogging.commandExecution.field.channel.title'), this.Guild.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.Channel.id, realChannelId: this.RealChannel.id}), true);
             if (typeof this.spoofing != "undefined") {
@@ -204,9 +159,9 @@ module.exports = class CommandExecution {
 
     async logExecution() {
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inSQL'))await this.TobyBot.SQLLogger.logCommandExecution(this);
-        if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole'))MainLog.log(this.TobyBot.i18n.__((typeof this.spoofing != "undefined") ? 'bot.command.execution.spoofed' : 'bot.command.execution', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, command: `${this.Command.name}`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
+        if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole'))MainLog.log(this.TobyBot.i18n.__((typeof this.spoofing != "undefined") ? 'bot.contextCommandExecution.execution.spoofed' : 'bot.contextCommandExecution.execution', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, command: `${this.Command.name}`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel') && typeof this.TobyBot.loggers.commandExecution != "undefined"){
-            let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.commandExecution.title')).setDescription(this.Guild.i18n.__('channelLogging.commandExecution.description', {command: `${this.Command.name} ${Object.entries(this.options).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.Guild.ConfigurationManager.get('style.colors.main'));
+            let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.contextCommandExecution.title')).setDescription(this.Guild.i18n.__('channelLogging.contextCommandExecution.description', {command: `${this.Command.name}`})).setColor(this.Guild.ConfigurationManager.get('style.colors.main'));
             embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.executor.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.Executor.id, realUserId: this.RealExecutor.id}), true);
             embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.channel.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.Channel.id, realChannelId: this.RealChannel.id}), true);
             embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.guild.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.guild.description', {guildId: this.Guild.guild.id, realGuildId: this.RealGuild.guild.id}), true);
@@ -219,7 +174,7 @@ module.exports = class CommandExecution {
         }
         
         if (await this.Guild.ConfigurationManager.get('logging.commandExecution.inChannel') && typeof this.Guild.loggers.commandExecution != "undefined"){
-            let embed = new MessageEmbed().setTitle(this.Guild.i18n.__('channelLogging.commandExecution.title')).setDescription(this.Guild.i18n.__('channelLogging.commandExecution.description', {command: `${this.Command.name} ${Object.entries(this.options).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.Guild.ConfigurationManager.get('style.colors.main'));
+            let embed = new MessageEmbed().setTitle(this.Guild.i18n.__('channelLogging.contextCommandExecution.title')).setDescription(this.Guild.i18n.__('channelLogging.contextCommandExecution.description', {command: `${this.Command.name}`})).setColor(this.Guild.ConfigurationManager.get('style.colors.main'));
             embed.addField(this.Guild.i18n.__('channelLogging.commandExecution.field.executor.title'), this.Guild.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.Executor.id, realUserId: this.RealExecutor.id}), true);
             embed.addField(this.Guild.i18n.__('channelLogging.commandExecution.field.channel.title'), this.Guild.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.Channel.id, realChannelId: this.RealChannel.id}), true);
             if (typeof this.spoofing != "undefined") {
