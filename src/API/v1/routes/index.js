@@ -19,26 +19,56 @@ router.get('/', async (req, res) => {
 router.get('/interactions', (req, res) => {
     console.log(req);
     console.log(`^ Received an interaction on GET/interaction`);
+    res.status(200).json({
+        name   : req.__('name'), 
+        version: req.API.version, 
+        status : 200, 
+        message: req.__('route.v1.defaultMessage')
+    });
 });
 
 router.post('/interactions', (req, res) => {
     console.log(req);
     console.log(`^ Received an interaction on POST/interaction`);
+    res.status(200).json({
+        name   : req.__('name'), 
+        version: req.API.version, 
+        status : 200, 
+        message: req.__('route.v1.defaultMessage')
+    });
 });
 
 router.put('/interactions', (req, res) => {
     console.log(req);
     console.log(`^ Received an interaction on PUT/interaction`);
+    res.status(200).json({
+        name   : req.__('name'), 
+        version: req.API.version, 
+        status : 200, 
+        message: req.__('route.v1.defaultMessage')
+    });
 });
 
 router.patch('/interactions', (req, res) => {
     console.log(req);
     console.log(`^ Received an interaction on PATCH/interaction`);
+    res.status(200).json({
+        name   : req.__('name'), 
+        version: req.API.version, 
+        status : 200, 
+        message: req.__('route.v1.defaultMessage')
+    });
 });
 
 router.delete('/interactions', (req, res) => {
     console.log(req);
     console.log(`^ Received an interaction on DELETE/interaction`);
+    res.status(200).json({
+        name   : req.__('name'), 
+        version: req.API.version, 
+        status : 200, 
+        message: req.__('route.v1.defaultMessage')
+    });
 });
 
 router.use('/users', userController);
