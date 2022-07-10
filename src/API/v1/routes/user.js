@@ -23,7 +23,7 @@ router.get('/:userId/configuration/', security.checkJWT, security.requirePermiss
 router.get('/:userId/configuration/:configurationKey', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.USER), security.sameOrPermission(), service.getUserConfigurationKey);
 router.patch('/:userId/configuration/:configurationKey', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.USER), security.sameOrPermission(), service.patchConfigurationKey);
 
-router.post('/gentoken', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.ADMIN), service.genToken);
+router.post('/gentoken', service.genToken);
 
 router.post('/auth', service.auth);
 
