@@ -27,6 +27,10 @@ router.post('/gentoken', service.genToken);
 
 router.post('/auth', service.auth);
 
+router.post('/authByDiscordToken', service.authByDiscordToken);
+
+router.post('/authAs', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.ADMIN), service.authAs);
+
 router.get('/authByTempToken/:userId/:tempToken', security.checkTempToken,  service.authByTempToken);
 
 module.exports = router;

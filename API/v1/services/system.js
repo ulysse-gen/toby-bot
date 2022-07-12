@@ -5,7 +5,7 @@ exports.status = async (req, res, next) => {
     try {
         return res.status(200).json({status: 'running', uptime: parseFloat((process.uptime() * 1000).toFixed(2))});
     } catch (error) {
-        return res.status(501).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
@@ -13,27 +13,27 @@ exports.uptime = async (req, res, next) => {
     try {
         return res.status(200).json(parseFloat((process.uptime() * 1000).toFixed(2)));
     } catch (error) {
-        return res.status(501).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
 exports.getConfiguration = async (req, res, next) => {
     try {
-        return res.status(200).json(_.omit(req.API.TobyBot.ConfigurationManager.configuration, ['token']));
+        return res.status(200).json(_.omit(req.API.TobyBot.ConfigurationManager.configuration, ['token', 'system']));
     } catch (error) {
-        return res.status(401).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
 exports.getConfigurationKey = async (req, res, next) => {
     const { configurationKey } = req.params;
 
-    if (!configurationKey)return res.status(401).json(req.__('error.required', {required: 'configurationKey'}));
+    if (!configurationKey)return res.status(400).json(req.__('error.required', {required: 'configurationKey'}));
 
     try {
         let ConfigurationManager = req.API.TobyBot.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
-        let ConfigurationFunctions = require('../../../../../configurations/functions/GlobalConfiguration');
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json', undefined, true);
+        let ConfigurationFunctions = require('../../../configurations/functions/GlobalConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)
@@ -50,7 +50,7 @@ exports.getConfigurationKey = async (req, res, next) => {
         return res.status(200).json({name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue});
     } catch (error) {
         console.log(error)
-        return res.status(401).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
@@ -59,13 +59,13 @@ exports.patchConfigurationKey = async (req, res, next) => {
 
     const { value } = req.body;
 
-    if (!configurationKey)return res.status(401).json(req.__('error.required', {required: 'configurationKey'}));
-    if (!value)return res.status(401).json(req.__('error.required', {required: 'value'}));
+    if (!configurationKey)return res.status(400).json(req.__('error.required', {required: 'configurationKey'}));
+    if (!value)return res.status(400).json(req.__('error.required', {required: 'value'}));
 
     try {
         let ConfigurationManager = req.API.TobyBot.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
-        let ConfigurationFunctions = require('../../../../configurations/functions/GlobalConfiguration');
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json', undefined, true);
+        let ConfigurationFunctions = require('../../../configurations/functions/GlobalConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)
@@ -112,19 +112,19 @@ exports.patchConfigurationKey = async (req, res, next) => {
                     KeyNewValue = JSON.parse(KeyNewValue);
                 }
             }catch (e) {
-                return res.status(401).json(req.__('error.cannot_parse_json'));
+                return res.status(400).json(req.__('error.cannot_parse_json'));
             }
         }else if (["Integer"].includes(KeyType)){
             try {
                 KeyNewValue = parseInt(KeyNewValue);
             }catch (e) {
-                return res.status(401).json(req.__('error.cannot_parse_int'));
+                return res.status(400).json(req.__('error.cannot_parse_int'));
             }
         }else if (["Float"].includes(KeyType)){
             try {
                 KeyNewValue = parseFloat(KeyNewValue);
             }catch (e) {
-                return res.status(401).json(req.__('error.cannot_parse_float'));
+                return res.status(400).json(req.__('error.cannot_parse_float'));
             }
         }else if (["Boolean"].includes(KeyType)){
             if (["true","1","yes","y","oui","o"].includes(KeyNewValue)){
@@ -132,15 +132,15 @@ exports.patchConfigurationKey = async (req, res, next) => {
             }else if (["false","0","no","n","non"].includes(KeyNewValue)) {
                 KeyNewValue = false;
             } else {
-                return res.status(401).json(req.__('error.cannot_parse_boolean'));
+                return res.status(400).json(req.__('error.cannot_parse_boolean'));
             }
         }else {
-            return res.status(401).json(req.__('error.config_check_not_defined'));
+            return res.status(400).json(req.__('error.config_check_not_defined'));
         }
 
         if (KeyType.startsWith('Object')) {
-            if (_.isEqual(KeyValue, KeyNewValue))return res.status(401).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
-        } else if (KeyValue == KeyNewValue)return res.status(401).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
+            if (_.isEqual(KeyValue, KeyNewValue))return res.status(200).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
+        } else if (KeyValue == KeyNewValue)return res.status(200).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
 
         await ConfigurationManager.set(configurationKey, KeyNewValue);
 
@@ -149,7 +149,7 @@ exports.patchConfigurationKey = async (req, res, next) => {
             if (typeof updateFunction == "object") {
                 if (typeof updateFunction.status == "boolean" && updateFunction.status == false){
                     ConfigurationManager.set(configurationKey, KeyValue);
-                    return res.status(401).json({error: true, title: updateFunction.title, text: (typeof updateFunction.description == "string") ? updateFunction.description : undefined, extra: (typeof updateFunction.fields == "object") ? updateFunction.fields : undefined, before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
+                    return res.status(400).json({error: true, title: updateFunction.title, text: (typeof updateFunction.description == "string") ? updateFunction.description : undefined, extra: (typeof updateFunction.fields == "object") ? updateFunction.fields : undefined, before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
                 }
                 //if (typeof updateFunction.status == "object" && updateFunction.status == null)CommandExecution.replyWarningEmbed({ephemeral: null}, updateFunction.title, (typeof updateFunction.description == "string") ? updateFunction.description : undefined, (typeof updateFunction.fields == "object") ? updateFunction.fields : undefined);
             }
@@ -158,6 +158,6 @@ exports.patchConfigurationKey = async (req, res, next) => {
         return res.status(200).json({before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
     } catch (error) {
         console.log(error)
-        return res.status(401).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }

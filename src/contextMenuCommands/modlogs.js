@@ -89,7 +89,7 @@ module.exports = {
         return ContextMenuCommandExecution.returnRaw({embeds: [embed]});
     },
     makeContextMenuCommand(i18n) {
-        return new ContextMenuCommandBuilder().setName(this.name).setType((this.type == "CHAT_INPUT") ? 1 : (this.type == "USER") ? 2 : 3);
+        return new ContextMenuCommandBuilder().setName(this.displayName).setType((this.type == "CHAT_INPUT") ? 1 : (this.type == "USER") ? 2 : 3);
     }
 }
 

@@ -2,7 +2,8 @@ const jwt = require('jsonwebtoken');
 const {Permissions} = require('discord.js');
 
 exports.PermissionLevel = {
-    'SYSTEM': 200,
+    'SYSTEM': 500,
+    'DEV': 250,
     'ADMIN': 100,
     'MOD': 50,
     'USER': 10

@@ -6,6 +6,7 @@ const userController = require('./user');
 const guildController = require('./guild');
 const commandController = require('./command');
 const systemController = require('./system');
+const documentationController = require('./documentation');
 
 router.get('/', async (req, res) => {
     res.status(200).json({
@@ -75,5 +76,6 @@ router.use('/users', userController);
 router.use('/guilds', guildController);
 router.use('/commands', commandController);
 router.use('/system', systemController);
+router.use('/documentation', documentationController);
 
 module.exports = router;

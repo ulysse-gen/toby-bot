@@ -11,7 +11,7 @@ module.exports = {
     enabled: true,
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.TobyBot.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json');
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('../../configurations/functions/GlobalConfiguration');
         await ConfigurationDocumentation.initialize();
 

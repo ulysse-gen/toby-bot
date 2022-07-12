@@ -12,7 +12,7 @@ module.exports = {
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.RealUser.ConfigurationManager;
         if (!ConfigurationManager.initialized)await CommandExecution.RealUser.initialize(true);
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json');
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 

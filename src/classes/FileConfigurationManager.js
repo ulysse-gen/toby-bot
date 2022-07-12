@@ -15,10 +15,10 @@ const ConfigurationManager = require('./ConfigurationManager');
 const MainLog = new FileLogger();
 
 module.exports = class FileConfigurationManager extends ConfigurationManager {
-    constructor(configurationFile, defaultConfiguration = {}) {
+    constructor(configurationFile, defaultConfiguration = {}, fromCwdConfig = false) {
         super();
 
-        this.file = `/data/configs/${configurationFile}`;
+        this.file = (fromCwdConfig) ? `${process.cwd()}/configurations/${configurationFile}` : `/data/configs/${configurationFile}`;
         this.defaultConfiguration = defaultConfiguration;
 
         this.initialized = false;

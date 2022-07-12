@@ -11,7 +11,7 @@ module.exports = {
     enabled: true,
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.Guild.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json');
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('../../configurations/functions/GuildConfiguration');
         await ConfigurationDocumentation.initialize();
 

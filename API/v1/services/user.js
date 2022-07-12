@@ -1,5 +1,6 @@
 const bcrypt   = require('bcryptjs');
 const crypto   = require('crypto');
+const axios = require('axios').default;
 const jwt    = require('jsonwebtoken');
 const _    = require('lodash');
 const FileConfigurationManager = require('../../../src/classes/FileConfigurationManager');
@@ -12,7 +13,7 @@ exports.getMine = async (req, res, next) => {
 exports.getUserById = async (req, res, next) => {
     const { userId } = req.params;
 
-    if (!userId)return res.status(401).json(req.__('error.required', {required: 'userId'}));
+    if (!userId)return res.status(400).json(req.__('error.required', {required: 'userId'}));
 
     try {
         let User = await req.API.TobyBot.UserManager.getUserById(userId);
@@ -23,41 +24,41 @@ exports.getUserById = async (req, res, next) => {
             return res.status(404).json(req.__('error.user_not_found'));
         }
     } catch (error) {
-        return res.status(401).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
 exports.getUserConfiguration = async (req, res, next) => {
     const { userId } = req.params;
 
-    if (!userId)return res.status(401).json(req.__('error.required', {required: 'userId'}));
+    if (!userId)return res.status(400).json(req.__('error.required', {required: 'userId'}));
 
     try {
         let User = await req.API.TobyBot.UserManager.getUserById(userId);
 
         if (User) {
-            return res.status(200).json(User.ConfigurationManager.configuration);
+            return res.status(200).json(_.omit(User.ConfigurationManager.configuration, ['systel']));
         } else {
             return res.status(404).json(req.__('error.user_not_found'));
         }
     } catch (error) {
-        return res.status(401).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
 exports.getUserConfigurationKey = async (req, res, next) => {
     const { userId, configurationKey } = req.params;
 
-    if (!userId)return res.status(401).json(req.__('error.required', {required: 'userId'}));
-    if (!configurationKey)return res.status(401).json(req.__('error.required', {required: 'configurationKey'}));
+    if (!userId)return res.status(400).json(req.__('error.required', {required: 'userId'}));
+    if (!configurationKey)return res.status(400).json(req.__('error.required', {required: 'configurationKey'}));
 
     try {
         let User = await req.API.TobyBot.UserManager.getUserById(userId);
         if (!User)return res.status(404).json(req.__('error.user_not_found'));
 
         let ConfigurationManager = User.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json');
-        let ConfigurationFunctions = require('../../../../configurations/functions/UserConfiguration');
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json', undefined, true);
+        let ConfigurationFunctions = require('../../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)
@@ -74,7 +75,7 @@ exports.getUserConfigurationKey = async (req, res, next) => {
         return res.status(200).json({name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue});
     } catch (error) {
         console.log(error)
-        return res.status(401).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
@@ -83,17 +84,17 @@ exports.patchConfigurationKey = async (req, res, next) => {
 
     const { value } = req.body;
 
-    if (!userId)return res.status(401).json(req.__('error.required', {required: 'userId'}));
-    if (!configurationKey)return res.status(401).json(req.__('error.required', {required: 'configurationKey'}));
-    if (!value)return res.status(401).json(req.__('error.required', {required: 'value'}));
+    if (!userId)return res.status(400).json(req.__('error.required', {required: 'userId'}));
+    if (!configurationKey)return res.status(400).json(req.__('error.required', {required: 'configurationKey'}));
+    if (!value)return res.status(400).json(req.__('error.required', {required: 'value'}));
 
     try {
         let User = await req.API.TobyBot.UserManager.getUserById(userId);
         if (!User)return res.status(404).json(req.__('error.user_not_found'));
 
         let ConfigurationManager = User.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json');
-        let ConfigurationFunctions = require('../../../../configurations/functions/UserConfiguration');
+        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json', undefined, true);
+        let ConfigurationFunctions = require('../../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)await ConfigurationManager.initialize(true, undefined, User)
@@ -140,19 +141,19 @@ exports.patchConfigurationKey = async (req, res, next) => {
                     KeyNewValue = JSON.parse(KeyNewValue);
                 }
             }catch (e) {
-                return res.status(401).json(req.__('error.cannot_parse_json'));
+                return res.status(400).json(req.__('error.cannot_parse_json'));
             }
         }else if (["Integer"].includes(KeyType)){
             try {
                 KeyNewValue = parseInt(KeyNewValue);
             }catch (e) {
-                return res.status(401).json(req.__('error.cannot_parse_int'));
+                return res.status(400).json(req.__('error.cannot_parse_int'));
             }
         }else if (["Float"].includes(KeyType)){
             try {
                 KeyNewValue = parseFloat(KeyNewValue);
             }catch (e) {
-                return res.status(401).json(req.__('error.cannot_parse_float'));
+                return res.status(400).json(req.__('error.cannot_parse_float'));
             }
         }else if (["Boolean"].includes(KeyType)){
             if (["true","1","yes","y","oui","o"].includes(KeyNewValue)){
@@ -160,15 +161,15 @@ exports.patchConfigurationKey = async (req, res, next) => {
             }else if (["false","0","no","n","non"].includes(KeyNewValue)) {
                 KeyNewValue = false;
             } else {
-                return res.status(401).json(req.__('error.cannot_parse_boolean'));
+                return res.status(400).json(req.__('error.cannot_parse_boolean'));
             }
         }else {
-            return res.status(401).json(req.__('error.config_check_not_defined'));
+            return res.status(400).json(req.__('error.config_check_not_defined'));
         }
 
         if (KeyType.startsWith('Object')) {
-            if (_.isEqual(KeyValue, KeyNewValue))return res.status(401).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
-        } else if (KeyValue == KeyNewValue)return res.status(401).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
+            if (_.isEqual(KeyValue, KeyNewValue))return res.status(200).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
+        } else if (KeyValue == KeyNewValue)return res.status(200).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
 
         await ConfigurationManager.set(configurationKey, KeyNewValue);
 
@@ -177,7 +178,7 @@ exports.patchConfigurationKey = async (req, res, next) => {
             if (typeof updateFunction == "object") {
                 if (typeof updateFunction.status == "boolean" && updateFunction.status == false){
                     ConfigurationManager.set(configurationKey, KeyValue);
-                    return res.status(401).json({error: true, title: updateFunction.title, text: (typeof updateFunction.description == "string") ? updateFunction.description : undefined, extra: (typeof updateFunction.fields == "object") ? updateFunction.fields : undefined, before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
+                    return res.status(400).json({error: true, title: updateFunction.title, text: (typeof updateFunction.description == "string") ? updateFunction.description : undefined, extra: (typeof updateFunction.fields == "object") ? updateFunction.fields : undefined, before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
                 }
                 //if (typeof updateFunction.status == "object" && updateFunction.status == null)CommandExecution.replyWarningEmbed({ephemeral: null}, updateFunction.title, (typeof updateFunction.description == "string") ? updateFunction.description : undefined, (typeof updateFunction.fields == "object") ? updateFunction.fields : undefined);
             }
@@ -186,7 +187,7 @@ exports.patchConfigurationKey = async (req, res, next) => {
         return res.status(200).json({before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
     } catch (error) {
         console.log(error)
-        return res.status(401).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
@@ -196,12 +197,12 @@ exports.patchConfigurationKey = async (req, res, next) => {
 exports.genToken = async (req, res, next) => {
     const { password } = req.body;
 
-    if (!password)return res.status(401).json(req.__('error.required', {required: 'password'}));
+    if (!password)return res.status(400).json(req.__('error.required', {required: 'password'}));
 
     try {
         res.status(200).json(bcrypt.hashSync(password, 10));
     } catch (error) {
-        return res.status(401).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
@@ -215,7 +216,7 @@ exports.auth = async (req, res, next) => {
         let User = await req.API.TobyBot.UserManager.getUserById(userId);
 
         if (User) {
-            if (!User.password)return res.status(401).json(req.__('error.no_api_account'));
+            if (!User.password)return res.status(418).json(req.__('error.no_api_account'));
 
             bcrypt.compare(password, User.password, function(err, response) {
                 if (err) throw err;
@@ -243,7 +244,41 @@ exports.auth = async (req, res, next) => {
             return res.status(404).json(req.__('error.user_not_found'));
         }
     } catch (error) {
-        return res.status(401).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
+    }
+}
+
+exports.authAs = async (req, res, next) => {
+    const { userId, validity } = req.body;
+
+    if (!userId)return res.status(400).json(req.__('error.required', {required: 'userId'}));
+
+    try {
+        let User = await req.API.TobyBot.UserManager.getUserById(userId);
+
+        if (User) {
+            if (!User.password)return res.status(418).json(req.__('error.no_api_account'));
+
+            User = User.tokenVersion();
+
+            const expireIn = (validity) ? parseInt(validity) : 24 * 60 * 60;
+            const token    = jwt.sign({
+                tokenIdentifier: crypto.randomBytes(8).toString('hex'),
+                User: User
+            },
+            req.API.secret,
+            {
+                expiresIn: expireIn
+            });
+
+            res.header('Authorization', 'Bearer ' + token);
+
+            return res.status(200).json({user: User, token: {token: token, expireIn: expireIn}});
+        } else {
+            return res.status(404).json(req.__('error.user_not_found'));
+        }
+    } catch (error) {
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
@@ -270,6 +305,43 @@ exports.authByTempToken = async (req, res, next) => {
 
         return res.status(200).json({user: User, token: {token: token, expireIn: expireIn}});
     } catch (error) {
-        return res.status(401).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
+    }
+}
+
+exports.authByDiscordToken = async (req, res, next) => {
+    const { discordToken } = req.body;
+
+    if (!discordToken)return res.status(401).json(req.__('error.required', {required: 'discordToken'}));
+
+    try {
+        let discordUser = await axios({
+            method: 'get',
+            url: 'https://discord.com/api/users/@me',
+            headers: {'Authorization': `Bearer ${discordToken}`}
+        }).then(res => res.data);
+
+        let User = await req.API.TobyBot.UserManager.getUserById(discordUser.id);
+
+        if (User) {
+            User = User.tokenVersion();
+
+            const expireIn = 24 * 60 * 60;
+            const token    = jwt.sign({
+                tokenIdentifier: crypto.randomBytes(8).toString('hex'),
+                User: User
+            },
+            req.API.secret,
+            {
+                expiresIn: expireIn
+            });
+            res.header('Authorization', 'Bearer ' + token);
+            return res.status(200).json({user: User, token: {token: token, expireIn: expireIn}});
+        } else {
+            return res.status(404).json(req.__('error.user_not_found'));
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(req.__('error.unknown'));
     }
 }

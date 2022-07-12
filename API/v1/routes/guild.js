@@ -18,4 +18,8 @@ router.get('/:guildId/configuration/', security.checkJWT, security.requirePermis
 router.get('/:guildId/configuration/:configurationKey', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.USER), security.needGuildPermission(security.GuildPermissions.MANAGE_GUILD), service.getGuildConfigurationKey);
 router.patch('/:guildId/configuration/:configurationKey', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.USER), security.needGuildPermission(security.GuildPermissions.MANAGE_GUILD), service.patchGuildConfigurationKey);
 
+router.get('/:guildId/members', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.USER), security.needGuildPermission(security.GuildPermissions.MANAGE_GUILD), service.getGuildMembers);
+router.get('/:guildId/roles', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.USER), security.needGuildPermission(security.GuildPermissions.MANAGE_GUILD), service.getGuildRoles);
+router.get('/:guildId/channels', security.checkJWT, security.requirePermissionLevel(security.PermissionLevel.USER), security.needGuildPermission(security.GuildPermissions.MANAGE_GUILD), service.getGuildChanels);
+
 module.exports = router;

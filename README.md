@@ -6,9 +6,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ### Todo:
 
-- Web GUI (gosh i suck at making GUIs i swear..)
-- ^ Somewhat linked with Web GUI | Add new API endpoints for configurations, guilds, bot control
-- API Dynamic loading of user
+- Web GUI (gosh i suck at making GUIs i swear..) | On its way!
 - Auto setup (auto grab log channels, mute role etc..) [Discord-made & Web-Gui-made ?]
 - Token scanner (check for token in messages [& reset them ?])
 - Configuration converter (switching between configuration version without losing data)
@@ -41,7 +39,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ### Fixes:
 
-- Whois & similar fallback to self  
+- None
 
 ## Update docker image:
 

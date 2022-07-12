@@ -5,7 +5,7 @@ exports.listAll = async (req, res, next) => {
     try {
         return res.status(200).json(req.API.TobyBot.CommandManager.commands.map(indCommand => indCommand.apiVersion()));
     } catch (error) {
-        return res.status(501).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
@@ -25,7 +25,7 @@ exports.getByName = async (req, res, next) => {
             return res.status(404).json(req.__('error.command_not_found'));
         }
     } catch (error) {
-        return res.status(501).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }
 
@@ -33,9 +33,9 @@ exports.execute = async (req, res, next) => {
     const { commandName } = req.params;
     const { guildId, channelId, options } = req.body;
 
-    if (!commandName)return res.status(401).json(req.__('error.required', {required: 'commandName'}));
-    if (!guildId)return res.status(401).json(req.__('error.required', {required: 'guildId'}));
-    if (!channelId)return res.status(401).json(req.__('error.required', {required: 'channelId'}));
+    if (!commandName)return res.status(400).json(req.__('error.required', {required: 'commandName'}));
+    if (!guildId)return res.status(400).json(req.__('error.required', {required: 'guildId'}));
+    if (!channelId)return res.status(400).json(req.__('error.required', {required: 'channelId'}));
 
     try {
         let Command = await req.API.TobyBot.CommandManager.fetch(commandName);
@@ -60,22 +60,22 @@ exports.execute = async (req, res, next) => {
             message.author = User.user;
             return message;
         }).catch(e => {
-            return res.status(501).json(req.__('error.commands.cannot_initiate'));
+            return res.status(500).json(req.__('error.commands.cannot_initiate'));
         })
 
         let CommandExecutionObject = new CommandExecution(FakeTrigger, Command, commandOptions, req.API.TobyBot.CommandManager);
         await CommandExecutionObject.buildContext();
         if (typeof CommandExecutionObject.options.permissionDenied != "undefined"){
             CommandExecutionObject.denyPermission(CommandExecutionObject.options.permissionDenied);
-            return res.status(501).json(req.__('error.commands.permission_denied'));
+            return res.status(403).json(req.__('error.commands.permission_denied'));
         }
         await CommandExecutionObject.logExecution();
         CommandExecutionObject.deferIfNeeded();
         let CommandExecutionProcess = await CommandExecutionObject.Command.execute(CommandExecutionObject);
 
-        return res.status(401).json(CommandExecutionProcess);
+        return res.status(200).json(CommandExecutionProcess);
     } catch (error) {
         console.log(error)
-        return res.status(501).json(req.__('error.unknown'));
+        return res.status(500).json(req.__('error.unknown'));
     }
 }

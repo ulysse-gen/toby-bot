@@ -28,6 +28,7 @@ module.exports = class Command {
         apiVersion.category = this.category;
         apiVersion.enabled = this.enabled;
         apiVersion.permission = this.permission;
+        apiVersion.options = this.slashCommand.options;
         return apiVersion;
     }
 }
