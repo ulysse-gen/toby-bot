@@ -171,7 +171,7 @@
         "muteRole": {
             "name": "Muted role",
             "description": "The role to assign to muted members.",
-            "type": "String(RoleID)",
+            "type": "String(RoleId)",
             "editable": true,
             "default": "none"
         }
