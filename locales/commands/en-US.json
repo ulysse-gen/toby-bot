@@ -409,8 +409,8 @@
 	"contextCommandExecution.generic.unknownCommand.title": "Unknown context menu command.",
 	"command.evaluate.error.noCodeSpecified.title": "MiSsiNg ArGumEnT 'code'",
 	"command.evaluate.error.noCodeSpecified.description": "Please. PLEASE. Type in the code you want to eval. Thanks.",
-	"command.ban.error.noReasonSpecified.title": "command.ban.error.noReasonSpecified.title",
-	"command.ban.error.noReasonSpecified.description": "command.ban.error.noReasonSpecified.description",
+	"command.ban.error.noReasonSpecified.title": "Could not ban.",
+	"command.ban.error.noReasonSpecified.description": "You must set a reason to ban.",
 	"moderation.cannotBan.title": "moderation.cannotBan.title",
 	"moderation.cannotBan.description": "moderation.cannotBan.description"
 }

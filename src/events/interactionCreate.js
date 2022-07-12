@@ -17,6 +17,7 @@ module.exports = {
     async exec(TobyBot, interaction) {
         if (TobyBot.TopConfigurationManager.get('API.only'))return true;
         if (typeof TobyBot == "undefined")throw `${__filename}(): TobyBot is undefined.`;
+        if (!this.TobyBot.ready)return false;
         interaction.TobyBot = {TobyBot: TobyBot};
 
         if (typeof TobyBot.ConfigurationManager.get('blocked.users')[interaction.user.id] != "undefined")return false;

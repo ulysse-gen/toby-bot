@@ -14,6 +14,7 @@ module.exports = {
     once: false,
     async exec(TobyBot, message) {
         if (typeof TobyBot == "undefined")throw `${__filename}(): TobyBot is undefined.`;
+        if (!this.TobyBot.ready)return false;
         message.TobyBot = {TobyBot: TobyBot};
 
         if (typeof message.channel.guild == "undefined") return require(`./DMHandler`).delete(TobyBot, message);

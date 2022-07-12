@@ -50,6 +50,7 @@ module.exports = class TobyBot {
 
         this.loggers = {};
 
+        this.ready = false;
         this.catchErrorsPreventClose = false;
         this.shuttingDown = false;
     }
@@ -68,14 +69,17 @@ module.exports = class TobyBot {
         await this.attachEvents().catch(e => { throw e }); //Attach events
         this.LifeMetric.addEntry("BotLogin");
         await this.attemptLogin();
+        //setInterval(this.reportMemoryUsage, 500); // <-- Enable this to report RAM Usage in console. This is a debug and developpement feature only
+    }
+
+    async continueStart() {
         if (!this.TopConfigurationManager.get('API.only'))this.CommandManager.pushSlashCommands();
         if (!this.TopConfigurationManager.get('API.only'))this.ContextMenuCommandManager.pushContextCommands();
         this.LifeMetric.addEntry("botReady");
         this.LifeMetric.addEntry("LoggersInit");
         await this.initLoggers().catch(e => { throw e }); //Attach loggers
         await this.finalTouch().catch(e => { throw e }); //Final touch
-
-        //setInterval(this.reportMemoryUsage, 500); // <-- Enable this to report RAM Usage in console. This is a debug and developpement feature only
+        this.ready = true;
     }
 
     async initManagers() {
@@ -256,7 +260,6 @@ module.exports = class TobyBot {
             if (loggedIn)this.rest = new REST({ version: '9' }).setToken(this.ConfigurationManager.get('token'));
             return loggedIn;
         }
-
 
         if (!await tryLogin()){
             MainLog.log(this.i18n.__('bot.inputToken.couldNotLogin'));

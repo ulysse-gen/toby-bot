@@ -14,6 +14,7 @@ module.exports = {
     once: false,
     async exec(TobyBot, message) {
         if (typeof TobyBot == "undefined")throw `${__filename}(): TobyBot is undefined.`;
+        if (!this.TobyBot.ready)return false;
         message.TobyBot = {TobyBot: TobyBot};
 
         if (typeof TobyBot.ConfigurationManager.get('blocked.users')[message.author.id] != "undefined"){
