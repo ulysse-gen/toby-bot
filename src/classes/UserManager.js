@@ -37,7 +37,6 @@ module.exports = class UserManager {
     async getUserById(userId, createIfNonExistant = false) {
         if (typeof this.users[userId] != "undefined")return this.users[userId];
         let user = await this.TobyBot.client.users.fetch(userId, {
-            cache: false,
             force: true
         }).catch(e=>undefined)
         if (typeof user == "undefined")return undefined;

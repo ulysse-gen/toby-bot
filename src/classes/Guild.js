@@ -135,12 +135,10 @@ module.exports = class Guild {
     async getUserFromArg(userString, fallbackUser = undefined) {
         if (!userString)return fallbackUser;
         let user = await this.guild.members.fetch({
-            cache: false,
             force: true
         }).then(members => members.find(member => member.user.tag === userString));
         if (userString.startsWith('<@'))userString = userString.replace('<@', '').slice(0, -1);
         if (typeof user == "undefined") user = await this.guild.members.fetch(userString, {
-            cache: false,
             force: true
         }).catch(e => {
             return fallbackUser;
@@ -152,7 +150,6 @@ module.exports = class Guild {
         let role = await this.guild.roles.fetch().then(roles => roles.find(role => role.name === roleSrting));
         if (roleSrting.startsWith('<@&'))roleSrting = roleSrting.replace('<@&', '').slice(0, -1);
         if (typeof role == "undefined") role = await this.guild.roles.fetch(roleSrting, {
-            cache: false,
             force: true
         }).catch(e => {
             return undefined;
@@ -162,21 +159,18 @@ module.exports = class Guild {
 
     async getMemberById(userId) {
         return this.guild.members.fetch(userId, {
-            cache: false,
             force: true
         }).catch(e => undefined);
     }
 
     async getChannelById(channelId) {
         return this.guild.channels.fetch(channelId, {
-            cache: false,
             force: true
         }).catch(e => undefined);
     }
 
     async getRoleById(roleId) {
         return this.guild.roles.fetch(roleId, {
-            cache: false,
             force: true
         }).catch(e => undefined);
     }

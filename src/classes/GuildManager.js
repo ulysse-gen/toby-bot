@@ -20,10 +20,9 @@ module.exports = class GuildManager {
     async getGuildById(guildId) {
         if (typeof this.guilds[guildId] != "undefined")return this.guilds[guildId];
         let guild = await this.TobyBot.client.guilds.fetch(guildId, {
-            cache: false,
             force: true
         }).catch(e=>undefined)
-        if (typeof guild == "undefined")return undefined;
+        if (typeof guild == "undefined" || guild.available == false)return undefined;
         this.guilds[guildId] = new Guild(this, guild);
         await this.guilds[guildId].initialize().catch(e => { 
             delete this.guilds[guildId];
