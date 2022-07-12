@@ -96,12 +96,13 @@ exports.needGuildPermission = (guildPermission = this.GuildPermissions.MANAGE_GU
             return next();
         }
         let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
+        if (!Guild)return res.status(404).json(req.__('error.guild_not_found'));
 
         let GuildMember = await Guild.getMemberById(req.User.id);
-        if (!GuildMember)return res.status(401).json(req.__('error.user_not_in_guild'));
+        if (!GuildMember)return res.status(403).json(req.__('error.user_not_in_guild'));
         let hasPermission = GuildMember.permissions.has(guildPermission);
 
-        if (!hasPermission)return res.status(401).json(req.__('error.missing_permission', {required: guildPermission.toString()}));
+        if (!hasPermission)return res.status(403).json(req.__('error.no_permission'));
         return next();
     };
 }
