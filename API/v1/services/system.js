@@ -9,6 +9,19 @@ exports.status = async (req, res, next) => {
     }
 }
 
+exports.statusDetailed = async (req, res, next) => {
+    try {
+        let totalGuilds = await req.API.TobyBot.client.guilds.fetch().then(guilds => req.API.TobyBot.client.guilds.cache.size).catch(()=>-1);
+        let cachedChannels = req.API.TobyBot.client.channels.cache.size;
+        let cachedUsers = req.API.TobyBot.client.users.cache.size;
+        let uptime = parseFloat((process.uptime() * 1000).toFixed(2));
+        return res.status(200).json({status: 'running', uptime: uptime, cachedUsers: cachedUsers, totalGuilds: totalGuilds, cachedChannels: cachedChannels});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(req.__('error.unknown'));
+    }
+}
+
 exports.uptime = async (req, res, next) => {
     try {
         return res.status(200).json(parseFloat((process.uptime() * 1000).toFixed(2)));

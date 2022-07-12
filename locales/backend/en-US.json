@@ -58,5 +58,7 @@
 	"bot.contextCommandExecution.execution": "{{{user}}} (context menu) executed {{{command}}} in {{{location}}}",
 	"bot.contextCommandExecution.execution.spoofed": "{{{realUser}}} (context menu) executed {{{command}}} in {{{realLocation}}} [Spoofed as {{{user}}} in {{{location}}}]",
 	"bot.contextCommandExecution.execution.permissionDenied": "{{{user}}} tried (context menu) executing {{{command}}} in {{{location}}} but has been denied the permission {{{permission}}}",
-	"bot.contextCommandExecution.execution.unknownCommand": "{{{realUser}}} tried to (context menu) execute an unknown command in {{{realLocation}}}"
+	"bot.contextCommandExecution.execution.unknownCommand": "{{{realUser}}} tried to (context menu) execute an unknown command in {{{realLocation}}}",
+	"bot.slashCommandRegisterSkip": "bot.slashCommandRegisterSkip",
+	"bot.contextMenuCommandRegisterSkip": "bot.contextMenuCommandRegisterSkip"
 }

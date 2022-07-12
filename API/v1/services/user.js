@@ -37,7 +37,7 @@ exports.getUserConfiguration = async (req, res, next) => {
         let User = await req.API.TobyBot.UserManager.getUserById(userId);
 
         if (User) {
-            return res.status(200).json(_.omit(User.ConfigurationManager.configuration, ['systel']));
+            return res.status(200).json(_.omit(User.ConfigurationManager.configuration, ['system']));
         } else {
             return res.status(404).json(req.__('error.user_not_found'));
         }

@@ -71,7 +71,12 @@ exports.execute = async (req, res, next) => {
         }
         await CommandExecutionObject.logExecution();
         CommandExecutionObject.deferIfNeeded();
-        let CommandExecutionProcess = await CommandExecutionObject.Command.execute(CommandExecutionObject);
+        let CommandExecutionProcess = await CommandExecutionObject.Command.execute(CommandExecutionObject).catch(e => {
+            res.status(500).json(e.toString());
+            return false;
+        });
+
+        if (typeof CommandExecutionProcess == "boolean" && CommandExecutionProcess == false)return;
 
         return res.status(200).json(CommandExecutionProcess);
     } catch (error) {

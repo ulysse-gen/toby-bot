@@ -67,7 +67,7 @@
 	"command.configuration.view.field.type.title": "**Type:**",
 	"command.configuration.view.field.value.description": "{{{value}}}",
 	"command.configuration.view.field.value.title": "**Value:**",
-	"command.configuration.view.field.WebGUI.description": "[Edit this from the web panel](https://tobybot.ubd.ovh/manage/{{{guildId}}}/configuration/{{{key}}})\n[Documentation about this configuration key](https://tobybot.ubd.ovh/documentation/configuration/guild/{{{key}}})",
+	"command.configuration.view.field.WebGUI.description": "[Edit this from the web panel](https://tobybot.xyz/manage/{{{guildId}}}#{{{key}}})\n[Documentation about this configuration key](https://tobybot.xyz/documentation/configurations/guild#{{{key}}})",
 	"command.configuration.view.field.WebGUI.title": "More on the Web Panel:",
 	"command.configuration.view.title": "Configuration key {{{key}}}",
 	"command.deletepunishment.description": "Delete a punishment never to be see again (lying, its still there just completely hidden)",
@@ -293,7 +293,7 @@
 	"command.userconfiguration.view.field.type.title": "**Type:**",
 	"command.userconfiguration.view.field.value.description": "{{{value}}}",
 	"command.userconfiguration.view.field.value.title": "**Value:**",
-	"command.userconfiguration.view.field.WebGUI.description": "[Edit this from the web panel](https://tobybot.ubd.ovh/manage/{{{guildId}}}/configuration/user/{{{key}}})\n[Documentation about this configuration key](https://tobybot.ubd.ovh/documentation/configuration/user/{{{key}}})",
+	"command.userconfiguration.view.field.WebGUI.description": "[Edit this from the web panel](https://tobybot.xyz/manage/me#{{{key}}})\n[Documentation about this configuration key](https://tobybot.xyz/documentation/configurations/user#{{{key}}})",
 	"command.userconfiguration.view.field.WebGUI.title": "More on the Web Panel:",
 	"command.userconfiguration.view.title": "Configuration key {{{key}}}",
 	"command.whois.description": "Display informations about a guild member.",
@@ -352,7 +352,7 @@
 	"command.globalconfiguration.view.field.type.title": "**Type:**",
 	"command.globalconfiguration.view.field.value.description": "{{{value}}}",
 	"command.globalconfiguration.view.field.value.title": "**Value:**",
-	"command.globalconfiguration.view.field.WebGUI.description": "nothing there",
+	"command.globalconfiguration.view.field.WebGUI.description": "[Edit this from the web panel](https://tobybot.xyz/manage/bot#{{{key}}})\n[Documentation about this configuration key](https://tobybot.xyz/documentation/configurations/system#{{{key}}})",
 	"command.globalconfiguration.view.field.WebGUI.title": "More on the Web Panel:",
 	"command.globalconfiguration.view.title": "Configuration key {{{key}}}",
 	"command.purge.name": "Purge",
@@ -408,5 +408,9 @@
 	"contextCommandExecution.generic.unknownCommand.description": "Could not find this context menu command.",
 	"contextCommandExecution.generic.unknownCommand.title": "Unknown context menu command.",
 	"command.evaluate.error.noCodeSpecified.title": "MiSsiNg ArGumEnT 'code'",
-	"command.evaluate.error.noCodeSpecified.description": "Please. PLEASE. Type in the code you want to eval. Thanks."
+	"command.evaluate.error.noCodeSpecified.description": "Please. PLEASE. Type in the code you want to eval. Thanks.",
+	"command.ban.error.noReasonSpecified.title": "command.ban.error.noReasonSpecified.title",
+	"command.ban.error.noReasonSpecified.description": "command.ban.error.noReasonSpecified.description",
+	"moderation.cannotBan.title": "moderation.cannotBan.title",
+	"moderation.cannotBan.description": "moderation.cannotBan.description"
 }

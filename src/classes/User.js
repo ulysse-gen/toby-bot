@@ -79,7 +79,7 @@ module.exports = class User {
     }
 
     async getUserPfp(publicOnly = false) {
-        if (typeof this.user.avatar == "undefined" && typeof this.avatar == "undefined") return `https://tobybot.ubd.ovh/assets/imgs/default_discord_avatar.png`;
+        if (typeof this.user.avatar == "undefined" && typeof this.avatar == "undefined") return `https://tobybot.xyz/assets/imgs/default_discord_avatar.png`;
         return new Promise((res, _rej) => {
             let urlBase = (this.avatar != null && !publicOnly) ? `https://cdn.discordapp.com/users/${this.user.id}/users/${this.user.id}/avatars/${this.avatar}` : `https://cdn.discordapp.com/avatars/${this.user.id}/${this.user.avatar}`;
             urlExists(`${urlBase}.gif`, function (_err, exists) {

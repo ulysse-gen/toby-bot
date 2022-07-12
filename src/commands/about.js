@@ -15,7 +15,7 @@ module.exports = {
             [`**Dobias Tray**`, `<@833178174207950869>`, true],
             [`**Guild Prefix**:`, `\`${CommandExecution.Guild.ConfigurationManager.get('prefix')}\``, true],
             [`**Global Prefix**`, `\`${CommandExecution.TobyBot.ConfigurationManager.get('prefix')}\``, true],
-            [`**Uptime**`, `${prettyMilliseconds(CommandExecution.TobyBot.client.uptime)}`, true],
+            [`**Uptime**`, `${prettyMilliseconds(CommandExecution.TobyBot.client.uptime, {secondsDecimalDigits: 0})}`, true],
             [`**Bot Version**`, `${CommandExecution.TobyBot.PackageInformations.version}`, true],
             [`**NodeJS Version**`, `${process.version}`, true],
             [`**DiscordJS Version**`, `${CommandExecution.TobyBot.PackageInformations.dependencies["discord.js"]}`, true],

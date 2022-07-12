@@ -208,6 +208,12 @@ module.exports = class ModerationManager {
 
     async kickUser(CommandExecution, Punished, PunishReason, silent = false, asBot = false) {
         let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
+        
+        let sendOption = {ephemeral: false};
+        if (silent){
+            sendOption.slashOnly = true;
+            sendOption.ephemeral = true;
+        }
 
         let Continue = await Punished.kick(this.Guild.i18n.__("moderation.auditLog.kickReason", {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id})).then(()=>true).catch(e => {
             CommandExecution.returnErrorEmbed(sendOption, CommandExecution.i18n.__("moderation.cannotKick.title"), CommandExecution.i18n.__("moderation.cannotKick.description", {error: e}));
@@ -225,6 +231,12 @@ module.exports = class ModerationManager {
 
     async banUser(CommandExecution, Punished, PunishReason, PunishDuration, silent = false, asBot = false) {
         let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
+        
+        let sendOption = {ephemeral: false};
+        if (silent){
+            sendOption.slashOnly = true;
+            sendOption.ephemeral = true;
+        }
 
         let Continue = await Punished.ban({
             days: 7,
@@ -246,6 +258,12 @@ module.exports = class ModerationManager {
     async banById(CommandExecution, PunishedID, PunishReason, silent = false, asBot = false) {
         let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
         let Punished = await CommandExecution.TobyBot.client.users.fetch(PunishedID).then(user => { return { user: user}}).catch(e => { return {user: { username: 'UnknownTag', discriminator: 'XXXX', id: PunishedID, tag: 'UnknownTag#XXXX'}}; });
+
+        let sendOption = {ephemeral: false};
+        if (silent){
+            sendOption.slashOnly = true;
+            sendOption.ephemeral = true;
+        }
 
         let Continue = await this.Guild.guild.bans.create(Punished.user.id, {
             days: 7,

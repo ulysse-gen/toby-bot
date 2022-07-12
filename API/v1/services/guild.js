@@ -1,6 +1,22 @@
 const _    = require('lodash');
 const FileConfigurationManager = require('../../../src/classes/FileConfigurationManager');
 
+exports.getAllGuilds = async (req, res, next) => {
+    try {
+        let Guilds = await req.API.TobyBot.GuildManager.guilds;
+
+        if (Guilds) {
+            return res.status(200).json(Object.entries(Guilds).map(entry => entry[1].apiVersion()));
+        } else {
+            return res.status(404).json(req.__('error.guild_not_found'));
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(req.__('error.unknown'));
+    }
+}
+
+
 exports.getGuildById = async (req, res, next) => {
     const { guildId } = req.params;
 
@@ -190,9 +206,8 @@ exports.getGuildMembers = async (req, res, next) => {
     try {
         let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
 
-        let Members = await Guild.guild.members.fetch();
-
         if (Guild) {
+            let Members = await Guild.guild.members.fetch();
             return res.status(200).json(Members);
         } else {
             return res.status(404).json(req.__('error.guild_not_found'));
@@ -210,9 +225,8 @@ exports.getGuildRoles = async (req, res, next) => {
     try {
         let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
 
-        let Roles = await Guild.guild.roles.fetch();
-
         if (Guild) {
+            let Roles = await Guild.guild.roles.fetch();
             return res.status(200).json(Roles);
         } else {
             return res.status(404).json(req.__('error.guild_not_found'));
@@ -230,9 +244,8 @@ exports.getGuildChanels = async (req, res, next) => {
     try {
         let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
 
-        let Channels = await Guild.guild.channels.fetch();
-
         if (Guild) {
+            let Channels = await Guild.guild.channels.fetch();
             return res.status(200).json(Channels);
         } else {
             return res.status(404).json(req.__('error.guild_not_found'));

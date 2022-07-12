@@ -39,6 +39,8 @@ module.exports = class ContextMenuCommandManager {
 
         this.initialized = false; //Set the main initialized variable to false
         this.verbose = false; //To turn on console verbose
+
+        this.registerCommands = false;
     }
 
     async initialize() {
@@ -66,6 +68,10 @@ module.exports = class ContextMenuCommandManager {
     } 
 
     async pushContextCommands() {
+        if (!this.registerCommands){
+            MainLog.log(this.TobyBot.i18n.__('bot.contextMenuCommandRegisterSkip'));
+            return true;
+        }
         try {
             /*await this.TobyBot.rest.put(
                 Routes.applicationCommands(this.TobyBot.client.user.id), {

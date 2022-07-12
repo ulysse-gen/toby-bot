@@ -37,7 +37,7 @@ intents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUI
 
 module.exports = class TobyBot {
     constructor(i18n, PackageInformations, TopConfigurationManager) {
-        this.client = new Client({ partials: ["CHANNEL"], intents: intents });
+        this.client = new Client({ partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION", "GUILD_SCHEDULED_EVENT"], intents: intents });
 
         this.i18n = i18n;
         this.PackageInformations = PackageInformations;
@@ -192,12 +192,12 @@ module.exports = class TobyBot {
                     switch (err.code) {
                         case "ECONNREFUSED":
                             ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here:`);
-                            ErrorLog.error(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/help/MySQL_not_`);
+                            ErrorLog.error(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/documentation/help/MySQL_not_connecting_1`);
                             break;
 
                         case "ETIMEDOUT":
                             ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here:`);
-                            ErrorLog.error(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/help/MySQL_not_connecting`);
+                            ErrorLog.error(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/documentation/help/MySQL_not_connecting_2`);
                             break;
     
                         case "ER_ACCESS_DENIED_ERROR":

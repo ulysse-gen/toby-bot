@@ -56,7 +56,7 @@ module.exports = {
                 [CommandExecution.i18n.__(`command.${this.name}.view.field.value.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.value.description`, { value: KeyValue }), true],
                 [CommandExecution.i18n.__(`command.${this.name}.view.field.defaultvalue.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.defaultvalue.description`, { defaultValue: KeyDefaultValue }), true],
                 [CommandExecution.i18n.__(`command.${this.name}.view.field.type.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.type.description`, { type: KeyType }), true],
-                //[CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.description`, { guildId: CommandExecution.Guild.guild.id, key: CommandExecution.options.key }), true]
+                [CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.title`, {}), CommandExecution.i18n.__(`command.${this.name}.view.field.WebGUI.description`, { guildId: CommandExecution.Guild.guild.id, key: CommandExecution.options.key }), true]
             ]
 
             CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.view.title`, { name: KeyName, key: CommandExecution.options.key }), CommandExecution.i18n.__(`command.${this.name}.view.description`, { description: KeyDescription }), fields);

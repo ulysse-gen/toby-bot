@@ -39,6 +39,8 @@ module.exports = class CommandManager {
 
         this.initialized = false; //Set the main initialized variable to false
         this.verbose = false; //To turn on console verbose
+        
+        this.registerCommands = false;
     }
 
     async initialize() {
@@ -66,6 +68,10 @@ module.exports = class CommandManager {
     } 
 
     async pushSlashCommands() {
+        if (!this.registerCommands){
+            MainLog.log(this.TobyBot.i18n.__('bot.slashCommandRegisterSkip'));
+            return true;
+        }
         try {
             /*await this.TobyBot.rest.put(
                 Routes.applicationCommands(this.TobyBot.client.user.id), {
