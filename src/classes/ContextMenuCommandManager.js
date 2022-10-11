@@ -40,7 +40,7 @@ module.exports = class ContextMenuCommandManager {
         this.initialized = false; //Set the main initialized variable to false
         this.verbose = false; //To turn on console verbose
 
-        this.registerCommands = false;
+        this.registerCommands = true;
     }
 
     async initialize() {
@@ -72,22 +72,8 @@ module.exports = class ContextMenuCommandManager {
             MainLog.log(this.TobyBot.i18n.__('bot.contextMenuCommandRegisterSkip'));
             return true;
         }
-        try {
-            /*await this.TobyBot.rest.put(
-                Routes.applicationCommands(this.TobyBot.client.user.id), {
-                    body: this.slashCommands
-                },
-            );*/
-            await this.TobyBot.rest.put(
-                Routes.applicationGuildCommands(this.TobyBot.client.user.id, '933416930038136832'), {
-                    body: this.contextMenuCommand
-                },
-            );
-            MainLog.log(this.TobyBot.i18n.__('bot.contextMenuCommandRegistered', {amount: this.contextMenuCommand.length.toString().green}));
-        } catch (error) {
-            MainLog.log(this.TobyBot.i18n.__('bot.contextMenuCommandRegistered.error', {amount: this.contextMenuCommand.length.toString().green, error: error.toString()}));
-            return false;
-        }
+        if (!this.TobyBot.commandsToRegister)this.TobyBot.commandsToRegister = [];
+        this.TobyBot.commandsToRegister = this.TobyBot.commandsToRegister.concat(this.contextMenuCommand);
         return true;
     }
 

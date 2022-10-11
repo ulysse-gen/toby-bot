@@ -9,6 +9,7 @@ module.exports = {
     permission: "command.permission",
     category: "administration",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         let PermissionManager = CommandExecution.Guild.PermissionManager;
 
@@ -185,7 +186,7 @@ module.exports = {
         var options = {};
         if (CommandExecution.CommandOptions.length == 0)return options;
         options.subCommand = CommandExecution.CommandOptions.shift();
-        if (CommandExecution.CommandOptions.length == 0)options.target = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.target = CommandExecution.CommandOptions.shift();
         if (CommandExecution.CommandOptions.length != 0)options.permission = CommandExecution.CommandOptions.shift();
         if (CommandExecution.CommandOptions.length != 0)options.value = CommandExecution.CommandOptions.shift();
         if (CommandExecution.CommandOptions.length != 0)options.priority = CommandExecution.CommandOptions.shift();

@@ -6,6 +6,7 @@
 //Importing NodeJS Modules
 const { MessageEmbed } = require("discord.js");
 const { I18n } = require('i18n');
+const { ErrorBuilder } = require("./Errors");
 
 //Importing classes
 const FileLogger = require('./FileLogger');
@@ -230,7 +231,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param color Color of the embed
      */
      async returnEmbed(options = {}, title, description = undefined, fields = [], color = this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')){
-        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new Error('Title must be a non empty string.');
+        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new ErrorBuilder(`Title must be a non empty string`).setType('TYPE_ERROR').logError();
         var returnOptions = Object.assign({ephemeral: true, slashOnly: false, followUpIfReturned: false}, options);
         if (returnOptions.slashOnly && !this.IsSlashCommand)return true;
         let embed = new MessageEmbed().setTitle(title).setColor(color);
@@ -352,7 +353,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param color Color of the embed
      */
      async sendEmbed(title, description = undefined, fields = [], color = this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')){
-        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new Error('Title must be a non empty string.');
+        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new ErrorBuilder(`Title must be a non empty string.`).setType('TYPE_ERROR').logError();
         let embed = new MessageEmbed().setTitle(title).setColor(color);
         if (typeof description == "string" && description.replaceAll(' ', '') != "") embed.setDescription(description);
         if (typeof fields == "object" && fields.length > 0)

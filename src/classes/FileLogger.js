@@ -9,14 +9,15 @@ const fs = require('fs');
 
 //Importing Classes
 const Logger = require('./Logger');
+const {ErrorBuilder} = require('./Errors')
 
 module.exports = class FileLogger extends Logger {
     constructor(logFile = `main.log`) {
         super();
         
-        if (typeof logFile != "string" || logFile.replaceAll(' ', '') == "") throw new Error('LogFile must be a non empty string.');
+        if (typeof logFile != "string" || logFile.replaceAll(' ', '') == "") throw new ErrorBuilder('LogFile must be a non empty string').logError();
 
-        this.file = `/data/logs/${logFile}`;
+        this.file = (logFile.startsWith('/')) ? logFile : `/data/logs/${logFile}`;
 
         this.createPath(this.file);
     }
@@ -25,17 +26,20 @@ module.exports = class FileLogger extends Logger {
         let pathParts = path.replace('/data/', '').split('/').filter(v => v != "").slice(0,-1);
         let currentPath = '/data';
         if (pathParts.length == 0)return true;
-        return new Promise((res, rej) => {
+        return new Promise((res, _rej) => {
             while (pathParts.length > 0){
                 currentPath += `/${pathParts.shift()}`;
-                if (!fs.existsSync(currentPath)) fs.mkdirSync(currentPath);
-                if (pathParts.length <= 0)res(true);
+                if (!fs.existsSync(currentPath)) try {
+                    fs.mkdirSync(currentPath);
+                    if (pathParts.length <= 0)res(true);
+                } catch(e) {
+                    throw new ErrorBuilder(`Could not build path.`, {cause: e}).setType('FILE_ERROR').logError();
+                }
             } 
         });
     }
 
     async log(string) {
-        if (typeof string != "string" && string == "") return false;
         let logText = this.pattern.replace(`&{TEXT}`, `${string}`).replace(`&{DATE}`, moment().format(`DD/MM/YYYY`)).replace(`&{HOUR}`, moment().format(`HH:mm:ss:SSS`));
         this.consoleLog(logText);
         this.fileLog(logText);
@@ -44,7 +48,6 @@ module.exports = class FileLogger extends Logger {
 
     fileLog(string) {
         this.createPath(this.file);
-        if (typeof string != "string" && string == "") return false;
         fs.appendFile(this.file, colors.stripColors(`${string}\r\n`), function (err) {
             if (err) throw err;
         });

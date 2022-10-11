@@ -84,7 +84,7 @@ module.exports = class API {
     }
 
     async ConnectionError(err) {
-        ErrorLog.error(`SQL connection dropped.`)
+        ErrorLog.error(`MySQL Watcher - SQL connection dropped.`)
         return true;
     }
 }

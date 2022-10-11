@@ -13,8 +13,7 @@ module.exports = {
     name: 'messageCreate',
     once: false,
     async exec(TobyBot, message) {
-        if (typeof TobyBot == "undefined")throw `${__filename}(): TobyBot is undefined.`;
-        if (TobyBot.ready)return false;
+        if (!TobyBot.ready)return false;
         message.TobyBot = {TobyBot: TobyBot};
 
         if (typeof TobyBot.ConfigurationManager.get('blocked.users')[message.author.id] != "undefined"){
@@ -48,6 +47,9 @@ module.exports = {
 
         if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
         if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
+
+        let autoMod = await TobyBot.AutoModeration.examine(message);
+        console.log(autoMod);
 
         let commandExecution = await TobyBot.CommandManager.handle(message).catch(e => {
             ErrorLog.error(`An error occured during the handling of the CommandManager handle:`);

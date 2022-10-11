@@ -9,10 +9,11 @@ module.exports = {
     permission: "command.userconfiguration",
     category: "administration",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.RealUser.ConfigurationManager;
         if (!ConfigurationManager.initialized)await CommandExecution.RealUser.initialize(true);
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + '/configurations/documentations/UserConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 

@@ -10,15 +10,18 @@ const _ = require('lodash');
 //Importing classes
 const FileLogger = require('./FileLogger');
 const ConfigurationManager = require('./ConfigurationManager');
+const { ErrorBuilder } = require('./Errors');
 
 //Creating objects
 const MainLog = new FileLogger();
 
 module.exports = class FileConfigurationManager extends ConfigurationManager {
-    constructor(configurationFile, defaultConfiguration = {}, fromCwdConfig = false) {
+    constructor(configurationFile, defaultConfiguration = {}) {
         super();
 
-        this.file = (fromCwdConfig) ? `${process.cwd()}/configurations/${configurationFile}` : `/data/configs/${configurationFile}`;
+        if (typeof configurationFile != "string" || configurationFile.replaceAll(' ', '') == "") throw new ErrorBuilder(`ConfigurationFile must be a non empty string.`).logError();
+
+        this.file = (configurationFile.startsWith('/')) ? configurationFile : `/data/configs/${configurationFile}`;
         this.defaultConfiguration = defaultConfiguration;
 
         this.initialized = false;
@@ -27,7 +30,7 @@ module.exports = class FileConfigurationManager extends ConfigurationManager {
     async initialize(createIfNonExistant = false) {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
-        if (!fs.existsSync(this.file) && !createIfNonExistant) throw new Error('File not found.');
+        if (!fs.existsSync(this.file) && !createIfNonExistant) throw new ErrorBuilder(`Configuration file not found`).setType('FILE_ERROR').logError();
         await this.createPath(this.file);
         if (!fs.existsSync(this.file)) {
             fs.appendFileSync(this.file, JSON.stringify(this.defaultConfiguration, null, 2));

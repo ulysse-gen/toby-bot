@@ -5,6 +5,7 @@
 //Importing NodeJS modules
 const { Permissions } = require('discord.js');
 const _ = require('lodash');
+const { ErrorBuilder } = require('./Errors');
 
 //Importing classes
 const FileLogger = require('./FileLogger');
@@ -163,7 +164,7 @@ module.exports = class SQLPermissionManager extends SQLConfigurationManager {
     }
 
     async userHasPermission(permission, guildUser, channel = undefined, useAdmin = false) {
-        if (typeof guildUser != "object") throw new Error('Wrong type.')
+        if (typeof guildUser != "object") throw new ErrorBuilder('Wrong type').setType("TYPE_ERROR").logError();
         if (this.allowDevOnly.includes(permission) && guildUser.user.id == "231461358200291330")return true;
         if (this.neverAllow.includes(permission))return false;
         if (this.neverAllowGuildFocused.includes(permission) && useAdmin)return false;
@@ -184,7 +185,7 @@ module.exports = class SQLPermissionManager extends SQLConfigurationManager {
 
     async isPermissionGranted(permissionArray, permission) { //Just a quick function to prevent writing the same code in a loop
         if (!this.initialized) return false;
-        if (typeof permissionArray != "object") throw new Error('Wrong type.')
+        if (typeof permissionArray != "object") throw new ErrorBuilder('Wrong type').setType("TYPE_ERROR").logError();
         if (Object.keys(permissionArray).length == 0) return false;
         let totalResults = [];
         let permissionModified = permission.split('.');

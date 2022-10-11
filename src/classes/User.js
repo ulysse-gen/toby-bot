@@ -68,7 +68,7 @@ module.exports = class User {
                 if (results.length == 0){
                     this.UserManager.SQLPool.query(`INSERT INTO \`users\` (id, configuration) VALUES (?,?)`, [this.user.id, JSON.stringify(require('../../configurations/defaults/UserConfiguration.json'))], async (error, results) => {
                         if (error)throw error;
-                        if (results.affectedRows != 1) throw new Error('Could not create the user.')
+                        if (results.affectedRows != 1) throw new ErrorBuilder('Could not insert user in the database').logError();
                         res(true);
                     });
                 }else {

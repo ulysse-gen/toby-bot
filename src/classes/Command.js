@@ -1,3 +1,5 @@
+const { ErrorBuilder } = require("./Errors");
+
 module.exports = class Command {
     constructor(CommandManager, command) {
         this.CommandManager = CommandManager;
@@ -16,7 +18,9 @@ module.exports = class Command {
         this.optionsFromSlashOptions = command.optionsFromSlashOptions;
 
         this.slashCommand = command.makeSlashCommand(this.CommandManager.i18n);
-        this.sendHelp = async (channel) => channel.send(await command.makeHelpEmbed(this)).catch(e=>{throw e});
+        this.sendHelp = async (channel) => channel.send(await command.makeHelpEmbed(this)).catch(e=>{throw new ErrorBuilder(`Could not send command help.`, {cause: e}).logError()});
+
+        this.hasSlashCommand = (typeof command.hasSlashCommand == "boolean") ? command.hasSlashCommand : false;
     }
 
     apiVersion (){

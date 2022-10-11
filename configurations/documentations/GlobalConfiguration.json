@@ -118,6 +118,43 @@
                 "type": "Boolean",
                 "editable": true,
                 "default": true
+            },
+            "inSQL": {
+                "name": "Log command execution in SQL",
+                "description": "Should we log the command execution in the SQL?",
+                "type": "Boolean",
+                "editable": true,
+                "default": true
+            }
+        },
+        "DM": {
+            "inConsole": {
+                "name": "Log DMs in console",
+                "description": "Should we log DMs in the console?",
+                "type": "Boolean",
+                "editable": true,
+                "default": true
+            },
+            "inSQL": {
+                "name": "Log DMs in SQL",
+                "description": "Should we log DMs in the SQL?",
+                "type": "Boolean",
+                "editable": true,
+                "default": true
+            },
+            "inChannel": {
+                "name": "Log DMs in channel",
+                "description": "Should we log DMs in the logging channel?",
+                "type": "Boolean",
+                "editable": true,
+                "default": false
+            },
+            "channel": {
+                "name": "DMs logging channel",
+                "description": "What is the DMs logging channel?",
+                "type": "String(ChannelId)",
+                "editable": true,
+                "default": "none"
             }
         },
         "moderationLogs": {

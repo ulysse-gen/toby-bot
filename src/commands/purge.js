@@ -8,6 +8,7 @@ module.exports = {
     permission: "command.purge",
     category: "moderation",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         try {
             let amount = parseInt(CommandExecution.options.subCommand)
@@ -109,7 +110,7 @@ module.exports = {
         var options = {};
         if (CommandExecution.CommandOptions.length == 0)return options;
         options.subCommand = CommandExecution.CommandOptions.shift();
-        if (CommandExecution.CommandOptions.length == 0)options.amount = CommandExecution.CommandOptions.pop();
+        if (CommandExecution.CommandOptions.length != 0)options.amount = CommandExecution.CommandOptions.pop();
         if (CommandExecution.CommandOptions.length != 0)options.target = CommandExecution.CommandOptions.shift();
         return options;
     },

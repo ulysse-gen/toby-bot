@@ -30,13 +30,13 @@ module.exports = class SQLLogger extends Logger {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
 
-        if (typeof this.SQLConnectionInfos != "object") throw new Error('Wrong type given for SQLConnectionInfos.');
-        if (typeof this.SQLConnectionInfos.host != "string") throw new Error('Wrong type given for SQLConnectionInfos.host.');
-        if (typeof this.SQLConnectionInfos.user != "string") throw new Error('Wrong type given for SQLConnectionInfos.user.');
-        if (typeof this.SQLConnectionInfos.password != "string") throw new Error('Wrong type given for SQLConnectionInfos.password.');
-        if (typeof this.SQLConnectionInfos.database != "string") throw new Error('Wrong type given for SQLConnectionInfos.database.');
-        if (typeof this.SQLConnectionInfos.charset != "string") throw new Error('Wrong type given for SQLConnectionInfos.charset.');
-        if (typeof this.SQLConnectionInfos.connectionLimit != "number") throw new Error('Wrong type given for SQLConnectionInfos.connectionLimit.');
+        if (typeof this.SQLConnectionInfos != "object") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.').logError();
+        if (typeof this.SQLConnectionInfos.host != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.host.').logError();
+        if (typeof this.SQLConnectionInfos.user != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.user.').logError();
+        if (typeof this.SQLConnectionInfos.password != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.password.').logError();
+        if (typeof this.SQLConnectionInfos.database != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.database.').logError();
+        if (typeof this.SQLConnectionInfos.charset != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.charset.').logError();
+        if (typeof this.SQLConnectionInfos.connectionLimit != "number") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.connectionLimit.').logError();
 
         this.SQLPool = mysql.createPool(this.SQLConnectionInfos)
 

@@ -9,6 +9,7 @@ module.exports = {
     permission: "command.globalpermission",
     category: "administration",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         let PermissionManager = CommandExecution.TobyBot.PermissionManager;
 

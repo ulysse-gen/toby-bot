@@ -14,6 +14,7 @@ const { I18n } = require('i18n');
 const FileLogger = require('./src/classes/FileLogger');
 const FileConfigurationManager = require('./src/classes/FileConfigurationManager');
 const TobyBot = require('./src/classes/TobyBot');
+const {ErrorBuilder} = require('./src/classes/Errors');
 
 //Creating main objects
 const TopConfigurationManager = new FileConfigurationManager('configuration.json', require('./configurations/defaults/TopConfiguration.json')); //This is the main -- top level -- config. Containing the MySQL details
@@ -33,9 +34,7 @@ const ErrorLog = new FileLogger(`error.log`);
 const GlobalBot = new TobyBot(i18n, PackageInformations, TopConfigurationManager); //This is the bot
 
 GlobalBot.start().catch(e => {
-    ErrorLog.log(`An error occured:`);
-    console.log(e);
-    process.exit(1);
+    throw new ErrorBuilder(`Failed to start TobyBot`, {cause: e}).setType("FATAL_ERROR").logError();
 });
 
 //More debug stuff
@@ -51,7 +50,6 @@ process.on('SIGUSR1', (code)=>shudownHandle("SIGUSR1", code)); //Catch 'PID kill
 process.on('SIGUSR2', (code)=>shudownHandle("SIGUSR2", code)); //Catch 'PID kills'
 
 async function errorHandle(type, error) {
-    MainLog.log(`Catched an ${type}:`);
     console.log(error);
     if (!GlobalBot.catchErrorsPreventClose)await GlobalBot.shutdown(type, error);
 }

@@ -16,8 +16,7 @@ module.exports = {
     enabled: true,
     async exec(TobyBot, interaction) {
         if (TobyBot.TopConfigurationManager.get('API.only'))return true;
-        if (typeof TobyBot == "undefined")throw `${__filename}(): TobyBot is undefined.`;
-        if (TobyBot.ready)return false;
+        if (!TobyBot.ready)return false;
         interaction.TobyBot = {TobyBot: TobyBot};
 
         if (typeof TobyBot.ConfigurationManager.get('blocked.users')[interaction.user.id] != "undefined")return false;
@@ -54,6 +53,34 @@ module.exports = {
                 ephemeral: true
             });
         });
+
+        if (interaction.isButton()){
+            if (typeof interaction.TobyBot.guild.waitingForInteractionData == "function")return interaction.TobyBot.guild.waitingForInteractionData[interaction.customId](interaction);
+
+            if (interaction.customId.startsWith('russianroulette-')){
+                let InteractionId = interaction.customId;
+                let Action = InteractionId.split('-')[1];
+                let RRID = InteractionId.split('-')[2];
+
+                if (typeof interaction.TobyBot.guild.data.russianroulette.channels[interaction.channelId] == "undefined")return interaction.reply({
+                    content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.notRunningInChannel'),
+                    ephemeral: true
+                });
+
+                let russianRoulette = interaction.TobyBot.guild.data.russianroulette.channels[interaction.channelId];
+
+                if (RRID != russianRoulette.id)return interaction.reply({
+                    content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.wrongId'),
+                    ephemeral: true
+                });
+
+                if (Action == "join")return russianRoulette.joinByInteraction(interaction);
+                if (Action == "leave")return russianRoulette.leaveByInteraction(interaction);
+                if (Action == "cancel")return russianRoulette.cancelByInteraction(interaction);
+                if (Action == "stop")return russianRoulette.stopByInteraction(interaction);
+                if (Action == "alive")return russianRoulette.amIAliveByInteraction(interaction);
+            }
+        }
 
         return interaction.reply({
             content: interaction.TobyBot.guild.i18n.__('interaction.couldNotProcess'),

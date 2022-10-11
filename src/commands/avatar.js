@@ -7,6 +7,7 @@ module.exports = {
     permission: "command.avatar",
     category: "infos",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         let User = await CommandExecution.Guild.getUserFromArg(CommandExecution.options.target, CommandExecution.GuildExecutor);
         if (typeof User == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.description`, {}));
@@ -30,7 +31,7 @@ module.exports = {
         var options = {};
         if (CommandExecution.CommandOptions.length == 0)return options;
         options.target = CommandExecution.CommandOptions.shift();
-        if (CommandExecution.CommandOptions.length == 0)options.public = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.public = CommandExecution.CommandOptions.shift();
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {

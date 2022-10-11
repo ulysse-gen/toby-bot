@@ -15,8 +15,7 @@ module.exports = {
     name: 'guildMemberAdd',
     once: true,
     async exec(TobyBot, GuildMember) {
-        if (typeof TobyBot == "undefined")throw `${__filename}: TobyBot is undefined.`;
-        if (TobyBot.ready)return false;
+        if (!TobyBot.ready)return false;
 
         if (typeof TobyBot.ConfigurationManager.get('blocked.guilds')[GuildMember.guild.id] != "undefined")return false;
 

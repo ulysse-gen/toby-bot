@@ -13,8 +13,7 @@ module.exports = {
     name: 'messageUpdate',
     once: false,
     async exec(TobyBot, oldMessage, message) {
-        if (typeof TobyBot == "undefined")throw `${__filename}(): TobyBot is undefined.`;
-        if (TobyBot.ready)return false;
+        if (!TobyBot.ready)return false;
         message.TobyBot = {TobyBot: TobyBot};
 
         if (typeof message.channel.guild == "undefined") return require(`./DMHandler`).update(TobyBot, message);

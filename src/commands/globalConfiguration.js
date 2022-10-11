@@ -9,9 +9,10 @@ module.exports = {
     permission: "command.globalconfiguration",
     category: "administration",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.TobyBot.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + '/configurations/documentations/GlobalConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('../../configurations/functions/GlobalConfiguration');
         await ConfigurationDocumentation.initialize();
 

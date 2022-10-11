@@ -16,6 +16,7 @@ const Command = require('./Command');
 const CommandExecution = require('./CommandExecution');
 const FileLogger = require('./FileLogger');
 const { setLocale } = require('i18n');
+const { ErrorBuilder, ErrorType } = require('./Errors');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -40,7 +41,7 @@ module.exports = class CommandManager {
         this.initialized = false; //Set the main initialized variable to false
         this.verbose = false; //To turn on console verbose
         
-        this.registerCommands = false;
+        this.registerCommands = true;
     }
 
     async initialize() {
@@ -50,20 +51,20 @@ module.exports = class CommandManager {
 
         if (!this.TobyBot.TopConfigurationManager.get('API.only'))await new Promise((res, _rej) => {
             fs.readdir(`./src/commands${_this.commandsFolder}`, function (err, files) { //Read events folder
-                if (err) throw err;
+                if (err) throw new ErrorBuilder(`Could not load commands.`, {cause: err}).setType("FATAL_ERROR").logError();
                 files.forEach((file, index, array) => { //For each files in the folder
                     if (file.endsWith('.js')) { //Only proceed if extension is .js
                         let cmd = new Command(_this, require(`../commands${_this.commandsFolder}${file}`));
                         if (!_this.checkForExistence(cmd)) {
                             _this.commands.push(cmd);
-                            _this.slashCommands.push(cmd.slashCommand.toJSON());
+                            if (typeof cmd.hasSlashCommand == "boolean" && cmd.hasSlashCommand)_this.slashCommands.push(cmd.slashCommand.toJSON());
                         }
                     }
                     if (index === array.length -1) res();
                 });
             });
         });
-        this.initialized = true;
+        this.initialized = false;
         return true;
     } 
 
@@ -72,20 +73,27 @@ module.exports = class CommandManager {
             MainLog.log(this.TobyBot.i18n.__('bot.slashCommandRegisterSkip'));
             return true;
         }
+        if (!this.TobyBot.commandsToRegister)this.TobyBot.commandsToRegister = [];
+        this.TobyBot.commandsToRegister = this.TobyBot.commandsToRegister.concat(this.slashCommands);
+        return true;
+    }
+
+    async pushAllCommands() {
+        if (!this.TobyBot.commandsToRegister)this.TobyBot.commandsToRegister = [];
         try {
             /*await this.TobyBot.rest.put(
                 Routes.applicationCommands(this.TobyBot.client.user.id), {
-                    body: this.slashCommands
+                    body: this.TobyBot.commandsToRegister
                 },
             );*/
             await this.TobyBot.rest.put(
                 Routes.applicationGuildCommands(this.TobyBot.client.user.id, '933416930038136832'), {
-                    body: this.slashCommands
+                    body: this.TobyBot.commandsToRegister
                 },
             );
-            MainLog.log(this.TobyBot.i18n.__('bot.slashCommandRegistered', {amount: this.slashCommands.length.toString().green}));
+            MainLog.log(this.TobyBot.i18n.__('bot.registeredCommands', {amount: this.TobyBot.commandsToRegister.length.toString().green}));
         } catch (error) {
-            MainLog.log(this.TobyBot.i18n.__('bot.slashCommandRegistered.error', {amount: this.slashCommands.length.toString().green, error: error.toString()}));
+            MainLog.log(this.TobyBot.i18n.__('bot.registeredCommands.error', {amount: this.TobyBot.commandsToRegister.length.toString().green, error: error.toString()}));
             return false;
         }
         return true;
@@ -102,12 +110,24 @@ module.exports = class CommandManager {
         let commandOptions=message.content.replace(/\s+/g, ' ').trim().split(' ');
         let command=commandOptions.shift().replace(prefixUsed, '');
         let fetchedCommand = await this.fetch(command);
-        return new CommandExecution(message, fetchedCommand, commandOptions, this).execute().catch(e=>{throw e});
+        return new CommandExecution(message, fetchedCommand, commandOptions, this).execute().catch(e=>{
+            if (e.type == ErrorType.CommandExecution){
+                return CommandExecution.Channel.send('An error occured executing the command. Reach <@231461358200291330> for help.');
+            }else {
+                throw new ErrorBuilder(`Could not execute command.`, {cause: e}).setType('COMMAND_EXECUTION_ERROR').logError()
+            }
+        });
     }
 
     async handleSlash(interaction) {
         let fetchedCommand = await this.fetch(interaction.commandName);
-        return new CommandExecution(interaction, fetchedCommand, interaction.options._hoistedOptions, this, true).execute();
+        return new CommandExecution(interaction, fetchedCommand, interaction.options._hoistedOptions, this, true).execute().catch(e=>{
+            if (e.type == ErrorType.CommandExecution){
+                return CommandExecution.Channel.send('An error occured executing the command. Reach <@231461358200291330> for help.');
+            }else {
+                throw new ErrorBuilder(`Could not execute command.`, {cause: e}).setType('COMMAND_EXECUTION_ERROR').logError()
+            }
+        });
     }
 
     checkForExistence(command) { //Check if a command exists (command must be a Command object)

@@ -30,6 +30,12 @@
             "channel": "none",
             "logFailed": true
         },
+        "DM": {
+            "inConsole": true,
+            "inSQL": false,
+            "inChannel": false,
+            "channel": "none"
+        },
         "moderationLogs": {
             "inConsole": true,
             "inSQL": true,

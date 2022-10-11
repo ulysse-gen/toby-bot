@@ -6,6 +6,7 @@
 //Importing NodeJS Modules
 const { MessageEmbed } = require("discord.js");
 const { I18n } = require('i18n');
+const { ErrorBuilder } = require("./Errors");
 
 //Importing classes
 const FileLogger = require('./FileLogger');
@@ -36,8 +37,8 @@ module.exports = class CommandExecution {
      * No arguments needed
      */
     async execute() {
-        await this.buildContext();
         this.deferIfNeeded();
+        await this.buildContext();
         if (typeof this.Command == "undefined")return this.unknownCommand((this.IsSlashCommand) ? this.Trigger.commandName : this.Trigger.content);
         if (typeof this.options.permissionDenied != "undefined")return this.denyPermission(this.options.permissionDenied);
         await this.logExecution();
@@ -206,7 +207,7 @@ module.exports = class CommandExecution {
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inSQL'))await this.TobyBot.SQLLogger.logCommandExecution(this);
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole'))MainLog.log(this.TobyBot.i18n.__((typeof this.spoofing != "undefined") ? 'bot.command.execution.spoofed' : 'bot.command.execution', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, command: `${this.Command.name}`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel') && typeof this.TobyBot.loggers.commandExecution != "undefined"){
-            let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.commandExecution.title')).setDescription(this.Guild.i18n.__('channelLogging.commandExecution.description', {command: `${this.Command.name} ${Object.entries(this.options).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.Guild.ConfigurationManager.get('style.colors.main'));
+            let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.commandExecution.title')).setDescription(this.TobyBot.i18n.__('channelLogging.commandExecution.description', {command: `${this.Command.name} ${Object.entries(this.options).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.Guild.ConfigurationManager.get('style.colors.main'));
             embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.executor.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.Executor.id, realUserId: this.RealExecutor.id}), true);
             embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.channel.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.channel.description', {channelId: this.Channel.id, realChannelId: this.RealChannel.id}), true);
             embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.guild.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.guild.description', {guildId: this.Guild.guild.id, realGuildId: this.RealGuild.guild.id}), true);
@@ -275,7 +276,7 @@ module.exports = class CommandExecution {
      * @param color Color of the embed
      */
      async returnEmbed(options = {}, title, description = undefined, fields = [], color = this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')){
-        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new Error('Title must be a non empty string.');
+        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new ErrorBuilder('Title must be a non empty string.').setType("TYPE_ERROR").logError();
         var returnOptions = Object.assign({ephemeral: true, slashOnly: false, followUpIfReturned: false}, options);
         if (returnOptions.slashOnly && !this.IsSlashCommand)return true;
         let embed = new MessageEmbed().setTitle(title).setColor(color);
@@ -397,13 +398,13 @@ module.exports = class CommandExecution {
      * @param color Color of the embed
      */
      async sendEmbed(title, description = undefined, fields = [], color = this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')){
-        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new Error('Title must be a non empty string.');
+        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new ErrorBuilder('Title must be a non empty string.').setType("TYPE_ERROR").logError();
         let embed = new MessageEmbed().setTitle(title).setColor(color);
         if (typeof description == "string" && description.replaceAll(' ', '') != "") embed.setDescription(description);
         if (typeof fields == "object" && fields.length > 0)
             fields.forEach(indField => embed.addField(indField[0], indField[1], indField[2]));
         
-        return this.Channel.send({embeds: [embed]});
+        return this.Channel.send({embeds: [embed]}).then(message=>message);
     }
 
     /** Reply to the execution by replying an embed
@@ -411,8 +412,8 @@ module.exports = class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
-     async sendMainEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main'));
+     async sendMainEmbed(title, description = undefined, fields = []){
+        return this.sendEmbed(title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main'));
     }
 
     /** Reply to the execution by replying an embed
@@ -420,8 +421,8 @@ module.exports = class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
-     async sendSuccessEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.success'));
+     async sendSuccessEmbed(title, description = undefined, fields = []){
+        return this.sendEmbed(title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.success'));
     }
 
     /** Reply to the execution by replying an embed
@@ -429,8 +430,8 @@ module.exports = class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
-     async sendErrorEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error'));
+     async sendErrorEmbed(title, description = undefined, fields = []){
+        return this.sendEmbed(title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error'));
     }
 
     /** Reply to the execution by replying an embed
@@ -438,8 +439,8 @@ module.exports = class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
-     async sendWarningEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning'));
+     async sendWarningEmbed(title, description = undefined, fields = []){
+        return this.sendEmbed(title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning'));
     }
 
     async returnRaw(...args){
@@ -455,7 +456,6 @@ module.exports = class CommandExecution {
     }
 
     async sendRaw(...args){
-        if (returnOptions.slashOnly && !this.IsSlashCommand)return true;
-        return this.Channel.send(...args);
+        return this.Channel.send(...args).then(message => message);
     }
 }

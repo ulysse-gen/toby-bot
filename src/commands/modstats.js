@@ -8,6 +8,7 @@ module.exports = {
     permission: "command.moderationstatistics",
     category: "moderation",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         let User = await CommandExecution.Guild.getUserFromArg(CommandExecution.options.target, CommandExecution.GuildExecutor);
         if (typeof User == "undefined"){

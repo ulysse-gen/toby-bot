@@ -5,6 +5,8 @@
 //Importing NodeJS Modules
 const moment = require('moment');
 
+const TobyBotErrors = require('./Errors')
+
 module.exports = class Logger {
     constructor() {
         this.pattern = "[&{DATE} - &{HOUR}] &{TEXT}";
@@ -19,14 +21,12 @@ module.exports = class Logger {
     }
 
     async log(string) {
-        if (typeof string != "string" && string == "") return false;
         let logText = this.pattern.replace(`&{TEXT}`, `${string}`).replace(`&{DATE}`, moment().format(`DD/MM/YYYY`)).replace(`&{HOUR}`, moment().format(`HH:mm:ss:SSS`));
         this.consoleLog(logText);
         return true;
     }
 
     consoleLog(string) {
-        if (typeof string != "string" && string == "") return false;
         console.log(string);
         return true;
     }

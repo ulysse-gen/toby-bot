@@ -9,7 +9,7 @@ module.exports = {
     permission: "command.moderationlogs",
     enabled: true,
     async execute(ContextMenuCommandExecution) {
-        let User = await ContextMenuContextMenuCommandExecution.Guild.getMemberById(ContextMenuContextMenuCommandExecution.Trigger.targetUser.id);
+        let User = await ContextMenuCommandExecution.Guild.getMemberById(ContextMenuCommandExecution.Trigger.targetUser.id);
         let UserPFP = await ContextMenuCommandExecution.Guild.getUserPfp(User);
 
         let embedFields = [];
@@ -67,18 +67,6 @@ module.exports = {
         };
 
         embedFields = embedPages[0];
-        if (ContextMenuCommandExecution.options.page) {
-            try {
-                ContextMenuCommandExecution.options.page = parseInt(ContextMenuCommandExecution.options.page);
-            } catch (e) {
-                return ContextMenuCommandExecution.returnErrorEmbed({ephemeral: false}, ContextMenuCommandExecution.i18n.__(`command.generic.pageUseNumber`));
-            }
-            embed.footer = {
-                text: ContextMenuCommandExecution.i18n.__(`command.${this.name}.searchThruPages`, {currentPage: ContextMenuCommandExecution.options.page, totalPages: embedPages.length})
-            };
-            if (typeof embedPages[ContextMenuCommandExecution.options.page - 1] == "undefined") return ContextMenuCommandExecution.returnErrorEmbed({ephemeral: false}, ContextMenuCommandExecution.i18n.__(`command.generic.pageDontExist`));
-            embedFields = embedPages[ContextMenuCommandExecution.options.page - 1];
-        }
 
         embedFields.forEach(embedField => {
             embed.addField(embedField[0], embedField[1], embedField[2]);

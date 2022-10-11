@@ -15,7 +15,6 @@ module.exports = {
     name: 'ready',
     once: true,
     async exec(TobyBot, client) {
-        if (typeof TobyBot == "undefined")throw `${__filename}: TobyBot is undefined.`;
         MainLog.log(TobyBot.i18n.__('bot.login', {tag: colors.green(client.user.tag), appName: TobyBot.ConfigurationManager.get('appName').green, version: TobyBot.PackageInformations.version.green}));
         await TobyBot.continueStart();
         TobyBot.SQLLogger.logReadyState(TobyBot);

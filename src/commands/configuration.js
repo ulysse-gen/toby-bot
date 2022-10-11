@@ -9,9 +9,10 @@ module.exports = {
     permission: "command.configuration",
     category: "administration",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.Guild.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + '/configurations/documentations/GuildConfiguration.json');
         let ConfigurationFunctions = require('../../configurations/functions/GuildConfiguration');
         await ConfigurationDocumentation.initialize();
 

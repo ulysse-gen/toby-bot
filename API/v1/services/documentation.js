@@ -3,7 +3,7 @@ const FileConfigurationManager = require('../../../src/classes/FileConfiguration
 
 exports.guildConfiguration = async (req, res, next) => {
     try {
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + '/configurations/documentations/GuildConfiguration.json', undefined, true);
         await ConfigurationDocumentation.initialize();
 
         return res.status(200).json(ConfigurationDocumentation.configuration);
@@ -15,7 +15,7 @@ exports.guildConfiguration = async (req, res, next) => {
 
 exports.userConfiguration = async (req, res, next) => {
     try {
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + '/configurations/documentations/UserConfiguration.json', undefined, true);
         await ConfigurationDocumentation.initialize();
 
         return res.status(200).json(ConfigurationDocumentation.configuration);
@@ -27,7 +27,7 @@ exports.userConfiguration = async (req, res, next) => {
 
 exports.globalConfiguration = async (req, res, next) => {
     try {
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GlobalConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + '/configurations/documentations/GlobalConfiguration.json', undefined, true);
         await ConfigurationDocumentation.initialize();
 
         return res.status(200).json(ConfigurationDocumentation.configuration);

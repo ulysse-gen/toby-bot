@@ -3,7 +3,9 @@ const crypto   = require('crypto');
 const axios = require('axios').default;
 const jwt    = require('jsonwebtoken');
 const _    = require('lodash');
+const { ErrorBuilder } = require('../../../src/classes/Errors');
 const FileConfigurationManager = require('../../../src/classes/FileConfigurationManager');
+
 
 exports.getMine = async (req, res, next) => {
     req.params.userId = req.User.id;
@@ -57,7 +59,7 @@ exports.getUserConfigurationKey = async (req, res, next) => {
         if (!User)return res.status(404).json(req.__('error.user_not_found'));
 
         let ConfigurationManager = User.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + 'configurations/documentations/UserConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('../../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 
@@ -93,7 +95,7 @@ exports.patchConfigurationKey = async (req, res, next) => {
         if (!User)return res.status(404).json(req.__('error.user_not_found'));
 
         let ConfigurationManager = User.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/UserConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + 'configurations/documentations/UserConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('../../../configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 
@@ -219,7 +221,7 @@ exports.auth = async (req, res, next) => {
             if (!User.password)return res.status(418).json(req.__('error.no_api_account'));
 
             bcrypt.compare(password, User.password, function(err, response) {
-                if (err) throw err;
+                if (err) throw new ErrorBuilder(`Could not verify password`, {cause: err}).logError();
                 if (response) {
                     User = User.tokenVersion();
 

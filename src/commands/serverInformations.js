@@ -8,6 +8,7 @@ module.exports = {
     permission: "command.serverinformations",
     category: "infos",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         let Owner = await CommandExecution.Guild.getUserFromArg(CommandExecution.Guild.guild.ownerId);
         let OwnerPFP = await CommandExecution.Guild.getUserPfp(Owner);

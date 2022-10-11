@@ -1,4 +1,5 @@
 const {MessageEmbed, Permissions} = require('discord.js');
+const { ErrorBuilder } = require('./Errors');
 
 module.exports = class ChannelLogger {
     constructor(Guild, channelLoggingConfig) {
@@ -16,7 +17,7 @@ module.exports = class ChannelLogger {
             this.channel = channel;
             this.initialized = true;
             return true;
-        }).catch((e) => {throw e});
+        }).catch((e) => {throw new ErrorBuilder(`Could not initialize ChannelLogger`, {cause: e}).logError()});
     }
 
     /** Log text
@@ -25,7 +26,7 @@ module.exports = class ChannelLogger {
      */
     async log(content) {
         if (!this.initialized)return false;
-        if (typeof content != "string" || content.replaceAll(" ", "") == "") throw new Error('Content must be a non empty string.');
+        if (typeof content != "string" || content.replaceAll(" ", "") == "") throw new ErrorBuilder(`Content must be a non empty string`).setType("TYPE_ERROR").logError();
         return this.channel.send(content);
     }
 
@@ -43,7 +44,7 @@ module.exports = class ChannelLogger {
      */
      async logEmbed(title, description = undefined, fields = [], color = this.Guild.ConfigurationManager.get('style.colors.main')){
          if (!this.initialized)return false;
-        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new Error('Title must be a non empty string.');
+         if (typeof content != "string" || content.replaceAll(" ", "") == "") throw new ErrorBuilder(`Title must be a non empty string`).setType("TYPE_ERROR").logError();
         let embed = new MessageEmbed().setTitle(title).setColor(color);
         if (typeof description == "string" && description.replaceAll(' ', '') != "") embed.setDescription(description);
         if (typeof fields == "object" && fields.length > 0)

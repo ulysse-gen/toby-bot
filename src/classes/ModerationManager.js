@@ -24,14 +24,6 @@ module.exports = class ModerationManager {
         this.Guild = Guild;
 
         this.verbose = false;
-
-        this.scamLinks = undefined;
-        this.scamterms = undefined;
-        this.scamSlashes = undefined;
-        this.domainNames = undefined;
-
-        this.refreshDataSets();
-        setInterval(() => this.refreshDataSets(), 21600000); //Update DataSets every 6 hours
     }
 
     async log(PunishedId, PunisherId, type, reason, length = false) {
@@ -375,37 +367,5 @@ module.exports = class ModerationManager {
                 });
             }
         })
-    }
-
-    async refreshDataSets() {
-        this.scamLinks = await axios.get('https://spen.tk/api/v1/links')
-            .then(response => {
-                return response.data.links
-            })
-            .catch(_error => {
-                return [];
-            });
-        this.scamterms = await axios.get('https://spen.tk/api/v1/terms')
-            .then(response => {
-                return response.data.terms
-            })
-            .catch(_error => {
-                return [];
-            });
-        this.scamSlashes = await axios.get('https://spen.tk/api/v1/slashes')
-            .then(response => {
-                return response.data.slashes
-            })
-            .catch(_error => {
-                return [];
-            });
-        this.domainNames = await axios.get('https://data.iana.org/TLD/tlds-alpha-by-domain.txt')
-            .then(response => {
-                return response.data.split('\n');
-            })
-            .catch(_error => {
-                return [];
-            });
-        //MainLog.log(`Loaded AutoMod datasets.`);
     }
 }

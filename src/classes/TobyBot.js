@@ -25,6 +25,8 @@ const ModerationManager = require('./ModerationManager');
 const API = require('./API');
 const Console = require('./Console');
 const MYSQLWatcher = require('./MYSQLWatcher');
+const AutoModeration = require('./AutoModeration');
+const { ErrorBuilder } = require('./Errors');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -47,15 +49,20 @@ module.exports = class TobyBot {
         this.MetricManager = new MetricManager();
         this.Console = new Console(this);
         this.LifeMetric = this.MetricManager.createMetric("LifeMetric"); //Create the main "LifeMetric" that will follow everything that might happen which is code related (e.g. errors)
+        this.AutoModeration = new AutoModeration(this);
 
         this.loggers = {};
 
         this.ready = false;
         this.catchErrorsPreventClose = false;
         this.shuttingDown = false;
+
+        this.registerCommands = false;
     }
 
     async start() {
+        await this.VerifyContext();
+
         this.LifeMetric.addEntry("TopConfigurationManagerInit");
         await this.TopConfigurationManager.initialize(true).catch(e => { throw e} );  //Init Top ConfigurationManager
 
@@ -73,13 +80,37 @@ module.exports = class TobyBot {
     }
 
     async continueStart() {
-        if (!this.TopConfigurationManager.get('API.only'))this.CommandManager.pushSlashCommands();
-        if (!this.TopConfigurationManager.get('API.only'))this.ContextMenuCommandManager.pushContextCommands();
+        if (!this.TopConfigurationManager.get('API.only') && this.registerCommands){
+            await this.CommandManager.pushSlashCommands();
+            await this.ContextMenuCommandManager.pushContextCommands();
+            await this.CommandManager.pushAllCommands();
+        }
         this.LifeMetric.addEntry("botReady");
         this.LifeMetric.addEntry("LoggersInit");
         await this.initLoggers().catch(e => { throw e }); //Attach loggers
         await this.finalTouch().catch(e => { throw e }); //Final touch
         this.ready = true;
+    }
+
+    async VerifyContext() {
+        MainLog.log('Verifying context.');
+        if (!fs.existsSync('/data'))try {
+            fs.mkdirSync('/data');
+        } catch (e) {
+            throw new ErrorBuilder(`Missing '/data' folder and its creation failed`, {cause: e}).setType('FILE_ERROR').logError();
+        }
+        if (!fs.existsSync('/data/logs'))try {
+            fs.mkdirSync('/data/logs');
+        } catch (e) {
+            throw new ErrorBuilder(`Missing '/data/logs' folder and its creation failed`, {cause: e}).setType('FILE_ERROR').logError();
+        }
+        if (!fs.existsSync('/data/configs'))try {
+            fs.mkdirSync('/data/configs');
+        } catch (e) {
+            throw new ErrorBuilder(`Missing '/data/configs' folder and its creation failed`, {cause: e}).setType('FILE_ERROR').logError();
+        }
+        MainLog.log('Verified context.');
+        return this;
     }
 
     async initManagers() {
@@ -244,7 +275,7 @@ module.exports = class TobyBot {
                 if (results.length == 0){
                     this.SQLPool.query(`INSERT INTO \`tobybot\` (numId, configuration, permissions) VALUES (?,?,?)`, [1, JSON.stringify(require('../../configurations/defaults/GlobalConfiguration.json')), JSON.stringify(require('../../configurations/defaults/GlobalPermissions.json'))], async (error, results) => {
                         if (error)throw error;
-                        if (results.affectedRows != 1) throw new Error('Could not create tobybot.')
+                        if (results.affectedRows != 1) throw new ErrorBuilder('Could not insert TobyBot in the databse.').logError();
                         res(true);
                     });
                 }else {

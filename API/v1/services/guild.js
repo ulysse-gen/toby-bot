@@ -64,7 +64,7 @@ exports.getGuildConfigurationKey = async (req, res, next) => {
         if (!Guild)return res.status(404).json(req.__('error.guild_not_found'));
 
         let ConfigurationManager = Guild.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + 'configurations/documentations/GuildConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('../../../configurations/functions/GuildConfiguration.js');
         await ConfigurationDocumentation.initialize();
 
@@ -100,7 +100,7 @@ exports.patchGuildConfigurationKey = async (req, res, next) => {
         if (!Guild)return res.status(404).json(req.__('error.guild_not_found'));
 
         let ConfigurationManager = Guild.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager('documentations/GuildConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + 'configurations/documentations/GuildConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('../../../configurations/functions/GuildConfiguration.js');
         await ConfigurationDocumentation.initialize();
 

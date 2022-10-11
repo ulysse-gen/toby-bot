@@ -15,6 +15,7 @@ const ModerationManager = require('./ModerationManager');
 const MessageManager = require('./MessageManager');
 const ChannelLogger = require('./ChannelLogger');
 const FileLogger = require('./FileLogger');
+const { ErrorBuilder } = require('./Errors');
 
 const MainLog = new FileLogger();
 
@@ -43,6 +44,18 @@ module.exports = class Guild {
             users: {},
             channels: {},
             any: undefined
+        }
+
+        this.waitingForInteractionData = {
+            users: {},
+            channels: {},
+            any: undefined
+        }
+
+        this.data = {
+            russianroulette: {
+                channels: {}
+            }
         }
 
         this.loggers = {};
@@ -108,8 +121,8 @@ module.exports = class Guild {
                 if (error)throw error;
                 if (results.length == 0){
                     this.SQLPool.query(`INSERT INTO \`guilds\` (id, name, locale, configuration, permissions) VALUES (?,?,?,?,?)`, [this.guild.id, this.guild.name, this.guild.preferredLocale, JSON.stringify(require('../../configurations/defaults/GuildConfiguration.json')), JSON.stringify(require('../../configurations/defaults/GuildPermissions.json'))], async (error, results) => {
-                        if (error)throw error;
-                        if (results.affectedRows != 1) throw new Error('Could not create the guild.')
+                        if (error)throw new ErrorBuilder(`Could not insert the guild in the database.`, {cause: error}).setType('SQL_ERROR').logError();
+                        if (results.affectedRows != 1) throw new ErrorBuilder(`Could not insert the guild in the database.`).setType('SQL_ERROR').logError();
                         res(true);
                     });
                 }else {

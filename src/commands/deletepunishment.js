@@ -7,6 +7,7 @@ module.exports = {
     permission: "command.deletepunishment",
     category: "moderation",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         if (typeof CommandExecution.options.caseid == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noCaseIdSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noCaseIdSpecified.description`, {}));
         if (typeof CommandExecution.options.reason == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noReasonSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noReasonSpecified.description`, {}));

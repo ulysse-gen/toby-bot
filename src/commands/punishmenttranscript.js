@@ -8,6 +8,7 @@ module.exports = {
     permission: "command.punishmenttranscript",
     category: "moderation",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         if (typeof CommandExecution.options.caseid == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noCaseIdSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noCaseIdSpecified.description`, {}));
     
@@ -76,7 +77,7 @@ module.exports = {
         var options = {};
         if (CommandExecution.CommandOptions.length == 0)return options;
         options.caseid = CommandExecution.CommandOptions.shift();
-        if (CommandExecution.CommandOptions.length == 0)options.page = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.page = CommandExecution.CommandOptions.shift();
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {

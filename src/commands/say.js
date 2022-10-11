@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
+const { ErrorBuilder } = require('../classes/Errors');
 
 module.exports = {
     name: "say",
@@ -7,6 +8,7 @@ module.exports = {
     permission: "command.say",
     category: "fun",
     enabled: true,
+    hasSlashCommand: true,
     async execute(CommandExecution) {
         if (typeof CommandExecution.options.toggle == "boolean"){
             if (typeof CommandExecution.Guild.waitingForMessageData.say.channels[CommandExecution.Channel.id] == "undefined")CommandExecution.Guild.waitingForMessageData.say.channels[CommandExecution.Channel.id] = {};
@@ -25,7 +27,7 @@ module.exports = {
             }
         }
 
-        if (typeof CommandExecution.options.text != "string" || CommandExecution.options.text.replaceAll(' ', '') == "")throw new Error(CommandExecution.i18n.__('command.say.error.textMustExistNotEmpty'));
+        if (typeof CommandExecution.options.text != "string" || CommandExecution.options.text.replaceAll(' ', '') == "")throw new ErrorBuilder(CommandExecution.i18n.__('command.say.error.textMustExistNotEmpty')).setType('COMMAND_EXECUTION_ERROR').logError();
 
         let channelToSendTo = (typeof CommandExecution.options.channel == "undefined") ? CommandExecution.Channel : await CommandExecution.Trigger.TobyBot.guild.getChannelById(CommandExecution.options.channel);
 
@@ -63,7 +65,7 @@ module.exports = {
             CommandExecution.CommandOptions = CommandExecution.CommandOptions.filter(function(e) { return e !== CommandExecution.CommandOptions[0]; });
         }
 
-        if (CommandExecution.CommandOptions.length == 0)options.text = CommandExecution.CommandOptions.join(' ');
+        if (CommandExecution.CommandOptions.length != 0)options.text = CommandExecution.CommandOptions.join(' ');
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {

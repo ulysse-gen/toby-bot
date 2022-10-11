@@ -6,10 +6,12 @@
 const moment = require('moment');
 const mysql = require(`mysql`);
 const _ = require(`lodash`);
+const crypto = require(`crypto`);
 
 //Importing classes
 const FileLogger = require('./FileLogger');
 const ConfigurationManager = require('./ConfigurationManager');
+const { ErrorBuilder } = require('./Errors');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -40,13 +42,13 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
 
-        if (typeof this.SQLConnectionInfos != "object") throw new Error('Wrong type given for SQLConnectionInfos.');
-        if (typeof this.SQLConnectionInfos.host != "string") throw new Error('Wrong type given for SQLConnectionInfos.host.');
-        if (typeof this.SQLConnectionInfos.user != "string") throw new Error('Wrong type given for SQLConnectionInfos.user.');
-        if (typeof this.SQLConnectionInfos.password != "string") throw new Error('Wrong type given for SQLConnectionInfos.password.');
-        if (typeof this.SQLConnectionInfos.database != "string") throw new Error('Wrong type given for SQLConnectionInfos.database.');
-        if (typeof this.SQLConnectionInfos.charset != "string") throw new Error('Wrong type given for SQLConnectionInfos.charset.');
-        if (typeof this.SQLConnectionInfos.connectionLimit != "number") throw new Error('Wrong type given for SQLConnectionInfos.connectionLimit.');
+        if (typeof this.SQLConnectionInfos != "object") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.').logError();
+        if (typeof this.SQLConnectionInfos.host != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.host.').logError();
+        if (typeof this.SQLConnectionInfos.user != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.user.').logError();
+        if (typeof this.SQLConnectionInfos.password != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.password.').logError();
+        if (typeof this.SQLConnectionInfos.database != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.database.').logError();
+        if (typeof this.SQLConnectionInfos.charset != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.charset.').logError();
+        if (typeof this.SQLConnectionInfos.connectionLimit != "number") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.connectionLimit.').logError();
 
         if (typeof guildDependent != "undefined"){
             this.Dependency = guildDependent;
@@ -74,7 +76,7 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
             if (typeof this.Dependency != "undefined"){
                 await this.Dependency.createInSQL().then(async () => {
                     await this.load(true).then(loaded => {
-                        if (!loaded) throw new Error('Could not load configuration');
+                        if (!loaded) throw new ErrorBuilder('Could not load configuration').logError();
                     });
                 });
             }
@@ -92,6 +94,7 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
     }
 
     async set(path, value) {
+        this.configurationHistory = this.configuration;
         _.set(this.configuration, path, value);
         return this.save();
     }
@@ -99,6 +102,30 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
     async delete(path) {
         _.unset(this.configuration, path);
         return this.save();
+    }
+
+    async saveBackup(backupName) {
+        let entryBackup = await new Promise((res, rej) => {
+            this.SQLPool.query(`SELECT backups FROM ${this.SQLTable} WHERE ${this.SQLWhere}`, (error, results) => {
+                if (error) throw error;
+                if (results.length == 0)return res([]);
+                res(JSON.parse(results[0].backups));
+            });
+        });
+        entryBackup[this.SQLcolumn][backupName] = {
+            timestamp: moment(),
+            name: backupName,
+            id: crypto.randomBytes(8).toString("hex"),
+            content: this.configuration
+        }
+        return new Promise((res, _rej) => {
+            if (this.verbose) MainLog.log(`Saving backup. [${this.SQLTable} => ${this.SQLWhere}][${moment().diff(startTimer)}ms]`);
+            this.SQLPool.query(`UPDATE \`${this.SQLTable}\` SET \`backups\`=? WHERE ${this.SQLWhere}`, [entryBackup], async function (error, results, _fields) {
+                if (error) throw error;
+                if (_this.verbose) MainLog.log(`Saved backup. [${_this.SQLTable} => ${_this.SQLWhere}][${moment().diff(startTimer)}ms]`);
+                res(true);
+            });
+        });
     }
 
     async save(bypass = true) {
