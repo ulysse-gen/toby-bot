@@ -10,13 +10,23 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: production
+    depends_on:
+      tobybot-database:
+        condition: service_started
+    env_file:
+        - .env
     volumes:
       - data:/data
+  tobybot-database:
+    restart: unless-stopped
+    image: mariadb:latest
+    container_name: MariaDB-TobyBot
+    command: mariadbd --log-bin
+    env_file:
+        - .env
 volumes:
   data:
 networks:
-  default:
-    external: 
-      name: tobybot
+  tobybot:
+    driver: bridge
+    internal: true

@@ -4,7 +4,7 @@
 //     and UlysseGenie#9555
 //Developped by UlysseGenie#9555
 //   Thanks to Tobias Dray's
-//Discord Server for the tests
+//Discord Server for the playground
 /////////////////////////////////
 
 //Importing NodeJS modules
@@ -12,12 +12,10 @@ const { I18n } = require('i18n');
 
 //Importing classes
 const FileLogger = require('./src/classes/FileLogger');
-const FileConfigurationManager = require('./src/classes/FileConfigurationManager');
 const TobyBot = require('./src/classes/TobyBot');
 const {ErrorBuilder} = require('./src/classes/Errors');
 
 //Creating main objects
-const TopConfigurationManager = new FileConfigurationManager('configuration.json', require('./configurations/defaults/TopConfiguration.json')); //This is the main -- top level -- config. Containing the MySQL details
 const i18n = new I18n({
     locales: ['en-US','fr-FR'],
     directory: 'locales/backend',
@@ -31,7 +29,7 @@ const PackageInformations = require(`./package.json`);
 const MainLog = new FileLogger();
 const ErrorLog = new FileLogger(`error.log`);
 
-const GlobalBot = new TobyBot(i18n, PackageInformations, TopConfigurationManager); //This is the bot
+const GlobalBot = new TobyBot(i18n, PackageInformations); //This is the bot
 
 GlobalBot.start().catch(e => {
     throw new ErrorBuilder(`Failed to start TobyBot`, {cause: e}).setType("FATAL_ERROR").logError();

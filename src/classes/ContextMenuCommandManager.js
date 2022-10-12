@@ -46,9 +46,9 @@ module.exports = class ContextMenuCommandManager {
     async initialize() {
         let _this = this;
         if (this.verbose) MainLog.log(`Initializing ContextMenuCommandManager [${this.commandsFolder}]`);
-        if (this.TobyBot.TopConfigurationManager.get('API.only')) MainLog.warning(this.TobyBot.i18n.__('bot.APIOnly.context'));
+        if (process.env.TOBYBOT_API_ONLY === "true") MainLog.warning(this.TobyBot.i18n.__('bot.APIOnly.context'));
 
-        if (!this.TobyBot.TopConfigurationManager.get('API.only'))await new Promise((res, _rej) => {
+        if (process.env.TOBYBOT_API_ONLY === "false")await new Promise((res, _rej) => {
             fs.readdir(`./src/contextMenuCommands${_this.commandsFolder}`, function (err, files) { //Read events folder
                 if (err) throw err;
                 files.forEach((file, index, array) => { //For each files in the folder

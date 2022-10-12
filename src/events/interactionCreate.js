@@ -15,7 +15,7 @@ module.exports = {
     once: false,
     enabled: true,
     async exec(TobyBot, interaction) {
-        if (TobyBot.TopConfigurationManager.get('API.only'))return true;
+        if (process.env.TOBYBOT_API_ONLY === "true")return true;
         if (!TobyBot.ready)return false;
         interaction.TobyBot = {TobyBot: TobyBot};
 

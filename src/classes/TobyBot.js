@@ -38,12 +38,11 @@ intents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUI
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGE_TYPING, Intents.FLAGS.GUILD_VOICE_STATES);
 
 module.exports = class TobyBot {
-    constructor(i18n, PackageInformations, TopConfigurationManager) {
+    constructor(i18n, PackageInformations) {
         this.client = new Client({ partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION", "GUILD_SCHEDULED_EVENT"], intents: intents });
 
         this.i18n = i18n;
         this.PackageInformations = PackageInformations;
-        this.TopConfigurationManager = TopConfigurationManager;
         this.ConfigurationManager = undefined;
         this.PermissionManager = undefined;
         this.MetricManager = new MetricManager();
@@ -63,9 +62,6 @@ module.exports = class TobyBot {
     async start() {
         await this.VerifyContext();
 
-        this.LifeMetric.addEntry("TopConfigurationManagerInit");
-        await this.TopConfigurationManager.initialize(true).catch(e => { throw e} );  //Init Top ConfigurationManager
-
         this.LifeMetric.addEntry("SQLInit");
         await this.SQLInit();
 
@@ -76,11 +72,10 @@ module.exports = class TobyBot {
         await this.attachEvents().catch(e => { throw e }); //Attach events
         this.LifeMetric.addEntry("BotLogin");
         await this.attemptLogin();
-        //setInterval(this.reportMemoryUsage, 500); // <-- Enable this to report RAM Usage in console. This is a debug and developpement feature only
     }
 
     async continueStart() {
-        if (!this.TopConfigurationManager.get('API.only') && this.registerCommands){
+        if (!process.env.TOBYBOT_API_ONLY && this.registerCommands){
             await this.CommandManager.pushSlashCommands();
             await this.ContextMenuCommandManager.pushContextCommands();
             await this.CommandManager.pushAllCommands();
@@ -115,17 +110,17 @@ module.exports = class TobyBot {
 
     async initManagers() {
         this.LifeMetric.addEntry("CreateSQLPool");
-        this.SQLPool = mysql.createPool(this.TopConfigurationManager.get('MySQL'));
+        this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE,"charset":process.env.MARIADB_CHARSET,"connectionLimit":process.env.MARIADB_CONNECTION_LIMIT});
 
 
         this.LifeMetric.addEntry("ConfigurationManagerCreate");
-        this.ConfigurationManager = new SQLConfigurationManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../../configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
+        this.ConfigurationManager = new SQLConfigurationManager('tobybot', undefined, undefined, require('../../configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
         this.LifeMetric.addEntry("ConfigurationManagerInit");
         await this.ConfigurationManager.initialize(true, undefined, undefined, this); //Init the Global ConfigurationManager
 
         
         this.LifeMetric.addEntry("PermissionManagerCreate");
-        this.PermissionManager = new SQLPermissionManager(this.TopConfigurationManager.get('MySQL'), 'tobybot', undefined, undefined, require('../../configurations/defaults/GlobalPermissions.json'), true); //Create the Global PermissionManager
+        this.PermissionManager = new SQLPermissionManager('tobybot', undefined, undefined, require('../../configurations/defaults/GlobalPermissions.json'), true); //Create the Global PermissionManager
         this.LifeMetric.addEntry("PermissionManagerInit");
         await this.PermissionManager.initialize(true, undefined, undefined, this); //Init the Global PermissionManager
 
@@ -146,12 +141,11 @@ module.exports = class TobyBot {
         await this.attachManagers();  //Attach the managers
 
         
-        this.SQLLogger = new SQLLogger(this.TopConfigurationManager.get('MySQL'), 'logs'); //Cheat cuz i need this here
+        this.SQLLogger = new SQLLogger('logs'); //Cheat cuz i need this here
         return true;
     }
 
     async attachManagers() {
-        this.client.TopConfigurationManager = this.TopConfigurationManager; //Attach Top ConfigurationManager to the client objects
         this.client.ConfigurationManager = this.ConfigurationManager; //Attach Global PermissionManager to the client objects
         this.client.PermissionManager = this.PermissionManager; //Attach Global PermissionManager to the client objects
         this.client.CommandManager = this.CommandManager; //Attach Global PermissionManager to the client objects
@@ -212,60 +206,49 @@ module.exports = class TobyBot {
         return true;
     }
 
-    async reportMemoryUsage() {
-        const used = process.memoryUsage().heapUsed / 1024 / 1024;
-        MainLog.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
-    }
-
     async SQLInit() {
-        let _this = this;
-        let con = mysql.createConnection(Object.assign({multipleStatements: true}, _.omit(_.cloneDeep(this.TopConfigurationManager.get('MySQL')), ['database'])));
-        return new Promise((res, rej) => {
-            con.connect(async (err) => {
-                if (err){
+        let SQLConnection = mysql.createConnection({multipleStatements: true, "host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"charset":process.env.MARIADB_CHARSET,"connectionLimit":process.env.MARIADB_CONNECTION_LIMIT});
+        await new Promise((res, _rej) => {
+            SQLConnection.connect((err) => {
+                if (err) {
                     console.log(err);
                     switch (err.code) {
                         case "ECONNREFUSED":
                             ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here:`);
                             ErrorLog.error(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/documentation/help/MySQL_not_connecting_1`);
                             break;
-
+    
                         case "ETIMEDOUT":
                             ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here:`);
                             ErrorLog.error(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/documentation/help/MySQL_not_connecting_2`);
                             break;
     
-                        case "ER_ACCESS_DENIED_ERROR":
-                            ErrorLog.error(`Could not login to the database. Check your configuration.`);
-                            break;
-                    
                         default:
                             break;
                     }
                     con.end();
                     process.exit();
                 }
+                res(true);
+            })
+        });
+        let SchemaExists = await new Promise((res, rej) => {
+            SQLConnection.query(`SELECT schema_name FROM information_schema.schemata WHERE schema_name = '${process.env.MARIADB_DATABASE}';`, (err, result) => {
+                if (err) throw err;
+                res(result.length != 0);
+            })
+        });
+        if (!SchemaExists) await new Promise((res, rej) => {
+            SQLConnection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.MARIADB_DATABASE}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; USE \`${process.env.MARIADB_DATABASE}\`; ` + fs.readFileSync(`${process.cwd()}/SQL_Structure/tobybot-structure.sql`).toString(), async (err, result) => {
+                if (err) throw err;
+                MainLog.log(`Created database and imported structure.`);
+                res(true);
+            })
+        });
 
-                con.query(`GRANT REPLICATION SLAVE, REPLICATION CLIENT, SELECT ON *.* TO '${_this.TopConfigurationManager.get('MySQL.user')}'@'%'`);
-    
-                return con.query(`SELECT schema_name FROM information_schema.schemata WHERE schema_name = '${_this.TopConfigurationManager.get('MySQL.database')}';`, async (err, result, fields) => {
-                    if (result.length == 0){
-                        return con.query(`CREATE DATABASE \`${_this.TopConfigurationManager.get('MySQL.database')}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`, async (err, result) => {
-                            if (err) throw err;
-                            return con.query(`USE \`${_this.TopConfigurationManager.get('MySQL.database')}\`; ` + fs.readFileSync(`${process.cwd()}/tobybot-structure.sql`).toString(), async (err, result) => {
-                                if (err) throw err;
-                                MainLog.log(`Created database and imported structure.`);
-                                con.end();
-                                res(true);
-                            });
-                        });
-                    }else {
-                        con.end();
-                        res(true);
-                    }
-                });
-            });
-        })
+        await new Promise((res) => res(SQLConnection.query(`GRANT REPLICATION SLAVE, REPLICATION CLIENT, SELECT ON *.* TO 'root'@'%'`)));
+        SQLConnection.end();
+        return true;
     }
 
     async createInSQL() {
@@ -306,7 +289,6 @@ module.exports = class TobyBot {
             this.CommunityGuild = await this.GuildManager.getGuildById(this.ConfigurationManager.get('communityGuild'));
             if (typeof this.CommunityGuild == "undefined")return false;
             if (this.CommunityGuild.guild.available == false)return false;
-            this.TopConfigurationManager.i18n = this.CommunityGuild.i18n; //Attach Top ConfigurationManager to the client objects
             this.ConfigurationManager.i18n = this.CommunityGuild.i18n; //Attach Global PermissionManager to the client objects
             this.PermissionManager.i18n = this.CommunityGuild.i18n; //Attach Global PermissionManager to the client objects
             return (typeof this.CommunityGuild == "undefined") ? false : true;

@@ -15,11 +15,10 @@ const SQLConfigurationManager = require('./SQLConfigurationManager');
 const MainLog = new FileLogger();
 
 module.exports = class SQLPermissionManager extends SQLConfigurationManager {
-    constructor(SQLConnectionInfos, SQLTable, SQLWhere = `\`numId\` = 1`, SQLColumn = 'permissions', defaultConfig = {}, neverAutoChange = false) {
+    constructor(SQLTable, SQLWhere = `\`numId\` = 1`, SQLColumn = 'permissions', defaultConfig = {}, neverAutoChange = false) {
         super();
 
         this.SQLPool = undefined;
-        this.SQLConnectionInfos = SQLConnectionInfos;
         this.SQLTable = SQLTable;
         this.SQLWhere = SQLWhere;
         this.SQLcolumn = SQLColumn;

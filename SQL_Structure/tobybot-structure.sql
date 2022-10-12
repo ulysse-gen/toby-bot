@@ -8,7 +8,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 
-CREATE TABLE `guilds` (
+CREATE TABLE IF NOT EXISTS`guilds` (
   `numId` int(11) NOT NULL,
   `id` varchar(18) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE `guilds` (
   `lastUpdated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `logs` (
+CREATE TABLE IF NOT EXISTS`logs` (
   `numId` int(11) NOT NULL,
   `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'undefined',
   `context` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}',
@@ -26,7 +26,7 @@ CREATE TABLE `logs` (
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `moderation` (
+CREATE TABLE IF NOT EXISTS`moderation` (
   `numId` int(11) NOT NULL,
   `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
@@ -42,14 +42,14 @@ CREATE TABLE `moderation` (
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `tobybot` (
+CREATE TABLE IF NOT EXISTS`tobybot` (
   `numId` int(11) NOT NULL,
-  `locale` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `locale` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'en-US',
   `configuration` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`configuration`)),
   `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`permissions`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS`users` (
   `numId` int(11) NOT NULL,
   `id` varchar(18) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,

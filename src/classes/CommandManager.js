@@ -47,9 +47,9 @@ module.exports = class CommandManager {
     async initialize() {
         let _this = this;
         if (this.verbose) MainLog.log(`Initializing CommandManager [${this.commandsFolder}]`);
-        if (this.TobyBot.TopConfigurationManager.get('API.only')) MainLog.warning(this.TobyBot.i18n.__('bot.APIOnly.normal'));
+        if (process.env.TOBYBOT_API_ONLY === "true") MainLog.warning(this.TobyBot.i18n.__('bot.APIOnly.normal'));
 
-        if (!this.TobyBot.TopConfigurationManager.get('API.only'))await new Promise((res, _rej) => {
+        if (process.env.TOBYBOT_API_ONLY === "false")await new Promise((res, _rej) => {
             fs.readdir(`./src/commands${_this.commandsFolder}`, function (err, files) { //Read events folder
                 if (err) throw new ErrorBuilder(`Could not load commands.`, {cause: err}).setType("FATAL_ERROR").logError();
                 files.forEach((file, index, array) => { //For each files in the folder
@@ -104,7 +104,7 @@ module.exports = class CommandManager {
     }
 
     async handle(message) {
-        if (this.TobyBot.TopConfigurationManager.get('API.only'))return true;
+        if (process.env.TOBYBOT_API_ONLY === "true")return true;
         let prefixUsed = [this.TobyBot.ConfigurationManager.get('prefixes'), message.TobyBot.guild.ConfigurationManager.get('prefixes'), message.TobyBot.guild.ConfigurationManager.get('prefix')].flat().filter((item, pos, self) => self.indexOf(item) == pos).find(e => message.content.startsWith(e));
         if (!prefixUsed)return undefined;
         let commandOptions=message.content.replace(/\s+/g, ' ').trim().split(' ');

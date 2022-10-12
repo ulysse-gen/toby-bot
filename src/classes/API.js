@@ -35,7 +35,7 @@ module.exports = class API {
         this.UserManager = TobyBot.UserManager;
         this.GuildManager = TobyBot.GuildManager;
 
-        this.secret = this.TobyBot.TopConfigurationManager.get('API.secret');
+        this.secret = process.env.TOBYBOT_API_SECRET;
     }
 
     async initialize(){
@@ -72,8 +72,8 @@ module.exports = class API {
     }
 
     async start() {
-        return this.app.listen(this.TobyBot.TopConfigurationManager.get('API.port'), () => {
-            MainLog.log(this.TobyBot.i18n.__('bot.api.started', {port: this.TobyBot.TopConfigurationManager.get('API.port').toString().green}));
+        return this.app.listen(process.env.TOBYBOT_API_PORT, () => {
+            MainLog.log(this.TobyBot.i18n.__('bot.api.started', {port: process.env.TOBYBOT_API_PORT.toString().green}));
         });
     }
 

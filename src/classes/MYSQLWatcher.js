@@ -13,7 +13,7 @@ module.exports = class API {
     constructor(TobyBot) {
         this.TobyBot = TobyBot;
 
-        this.configuration = _.omit(TobyBot.TopConfigurationManager.get('MySQL'), ['database', 'charset', 'connectionLimit']);
+        this.configuration = {"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD}
 
         this.EventWatcher = new MySQLEvents(this.configuration, {
             startAtEnd: true,
@@ -26,7 +26,7 @@ module.exports = class API {
     async initialize(){
         this.EventWatcher.addTrigger({
             name: 'guild_update',
-            expression: `${this.TobyBot.TopConfigurationManager.get('MySQL.database')}.guilds`,
+            expression: `${process.env.MARIADB_DATABASE}.guilds`,
             statement: MySQLEvents.STATEMENTS.UPDATE,
             onEvent: async (event) => {
                 event.affectedRows.forEach(async affectedRow => {
@@ -39,7 +39,7 @@ module.exports = class API {
 
         this.EventWatcher.addTrigger({
             name: 'user_update',
-            expression: `${this.TobyBot.TopConfigurationManager.get('MySQL.database')}.users`,
+            expression: `${process.env.MARIADB_DATABASE}.users`,
             statement: MySQLEvents.STATEMENTS.UPDATE,
             onEvent: async (event) => {
                 event.affectedRows.forEach(async affectedRow => {
@@ -52,7 +52,7 @@ module.exports = class API {
 
         this.EventWatcher.addTrigger({
             name: 'tobybot_update',
-            expression: `${this.TobyBot.TopConfigurationManager.get('MySQL.database')}.tobybot`,
+            expression: `${process.env.MARIADB_DATABASE}.tobybot`,
             statement: MySQLEvents.STATEMENTS.UPDATE,
             onEvent: async (event) => {
                 event.affectedRows.forEach(async affectedRow => {

@@ -38,7 +38,7 @@ module.exports = class User {
     }
 
     async initialize(createIfNonExistant = false) {
-        this.ConfigurationManager = new SQLConfigurationManager(this.UserManager.TobyBot.TopConfigurationManager.get('MySQL'), 'users', `\`id\` = '${this.user.id}'`, undefined, require('../../configurations/defaults/UserConfiguration.json'));
+        this.ConfigurationManager = new SQLConfigurationManager('users', `\`id\` = '${this.user.id}'`, undefined, require('../../configurations/defaults/UserConfiguration.json'));
         await this.ConfigurationManager.initialize(createIfNonExistant, undefined, this);
         await this.loadSQLContent();
         this.initialized = true;

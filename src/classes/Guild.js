@@ -85,8 +85,8 @@ module.exports = class Guild {
     }
 
     async initialize() {
-        this.ConfigurationManager = new SQLConfigurationManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, JSON.stringify(require('../../configurations/defaults/GuildConfiguration.json')));
-        this.PermissionManager = new SQLPermissionManager(this.GuildManager.TobyBot.TopConfigurationManager.get('MySQL'), 'guilds', `\`id\` = '${this.guild.id}'`, undefined, require('../../configurations/defaults/GuildPermissions.json'));
+        this.ConfigurationManager = new SQLConfigurationManager('guilds', `\`id\` = '${this.guild.id}'`, undefined, JSON.stringify(require('../../configurations/defaults/GuildConfiguration.json')));
+        this.PermissionManager = new SQLPermissionManager('guilds', `\`id\` = '${this.guild.id}'`, undefined, require('../../configurations/defaults/GuildPermissions.json'));
         this.ModerationManager = new ModerationManager(this);
         await this.ConfigurationManager.initialize(true, this);
         this.isSetup = this.ConfigurationManager.get('system.setup-done');

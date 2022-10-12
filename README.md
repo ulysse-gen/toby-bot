@@ -41,25 +41,19 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ### Fixes:
 
-- None
+- Rebuilt a good part
 
 ### Deployment
-
-Build Image
-```bash
-  git clone https://github.com/ulysse-gen/toby-bot
-  cd toby-bot
-  docker build -t tobybot:4.0.0 .
-```
 
 Normal Deployment:
 ```bash
   git clone https://github.com/ulysse-gen/toby-bot
   cd toby-bot
+  docker build -t tobybot:4.0.0 .
   docker-compose up -d
 ```
 
 Fast Deployment:
 ```bash
-  git clone https://github.com/ulysse-gen/toby-bot && cd toby-bot && docker-compose up -d
+  git clone https://github.com/ulysse-gen/toby-bot && cd toby-bot && docker build -t tobybot:4.0.0 . && docker-compose up -d
 ```

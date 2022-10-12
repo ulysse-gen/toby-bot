@@ -1,8 +1,6 @@
 .cache
 .cache/
 .dynamodb/
-.env
-.env.test
 .eslintcache
 .fusebox/
 .grunt

@@ -12,7 +12,7 @@ module.exports = class GuildManager {
     constructor(TobyBot) {
         this.TobyBot = TobyBot;
 
-        this.SQLPool = mysql.createPool(this.TobyBot.TopConfigurationManager.get('MySQL'));
+        this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE,"charset":process.env.MARIADB_CHARSET,"connectionLimit":process.env.MARIADB_CONNECTION_LIMIT});
 
         this.guilds = {};
     }

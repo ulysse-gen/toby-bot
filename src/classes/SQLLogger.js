@@ -14,11 +14,10 @@ const FileLogger = require('./FileLogger');
 const MainLog = new FileLogger();
 
 module.exports = class SQLLogger extends Logger {
-    constructor(SQLConnectionInfos, SQLTable) {
+    constructor(SQLTable) {
         super();
         
         this.SQLPool = undefined;
-        this.SQLConnectionInfos = SQLConnectionInfos;
         this.SQLTable = SQLTable;
 
         this.verbose = false;
@@ -30,15 +29,7 @@ module.exports = class SQLLogger extends Logger {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
 
-        if (typeof this.SQLConnectionInfos != "object") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.').logError();
-        if (typeof this.SQLConnectionInfos.host != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.host.').logError();
-        if (typeof this.SQLConnectionInfos.user != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.user.').logError();
-        if (typeof this.SQLConnectionInfos.password != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.password.').logError();
-        if (typeof this.SQLConnectionInfos.database != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.database.').logError();
-        if (typeof this.SQLConnectionInfos.charset != "string") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.charset.').logError();
-        if (typeof this.SQLConnectionInfos.connectionLimit != "number") throw new ErrorBuilder('Wrong type given for SQLConnectionInfos.connectionLimit.').logError();
-
-        this.SQLPool = mysql.createPool(this.SQLConnectionInfos)
+        this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE,"charset":process.env.MARIADB_CHARSET,"connectionLimit":process.env.MARIADB_CONNECTION_LIMIT})
 
         if (this.verbose)MainLog.log(`Initialized ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
         this.initialized = true;
