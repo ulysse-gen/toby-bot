@@ -48,8 +48,11 @@ module.exports = {
         if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
         if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
 
+
+        /** Disabling AutoModeration cuz not any close to be done, and other things are prioritized over this.
         let autoMod = await TobyBot.AutoModeration.examine(message);
         console.log(autoMod);
+        **/
 
         let commandExecution = await TobyBot.CommandManager.handle(message).catch(e => {
             ErrorLog.error(`An error occured during the handling of the CommandManager handle:`);
