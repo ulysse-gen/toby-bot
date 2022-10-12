@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 
-const FileLogger = require('../classes/FileLogger');
+const FileLogger = require('/app/src/classes/FileLogger');
 
 const MainLog = new FileLogger();
 

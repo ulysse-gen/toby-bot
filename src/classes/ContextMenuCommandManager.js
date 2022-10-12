@@ -53,7 +53,7 @@ module.exports = class ContextMenuCommandManager {
                 if (err) throw err;
                 files.forEach((file, index, array) => { //For each files in the folder
                     if (file.endsWith('.js')) { //Only proceed if extension is .js
-                        let cmd = new ContextMenuCommand(_this, require(`../contextMenuCommands${_this.commandsFolder}${file}`));
+                        let cmd = new ContextMenuCommand(_this, require(`/app/src/contextMenuCommands${_this.commandsFolder}${file}`));
                         if (!_this.checkForExistence(cmd)) {
                             _this.commands.push(cmd);
                             _this.contextMenuCommand.push(cmd.contextMenuCommand.toJSON());

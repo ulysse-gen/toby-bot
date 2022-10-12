@@ -54,7 +54,7 @@ module.exports = class CommandManager {
                 if (err) throw new ErrorBuilder(`Could not load commands.`, {cause: err}).setType("FATAL_ERROR").logError();
                 files.forEach((file, index, array) => { //For each files in the folder
                     if (file.endsWith('.js')) { //Only proceed if extension is .js
-                        let cmd = new Command(_this, require(`../commands${_this.commandsFolder}${file}`));
+                        let cmd = new Command(_this, require(`/app/src/commands${_this.commandsFolder}${file}`));
                         if (!_this.checkForExistence(cmd)) {
                             _this.commands.push(cmd);
                             if (typeof cmd.hasSlashCommand == "boolean" && cmd.hasSlashCommand)_this.slashCommands.push(cmd.slashCommand.toJSON());

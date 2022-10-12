@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const { ErrorBuilder } = require('../classes/Errors');
+const { ErrorBuilder } = require('/app/src/classes/Errors');
 
 module.exports = {
     name: "say",

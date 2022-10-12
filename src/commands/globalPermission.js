@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed, Permissions } = require('discord.js');
 const _ = require('lodash');
-const FileConfigurationManager = require('../classes/FileConfigurationManager');
+const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager');
 
 module.exports = {
     name: "globalpermission",

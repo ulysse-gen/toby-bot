@@ -3,7 +3,7 @@
 /////////////////////////////////
 
 //Importing classes
-const FileLogger = require('../classes/FileLogger');
+const FileLogger = require('/app/src/classes/FileLogger');
 
 //Creating objects
 const MainLog = new FileLogger();

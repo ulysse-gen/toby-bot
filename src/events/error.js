@@ -3,8 +3,8 @@
 /////////////////////////////////
 
 //Importing classes
-const { ErrorBuilder } = require('../classes/Errors');
-const FileLogger = require('../classes/FileLogger');
+const { ErrorBuilder } = require('/app/src/classes/Errors');
+const FileLogger = require('/app/src/classes/FileLogger');
 
 //Creating objects
 const MainLog = new FileLogger();

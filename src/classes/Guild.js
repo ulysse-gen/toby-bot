@@ -84,8 +84,8 @@ module.exports = class Guild {
     }
 
     async initialize() {
-        this.ConfigurationManager = new SQLConfigurationManager('guilds', `\`id\` = '${this.guild.id}'`, undefined, JSON.stringify(require('../../configurations/defaults/GuildConfiguration.json')));
-        this.PermissionManager = new SQLPermissionManager('guilds', `\`id\` = '${this.guild.id}'`, undefined, require('../../configurations/defaults/GuildPermissions.json'));
+        this.ConfigurationManager = new SQLConfigurationManager('guilds', `\`id\` = '${this.guild.id}'`, undefined, JSON.stringify(require('/app/configurations/defaults/GuildConfiguration.json')));
+        this.PermissionManager = new SQLPermissionManager('guilds', `\`id\` = '${this.guild.id}'`, undefined, require('/app/configurations/defaults/GuildPermissions.json'));
         this.ModerationManager = new ModerationManager(this);
         await this.ConfigurationManager.initialize(true, this);
         this.isSetup = this.ConfigurationManager.get('system.setup-done');
@@ -119,7 +119,7 @@ module.exports = class Guild {
             this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.guild.id}'`, (error, results) => {
                 if (error)throw error;
                 if (results.length == 0){
-                    this.SQLPool.query(`INSERT INTO \`guilds\` (id, name, locale, configuration, permissions) VALUES (?,?,?,?,?)`, [this.guild.id, this.guild.name, this.guild.preferredLocale, JSON.stringify(require('../../configurations/defaults/GuildConfiguration.json')), JSON.stringify(require('../../configurations/defaults/GuildPermissions.json'))], async (error, results) => {
+                    this.SQLPool.query(`INSERT INTO \`guilds\` (id, name, locale, configuration, permissions) VALUES (?,?,?,?,?)`, [this.guild.id, this.guild.name, this.guild.preferredLocale, JSON.stringify(require('/app/configurations/defaults/GuildConfiguration.json')), JSON.stringify(require('/app/configurations/defaults/GuildPermissions.json'))], async (error, results) => {
                         if (error)throw new ErrorBuilder(`Could not insert the guild in the database.`, {cause: error}).setType('SQL_ERROR').logError();
                         if (results.affectedRows != 1) throw new ErrorBuilder(`Could not insert the guild in the database.`).setType('SQL_ERROR').logError();
                         res(true);

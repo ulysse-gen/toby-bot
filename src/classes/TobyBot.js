@@ -114,13 +114,13 @@ module.exports = class TobyBot {
 
 
         this.LifeMetric.addEntry("ConfigurationManagerCreate");
-        this.ConfigurationManager = new SQLConfigurationManager('tobybot', undefined, undefined, require('../../configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
+        this.ConfigurationManager = new SQLConfigurationManager('tobybot', undefined, undefined, require('/app/configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
         this.LifeMetric.addEntry("ConfigurationManagerInit");
         await this.ConfigurationManager.initialize(true, undefined, undefined, this); //Init the Global ConfigurationManager
 
         
         this.LifeMetric.addEntry("PermissionManagerCreate");
-        this.PermissionManager = new SQLPermissionManager('tobybot', undefined, undefined, require('../../configurations/defaults/GlobalPermissions.json'), true); //Create the Global PermissionManager
+        this.PermissionManager = new SQLPermissionManager('tobybot', undefined, undefined, require('/app/configurations/defaults/GlobalPermissions.json'), true); //Create the Global PermissionManager
         this.LifeMetric.addEntry("PermissionManagerInit");
         await this.PermissionManager.initialize(true, undefined, undefined, this); //Init the Global PermissionManager
 
@@ -159,7 +159,7 @@ module.exports = class TobyBot {
             fs.readdir(`./src/events/`, function (err, files) { //Read events folder
                 if (err) throw err;
                 files.filter(file => file.endsWith('.js')).forEach((file, index, array) => { //For each files in the folder
-                    let event = require(`../events/${file}`);
+                    let event = require(`/app/src/events/${file}`);
 
                     if ((typeof event.enabled == "boolean") ? event.enabled : true)
                         if (event.once) {
@@ -256,7 +256,7 @@ module.exports = class TobyBot {
             this.SQLPool.query(`SELECT * FROM \`tobybot\` WHERE numId=1`, (error, results) => {
                 if (error)throw error;
                 if (results.length == 0){
-                    this.SQLPool.query(`INSERT INTO \`tobybot\` (numId, configuration, permissions) VALUES (?,?,?)`, [1, JSON.stringify(require('../../configurations/defaults/GlobalConfiguration.json')), JSON.stringify(require('../../configurations/defaults/GlobalPermissions.json'))], async (error, results) => {
+                    this.SQLPool.query(`INSERT INTO \`tobybot\` (numId, configuration, permissions) VALUES (?,?,?)`, [1, JSON.stringify(require('/app/configurations/defaults/GlobalConfiguration.json')), JSON.stringify(require('/app/configurations/defaults/GlobalPermissions.json'))], async (error, results) => {
                         if (error)throw error;
                         if (results.affectedRows != 1) throw new ErrorBuilder('Could not insert TobyBot in the databse.').logError();
                         res(true);

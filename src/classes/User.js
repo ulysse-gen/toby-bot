@@ -38,7 +38,7 @@ module.exports = class User {
     }
 
     async initialize(createIfNonExistant = false) {
-        this.ConfigurationManager = new SQLConfigurationManager('users', `\`id\` = '${this.user.id}'`, undefined, require('../../configurations/defaults/UserConfiguration.json'));
+        this.ConfigurationManager = new SQLConfigurationManager('users', `\`id\` = '${this.user.id}'`, undefined, require('/app/configurations/defaults/UserConfiguration.json'));
         await this.ConfigurationManager.initialize(createIfNonExistant, undefined, this);
         await this.loadSQLContent();
         this.initialized = true;
@@ -66,7 +66,7 @@ module.exports = class User {
             this.UserManager.SQLPool.query(`SELECT * FROM \`users\` WHERE id='${this.user.id}'`, (error, results) => {
                 if (error)throw error;
                 if (results.length == 0){
-                    this.UserManager.SQLPool.query(`INSERT INTO \`users\` (id, configuration) VALUES (?,?)`, [this.user.id, JSON.stringify(require('../../configurations/defaults/UserConfiguration.json'))], async (error, results) => {
+                    this.UserManager.SQLPool.query(`INSERT INTO \`users\` (id, configuration) VALUES (?,?)`, [this.user.id, JSON.stringify(require('/app/configurations/defaults/UserConfiguration.json'))], async (error, results) => {
                         if (error)throw error;
                         if (results.affectedRows != 1) throw new ErrorBuilder('Could not insert user in the database').logError();
                         res(true);

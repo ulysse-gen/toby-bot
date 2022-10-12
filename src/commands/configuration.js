@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const _ = require('lodash');
-const FileConfigurationManager = require('../classes/FileConfigurationManager');
+const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager');
 
 module.exports = {
     name: "configuration",
@@ -13,7 +13,7 @@ module.exports = {
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.Guild.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + '/configurations/documentations/GuildConfiguration.json');
-        let ConfigurationFunctions = require('../../configurations/functions/GuildConfiguration');
+        let ConfigurationFunctions = require('/app/configurations/functions/GuildConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)return CommandExecution.returnWarningEmbed({}, CommandExecution.i18n.__(`command.generic.configuration.first-init.title`), CommandExecution.i18n.__(`command.generic.configuration.first-init.description`, {}));

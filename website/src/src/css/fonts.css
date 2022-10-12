@@ -1,0 +1,31 @@
+@font-face {
+    font-family: "Whitney";
+    src: url('/src/fonts/Whitney/whitney-medium.otf');
+}
+@font-face {
+    font-family: "Whitney";
+    src: url('/src/fonts/Whitney/whitney-bold.otf');
+    font-weight: bold;
+}
+@font-face {
+    font-family: "Whitney";
+    src: url('/src/fonts/Whitney/whitney-bolditalicsc.otf');
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: "Whitney";
+    src: url('/src/fonts/Whitney/whitney-light.otf');
+    font-weight: light;
+}
+@font-face {
+    font-family: "Whitney";
+    src: url('/src/fonts/Whitney/whitney-lightitalic.otf');
+    font-weight: light;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Consolas";
+    src: url('/src/fonts/Consolas/CONSOLA.TTF');
+}

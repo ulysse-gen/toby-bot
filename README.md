@@ -11,6 +11,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 ### Todo:
 
 - Web GUI (gosh i suck at making GUIs i swear..) | On its way!
+    - Well in fact I have to rebuild a bit part of it cuz of the changes i did lol
 - Auto setup (auto grab log channels, mute role etc..) [Discord-made & Web-Gui-made ?]
 - Token scanner (check for token in messages [& reset them ?])
 - Configuration converter (switching between configuration version without losing data)
@@ -41,19 +42,44 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ### Fixes:
 
-- Rebuilt a good part
+- Nothin'
 
 ### Deployment
 
 Normal Deployment:
 ```bash
   git clone https://github.com/ulysse-gen/toby-bot
-  cd toby-bot
-  docker build -t tobybot:4.0.0 .
+  cd toby-bot/website
+  docker build -t tobybot-gui:8.1-apache . < ./website/Dockerfile # Get-Content Dockerfile | docker build -t tobybot-gui:8.1-apache .
+  cd ../
+  docker build -t tobybot:4.0.0 . < Dockerfile #Get-Content Dockerfile | docker build -t tobybot:4.0.0 .
   docker-compose up -d
 ```
 
-Fast Deployment:
+Fast Deployment (Linux):
 ```bash
-  git clone https://github.com/ulysse-gen/toby-bot && cd toby-bot && docker build -t tobybot:4.0.0 . && docker-compose up -d
+  git clone https://github.com/ulysse-gen/toby-bot && cd toby-bot/website && docker build -t tobybot-gui:8.1-apache . < ./website/Dockerfile && cd ../ && docker build -t tobybot:4.0.0 . < Dockerfile && docker-compose up -d
+```
+
+Fast Deployment (PowerShell):
+```PowerShell
+  git clone https://github.com/ulysse-gen/toby-bot; cd toby-bot/website; Get-Content Dockerfile | docker build -t tobybot-gui:8.1-apache .; cd ../; Get-Content Dockerfile | docker build -t tobybot:4.0.0 .; docker-compose up -d
+```
+
+Reload (PowerShell):
+```PowerShell
+  cd website; Get-Content Dockerfile | docker build -t tobybot-gui:8.1-apache .; cd ../; Get-Content Dockerfile | docker build -t tobybot:4.0.0 .; docker-compose up -d
+```
+
+Environment variables:
+```
+MARIADB_HOST (Default: 'MariaDB-TobyBot'): The database container's name/hostname.
+MARIADB_DATABASE (Default: 'tobybot-v4') : The database name.
+MARIADB_CONNECTION_LIMIT (Default: 10)   : The amount of connections to be created in the pool.
+MARIADB_ROOT_PASSWORD (Default: none)    : The root password for the database.
+
+TOBYBOT_API_HOST (Default: 'TobyBot')    : The API container's name/hostname.
+TOBYBOT_API_PORT (Default: 6845)         : The port to be used for the API.
+TOBYBOT_API_ONLY (Default: false)        : Run only the API and ignore everything else.
+TOBYBOT_API_SECRET (Default: none)       : The secret to be used by JWT on the API.
 ```

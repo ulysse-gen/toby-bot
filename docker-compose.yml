@@ -16,6 +16,8 @@ services:
         - .env
     volumes:
       - data:/data
+    ports:
+    - 8889:6845
   tobybot-database:
     restart: unless-stopped
     image: mariadb:latest
@@ -23,6 +25,13 @@ services:
     command: mariadbd --log-bin
     env_file:
         - .env
+  tobybot-website:
+    image: tobybot-gui:8.1-apache
+    container_name: TobyBot-GUI
+    env_file:
+        - .env
+    ports:
+    - 8888:80
 volumes:
   data:
 networks:

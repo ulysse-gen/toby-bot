@@ -53,10 +53,9 @@ module.exports = class SQLLogger extends Logger {
 
     async logReadyState(TobyBot){
         if (!this.initialized)return false;
-        this.SQLPool.query(`INSERT INTO \`logs\` (type, context) VALUES (?,?)`, ['ClientLogin', JSON.stringify({version: TobyBot.PackageInformations.version, clientId: TobyBot.client.user.id})], async (error, results) => {
+        return this.SQLPool.query(`INSERT INTO \`logs\` (type, context) VALUES (?,?)`, ['ClientLogin', JSON.stringify({version: TobyBot.PackageInformations.version, clientId: TobyBot.client.user.id})], async (error, results) => {
             return !(error);
         });
-        return false;
     }
 
     async logShutdown(GlobalBot, reason, exit) {

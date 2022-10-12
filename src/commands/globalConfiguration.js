@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const _ = require('lodash');
-const FileConfigurationManager = require('../classes/FileConfigurationManager');
+const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager');
 
 module.exports = {
     name: "globalconfiguration",
@@ -13,7 +13,7 @@ module.exports = {
     async execute(CommandExecution) {
         let ConfigurationManager = CommandExecution.TobyBot.ConfigurationManager;
         let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + '/configurations/documentations/GlobalConfiguration.json', undefined, true);
-        let ConfigurationFunctions = require('../../configurations/functions/GlobalConfiguration');
+        let ConfigurationFunctions = require('/app/configurations/functions/GlobalConfiguration');
         await ConfigurationDocumentation.initialize();
 
         if (!ConfigurationManager.initialized)return CommandExecution.returnWarningEmbed({}, CommandExecution.i18n.__(`command.generic.configuration.first-init.title`), CommandExecution.i18n.__(`command.generic.configuration.first-init.description`, {}));

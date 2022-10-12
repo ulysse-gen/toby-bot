@@ -4,7 +4,7 @@ const AutoModerationViolation = require('./AutoModerationViolation');
 const { MessageEmbed } = require("discord.js");
 const moment = require('moment');
 const removeAccents = require(`remove-accents`);
-const leetSpeakConverter = require("../utils/leet-converter")
+const leetSpeakConverter = require("/app/src/utils/leet-converter")
 
 
 module.exports = class AutoModerationRun {

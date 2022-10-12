@@ -17,4 +17,4 @@ RUN npm ci --only=production && mv node_modules /app/
 
 COPY --chown=node:node . /app
 
-CMD ["dumb-init", "node", "index.js"]
+CMD ["dumb-init", "node", "./src/index.js"]

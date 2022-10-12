@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const RussianRoulette = require('../classes/RussianRoulette')
+const RussianRoulette = require('/app/src/classes/RussianRoulette')
 
 module.exports = {
     name: "russianroulette",
