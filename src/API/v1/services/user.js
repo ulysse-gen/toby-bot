@@ -59,7 +59,7 @@ exports.getUserConfigurationKey = async (req, res, next) => {
         if (!User)return res.status(404).json(req.__('error.user_not_found'));
 
         let ConfigurationManager = User.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + 'configurations/documentations/UserConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager('/app/configurations/documentations/UserConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('/app/configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 
@@ -95,7 +95,7 @@ exports.patchConfigurationKey = async (req, res, next) => {
         if (!User)return res.status(404).json(req.__('error.user_not_found'));
 
         let ConfigurationManager = User.ConfigurationManager;
-        let ConfigurationDocumentation = new FileConfigurationManager(process.cwd() + 'configurations/documentations/UserConfiguration.json', undefined, true);
+        let ConfigurationDocumentation = new FileConfigurationManager('/app/configurations/documentations/UserConfiguration.json', undefined, true);
         let ConfigurationFunctions = require('/app/configurations/functions/UserConfiguration');
         await ConfigurationDocumentation.initialize();
 

@@ -18,7 +18,10 @@ require_once('src/php/config.inc.php');
 </section>
 
 <script>
-    const apiBase = "<?php echo "http://" . $_ENV["TOBYBOT_API_HOST"] . ":" . $_ENV["TOBYBOT_API_PORT"]; ?>";
+    const apiHost = "<?php echo $_ENV["TOBYBOT_API_HOST"]; ?>";
+    const apiPort = <?php echo $_ENV["TOBYBOT_API_PORT"]; ?>;
+    var apiBase = `https://${apiHost}:${apiPort}`;
+    apiBase = `${location.protocol}//${location.hostname}:${apiPort}`;
     const userId = "<?php echo $_SESSION['tobybot_user']->id; ?>";
 
 

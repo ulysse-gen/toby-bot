@@ -27,7 +27,12 @@ $adminAccess = tobybotApiRequest("/v1/system/haspermission/ADMIN");
 if (is_bool($adminAccess) && $adminAccess){
 ?>
     <datalist id="guilds"></datalist><datalist id="channels"></datalist><datalist id="commands"></datalist>
-    <script>const apiBase = "<?php echo "http://" . $_ENV["TOBYBOT_API_HOST"] . ":" . $_ENV["TOBYBOT_API_PORT"]; ?>";</script>
+    <script>
+        const apiHost = "<?php echo $_ENV["TOBYBOT_API_HOST"]; ?>";
+        const apiPort = <?php echo $_ENV["TOBYBOT_API_PORT"]; ?>;
+        var apiBase = `https://${apiHost}:${apiPort}`;
+        apiBase = `${location.protocol}//${location.hostname}:${apiPort}`;
+    </script>
     <link rel="stylesheet" href="/src/css/home/admin.css">
     <script src="/src/js/admin.js" type="module"></script>
     <section class="full-width admin-panel">
