@@ -1,11 +1,11 @@
-/////////////////////////////////
-//Toby Bot - Discord Utility Bot
-//Project idea from holidae#8454
-//     and UlysseGenie#9555
-//Developped by UlysseGenie#9555
-//   Thanks to Tobias Dray's
-//Discord Server for the playground
-/////////////////////////////////
+/////////////////////////////////////
+// Toby Bot - Discord Utility Bot  //
+// Project idea from holidae#8454  //
+//     and UlysseGenie#9555        //
+// Developped by UlysseGenie#9555  //
+//     Thanks to Tobias Dray's     //
+//Discord Server for the playground//
+/////////////////////////////////////
 
 //Importing NodeJS modules
 const { I18n } = require('i18n');
