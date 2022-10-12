@@ -55,6 +55,7 @@
 	"channelLogging.contextCommandExecution.error.unknown.description": "{{{command}}}",
 	"bot.APIOnly.normal": "Running on 'API Only'. Bot will not listen to any command.",
 	"bot.APIOnly.context": "Running on 'API Only'. Bot will not listen to any context menu command.",
+	"bot.shuttingDown": "Toby Bot shutting down.",
 	"bot.contextCommandExecution.execution": "{{{user}}} (context menu) executed {{{command}}} in {{{location}}}",
 	"bot.contextCommandExecution.execution.spoofed": "{{{realUser}}} (context menu) executed {{{command}}} in {{{realLocation}}} [Spoofed as {{{user}}} in {{{location}}}]",
 	"bot.contextCommandExecution.execution.permissionDenied": "{{{user}}} tried (context menu) executing {{{command}}} in {{{location}}} but has been denied the permission {{{permission}}}",

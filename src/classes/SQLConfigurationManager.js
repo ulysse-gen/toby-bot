@@ -57,7 +57,7 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         }
         if (typeof this.SQLPool == "undefined") {
             if (this.verbose)MainLog.log(`Creating SQL Pool [${moment().diff(startTimer)}ms]`);
-            this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE,"charset":process.env.MARIADB_CHARSET,"connectionLimit":process.env.MARIADB_CONNECTION_LIMIT})
+            this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE,"charset":process.env.MARIADB_CHARSET,"connectionLimit":2})
         }
         
         let loaded = await this.load(true);

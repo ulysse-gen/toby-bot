@@ -46,6 +46,7 @@ process.on('exit', (code)=>shudownHandle("exit", code)); //Global closing, this 
 process.on('SIGINT', (code)=>shudownHandle("SIGINT", code)); //Catch CTRL + C in console (already catched by TobyBot.Console, but keep it as a fallback)
 process.on('SIGUSR1', (code)=>shudownHandle("SIGUSR1", code)); //Catch 'PID kills'
 process.on('SIGUSR2', (code)=>shudownHandle("SIGUSR2", code)); //Catch 'PID kills'
+process.on('SIGTERM', (code)=>shudownHandle("SIGTERM", code)); //Catch 'Docker' ? kills
 
 async function errorHandle(type, error) {
     console.log(error);

@@ -13,9 +13,7 @@ module.exports = class API {
     constructor(TobyBot) {
         this.TobyBot = TobyBot;
 
-        this.configuration = {"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD}
-
-        this.EventWatcher = new MySQLEvents(this.configuration, {
+        this.EventWatcher = new MySQLEvents({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD}, {
             startAtEnd: true,
           });
 

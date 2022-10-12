@@ -141,7 +141,7 @@ module.exports = class TobyBot {
         await this.attachManagers();  //Attach the managers
 
         
-        this.SQLLogger = new SQLLogger('logs'); //Cheat cuz i need this here
+        this.SQLLogger = new SQLLogger(this, 'logs'); //Cheat cuz i need this here
         return true;
     }
 
@@ -308,7 +308,15 @@ module.exports = class TobyBot {
         this.shuttingDown = true;
         await this.LifeMetric.end();
         if (typeof this.SQLLogger != "undefined")await this.SQLLogger.logShutdown(this, reason, exit);
-        process.exit();
+
+        this.SQLPool.end();
+        await this.SQLWatcher.EventWatcher.stop();
+        
+        await this.client.user.setPresence({status: "invisible"});
+        await this.client.destroy();
+
+        MainLog.log(this.i18n.__('bot.shuttingDown'));
+        process.exit(0);
     }
 
     async loadSQLContent(checkForUpdate = false) {

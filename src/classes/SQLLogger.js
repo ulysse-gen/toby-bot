@@ -14,10 +14,12 @@ const FileLogger = require('./FileLogger');
 const MainLog = new FileLogger();
 
 module.exports = class SQLLogger extends Logger {
-    constructor(SQLTable) {
+    constructor(TobyBot, SQLTable) {
         super();
+
+        this.TobyBot = TobyBot;
         
-        this.SQLPool = undefined;
+        this.SQLPool = TobyBot.SQLPool;
         this.SQLTable = SQLTable;
 
         this.verbose = false;
@@ -28,9 +30,6 @@ module.exports = class SQLLogger extends Logger {
     async initialize() {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
-
-        this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE,"charset":process.env.MARIADB_CHARSET,"connectionLimit":process.env.MARIADB_CONNECTION_LIMIT})
-
         if (this.verbose)MainLog.log(`Initialized ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
         this.initialized = true;
         return true;

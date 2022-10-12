@@ -3,7 +3,6 @@
 /////////////////////////////////
 
 //Importing NodeJS modules
-const mysql = require(`mysql`);
 const { I18n } = require('i18n');
 const urlExists = require('url-exists');
 const { Permissions } = require('discord.js');
