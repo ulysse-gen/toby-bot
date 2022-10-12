@@ -3,7 +3,7 @@ version: '3.4'
 services:
   tobybot:
     restart: unless-stopped
-    image: tobybot
+    image: tobybot:4.0.0
     container_name: TobyBot
     tty: true
     stdin_open: true
@@ -12,8 +12,6 @@ services:
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: production
-    ports:
-      - 6845:6845
     volumes:
       - data:/data
 volumes:
@@ -21,4 +19,4 @@ volumes:
 networks:
   default:
     external: 
-      name: phpmyadmin
+      name: tobybot

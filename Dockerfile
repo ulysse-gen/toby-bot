@@ -12,6 +12,4 @@ RUN npm install --production --silent && mv node_modules /app/
 
 COPY . /app
 
-EXPOSE 6845
-
 CMD ["npm", "start"]
