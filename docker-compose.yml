@@ -11,8 +11,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     depends_on:
-      tobybot-database:
-        condition: service_started
+      "tobybot-database"
     env_file:
         - .env
     volumes:
