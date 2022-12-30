@@ -57,7 +57,7 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         }
         if (typeof this.SQLPool == "undefined") {
             if (this.verbose)MainLog.log(`Creating SQL Pool [${moment().diff(startTimer)}ms]`);
-            this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE,"charset":process.env.MARIADB_CHARSET,"connectionLimit":2})
+            this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE_NC,"charset":process.env.MARIADB_CHARSET,"connectionLimit":2})
         }
         
         let loaded = await this.load(true);
@@ -149,8 +149,8 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
         if (this.verbose) MainLog.log(`Loading configuration. [${this.SQLTable} => ${this.SQLWhere}][${moment().diff(startTimer)}ms]`);
         if (this.verbose) MainLog.log(`Fetching configuration. [${this.SQLTable} => ${this.SQLWhere}][${moment().diff(startTimer)}ms]`);
 
-        return new Promise((res, rej) => {
-            this.SQLPool.query(`SELECT * FROM ${this.SQLTable} WHERE ${this.SQLWhere}`, (error, results) => {
+        return new Promise(async (res, rej) => {
+            this.SQLPool.query(`SELECT * FROM ${this.SQLTable} WHERE ${this.SQLWhere}`, async (error, results) => {
                 if (error) throw error;
                 if (results.length == 0)return res(false);
 
@@ -161,9 +161,13 @@ module.exports = class SQLConfigurationManager extends ConfigurationManager {
                     return res(this.save());
                 }
                 if (this.verbose) MainLog.log(`Fetched configuration. [${this.SQLTable} => ${this.SQLWhere}][${moment().diff(startTimer)}ms]`);
-                this.configuration = results;
+                this.configuration = await this.versionChecking(results);
                 res(true);
             });
         });
+    }
+
+    async versionChecking (configuration) {
+        return configuration;
     }
 }

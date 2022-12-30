@@ -6,7 +6,7 @@ $dev = true;
 $SQLHost = $_ENV["MARIADB_HOST"];
 $SQLUser = "root";
 $SQLPass = $_ENV["MARIADB_ROOT_PASSWORD"];
-$SQLDatabase = $_ENV["MARIADB_DATABASE"];
+$SQLDatabase = $_ENV["MARIADB_DATABASE_NC"];
 
 $discord_Api_Base = 'https://discord.com/api';
 $discord_Authorize_URL = $discord_Api_Base.'/oauth2/authorize';

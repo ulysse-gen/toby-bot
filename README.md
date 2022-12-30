@@ -74,7 +74,7 @@ Reload (PowerShell):
 Environment variables:
 ```
 MARIADB_HOST (Default: 'MariaDB-TobyBot'): The database container's name/hostname.
-MARIADB_DATABASE (Default: 'tobybot-v4') : The database name.
+MARIADB_DATABASE_NC (Default: 'tobybot-v4') : The database name.
 MARIADB_CONNECTION_LIMIT (Default: 10)   : The amount of connections to be created in the pool.
 MARIADB_ROOT_PASSWORD (Default: none)    : The root password for the database.
 

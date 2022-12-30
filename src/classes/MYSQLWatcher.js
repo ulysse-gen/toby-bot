@@ -24,7 +24,7 @@ module.exports = class API {
     async initialize(){
         this.EventWatcher.addTrigger({
             name: 'guild_update',
-            expression: `${process.env.MARIADB_DATABASE}.guilds`,
+            expression: `${process.env.MARIADB_DATABASE_NC}.guilds`,
             statement: MySQLEvents.STATEMENTS.UPDATE,
             onEvent: async (event) => {
                 event.affectedRows.forEach(async affectedRow => {
@@ -37,7 +37,7 @@ module.exports = class API {
 
         this.EventWatcher.addTrigger({
             name: 'user_update',
-            expression: `${process.env.MARIADB_DATABASE}.users`,
+            expression: `${process.env.MARIADB_DATABASE_NC}.users`,
             statement: MySQLEvents.STATEMENTS.UPDATE,
             onEvent: async (event) => {
                 event.affectedRows.forEach(async affectedRow => {
@@ -50,7 +50,7 @@ module.exports = class API {
 
         this.EventWatcher.addTrigger({
             name: 'tobybot_update',
-            expression: `${process.env.MARIADB_DATABASE}.tobybot`,
+            expression: `${process.env.MARIADB_DATABASE_NC}.tobybot`,
             statement: MySQLEvents.STATEMENTS.UPDATE,
             onEvent: async (event) => {
                 event.affectedRows.forEach(async affectedRow => {

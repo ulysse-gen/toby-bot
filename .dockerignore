@@ -22,6 +22,4 @@
 **/values.dev.yaml
 **/logs
 /.github
-sonar-project.properties
 README.md
-src/configuration/configuration.json

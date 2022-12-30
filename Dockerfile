@@ -9,7 +9,8 @@ RUN chmod +x /usr/local/bin/dumb-init
 
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "/app/"]
+COPY ["package.json", "package-lock.json*", "/wait-for", "/app/"]
+RUN chmod +x /app/wait-for
 
 RUN npm ci --only=production && mv node_modules /app/
 

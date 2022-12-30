@@ -41,6 +41,20 @@ module.exports = class TobyBot {
     constructor(i18n, PackageInformations) {
         this.client = new Client({ partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION", "GUILD_SCHEDULED_EVENT"], intents: intents });
 
+        this.ws = this.client.ws;
+        this.actions = this.client.actions;
+        this.voice = this.client.voice;
+        this.users = this.client.users;
+        this.guilds = this.client.guilds;
+        this.channels = this.client.channels;
+        this.sweepers = this.client.sweepers;
+        this.presence = this.client.presence;
+        this.user = this.client.user;
+        this.application = this.client.application;
+        this.readyTimestamp = this.client.readyTimestamp;
+        this.application = this.client.application;
+
+
         this.i18n = i18n;
         this.PackageInformations = PackageInformations;
         this.ConfigurationManager = undefined;
@@ -56,7 +70,7 @@ module.exports = class TobyBot {
         this.catchErrorsPreventClose = false;
         this.shuttingDown = false;
 
-        this.registerCommands = false;
+        this.registerCommands = true;
     }
 
     async start() {
@@ -110,7 +124,7 @@ module.exports = class TobyBot {
 
     async initManagers() {
         this.LifeMetric.addEntry("CreateSQLPool");
-        this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE,"charset":process.env.MARIADB_CHARSET,"connectionLimit":process.env.MARIADB_CONNECTION_LIMIT});
+        this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE_NC,"charset":process.env.MARIADB_CHARSET,"connectionLimit":process.env.MARIADB_CONNECTION_LIMIT});
 
 
         this.LifeMetric.addEntry("ConfigurationManagerCreate");
@@ -214,32 +228,30 @@ module.exports = class TobyBot {
                     console.log(err);
                     switch (err.code) {
                         case "ECONNREFUSED":
-                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here:`);
-                            ErrorLog.error(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/documentation/help/MySQL_not_connecting_1`);
+                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}).`);
                             break;
     
                         case "ETIMEDOUT":
-                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}). You may find the solution here:`);
-                            ErrorLog.error(`https://${this.TobyBot.ConfigurationManager.get('domainName')}/documentation/help/MySQL_not_connecting_2`);
+                            ErrorLog.error(`Could not connect to the database (${err.address}:${err.port}).`);
                             break;
     
                         default:
                             break;
                     }
-                    con.end();
+                    SQLConnection.end();
                     process.exit();
                 }
                 res(true);
             })
         });
         let SchemaExists = await new Promise((res, rej) => {
-            SQLConnection.query(`SELECT schema_name FROM information_schema.schemata WHERE schema_name = '${process.env.MARIADB_DATABASE}';`, (err, result) => {
+            SQLConnection.query(`SELECT schema_name FROM information_schema.schemata WHERE schema_name = '${process.env.MARIADB_DATABASE_NC}';`, (err, result) => {
                 if (err) throw err;
                 res(result.length != 0);
             })
         });
         if (!SchemaExists) await new Promise((res, rej) => {
-            SQLConnection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.MARIADB_DATABASE}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; USE \`${process.env.MARIADB_DATABASE}\`; ` + fs.readFileSync(`${process.cwd()}/SQL_Structure/tobybot-structure.sql`).toString(), async (err, result) => {
+            SQLConnection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.MARIADB_DATABASE_NC}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; USE \`${process.env.MARIADB_DATABASE_NC}\`; ` + fs.readFileSync(`${process.cwd()}/SQL_Structure/tobybot-${this.PackageInformations.version}-structure.sql`).toString(), async (err, result) => {
                 if (err) throw err;
                 MainLog.log(`Created database and imported structure.`);
                 res(true);
@@ -307,13 +319,16 @@ module.exports = class TobyBot {
         if (this.shuttingDown)return true;
         this.shuttingDown = true;
         await this.LifeMetric.end();
-        if (typeof this.SQLLogger != "undefined")await this.SQLLogger.logShutdown(this, reason, exit);
+        try {
+            if (typeof this.SQLLogger != "undefined")await this.SQLLogger.logShutdown(this, reason, exit);
+    
+            this.SQLPool.end();
+            await this.SQLWatcher.EventWatcher.stop();
+            await this.client.user.setPresence({status: "invisible"});
+            await this.client.destroy();
+        } catch(e) {
 
-        this.SQLPool.end();
-        await this.SQLWatcher.EventWatcher.stop();
-        
-        await this.client.user.setPresence({status: "invisible"});
-        await this.client.destroy();
+        }
 
         MainLog.log(this.i18n.__('bot.shuttingDown'));
         process.exit(0);

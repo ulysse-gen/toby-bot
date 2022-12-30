@@ -87,7 +87,7 @@ module.exports = class CommandManager {
                 },
             );*/
             await this.TobyBot.rest.put(
-                Routes.applicationGuildCommands(this.TobyBot.client.user.id, '933416930038136832'), {
+                Routes.applicationGuildCommands(this.TobyBot.client.user.id, '719963783677870173'), {
                     body: this.TobyBot.commandsToRegister
                 },
             );

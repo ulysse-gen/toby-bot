@@ -1,12 +1,24 @@
 version: '3.4'
 
 services:
-  tobybot:
+  tobybot-database:
     restart: unless-stopped
+    image: mariadb:latest
+    container_name: MariaDB-TobyBot
+    command: mariadbd --log-bin
+    env_file:
+        - .env
+    volumes:
+      - mysql:/var/lib/mysql
+    ports:
+    - 3307:3306
+  tobybot:
+    restart: "no"
     image: tobybot:4.0.0
     container_name: TobyBot
     tty: true
     stdin_open: true
+    command: ./wait-for MariaDB-TobyBot:3306 -- dumb-init node ./src/index.js
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -18,22 +30,9 @@ services:
       - data:/data
     ports:
     - 6845:6845
-  tobybot-database:
-    restart: unless-stopped
-    image: mariadb:latest
-    container_name: MariaDB-TobyBot
-    command: mariadbd --log-bin
-    env_file:
-        - .env
-  tobybot-website:
-    image: tobybot-gui:8.1-apache
-    container_name: TobyBot-GUI
-    env_file:
-        - .env
-    ports:
-    - 8888:80
 volumes:
   data:
+  mysql:
 networks:
   tobybot:
     driver: bridge
