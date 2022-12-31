@@ -22,4 +22,5 @@
 **/values.dev.yaml
 **/logs
 /.github
+/build
 README.md

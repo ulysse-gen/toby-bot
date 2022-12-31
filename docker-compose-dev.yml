@@ -1,0 +1,40 @@
+version: '3.4'
+
+services:
+  tobybot-database:
+    restart: unless-stopped
+    image: mariadb:latest
+    container_name: MariaDB-TobyBot
+    command: mariadbd --log-bin
+    env_file:
+        - .env
+    volumes:
+      - mysql:/var/lib/mysql
+    ports:
+    - 3307:3306
+  tobybot:
+    restart: "no"
+    image: tobybot:alpha4.0.0
+    container_name: TobyBot
+    tty: true
+    stdin_open: true
+    command: ./wait-for MariaDB-TobyBot:3306 -- dumb-init npm run dev
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - "tobybot-database"
+    env_file:
+        - .env
+    volumes:
+      - data:/data
+      - ./src:/app/src
+    ports:
+    - 6845:6845
+volumes:
+  data:
+  mysql:
+networks:
+  tobybot:
+    driver: bridge
+    internal: true

@@ -1,0 +1,179 @@
+{
+    "prefix": {
+        "name": "Prefix",
+        "description": "The main bot prefix",
+        "type": "String",
+        "editable": true,
+        "default": "t!"
+    },
+    "prefixes": {
+        "name": "Prefixes",
+        "description": "The alternative prefixes for the bot",
+        "type": "Object(Array)",
+        "editable": true,
+        "default": []
+    },
+    "style": {
+        "colors": {
+            "success": {
+                "name": "Success embed color",
+                "description": "The color of the success embeds",
+                "type": "String(Color)",
+                "editable": true,
+                "default": "#00FF68"
+            },
+            "error": {
+                "name": "Error embed color",
+                "description": "The color of the error embeds",
+                "type": "String(Color)",
+                "editable": true,
+                "default": "#FF654D"
+            },
+            "warning": {
+                "name": "Warning embed color",
+                "description": "The color of the warning embeds",
+                "type": "String(Color)",
+                "editable": true,
+                "default": "#FFD02F"
+            },
+            "main": {
+                "name": "Main embed color",
+                "description": "The color of the main embeds",
+                "type": "String(Color)",
+                "editable": true,
+                "default": "#EF2FFF"
+            }
+          }
+    },
+    "behaviour": {
+        "returnErrorOnCommandError": {
+            "name": "Return error on command error",
+            "description": "Enable for the bot to return an error when commands error.",
+            "type": "Boolean",
+            "editable": true,
+            "default": true
+        },
+        "returnErrorOnPermissionDenied": {
+            "name": "Return error on permission deny",
+            "description": "Enable for the bot to return an error when commands is denied.",
+            "type": "Boolean",
+            "editable": true,
+            "default": true
+        },
+        "returnErrorOnUnknownCommand": {
+            "name": "Return error on unknown command",
+            "description": "Enable for the bot to return an error when an unknown command is tried. (basically any message starting with one of the prefixes)",
+            "type": "Boolean",
+            "editable": true,
+            "default": true
+        },
+        "returnErrorOnCommandCooldown": {
+            "name": "Return error on command cooldown",
+            "description": "Enable for the bot to return an error on command cooldown.",
+            "type": "Boolean",
+            "editable": true,
+            "default": true
+        },
+        "allowUserLocale": {
+            "name": "Allow user locale",
+            "description": "Should the bot reply in the user defined locale or stick with the guild locale.",
+            "type": "Boolean",
+            "editable": true,
+            "default": false
+        }
+    },
+    "logging": {
+        "commandExecution": {
+            "inChannel": {
+                "name": "Log command execution in channel",
+                "description": "Should we log the command execution in the logging channel?",
+                "type": "Boolean",
+                "editable": true,
+                "default": false
+            },
+            "channel": {
+                "name": "Command execution logging channel",
+                "description": "What is the command execution logging channel?",
+                "type": "String(ChannelId)",
+                "editable": true,
+                "default": "none"
+            },
+            "logFailed": {
+                "name": "Log failed command execution in channel",
+                "description": "Should we log the failed command execution in the logging channel?",
+                "type": "Boolean",
+                "editable": true,
+                "default": true
+            }
+        },
+        "moderationLogs": {
+            "inChannel": {
+                "name": "Log moderation actions in channel",
+                "description": "Should we log the moderation actions in the logging channel?",
+                "type": "Boolean",
+                "editable": true,
+                "default": false
+            },
+            "channel": {
+                "name": "Moderation logging channel",
+                "description": "What is the moderation logging channel?",
+                "type": "String(ChannelId)",
+                "editable": true,
+                "default": "none"
+            }
+        },
+        "autoModerationLogs": {
+            "inChannel": {
+                "name": "Log moderation actions in channel",
+                "description": "Should we log the moderation actions in the logging channel?",
+                "type": "Boolean",
+                "editable": true,
+                "default": false
+            },
+            "channel": {
+                "name": "Auto moderation logging channel",
+                "description": "What is the auto moderation logging channel?",
+                "type": "String(ChannelId)",
+                "editable": true,
+                "default": "none"
+            }
+        }
+    },
+    "moderation": {
+        "sendWarnInDM": {
+            "name": "Send warning alert in DM",
+            "description": "Should the warned member be alerted in DM ? (Dont disable this its the whole point of warning.)",
+            "type": "Boolean",
+            "editable": true,
+            "default": true
+        },
+        "sendMuteInDM": {
+            "name": "Send mute alert in DM",
+            "description": "Should the muted member be alerted in DM ?",
+            "type": "Boolean",
+            "editable": true,
+            "default": true
+        },
+        "sendKickInDM": {
+            "name": "Send kick alert in DM",
+            "description": "Should the kicked member be alerted in DM ?",
+            "type": "Boolean",
+            "editable": true,
+            "default": false
+        },
+        "sendBanInDM": {
+            "name": "Send ban alert in DM",
+            "description": "Should the banned member be alerted in DM ?",
+            "type": "Boolean",
+            "editable": true,
+            "default": false
+        },
+        "muteRole": {
+            "name": "Muted role",
+            "description": "The role to assign to muted members.",
+            "type": "String(RoleId)",
+            "editable": true,
+            "default": "none"
+        }
+    }
+}

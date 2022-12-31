@@ -9,7 +9,7 @@ RUN chmod +x /usr/local/bin/dumb-init
 
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "/wait-for", "/app/"]
+COPY ["tsconfig.json", "package.json", "package-lock.json*", "src/wait-for", "/app/"]
 RUN chmod +x /app/wait-for
 
 RUN npm ci --only=production && mv node_modules /app/
@@ -18,4 +18,6 @@ RUN npm ci --only=production && mv node_modules /app/
 
 COPY --chown=node:node . /app
 
-CMD ["dumb-init", "node", "./src/index.js"]
+RUN npm run build
+
+CMD ["./wait-for", "MariaDB-TobyBot:3306", "--", "dumb-init", "npm", "start"]

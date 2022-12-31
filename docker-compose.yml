@@ -14,11 +14,10 @@ services:
     - 3307:3306
   tobybot:
     restart: "no"
-    image: tobybot:4.0.0
+    image: tobybot:alpha4.0.0
     container_name: TobyBot
     tty: true
     stdin_open: true
-    command: ./wait-for MariaDB-TobyBot:3306 -- dumb-init node ./src/index.js
     build:
       context: .
       dockerfile: ./Dockerfile

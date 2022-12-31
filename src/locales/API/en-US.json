@@ -1,0 +1,23 @@
+{
+	"name": "TobyBot Api",
+	"route.unknown": "Welcome to TobyBot's API. There's nothing there.",
+	"route.v1.defaultMessage": "Welcome to TobyBot's API v1. You could have more fun, but the endpoints arent publicly shared yet.",
+	"error.not_found": "Not found.",
+	"route.v1.any.defaultMessage": "Welcome to TobyBot's API v1.",
+	"error.required": "Missing {{{required}}}.",
+	"error.wrong_credentials": "Wrong credentials.",
+	"error.no_api_account": "No api account, you can contact UlysseGenie#9555 to create one if needed, which should not be the case, until the API get any public access.",
+	"error.token_required": "Token required.",
+	"error.token_not_valid": "Invalid token.",
+	"error.no_permission": "You dont have the permission to access this.",
+	"error.unknown": "An unknown error occured. {{{error}}}",
+	"error.user_not_found": "User not found.",
+	"error.guild_not_found": "Guild not found.",
+	"error.missing_permission": "Missing permission {{{required}}}.",
+	"error.channel_not_found": "Channel not found.",
+	"error.commands.permission_denied": "You dont have the permission to execute this command in this context.",
+	"error.command_not_found": "Command not found.",
+	"error.configuration_first_init": "error.configuration_first_init",
+	"error.configuration_key_not_found": "Configuration key not found.",
+	"error.configuration_unchanged": "Configuration enchanged."
+}
