@@ -7,10 +7,12 @@ ENV CI=true
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.1.1/dumb-init_1.1.1_amd64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 
+ADD https://raw.githubusercontent.com/eficode/wait-for/master/wait-for /usr/local/bin/wait-for
+RUN chmod +x /usr/local/bin/wait-for
+
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "/wait-for", "/app/"]
-RUN chmod +x /app/wait-for
+COPY ["package.json", "package-lock.json*", "/app/"]
 
 RUN npm ci --only=production && mv node_modules /app/
 
@@ -18,4 +20,4 @@ RUN npm ci --only=production && mv node_modules /app/
 
 COPY --chown=node:node . /app
 
-CMD ["dumb-init", "node", "./src/index.js"]
+CMD ["wait-for", "MariaDB-TobyBot:3306", "--", "dumb-init", "node", "./src/index.js"]

@@ -111,22 +111,16 @@ module.exports = class CommandManager {
         let command=commandOptions.shift().replace(prefixUsed, '');
         let fetchedCommand = await this.fetch(command);
         return new CommandExecution(message, fetchedCommand, commandOptions, this).execute().catch(e=>{
-            if (e.type == ErrorType.CommandExecution){
-                return CommandExecution.Channel.send('An error occured executing the command. Reach <@231461358200291330> for help.');
-            }else {
-                throw new ErrorBuilder(`Could not execute command.`, {cause: e}).setType('COMMAND_EXECUTION_ERROR').logError()
-            }
+            //CommandExecution.Channel.send('An error occured executing the command. Reach <@231461358200291330> for help.'); //CommandExecution.Channel may not be defined at this point
+            throw new ErrorBuilder(`Could not execute command.`, {cause: e}).setType('COMMAND_EXECUTION_ERROR').logError();
         });
     }
 
     async handleSlash(interaction) {
         let fetchedCommand = await this.fetch(interaction.commandName);
         return new CommandExecution(interaction, fetchedCommand, interaction.options._hoistedOptions, this, true).execute().catch(e=>{
-            if (e.type == ErrorType.CommandExecution){
-                return CommandExecution.Channel.send('An error occured executing the command. Reach <@231461358200291330> for help.');
-            }else {
-                throw new ErrorBuilder(`Could not execute command.`, {cause: e}).setType('COMMAND_EXECUTION_ERROR').logError()
-            }
+            //CommandExecution.Channel.send('An error occured executing the command. Reach <@231461358200291330> for help.'); //CommandExecution.Channel may not be defined at this point
+            throw new ErrorBuilder(`Could not execute command.`, {cause: e}).setType('COMMAND_EXECUTION_ERROR').logError();
         });
     }
 

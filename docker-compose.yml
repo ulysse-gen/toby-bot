@@ -18,7 +18,7 @@ services:
     container_name: TobyBot
     tty: true
     stdin_open: true
-    command: ./wait-for MariaDB-TobyBot:3306 -- dumb-init node ./src/index.js
+    command: wait-for MariaDB-TobyBot:3306 -- dumb-init node ./src/index.js
     build:
       context: .
       dockerfile: ./Dockerfile

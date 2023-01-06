@@ -9,32 +9,51 @@ module.exports = {
     category: "informations",
     enabled: true,
     async execute(CommandExecution) {
-        if (!CommandExecution.CommandOptions.searchkey) {
+        let Commands = CommandExecution.TobyBot.CommandManager.commands;
+        if (!CommandExecution.options.searchkey) {
             let embed = new MessageEmbed({
                 title: CommandExecution.i18n.__(`command.${this.name}.mainEmbed.title`),
                 color: CommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
-                description: CommandExecution.i18n.__(`command.${this.name}.mainEmbed.description`, {amount: CommandExecution.TobyBot.CommandManager.commands.length, list: '`' + CommandExecution.TobyBot.CommandManager.commands.map(c => c.name).join('`, `') + '`'})
+                description: CommandExecution.i18n.__(`command.${this.name}.mainEmbed.description`, {amount: Commands.length, list: '`' + Commands.map(c => c.name).join('`, `') + '`'})
             });
     
             return CommandExecution.returnRaw({embeds: [embed]});
         }
 
-        let searchThings = {
-            commands: CommandExecution.TobyBot.CommandManager.commands.map(c => c.name).join('`, `')
+        if (CommandExecution.options.searchkey.toLowerCase() == "category" || CommandExecution.options.category){
+            if (!CommandExecution.options.category) {
+                return CommandExecution.returnErrorEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.notCategorySpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.notCategorySpecified.description`))
+            }
+
+            Commands = Commands.filter(c => c.category == CommandExecution.options.category.toLowerCase());
+
+            if (Commands.length == 0){
+                return CommandExecution.returnErrorEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.noCommandInCategory.title`), CommandExecution.i18n.__(`command.${this.name}.error.noCommandInCategory.description`))
+            }
+            let embed = new MessageEmbed({
+                title: CommandExecution.i18n.__(`command.${this.name}.categoryEmbed.title`),
+                color: CommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
+                description: CommandExecution.i18n.__(`command.${this.name}.categoryEmbed.description`, {amount: Commands.length, list: '`' + Commands.map(c => c.name).join('`, `') + '`'})
+            });
+    
+            return CommandExecution.returnRaw({embeds: [embed]});
         }
 
-        if (searchThings.commands.includes(CommandExecution.CommandOptions.searchkey.toLowerCase())){
-            console.log(CommandExecution.TobyBot.CommandManager.commands.filter(c => c.name == CommandExecution.CommandOptions.searchkey.toLowerCase())[0])
+        let FetchedCommand = await CommandExecution.CommandManager.fetch(CommandExecution.options.searchkey.toLowerCase());
+
+        if (!FetchedCommand) {
+            return CommandExecution.returnErrorEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.commandNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.commandNotFound.description`))
         }
-        
-        CommandExecution.returnErrorEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.generic.unknownSubCommand.title`), CommandExecution.i18n.__(`command.generic.unknownSubCommand.description`, {command: this.name}));
-        return true;
+
+        return FetchedCommand.sendHelp(CommandExecution.Channel).catch(e => {
+            CommandExecution.returnErrorEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotGetHelp.title`), CommandExecution.i18n.__(`command.error.couldNotGetHelp.description`));
+        });
     },
     async optionsFromArgs (CommandExecution) {
         var options = {};
         if (CommandExecution.CommandOptions.length == 0)return options;
         options.searchkey = CommandExecution.CommandOptions.shift();
-        if (CommandExecution.CommandOptions.length != 0)options.idkWhat = CommandExecution.CommandOptions.shift();
+        if (CommandExecution.CommandOptions.length != 0)options.category = CommandExecution.CommandOptions.shift();
         return options;
     },
     async optionsFromSlashOptions (CommandExecution) {
@@ -47,11 +66,17 @@ module.exports = {
             .setName(this.name)
             .setDescription(i18n.__(`command.${this.name}.description`));
 
-        slashCommand.addStringOption(option => 
-            option.setName('searchkey')
-                .setDescription(i18n.__(`command.${this.name}.option.searchkey.description`))
-                .setRequired(false)
-        )
+            slashCommand.addStringOption(option => 
+                option.setName('searchkey')
+                    .setDescription(i18n.__(`command.${this.name}.option.searchkey.description`))
+                    .setRequired(false)
+            )
+
+            slashCommand.addStringOption(option => 
+                option.setName('category')
+                    .setDescription(i18n.__(`command.${this.name}.option.category.description`))
+                    .setRequired(false)
+            )
 
         return slashCommand;
     },
@@ -59,7 +84,10 @@ module.exports = {
         let returnObject = {embeds: []};
         let tempEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
                                             .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
-                                            .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`) + '\n' + Command.CommandManager.i18n.__(`commands.generic.help.argsType`));
+                                            .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`));
+
+                                            tempEmbed.addField('searchkey', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.searchkey.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.string`)}));
+                                            tempEmbed.addField('category', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.category.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.string`)}));
 
         returnObject.embeds.push(tempEmbed) 
         return returnObject;

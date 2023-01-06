@@ -8,7 +8,10 @@ let ErrorType = {
     CommandExecution: "COMMAND_EXECUTION_ERROR",
     Fatal: "FATAL_ERROR",
     SQL: "SQL_ERROR",
-    File: "FILE_ERROR"
+    File: "FILE_ERROR",
+    EventHandling: "EVENT_HANDLING_ERROR",
+    CommandHandling: "COMMAND_HANDLING_ERROR",
+    WaitingForMessage: "WAITING_FOR_MESSAGE"
 }
 
 module.exports.ErrorType = ErrorType;

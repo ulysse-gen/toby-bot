@@ -26,7 +26,7 @@ const API = require('./API');
 const Console = require('./Console');
 const MYSQLWatcher = require('./MYSQLWatcher');
 const AutoModeration = require('./AutoModeration');
-const { ErrorBuilder } = require('./Errors');
+const { ErrorBuilder, ErrorType } = require('./Errors');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -175,18 +175,22 @@ module.exports = class TobyBot {
                 files.filter(file => file.endsWith('.js')).forEach((file, index, array) => { //For each files in the folder
                     let event = require(`/app/src/events/${file}`);
 
-                    if ((typeof event.enabled == "boolean") ? event.enabled : true)
-                        if (event.once) {
-                            _this.client.once(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
-                                ErrorLog.error(`An error occured during the handling of the (once) event ${event.name}:`);
-                                console.log(e);
-                            }));
-                        }else {
-                            _this.client.on(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
-                                ErrorLog.error(`An error occured during the handling of the event ${event.name}:`);
-                                console.log(e);
-                            }));
-                        }
+                    
+
+                    if ((typeof event.enabled == "boolean") ? event.enabled : true)if (event.once) {
+                        _this.client.once(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
+                            let err = new ErrorBuilder(`An error occured trying to handle the event ${event.name}.`, {cause: e}).setType(ErrorType.EventHandling);
+                            console.log(err);
+                            return undefined;
+                        }));
+                    }else {
+                        _this.client.on(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
+                            let err = new ErrorBuilder(`An error occured trying to handle the event ${event.name}.`, {cause: e}).setType(ErrorType.EventHandling);
+                            console.log(err);
+                            return undefined;
+                        }));
+                    }
+                        
                     
                     if (index === array.length -1) res();
                 });

@@ -27,6 +27,7 @@ module.exports = class ModerationManager {
     }
 
     async log(PunishedId, PunisherId, type, reason, length = false) {
+        console.log(PunishedId, PunisherId, type, reason, length)
         let _this = this;
         if (typeof PunishedId != "string" || typeof PunisherId != "string" || typeof type != "string" || typeof reason != "string") return false;
 

@@ -84,7 +84,7 @@ module.exports = {
         let returnObject = {embeds: []};
         let tempEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
                                             .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
-                                            .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`) + '\n' + Command.CommandManager.i18n.__(`commands.generic.help.argsType`));
+                                            .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`));
        
         returnObject.embeds.push(tempEmbed) 
 

@@ -4,6 +4,7 @@
 
 //Importing classes
 const FileLogger = require('/app/src/classes/FileLogger');
+const { ErrorBuilder, ErrorType } = require('/app/src/classes/Errors');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -55,16 +56,12 @@ module.exports = {
         **/
 
         let commandExecution = await TobyBot.CommandManager.handle(message).catch(e => {
-            ErrorLog.error(`An error occured during the handling of the CommandManager handle:`);
-            console.log(e);
-            return undefined;
+            throw new ErrorBuilder(`An error occured trying to handle the command.`, {cause: e}).setType(ErrorType.CommandHandling);
         });
 
         if (!commandExecution){
             let waitingForMessage = await message.TobyBot.guild.waitingForMessage(message).catch(e => {
-                ErrorLog.error(`An error occured during the handling of the Guild waitingForMessage:`);
-                console.log(e);
-                return undefined;
+                throw new ErrorBuilder(`An error occured trying to handle the waitingForMessage.`, {cause: e}).setType(ErrorType.WaitingForMessage);
             });
     
             if (typeof waitingForMessage == "boolean" && waitingForMessage)return true;

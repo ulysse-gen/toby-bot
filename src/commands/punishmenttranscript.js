@@ -108,7 +108,7 @@ module.exports = {
         let returnObject = {embeds: []};
         let tempEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
                                             .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
-                                            .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`) + '\n' + Command.CommandManager.i18n.__(`commands.generic.help.argsType`));
+                                            .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`));
 
         tempEmbed.addField('caseid', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.caseid.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.number`)}));
         tempEmbed.addField('page', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.page.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.number`)}));
