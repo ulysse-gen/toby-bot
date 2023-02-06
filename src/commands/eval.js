@@ -43,14 +43,30 @@ module.exports = {
     },
     async makeHelp(Command) {
         let returnObject = {embeds: []};
-        let tempEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
-                                            .setColor(Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
-                                            .setDescription('**' + Command.CommandManager.i18n.__(`command.${this.name}.description`) + '**\n' + Command.CommandManager.i18n.__(`commands.generic.help.argsType`));
+        let optionTypes = {
+            1: 'subcommand',
+            2: 'subcommand_group',
+            3: 'string',
+            4: 'integer',
+            5: 'boolean',
+            6: 'user',
+            7: 'channel',
+            8: 'role',
+            9: 'mentionnable',
+            10: 'number',
+            11: 'attachment',
+        }
 
-        tempEmbed.addField('code', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.code.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.text`)}));
+        let HelpEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
+        .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
+        .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`));
 
-        returnObject.embeds.push(tempEmbed) 
+        let slashCommandOptions = Command.slashCommand.options;
+        slashCommandOptions.forEach(option => {
+            HelpEmbed.addField(`**${option.name}**`, Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.${option.name}.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.` + optionTypes[option.type])}));
+        })
 
+        returnObject.embeds.push(HelpEmbed) 
         return returnObject;
     }
 }

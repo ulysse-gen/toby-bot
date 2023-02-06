@@ -60,15 +60,31 @@ module.exports = {
     },
     async makeHelp(Command) {
         let returnObject = {embeds: []};
-        let tempEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
-                                            .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
-                                            .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`));
+        let optionTypes = {
+            undefined: 'subcommand',
+            1: 'subcommand',
+            2: 'subcommand_group',
+            3: 'string',
+            4: 'integer',
+            5: 'boolean',
+            6: 'user',
+            7: 'channel',
+            8: 'role',
+            9: 'mentionnable',
+            10: 'number',
+            11: 'attachment',
+        }
 
-        tempEmbed.addField('target', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.target.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.user`)}));
-        tempEmbed.addField('public', Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.option.public.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.boolean`)}));
-       
-        returnObject.embeds.push(tempEmbed) 
+        let HelpEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
+        .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
+        .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`));
 
+        let slashCommandOptions = Command.slashCommand.options;
+        slashCommandOptions.forEach(option => {
+            HelpEmbed.addField(`${(option.options.required) ? '**[R]**' : '**[O]'}${option.name}**`, Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.${optionTypes[option.options.type]}.${option.name}.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.${optionTypes[option.options.type]}`)}));
+        })
+
+        returnObject.embeds.push(HelpEmbed) 
         return returnObject;
     }
 }

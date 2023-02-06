@@ -20,6 +20,7 @@ const ContextMenuCommandExecution = require('./ContextMenuCommandExecution');
 //Creating objects
 const MainLog = new FileLogger();
 const ErrorLog = new FileLogger('error.log');
+const LocaleLog = new FileLogger('locale.log');
 
 module.exports = class ContextMenuCommandManager {
     constructor(TobyBot, commandsFolder = "/") {
@@ -35,6 +36,10 @@ module.exports = class ContextMenuCommandManager {
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US',
             autoReload: true,
+            missingKeyFn: (locale, value) => {
+                LocaleLog.log('[Missing Locale][commands]' + value + ` in ` + locale);
+                return value;
+            },
         });
 
         this.initialized = false; //Set the main initialized variable to false

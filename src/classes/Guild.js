@@ -17,6 +17,7 @@ const FileLogger = require('./FileLogger');
 const { ErrorBuilder } = require('./Errors');
 
 const MainLog = new FileLogger();
+const LocaleLog = new FileLogger('locale.log');
 
 module.exports = class Guild {
     constructor(GuildManager, guild) {
@@ -34,6 +35,10 @@ module.exports = class Guild {
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US',
             autoReload: true,
+            missingKeyFn: (locale, value) => {
+                LocaleLog.log('[Missing Locale][guild]' + value + ` in ` + locale);
+                return value;
+            },
         });
 
         this.waitingForMessageData = {
@@ -54,6 +59,13 @@ module.exports = class Guild {
         this.data = {
             russianroulette: {
                 channels: {}
+            },
+            roleadder: {
+                queue: undefined,
+                failed: [],
+                success: [],
+                trackerMessage: undefined,
+                fetchDone: false
             }
         }
 

@@ -15,6 +15,12 @@ const FileLogger = require('./classes/FileLogger');
 const TobyBot = require('./classes/TobyBot');
 const {ErrorBuilder} = require('./classes/Errors');
 
+//Creating main variables
+const PackageInformations = require(`/app/package.json`);
+const MainLog = new FileLogger();
+const ErrorLog = new FileLogger(`error.log`);
+const LocaleLog = new FileLogger(`locale.log`);
+
 //Creating main objects
 const i18n = new I18n({
     locales: ['en-US','fr-FR'],
@@ -22,12 +28,12 @@ const i18n = new I18n({
     fallbackLocale: 'en-US',
     defaultLocale: 'en-US',
     autoReload: true,
+    missingKeyFn: (locale, value) => {
+        LocaleLog.log('[Missing Locale][backend]' + value + ` in ` + locale);
+        return value;
+    },
+    
 });
-
-//Creating main variables
-const PackageInformations = require(`/app/package.json`);
-const MainLog = new FileLogger();
-const ErrorLog = new FileLogger(`error.log`);
 
 const GlobalBot = new TobyBot(i18n, PackageInformations); //This is the bot
 

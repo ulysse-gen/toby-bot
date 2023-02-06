@@ -75,5 +75,13 @@
                 }
             }
         }
+    },
+    "roleadder": {
+        "trigger": "none",
+        "logAddedUsers": true,
+        "addReason": "Added using RoleAdded | {{{TriggerReason}}} by {{{TriggerUserTag}}}",
+        "rolesToAdd": [],
+        "blacklist": [],
+        "whitelist": []
     }
 }

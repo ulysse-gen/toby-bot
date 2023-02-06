@@ -14,6 +14,7 @@ const FileLogger = require('./FileLogger');
 //Creating objects
 const MainLog = new FileLogger();
 const ErrorLog = new FileLogger('error.log');
+const LocaleLog = new FileLogger('locale.log');
 
 module.exports = class ContextMenuCommandExecution {
     constructor(trigger, command, ContextMenuCommandManager) {
@@ -28,6 +29,10 @@ module.exports = class ContextMenuCommandExecution {
             fallbackLocale: 'en-US',
             defaultLocale: 'en-US',
             autoReload: true,
+            missingKeyFn: (locale, value) => {
+                LocaleLog.log('[Missing Locale][commands]' + value + ` in ` + locale);
+                return value;
+            },
         });
     }
 

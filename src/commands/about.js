@@ -10,19 +10,6 @@ module.exports = {
     enabled: true,
     async execute(CommandExecution) {
         let fields = [
-            [`**Developer**`, `<@231461358200291330>`, true],
-            [`**Original Idea**`, `<@330826518370451457>`, true],
-            [`**Dobias Tray**`, `<@833178174207950869>`, true],
-            [`**Guild Prefix**:`, `\`${CommandExecution.Guild.ConfigurationManager.get('prefix')}\``, true],
-            [`**Global Prefix**`, `\`${CommandExecution.TobyBot.ConfigurationManager.get('prefix')}\``, true],
-            [`**Uptime**`, `${prettyMilliseconds(CommandExecution.TobyBot.client.uptime, {secondsDecimalDigits: 0})}`, true],
-            [`**Bot Version**`, `${CommandExecution.TobyBot.PackageInformations.version}`, true],
-            [`**NodeJS Version**`, `${process.version}`, true],
-            [`**DiscordJS Version**`, `${CommandExecution.TobyBot.PackageInformations.dependencies["discord.js"]}`, true],
-            [`**Latency**`, `${Date.now() - CommandExecution.Trigger.createdTimestamp}ms`, true],
-            [`**API Latency**`, `${Math.round(CommandExecution.TobyBot.client.ws.ping)}ms`, true]
-        ];
-        fields = [
             [CommandExecution.i18n.__(`command.${this.name}.fields.developer.title`), CommandExecution.i18n.__(`command.${this.name}.fields.developer.content`), true],
             [CommandExecution.i18n.__(`command.${this.name}.fields.originalIdea.title`), CommandExecution.i18n.__(`command.${this.name}.fields.originalIdea.content`), true],
             [CommandExecution.i18n.__(`command.${this.name}.fields.dobiasTray.title`), CommandExecution.i18n.__(`command.${this.name}.fields.dobiasTray.content`), true],
@@ -53,11 +40,31 @@ module.exports = {
     },
     async makeHelp(Command) {
         let returnObject = {embeds: []};
-        let tempEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
-                                            .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
-                                            .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`));
+        let optionTypes = {
+            undefined: 'subcommand',
+            1: 'subcommand',
+            2: 'subcommand_group',
+            3: 'string',
+            4: 'integer',
+            5: 'boolean',
+            6: 'user',
+            7: 'channel',
+            8: 'role',
+            9: 'mentionnable',
+            10: 'number',
+            11: 'attachment',
+        }
 
-        returnObject.embeds.push(tempEmbed) 
+        let HelpEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
+        .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
+        .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`));
+
+        let slashCommandOptions = Command.slashCommand.options;
+        slashCommandOptions.forEach(option => {
+            HelpEmbed.addField(`${(option.options.required) ? '**[R]**' : '**[O]'}${option.name}**`, Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.${optionTypes[option.options.type]}.${option.name}.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.${optionTypes[option.options.type]}`)}));
+        })
+
+        returnObject.embeds.push(HelpEmbed) 
         return returnObject;
     }
 }

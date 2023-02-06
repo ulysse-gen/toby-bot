@@ -39,7 +39,21 @@ intents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUI
 
 module.exports = class TobyBot {
     constructor(i18n, PackageInformations) {
-        this.client = new Client({ partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION", "GUILD_SCHEDULED_EVENT"], intents: intents });
+        this.client = new Client({ 
+            sweepers: {
+                messages: {
+                    maximumSize: 250,
+                    interval: 120,
+                    lifetime: 300
+                },
+                threads: {
+                    interval: 300,
+                    lifetime: 310
+                }
+            },
+            partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION", "GUILD_SCHEDULED_EVENT"], 
+            intents: intents 
+        });
 
         this.ws = this.client.ws;
         this.actions = this.client.actions;
@@ -96,13 +110,13 @@ module.exports = class TobyBot {
         }
         this.LifeMetric.addEntry("botReady");
         this.LifeMetric.addEntry("LoggersInit");
+        this.LifeMetric.addEntry("SweeperInit");
         await this.initLoggers().catch(e => { throw e }); //Attach loggers
         await this.finalTouch().catch(e => { throw e }); //Final touch
         this.ready = true;
     }
 
     async VerifyContext() {
-        MainLog.log('Verifying context.');
         if (!fs.existsSync('/data'))try {
             fs.mkdirSync('/data');
         } catch (e) {
@@ -118,7 +132,6 @@ module.exports = class TobyBot {
         } catch (e) {
             throw new ErrorBuilder(`Missing '/data/configs' folder and its creation failed`, {cause: e}).setType('FILE_ERROR').logError();
         }
-        MainLog.log('Verified context.');
         return this;
     }
 

@@ -15,6 +15,7 @@ const FileLogger = require('./FileLogger');
 //Creating objects
 const MainLog = new FileLogger();
 const ErrorLog = new FileLogger('error.log');
+const LocaleLog = new FileLogger('locale.log');
 
 const APIRoutesV1 = require('/app/src/API/v1/routes/index');
 
@@ -29,6 +30,10 @@ module.exports = class API {
             defaultLocale: 'en-US',
             autoReload: true,
             header: null,
+            missingKeyFn: (locale, value) => {
+                LocaleLog.log('[Missing Locale][API]' + value + ` in ` + locale);
+                return value;
+            },
         });
 
         this.version = TobyBot.PackageInformations.apiVersion;

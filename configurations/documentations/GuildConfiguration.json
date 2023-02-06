@@ -175,5 +175,49 @@
             "editable": true,
             "default": "none"
         }
+    },
+    "roleadder": {
+        "trigger": {
+            "name": "trigger",
+            "description": "trigger",
+            "type": "String",
+            "editable": false,
+            "default": "none"
+        },
+        "logAddedUsers": {
+            "name": "Log added users",
+            "description": "Should the bot log in the channel the users that have gotten a role assigned to ?",
+            "type": "Boolean",
+            "editable": true,
+            "default": true
+        },
+        "addReason": {
+            "name": "Reason for adding roles.",
+            "description": "Make this the reason that will appear in the audit log for adding the role.",
+            "type": "String",
+            "editable": true,
+            "default": "Added using RoleAdded | {{{TriggerReason}}} by {{{TriggerUserTag}}}"
+        },
+        "rolesToAdd": {
+            "name": "Roles to add.",
+            "description": "List of the roles to be added when triggering the roleadder command.",
+            "type": "Object(Array)",
+            "editable": true,
+            "default": []
+        },
+        "blacklist": {
+            "name": "Roles to blacklist.",
+            "description": "List of the roles to be blacklisted when preparing the roleadder command. Members withing these roles will be ignored.",
+            "type": "Object(Array)",
+            "editable": true,
+            "default": []
+        },
+        "whitelist": {
+            "name": "Roles to whitelist.",
+            "description": "List of the roles to be blacklisted when preparing the roleadder command. Members without any of these roles will be ignored.",
+            "type": "Object(Array)",
+            "editable": true,
+            "default": []
+        }
     }
 }
