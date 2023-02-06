@@ -3,7 +3,8 @@ name: Build
 on:
   push:
     branches:
-      - main
+      - develop
+      - v4-develop
 
 
 jobs:
