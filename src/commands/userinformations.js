@@ -46,7 +46,7 @@ module.exports = {
         let userPFP = await utils.getUserPfp(user);
 
         let embed = new MessageEmbed({
-            title: `Moderation Statistics`,
+            title: `User Informations`,
             description: `<@${user.user.id}>`,
             color: user.displayHexColor,
             author: {
