@@ -17,6 +17,8 @@ services:
     container_name: TobyBot-MariaDB
     image: mariadb
     restart: unless-stopped
+    networks:
+      - tobybot
     environment:
       - MARIADB_ROOT_PASSWORD=xvNUiUhjmmftPMiyWagAcR6sEtQxPt
     volumes:
