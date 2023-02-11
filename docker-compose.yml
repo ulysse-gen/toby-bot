@@ -22,7 +22,7 @@ services:
     command: sh wait-for ${MARIADB_HOST}:3306 -- dumb-init node ./src/index.js
     networks:
       - tobybot
-      - bridge
+      - custombridge
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -42,5 +42,4 @@ networks:
   db_manage:
     external: true
   custombridge:
-    name: bridge
     external: true
