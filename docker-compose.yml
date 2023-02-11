@@ -6,12 +6,13 @@ services:
     image: mariadb:latest
     container_name: MariaDB-TobyBot
     command: mariadbd --log-bin
+    networks:
+      - tobybot
+      - db_manage
     env_file:
         - .env
     volumes:
       - mysql:/var/lib/mysql
-    ports:
-    - 3307:3306
   tobybot:
     restart: "no"
     image: tobybot:4.0.0
@@ -19,6 +20,8 @@ services:
     tty: true
     stdin_open: true
     command: wait-for MariaDB-TobyBot:3306 -- dumb-init node ./src/index.js
+    networks:
+      - tobybot
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -28,12 +31,13 @@ services:
         - .env
     volumes:
       - data:/data
-    ports:
-    - 6845:6845
 volumes:
   data:
   mysql:
 networks:
   tobybot:
+    name: tobybot
     driver: bridge
     internal: true
+  db_manage:
+    external: true
