@@ -12,7 +12,7 @@ services:
     env_file:
       - tobybot.env
     volumes:
-      -	tobybot-v3-volume:/home/container
+      - tobybot-v3_volume:/home/container
   db:
     container_name: TobyBot
     image: mariadb
@@ -20,7 +20,7 @@ services:
     environment:
       - MARIADB_ROOT_PASSWORD=xvNUiUhjmmftPMiyWagAcR6sEtQxPt
     volumes:
-      -	tobybot-v3-db-volume:/home/container
+      -	tobybot-v3_db-volume:/home/container
 networks:
   tobybot:
     external: true
@@ -28,5 +28,5 @@ networks:
     name: custombridge
     external: true
 volumes:
-  tobybot-v3-volume:
-  tobybot-v3-db-volume:
+  tobybot-v3_volume:
+  tobybot-v3_db-volume:
