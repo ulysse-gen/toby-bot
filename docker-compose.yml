@@ -1,0 +1,24 @@
+version: '2.1'
+services:
+  app:
+    image: 'ghcr.io/parkervcp/yolks:nodejs_17'
+    restart: unless-stopped
+    container_name: TobyBot
+    networks:
+      - tobybot
+      - bridge
+    ports:
+      - 20000:20000
+    env_file:
+      - tobybot.env
+  db:
+    image: TobyBot-MariaDB
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=xvNUiUhjmmftPMiyWagAcR6sEtQxPt
+networks:
+  tobybot:
+    external: true
+  bridge:
+    name: custombridge
+    external: true

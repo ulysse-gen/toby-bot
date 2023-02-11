@@ -1,1 +1,1 @@
-{"host":"localhost","user":"tobybot","password":"dopepassword","database":"tobybot","charset":"UTF8MB4_UNICODE_CI","connectionLimit":10}
+{"host":"TobyBot-MariaDB","user":"root","password":"xvNUiUhjmmftPMiyWagAcR6sEtQxPt","database":"tobybot","charset":"UTF8MB4_UNICODE_CI","connectionLimit":10}
