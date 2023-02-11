@@ -12,7 +12,8 @@ services:
     env_file:
       - tobybot.env
   db:
-    image: TobyBot-MariaDB
+    container_name: TobyBot
+    image: mariadb
     restart: unless-stopped
     environment:
       - MARIADB_ROOT_PASSWORD=xvNUiUhjmmftPMiyWagAcR6sEtQxPt
