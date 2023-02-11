@@ -19,6 +19,8 @@ services:
     restart: unless-stopped
     networks:
       - tobybot
+    ports:
+      - 3306:3306
     environment:
       - MARIADB_ROOT_PASSWORD=xvNUiUhjmmftPMiyWagAcR6sEtQxPt
     volumes:
