@@ -20,7 +20,7 @@ services:
     environment:
       - MARIADB_ROOT_PASSWORD=xvNUiUhjmmftPMiyWagAcR6sEtQxPt
     volumes:
-      -	tobybot-v3_db-volume:/home/container
+      - tobybot-v3_db-volume:/home/container
 networks:
   tobybot:
     external: true
