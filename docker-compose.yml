@@ -14,7 +14,7 @@ services:
     volumes:
       - tobybot-v3_volume:/home/container
   db:
-    container_name: TobyBot
+    container_name: TobyBot-MariaDB
     image: mariadb
     restart: unless-stopped
     environment:
