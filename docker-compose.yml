@@ -11,12 +11,16 @@ services:
       - 20000:20000
     env_file:
       - tobybot.env
+    volumes:
+      -	/docker/toby-bot-v3/volume1:/home/container
   db:
     container_name: TobyBot
     image: mariadb
     restart: unless-stopped
     environment:
       - MARIADB_ROOT_PASSWORD=xvNUiUhjmmftPMiyWagAcR6sEtQxPt
+    volumes:
+      -	/docker/toby-bot-v3/volume2:/home/container
 networks:
   tobybot:
     external: true
