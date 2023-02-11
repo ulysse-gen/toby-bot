@@ -36,7 +36,6 @@ volumes:
   mysql:
 networks:
   tobybot:
-    name: tobybot
     driver: bridge
     internal: true
   db_manage:
