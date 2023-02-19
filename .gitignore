@@ -114,3 +114,4 @@ dist
 /.gitconfig
 .cache/
 /temp
+MySQL.json
