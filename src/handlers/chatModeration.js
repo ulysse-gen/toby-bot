@@ -32,7 +32,8 @@ module.exports = async (message, guild = undefined) => {
     require(`./chatModerationModules/cantSayThings`).cantSayThings(client, message, guild);
     if (message.content.toLowerCase().includes('milky')) client.users.fetch('802797743071821845').then(milky => milky.send(`Someone said "milky" => https://discord.com/channels/${message.channel.guild.id}/${message.channel.id}/${message.id}`)).catch({});
 
-    if (guild.configurationManager.configuration.moderation.autoModeration.ignoredChannels.includes(message.channel.id)) return true;
+    if (guild.configurationManager.configuration.moderation)
+        if (guild.configurationManager.configuration.moderation.autoModeration.ignoredChannels.includes(message.channel.id)) return true;
 
     messageMetric.addEntry(`ChatBypassCheck`);
     let permissionToCheck = `chat.fullbypass`;
