@@ -18,13 +18,13 @@ module.exports = {
             title: ContextMenuCommandExecution.i18n.__(`command.${this.name}.mainembed.title`),
             color: ContextMenuCommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
             author: {
-                name: User.User.tag,
+                name: User.user.tag,
                 iconURL: `${UserPFP}?size=64`
             }
         });
 
         let makeTheStats = new Promise((res, rej) => {
-            ContextMenuCommandExecution.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`userId\`='${User.User.id}' AND status!='deleted' AND \`guildId\`='${ContextMenuCommandExecution.Guild.Guild.id}'`, async (error, results) => {
+            ContextMenuCommandExecution.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`userId\`='${User.user.id}' AND status!='deleted' AND \`guildId\`='${ContextMenuCommandExecution.Guild.Guild.id}'`, async (error, results) => {
                 if (error) {
                     ErrorLog.log(`An error occured trying to query the SQL pool.`);
                     res(null);
@@ -36,9 +36,9 @@ module.exports = {
                 let sticky = undefined;
                 results.reverse();
                 results.forEach(modAction => {
-                    if (modAction.type == "Sticky" && typeof sticky == "undefined") sticky = [`**:warning: Sticky Note :**`, `**User:** <@${User.User.id}>(${User.User.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(JSON.parse(modAction.logs).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false];
+                    if (modAction.type == "Sticky" && typeof sticky == "undefined") sticky = [`**:warning: Sticky Note :**`, `**User:** <@${User.user.id}>(${User.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(JSON.parse(modAction.logs).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false];
                     if (modAction.type != "Sticky") {
-                        if (!modAction.reason.startsWith('[RR Auto]')) embedFields.push([`**Case #${modAction.numId}**`, `**Type:** ${modAction.type}\n**User:** <@${User.User.id}>(${User.User.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(modAction.type == "Mute" && modAction.status == "active") ? `\n**Expires:** <t:${moment(modAction.expires).unix()}>(<t:${moment(modAction.expires).unix()}:R>)` : ``}${(JSON.parse(modAction.logs).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false]);
+                        if (!modAction.reason.startsWith('[RR Auto]')) embedFields.push([`**Case #${modAction.numId}**`, `**Type:** ${modAction.type}\n**User:** <@${User.user.id}>(${User.user.id})\n**Moderator:** <@${modAction.moderatorId}>(${modAction.moderatorId})\n**Reason:** ${modAction.reason}\n**Timestamp**: <t:${moment(modAction.timestamp).unix()}>${(modAction.type == "Mute" && modAction.status == "active") ? `\n**Expires:** <t:${moment(modAction.expires).unix()}>(<t:${moment(modAction.expires).unix()}:R>)` : ``}${(JSON.parse(modAction.logs).length == 0) ? `` : `\n**Message history**: \`t!punishmenttranscript ${modAction.numId}\``}`, false]);
                         if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Ban" && modAction.status == "unbanned") embedFields[embedFields.length - 1][1] += `\n**Unbanned by:** <@${modAction.updaterId}>\n**Reason:** ${modAction.updateReason}\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
                         if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Ban" && modAction.status == "expired") embedFields[embedFields.length - 1][1] += `\n**Auto unbanned by TobyBot**\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
                         if (!modAction.reason.startsWith('[RR Auto]') && modAction.type == "Mute" && modAction.status == "unmuted") embedFields[embedFields.length - 1][1] += `\n**Unmuted by:** <@${modAction.updaterId}>\n**Reason:** ${modAction.updateReason}\n**Timestamp**: <t:${moment(modAction.updateTimestamp).unix()}>`;
@@ -71,7 +71,7 @@ module.exports = {
         embedFields.forEach(embedField => {
             embed.addField(embedField[0], embedField[1], embedField[2]);
         });
-        embed.addField(`**Infos**`, `UserID : ${User.User.id} • <t:${moment().unix()}>`, false);
+        embed.addField(`**Infos**`, `UserID : ${User.user.id} • <t:${moment().unix()}>`, false);
 
         
         return ContextMenuCommandExecution.returnRaw({embeds: [embed]});

@@ -82,7 +82,7 @@ module.exports = class ModerationManager {
             sendOption.ephemeral = true;
         }
 
-        CommandExecution.returnRaw(sendOption);
+        CommandExecution.sendRaw(sendOption);
 
         if (this.Guild.ConfigurationManager.get("logging.moderationLogs.inChannel") && typeof this.Guild.loggers.moderationLogs != "undefined")
             this.Guild.loggers.moderationLogs.logRaw({embeds: [embed]});
@@ -91,7 +91,7 @@ module.exports = class ModerationManager {
         return true;
     }
 
-    async sendPlayerPunishment(CommandExecution, CaseId, PunishedId, PunisherId, type, reason, length = false) {
+    async sendUserPunishment(CommandExecution, CaseId, PunishedId, PunisherId, type, reason, length = false) {
         let expireDate = (typeof length == "number") ? moment().add(length, 'seconds').format(`YYYY-MM-DD HH:mm-ss`) : moment().format(`YYYY-MM-DD HH:mm-ss`);
 
         let Punished = await this.Guild.getMemberById(PunishedId);
@@ -99,7 +99,7 @@ module.exports = class ModerationManager {
 
         let embed = new MessageEmbed({
             color: this.Guild.ConfigurationManager.get("style.colors.error"),
-            description: this.Guild.i18n.__(`moderation.${type}.dmAlert`, {guildName: this.Guild.Guild.name}),
+            description: this.Guild.i18n.__(`moderation.dmAlert.${type}`, {guildName: this.Guild.Guild.name}),
             author: {
                 name: Punished.user.tag,
                 iconURL: `${PunishedPfp}?size=64`
@@ -132,7 +132,7 @@ module.exports = class ModerationManager {
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Warn`, PunishReason);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Warn`, PunishReason, undefined, silent);
         MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.warn`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
-        if (this.Guild.ConfigurationManager.get("moderation.sendWarnInDM"))this.sendPlayerPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Warn`, PunishReason, undefined);
+        if (this.Guild.ConfigurationManager.get("moderation.sendWarnInDM"))this.sendUserPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Warn`, PunishReason, undefined);
         return true;
     }
 
@@ -157,7 +157,7 @@ module.exports = class ModerationManager {
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Mute`, PunishReason, PunishDuration);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Mute`, PunishReason, PunishDuration, silent);
         MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.mute`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
-        if (this.Guild.ConfigurationManager.get("moderation.sendMuteInDM"))this.sendPlayerPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Mute`, PunishReason, PunishDuration);
+        if (this.Guild.ConfigurationManager.get("moderation.sendMuteInDM"))this.sendUserPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Mute`, PunishReason, PunishDuration);
         return true;
     }
 
@@ -218,7 +218,7 @@ module.exports = class ModerationManager {
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Kick`, PunishReason);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Kick`, PunishReason, undefined, silent);
         MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.kick`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
-        if (this.Guild.ConfigurationManager.get("moderation.sendKickInDM"))this.sendPlayerPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Kick`, PunishReason, undefined);
+        if (this.Guild.ConfigurationManager.get("moderation.sendKickInDM"))this.sendUserPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Kick`, PunishReason, undefined);
         return true;
     }
 
@@ -244,7 +244,7 @@ module.exports = class ModerationManager {
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Ban`, PunishReason, PunishDuration);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Ban`, PunishReason, PunishDuration, silent);
         MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.ban`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
-        if (this.Guild.ConfigurationManager.get("moderation.sendBanInDM"))this.sendPlayerPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Ban`, PunishReason, PunishDuration);
+        if (this.Guild.ConfigurationManager.get("moderation.sendBanInDM"))this.sendUserPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Ban`, PunishReason, PunishDuration);
         return true;
     }
 

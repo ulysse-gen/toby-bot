@@ -16,10 +16,10 @@ module.exports = {
 
         let embed = new MessageEmbed({
             title: CommandExecution.i18n.__(`command.${this.name}.embed.title`),
-            description: CommandExecution.i18n.__(`command.${this.name}.embed.description`, {userId: User.User.id, userTag: User.User.tag}),
+            description: CommandExecution.i18n.__(`command.${this.name}.embed.description`, {userId: User.user.id, userTag: User.user.tag}),
             color: User.displayHexColor,
             author: {
-                name: User.User.tag,
+                name: User.user.tag,
                 iconURL: `${UserPFP}?size=64`
             }
         });
@@ -44,12 +44,12 @@ module.exports = {
         let permissionsString = (userPermissions.length == 0) ? `None` : userPermissions.join(', ');
 
         embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.joined.name`), `<t:${moment(User.joinedTimestamp).unix()}>`, true);
-        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.registered.name`), `<t:${moment(User.User.createdTimestamp).unix()}>`, true);
+        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.registered.name`), `<t:${moment(User.user.createdTimestamp).unix()}>`, true);
         embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.roles.name`, {amount: userRoles.length}), roleString, false);
         embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.permissions.name`), permissionsString, false);
         embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.acknowledgements.name`), `${userAcknowledgements}`, false);
-        /*Custom Specifications for the bot itself*/if (User.User.id == CommandExecution.TobyBot.client.user.id) embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.specs.name`), CommandExecution.i18n.__(`command.${this.name}.embed.field.specs.content`), false);
-        embed.addField(`**Infos**`, `UserID: ${User.User.id} • <t:${moment().unix()}>`, false);
+        /*Custom Specifications for the bot itself*/if (User.user.id == CommandExecution.TobyBot.client.user.id) embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.specs.name`), CommandExecution.i18n.__(`command.${this.name}.embed.field.specs.content`), false);
+        embed.addField(`**Infos**`, `UserID: ${User.user.id} • <t:${moment().unix()}>`, false);
 
         return CommandExecution.returnRaw({embeds: [embed]});
     },
@@ -118,6 +118,6 @@ function toAcknowledgements(user, guild, userPermissions, ) {
     if (serverAdministratorArray.every(permission => {
             return userPermissions.includes(permission)
         })) currentAcknowledgements = `**Server Administrator**`;
-    if (guild.ownerId == User.User.id) currentAcknowledgements = `***Server Owner***`;
+    if (guild.ownerId == User.user.id) currentAcknowledgements = `***Server Owner***`;
     return currentAcknowledgements;
 }

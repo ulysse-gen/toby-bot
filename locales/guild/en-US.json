@@ -34,5 +34,41 @@
 				}
 			}
 		}
+	},
+	"moderation": {
+		"auditLog": {
+			"banReason": "Banned by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
+			"muteReason": "Muted by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
+			"unMuteReason": "Unmuted by {{{updaterTag}}}({{{updaterId}}}) for {{{updateReason}}}",
+			"kickReason": "Kicked by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
+			"unbanReason": "Unbanned by {{{updaterTag}}}({{{updaterId}}}) for {{{updateReason}}}",
+			"autoRemute": "Mute auto applied after re-join."
+		},
+		"dmAlert" : {
+			"Mute": "You have been muted in {{{guildName}}}",
+			"Warn": "You have been warned in {{{guildName}}}",
+			"Kick": "You have been kicked in {{{guildName}}}",
+			"Ban": "You have been banned in {{{guildName}}}"
+		}
+	},
+	"interaction": {
+		"russianroulette": {
+			"joined": "You joined the Russian Roulette. May the odds be ever in your favor!",
+			"alreadyJoined": "You have already joined!",
+			"canceled": "Russian Roulette canceled.",
+			"alive": {
+				"alive": "You are still alive!",
+				"eliminated": "I got bad news.."
+			},
+			"stop": "Russian Roulette stopped."
+		}
+	},
+	"configuration": {
+		"role": {
+			"cannotFetchRole": {
+				"title": "Could not fetch role.",
+				"description": "Could not fetch the specified role. Please make sure that you typed the right ID."
+			}
+		}
 	}
 }

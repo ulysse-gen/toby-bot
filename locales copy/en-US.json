@@ -1,9 +1,0 @@
-{
-	"bot.start": "bot.start",
-	"bot.events.attach": "bot.events.attach",
-	"bot.login": "bot.login",
-	"bot.api.started": "bot.api.started",
-	"bot.shuttingDown": "bot.shuttingDown",
-	"backend:bot.start": "backend:bot.start",
-	"backend:bot.starting": "backend:bot.starting"
-}

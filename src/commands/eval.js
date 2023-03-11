@@ -12,7 +12,7 @@ module.exports = {
         try {
             let evalValue = eval(CommandExecution.options.code);
             if (typeof evalValue != "undefined")return CommandExecution.replySuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.successExecution.title`), CommandExecution.i18n.__(`command.${this.name}.successExecution.description`, {evalValue: evalValue}));
-            return CommandExecution.replySuccessEmbed({slashOnly: true}, CommandExecution.i18n.__(`command.${this.name}.successExecution.title.noReturn`));
+            return CommandExecution.replySuccessEmbed({slashOnly: true}, CommandExecution.i18n.__(`command.${this.name}.successExecutionNoReturn.title`));
         } catch (error) {
             return CommandExecution.replyErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.error.failedExecution.title`), CommandExecution.i18n.__(`command.${this.name}.error.failedExecution.description`, {error: error}));
         }

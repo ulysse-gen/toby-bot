@@ -164,7 +164,7 @@ module.exports = class SQLPermissionManager extends SQLConfigurationManager {
 
     async userHasPermission(permission, guildUser, channel = undefined, useAdmin = false) {
         if (typeof guildUser != "object") throw new ErrorBuilder('Wrong type').setType("TYPE_ERROR").logError();
-        if (this.allowDevOnly.includes(permission) && guildUser.User.id == "231461358200291330")return true;
+        if (this.allowDevOnly.includes(permission) && guildUser.user.id == "231461358200291330")return true;
         if (this.neverAllow.includes(permission))return false;
         if (this.neverAllowGuildFocused.includes(permission) && useAdmin)return false;
         let isAdmin = (useAdmin) ? await guildUser.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true) : false;

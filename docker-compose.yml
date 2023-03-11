@@ -15,7 +15,7 @@ services:
     volumes:
       - mysql:/var/lib/mysql
     healthcheck:
-      test: "/usr/bin/mysql --user=root --password=$$MARIADB_ROOT_PASSWORD --execute \"SHOW DATABASES;\""
+      test: "/usr/bin/mysql --user=root --password=$$MARIADB_ROOT_PASSWORD --execute \"SELECT 'Database up and running !' as '';\""
       interval: 3s
       timeout: 1s
       retries: 5

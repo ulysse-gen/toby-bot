@@ -32,9 +32,9 @@ module.exports = {
         let embed = new MessageEmbed({
             title: CommandExecution.i18n.__(`command.${this.name}.embed.title`),
             color: CommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
-            description: CommandExecution.i18n.__(`command.${this.name}.embed.description`, {userId: User.User.id, punishmentType: Punishment.type.toLowerCase()}),
+            description: CommandExecution.i18n.__(`command.${this.name}.embed.description`, {userId: User.user.id, punishmentType: Punishment.type.toLowerCase()}),
             author: {
-                name: User.User.tag,
+                name: User.user.tag,
                 iconURL: `${UserPFP}?size=64`
             }
         });
@@ -69,7 +69,7 @@ module.exports = {
         embedFields.forEach(embedField => {
             embed.addField(embedField[0], embedField[1], embedField[2]);
         });
-        embed.addField(`**Infos**`, `UserID : ${User.User.id} • <t:${moment().unix()}>`, false);
+        embed.addField(`**Infos**`, `UserID : ${User.user.id} • <t:${moment().unix()}>`, false);
         
         return CommandExecution.returnRaw({embeds: [embed]});
     },

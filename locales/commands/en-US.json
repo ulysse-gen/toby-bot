@@ -40,169 +40,300 @@
 			"title": "About"
 		},
 		"avatar": {
-			"name": "command.avatar.name",
-			"description": "command.avatar.description",
+			"name": "Avatar",
+			"description": "Show a user's avatar.",
 			"option": {
 				"target": {
-					"description": "command.avatar.option.target.description"
+					"description": "The user to show the avatar of."
 				},
 				"public": {
-					"description": "command.avatar.option.public.description"
+					"description": "Show the public avatar instead of the server avatar."
 				}
 			}
 		},
 		"ban": {
-			"name": "command.ban.name",
-			"description": "command.ban.description",
+			"name": "Ban",
+			"description": "Ban a member from the guild.\nArgs order: <target> [duration] [reason]",
 			"option": {
 				"target": {
-					"description": "command.ban.option.target.description"
+					"description": "The target."
 				},
 				"reason": {
-					"description": "command.ban.option.reason.description"
+					"description": "The reason."
 				},
 				"duration": {
-					"description": "command.ban.option.duration.description"
+					"description": "The duration (ex: 30mn, 2h, 1d)."
+				}
+			},
+			"error": {
+				"noTargetSpecified": {
+					"title": "You are missing something!",
+					"description": "You need to specify the user you want to ban."
+				},
+				"noReasonSpecified": {
+					"title": "You are missing something!",
+					"description": "You need to specify the reason for the ban."
 				}
 			}
 		},
 		"configuration": {
-			"name": "command.configuration.name",
-			"description": "command.configuration.description",
+			"name": "Configuration",
+			"description": "Change the current guild's configuration.",
 			"subcommand": {
 				"help": {
-					"description": "command.configuration.subcommand.help.description"
+					"description": "Show the help for the configuration command, such as the available subcommands."
 				},
 				"load": {
-					"description": "command.configuration.subcommand.load.description"
+					"description": "Forcely load the configuration from the server. This should not be needed."
 				},
 				"save": {
-					"description": "command.configuration.subcommand.save.description"
+					"description": "Forcely save the configuration to the server. This should not be needed."
 				},
 				"set": {
-					"description": "command.configuration.subcommand.set.description"
+					"description": "Change a configuration value with its key."
 				},
 				"view": {
-					"description": "command.configuration.subcommand.view.description"
+					"description": "View a configuration key. Current value, default value and type are shown here."
 				},
 				"reset": {
-					"description": "command.configuration.subcommand.reset.description"
+					"description": "Reset a configuration key to its default value."
 				}
 			},
 			"option": {
 				"key": {
-					"description": "command.configuration.option.key.description"
+					"description": "Configuration key."
 				},
 				"value": {
-					"description": "command.configuration.option.value.description"
+					"description": "Configuration value."
 				}
+			},
+			"help": {
+				"title": "Shhhhhh.. dont tell anyone",
+				"description": "I havent done this part yet.."
+			},
+			"loaded": {
+				"title": "Configuration loaded.",
+				"description": "Configuration successfully loaded from the server."
+			},
+			"saved": {
+				"title": "Configuration saved.",
+				"description": "Configuration successfully saved to the server."
+			},
+			"error": {
+				"configUnchanged": {
+					"title": "Configuration unchanged.",
+					"description": "Looks like it was already that way sir."
+				}
+			},
+			"set": {
+				"title": "Configuration key defined.",
+				"description": "{{{name}}} successfully changed and saved."
+			},
+			"reset": {
+				"title": "Configuration key reset.",
+				"description": "{{{name}}} successfully reset and saved."
+			},
+			"view": {
+				"field": {
+					"value": {
+						"title": "**Value:**",
+						"description": "{{{value}}}"
+					},
+					"defaultvalue": {
+						"title": "**Default value:**",
+						"description": "{{{defaultValue}}}"
+					},
+					"type": {
+						"title": "**Type:**",
+						"description": "{{{type}}}"
+					},
+					"WebGUI": {
+						"title": "More on the Web Panel:",
+						"description": "This feature is coming later (hmm ofc it is)"
+					}
+				},
+				"title": "Configuration key {{{key}}}",
+				"description": "{{{description}}}"
 			}
 		},
 		"deletepunishment": {
-			"name": "command.deletepunishment.name",
-			"description": "command.deletepunishment.description",
+			"name": "Delete punishment",
+			"description": "Delete a punishment from the logs.",
 			"option": {
 				"caseid": {
-					"description": "command.deletepunishment.option.caseid.description"
+					"description": "The case ID of the punishment to remove."
 				},
 				"reason": {
-					"description": "command.deletepunishment.option.reason.description"
+					"description": "The reason for the removal."
 				}
 			}
 		},
 		"evaluate": {
-			"name": "command.evaluate.name",
-			"description": "command.evaluate.description",
+			"name": "Evaluate",
+			"description": "Execute raw javascript code. [This is obviously locked, sorry]",
 			"option": {
 				"code": {
-					"description": "command.evaluate.option.code.description"
+					"description": "The code to evaluate"
 				}
+			},
+			"error": {
+				"noCodeSpecified": {
+					"title": "Bro you suuuuuuck...",
+					"description": "PLEASE specify what you wont to execute, it makes no sense if you dont.."
+				},
+				"failedExecution": {
+					"title": "Evaluation exited with errors",
+					"description": "```{{{error}}}```"
+				}
+			},
+			"successExecution": {
+				"title": "Evaluation exited successfully",
+				"description": "```{{{evalValue}}}```"
+			},
+			"successExecutionNoReturn": {
+				"title": "Evaluation exited successfully with no return value."
 			}
 		},
 		"getapitoken": {
-			"name": "command.getapitoken.name",
-			"description": "command.getapitoken.description"
+			"name": "Get API Token",
+			"description": "Get a cute little API token to experience the amazing API I built."
 		},
 		"globalconfiguration": {
-			"name": "command.globalconfiguration.name",
-			"description": "command.globalconfiguration.description",
+			"name": "Global configuration",
+			"description": "Change the bot's configuration.",
 			"subcommand": {
 				"help": {
-					"description": "command.globalconfiguration.subcommand.help.description"
+					"description": "Show the help for the configuration command, such as the available subcommands."
 				},
 				"load": {
-					"description": "command.globalconfiguration.subcommand.load.description"
+					"description": "Forcely load the configuration from the server. This should not be needed."
 				},
 				"save": {
-					"description": "command.globalconfiguration.subcommand.save.description"
+					"description": "Forcely save the configuration to the server. This should not be needed."
 				},
 				"set": {
-					"description": "command.globalconfiguration.subcommand.set.description"
+					"description": "Change a configuration value with its key."
 				},
 				"view": {
-					"description": "command.globalconfiguration.subcommand.view.description"
+					"description": "View a configuration key. Current value, default value and type are shown here."
 				},
 				"reset": {
-					"description": "command.globalconfiguration.subcommand.reset.description"
+					"description": "Reset a configuration key to its default value."
 				}
 			},
 			"option": {
 				"key": {
-					"description": "command.globalconfiguration.option.key.description"
+					"description": "Configuration key."
 				},
 				"value": {
-					"description": "command.globalconfiguration.option.value.description"
+					"description": "Configuration value."
 				}
+			},
+			"help": {
+				"title": "Shhhhhh.. dont tell anyone",
+				"description": "I havent done this part yet.."
+			},
+			"loaded": {
+				"title": "Configuration loaded.",
+				"description": "Configuration successfully loaded from the server."
+			},
+			"saved": {
+				"title": "Configuration saved.",
+				"description": "Configuration successfully saved to the server."
+			},
+			"error": {
+				"configUnchanged": {
+					"title": "Configuration unchanged.",
+					"description": "Looks like it was already that way sir."
+				}
+			},
+			"set": {
+				"title": "Configuration key defined.",
+				"description": "{{{name}}} successfully changed and saved."
+			},
+			"reset": {
+				"title": "Configuration key reset.",
+				"description": "{{{name}}} successfully reset and saved."
+			},
+			"view": {
+				"field": {
+					"value": {
+						"title": "**Value:**",
+						"description": "{{{value}}}"
+					},
+					"defaultvalue": {
+						"title": "**Default value:**",
+						"description": "{{{defaultValue}}}"
+					},
+					"type": {
+						"title": "**Type:**",
+						"description": "{{{type}}}"
+					},
+					"WebGUI": {
+						"title": "More on the Web Panel:",
+						"description": "This feature is coming later (hmm ofc it is)"
+					}
+				},
+				"title": "Configuration key {{{key}}}",
+				"description": "{{{description}}}"
 			}
 		},
 		"globalpermission": {
-			"name": "command.globalpermission.name",
-			"description": "command.globalpermission.description",
+			"name": "Global permission",
+			"description": "Change the top level permissions.",
 			"subcommand": {
 				"help": {
-					"description": "command.globalpermission.subcommand.help.description"
+					"description": "Show some help."
 				},
 				"load": {
-					"description": "command.globalpermission.subcommand.load.description"
+					"description": "Forcely load the permissions from the server. This should not be needed."
 				},
 				"save": {
-					"description": "command.globalpermission.subcommand.save.description"
+					"description": "Forcely save the permissions to the server. This should not be needed."
 				},
 				"set": {
-					"description": "command.globalpermission.subcommand.set.description"
+					"description": "Set a permission key for a scope."
 				},
 				"view": {
-					"description": "command.globalpermission.subcommand.view.description"
+					"description": "View a permission key and its state for a scope."
 				},
 				"remove": {
-					"description": "command.globalpermission.subcommand.remove.description"
+					"description": "Remove a permission key from a scope."
 				}
 			},
 			"option": {
 				"target": {
-					"description": "command.globalpermission.option.target.description"
+					"description": "The target scope."
 				},
 				"permission": {
-					"description": "command.globalpermission.option.permission.description"
+					"description": "The permission key."
 				},
 				"value": {
-					"description": "command.globalpermission.option.value.description"
+					"description": "The permission value (true/false)."
 				},
 				"priority": {
-					"description": "command.globalpermission.option.priority.description"
+					"description": "The priority, the lower the better. (or the other way i dont remember lol)"
 				}
+			},
+			"help": {
+				"title": "Shhhhhh.. dont tell anyone",
+				"description": "I havent done this part yet.."
 			}
 		},
 		"help": {
-			"name": "command.help.name",
-			"description": "command.help.description",
+			"name": "Help",
+			"description": "Show a list of available commands, as well as their subcommands.",
 			"option": {
 				"searchkey": {
-					"description": "command.help.option.searchkey.description"
+					"description": "A string to search for. This can be a command name or alias."
 				},
 				"category": {
-					"description": "command.help.option.category.description"
+					"description": "The category to search for (no idea if this even works)."
 				}
+			},
+			"mainEmbed": {
+				"title": "Help",
+				"description": "Please execute `help help` to see how to get more help.\n**Here is the list of the {{{amount}}} commands available:** \n{{{list}}}"
 			}
 		},
 		"lastmessages": {
@@ -235,136 +366,164 @@
 			"searchThruPages": "Use `lastmessages <User> [page number]` to search through pages. [{{{currentPage}}}/{{{totalPages}}}]"
 		},
 		"moderationlogs": {
-			"name": "command.moderationlogs.name",
-			"description": "command.moderationlogs.description",
+			"name": "Moderation logs",
+			"description": "Show the moderation logs for a user.",
 			"option": {
 				"target": {
-					"description": "command.moderationlogs.option.target.description"
+					"description": "The user to look for."
 				},
 				"page": {
-					"description": "command.moderationlogs.option.page.description"
+					"description": "The page, if there are multiple pages."
 				}
-			}
+			},
+			"error": {
+				"noTargetSpecified": {
+					"title": "You are missing something!",
+					"description": "You need to specify the user."
+				}
+			},
+			"mainembed": {
+				"title": "Moderation logs"
+			},
+			"noLogs": "This user has no moderation logs.",
+			"searchThruPages": "command.moderationlogs.searchThruPages"
 		},
 		"moderationstatistics": {
-			"name": "command.moderationstatistics.name",
-			"description": "command.moderationstatistics.description",
+			"name": "Moderation statistics",
+			"description": "Show the moderation stats of a user. Warns, bans and mutes for defined periods.",
 			"option": {
 				"target": {
-					"description": "command.moderationstatistics.option.target.description"
+					"description": "The user to look for."
 				}
+			},
+			"mainembed": {
+				"title": "Moderation statistics"
 			}
 		},
 		"mute": {
-			"name": "command.mute.name",
-			"description": "command.mute.description",
+			"name": "Mute",
+			"description": "Mute a member.\nArgs order: <target> [duration] [reason]",
 			"option": {
 				"target": {
-					"description": "command.mute.option.target.description"
+					"description": "The user to mute."
 				},
 				"reason": {
-					"description": "command.mute.option.reason.description"
+					"description": "The reason."
 				},
 				"duration": {
-					"description": "command.mute.option.duration.description"
+					"description": "The duration (ex: 30mn, 2h, 1d)."
+				}
+			},
+			"error": {
+				"noTargetSpecified": {
+					"title": "You are missing something!",
+					"description": "You need to specify the user you want to mute."
+				},
+				"noReasonSpecified": {
+					"title": "You are missing something!",
+					"description": "You need to specify the reason for the mute."
 				}
 			}
 		},
 		"note": {
-			"name": "command.note.name",
-			"description": "command.note.description",
+			"name": "Note",
+			"description": "Basically a silent warn. Will show on modlogs but user wont get a message.",
 			"option": {
 				"target": {
-					"description": "command.note.option.target.description"
+					"description": "The user to note."
 				},
 				"reason": {
-					"description": "command.note.option.reason.description"
+					"description": "The reason aka the note."
 				}
 			}
 		},
 		"permission": {
-			"name": "command.permission.name",
-			"description": "command.permission.description",
+			"name": "Permission",
+			"description": "Change the guild level permissions.",
 			"subcommand": {
 				"help": {
-					"description": "command.permission.subcommand.help.description"
+					"description": "Show some help."
 				},
 				"load": {
-					"description": "command.permission.subcommand.load.description"
+					"description": "Forcely load the permissions from the server. This should not be needed."
 				},
 				"save": {
-					"description": "command.permission.subcommand.save.description"
+					"description": "Forcely save the permissions to the server. This should not be needed."
 				},
 				"set": {
-					"description": "command.permission.subcommand.set.description"
+					"description": "Set a permission key for a scope."
 				},
 				"view": {
-					"description": "command.permission.subcommand.view.description"
+					"description": "View a permission key and its state for a scope."
 				},
 				"remove": {
-					"description": "command.permission.subcommand.remove.description"
+					"description": "Remove a permission key from a scope."
 				}
 			},
 			"option": {
 				"target": {
-					"description": "command.permission.option.target.description"
+					"description": "The target scope."
 				},
 				"permission": {
-					"description": "command.permission.option.permission.description"
+					"description": "The permission key."
 				},
 				"value": {
-					"description": "command.permission.option.value.description"
+					"description": "The permission value (true/false)."
 				},
 				"priority": {
-					"description": "command.permission.option.priority.description"
+					"description": "The priority, the lower the better. (or the other way i dont remember lol)"
 				}
+			},
+			"help": {
+				"title": "Shhhhhh.. dont tell anyone",
+				"description": "I havent done this part yet.."
 			}
 		},
 		"punishmenttranscript": {
-			"name": "command.punishmenttranscript.name",
-			"description": "command.punishmenttranscript.description",
+			"name": "Punishment transcript",
+			"description": "Show the last saved messages of a member before a punishment.",
 			"option": {
 				"caseid": {
-					"description": "command.punishmenttranscript.option.caseid.description"
+					"description": "The case ID of the punishment to see the transcript of."
 				},
 				"page": {
-					"description": "command.punishmenttranscript.option.page.description"
+					"description": "The page, if there are multiple pages."
 				}
 			}
 		},
 		"purge": {
-			"name": "command.purge.name",
-			"description": "command.purge.description",
+			"name": "Purge",
+			"description": "Purge messages from a channel.",
 			"subcommand": {
 				"any": {
-					"description": "command.purge.subcommand.any.description"
+					"description": "Remove a number of messages from the channel."
 				},
 				"user": {
-					"description": "command.purge.subcommand.user.description"
+					"description": "Remove a number of messages from the channel sent by a certain user."
 				},
 				"match": {
-					"description": "command.purge.subcommand.match.description"
+					"description": "Remove a number of messages from the channel containing certain text."
 				}
 			},
 			"option": {
 				"amount": {
-					"description": "command.purge.option.amount.description"
+					"description": "The amount of messages to remove."
 				},
 				"user": {
 					"target": {
-						"description": "command.purge.option.user.target.description"
+						"description": "The messsages sender."
 					}
 				},
 				"match": {
 					"target": {
-						"description": "command.purge.option.match.target.description"
+						"description": "The text to search for."
 					}
 				}
 			}
 		},
 		"reload": {
-			"name": "command.reload.name",
-			"description": "command.reload.description"
+			"name": "Reload",
+			"description": "Reload some components of the bot."
 		},
 		"roleadder": {
 			"name": "command.roleadder.name",
@@ -453,134 +612,279 @@
 			}
 		},
 		"russianroulette": {
-			"name": "command.russianroulette.name",
-			"description": "command.russianroulette.description",
+			"name": "Russian roulette",
+			"description": "Run a russian roulette, join and hope for the best..",
 			"option": {
 				"starttimer": {
-					"description": "command.russianroulette.option.starttimer.description"
+					"description": "Define a custom time before the russian roulette starts. Time is in seconds."
 				},
 				"winners": {
-					"description": "command.russianroulette.option.winners.description"
+					"description": "The amount of winners."
 				},
 				"prize": {
-					"description": "command.russianroulette.option.prize.description"
+					"description": "The prize for the winner."
+				}
+			},
+			"button": {
+				"join": "Join",
+				"cancel": "Cancel",
+				"stop": "Stop",
+				"alive": "Am I alive ?"
+			},
+			"prestart": {
+				"title": "The Russian Roulette will start in {{{timer}}} seconds.",
+				"description": "**Click** on the **join button** below to join the **Russian Roulette** {{{prize}}}\nCurrent players **{{{playerAmount}}}** : {{{playerList}}}"
+			},
+			"joining": {
+				"title": "The Russian Roulette will start in {{{timer}}} seconds.",
+				"description": "**Click** on the **join button** below to join the **Russian Roulette** {{{prize}}}\nCurrent players **{{{playerAmount}}}** : {{{playerList}}}"
+			},
+			"startingsoon": {
+				"title": "The Russian Roulette is about to start !"
+			},
+			"cancel": {
+				"notenoughplayers": {
+					"title": "Russian Roulette canceled.",
+					"description": "Not enough players to start the russian roulette."
+				},
+				"interaction": {
+					"title": "command.russianroulette.cancel.interaction.title",
+					"description": "command.russianroulette.cancel.interaction.description"
+				},
+				"stopped": {
+					"title": "command.russianroulette.cancel.stopped.title",
+					"description": "command.russianroulette.cancel.stopped.description"
+				}
+			},
+			"canceled": {
+				"title": "The Russian Roulette has been canceled.",
+				"description": "The russian roulette has been canceled."
+			},
+			"starting": {
+				"title": "The Russian Roulette is starting !",
+				"description": "The Russian Roulette is starting ! Players: **{{{playerAmount}}}**."
+			},
+			"round": {
+				"title": "{{{playerTag}}} 🔫",
+				"description": "Rolling the barrel..",
+				"elimination": {
+					"title": "{{{playerTag}}} 💥🔫  **BANG**",
+					"description": "<@{{{playerId}}}> eliminated."
+				}
+			},
+			"finished": {
+				"title": "Russian Roulette finished !",
+				"description": "We can all applaud {{{winnersId}}} !"
+			},
+			"prize": {
+				"mute": {
+					"reason": "command.russianroulette.prize.mute.reason"
 				}
 			}
 		},
 		"samplecommand": {
-			"name": "command.samplecommand.name",
-			"description": "command.samplecommand.description",
+			"name": "Sample command",
+			"description": "This command is just a placeholder.",
 			"option": {
 				"sampleoption": {
-					"description": "command.samplecommand.option.sampleoption.description"
+					"description": "No idea what that is."
 				}
 			}
 		},
 		"say": {
-			"name": "command.say.name",
-			"description": "command.say.description",
+			"name": "Say",
+			"description": "Make the bot say things!",
 			"option": {
 				"text": {
-					"description": "command.say.option.text.description"
+					"description": "The text to be said by the bot."
 				},
 				"channel": {
-					"description": "command.say.option.channel.description"
+					"description": "The channel to send the message to."
 				},
 				"toggle": {
-					"description": "command.say.option.toggle.description"
+					"description": "Toggle say. When enabled the bot will remove and re say your messages."
 				}
 			}
 		},
 		"serverinformations": {
-			"name": "command.serverinformations.name",
-			"description": "command.serverinformations.description"
+			"name": "Server informations",
+			"description": "Shows informations about the current guild.",
+			"embed": {
+				"title": "Guild informations",
+				"field": {
+					"owner": {
+						"name": "Guld owner"
+					},
+					"serverId": {
+						"name": "Guild ID"
+					},
+					"description": {
+						"name": "Guild description"
+					},
+					"members": {
+						"name": "Members"
+					},
+					"channels": {
+						"name": "Channels"
+					},
+					"created": {
+						"name": "Created"
+					},
+					"roles": {
+						"name": "Roles"
+					},
+					"boosts": {
+						"name": "Boosts"
+					}
+				}
+			}
 		},
 		"sticky": {
-			"name": "command.sticky.name",
-			"description": "command.sticky.description",
+			"name": "Sticky",
+			"description": "Basically a sticky node. Will show on top on modlogs.",
 			"option": {
 				"target": {
-					"description": "command.sticky.option.target.description"
+					"description": "The user to sticky note."
 				},
 				"reason": {
-					"description": "command.sticky.option.reason.description"
+					"description": "The reason aka the note."
 				}
 			}
 		},
 		"unban": {
-			"name": "command.unban.name",
-			"description": "command.unban.description",
+			"name": "Unban",
+			"description": "Unban a member from the guild.",
 			"option": {
 				"target": {
-					"description": "command.unban.option.target.description"
+					"description": "The user to unban."
 				},
 				"reason": {
-					"description": "command.unban.option.reason.description"
+					"description": "The reason."
 				}
 			}
 		},
 		"unmute": {
-			"name": "command.unmute.name",
-			"description": "command.unmute.description",
+			"name": "Unmute",
+			"description": "Unmute a member.",
 			"option": {
 				"target": {
-					"description": "command.unmute.option.target.description"
+					"description": "The user to unmute."
 				},
 				"reason": {
-					"description": "command.unmute.option.reason.description"
+					"description": "The reason."
 				}
 			}
 		},
 		"userconfiguration": {
-			"name": "command.userconfiguration.name",
-			"description": "command.userconfiguration.description",
+			"name": "User configuration",
+			"description": "Change the your configuration.",
 			"subcommand": {
 				"help": {
-					"description": "command.userconfiguration.subcommand.help.description"
+					"description": "Show the help for the configuration command, such as the available subcommands."
 				},
 				"load": {
-					"description": "command.userconfiguration.subcommand.load.description"
+					"description": "Forcely load the configuration from the server. This should not be needed."
 				},
 				"save": {
-					"description": "command.userconfiguration.subcommand.save.description"
+					"description": "Forcely save the configuration to the server. This should not be needed."
 				},
 				"set": {
-					"description": "command.userconfiguration.subcommand.set.description"
+					"description": "Change a configuration value with its key."
 				},
 				"view": {
-					"description": "command.userconfiguration.subcommand.view.description"
+					"description": "View a configuration key. Current value, default value and type are shown here."
 				},
 				"reset": {
-					"description": "command.userconfiguration.subcommand.reset.description"
+					"description": "Reset a configuration key to its default value."
 				}
 			},
 			"option": {
 				"key": {
-					"description": "command.userconfiguration.option.key.description"
+					"description": "Configuration key."
 				},
 				"value": {
-					"description": "command.userconfiguration.option.value.description"
+					"description": "Configuration value."
 				}
+			},
+			"help": {
+				"title": "Shhhhhh.. dont tell anyone",
+				"description": "I havent done this part yet.."
+			},
+			"loaded": {
+				"title": "Configuration loaded.",
+				"description": "Configuration successfully loaded from the server."
+			},
+			"saved": {
+				"title": "Configuration saved.",
+				"description": "Configuration successfully saved to the server."
+			},
+			"error": {
+				"configUnchanged": {
+					"title": "Configuration unchanged.",
+					"description": "Looks like it was already that way sir."
+				}
+			},
+			"set": {
+				"title": "Configuration key defined.",
+				"description": "{{{name}}} successfully changed and saved."
+			},
+			"reset": {
+				"title": "Configuration key reset.",
+				"description": "{{{name}}} successfully reset and saved."
+			},
+			"view": {
+				"field": {
+					"value": {
+						"title": "**Value:**",
+						"description": "{{{value}}}"
+					},
+					"defaultvalue": {
+						"title": "**Default value:**",
+						"description": "{{{defaultValue}}}"
+					},
+					"type": {
+						"title": "**Type:**",
+						"description": "{{{type}}}"
+					},
+					"WebGUI": {
+						"title": "More on the Web Panel:",
+						"description": "This feature is coming later (hmm ofc it is)"
+					}
+				},
+				"title": "Configuration key {{{key}}}",
+				"description": "{{{description}}}"
 			}
 		},
 		"warn": {
-			"name": "command.warn.name",
-			"description": "command.warn.description",
+			"name": "Warning",
+			"description": "Warn a member, the user will receive a DM.",
 			"option": {
 				"target": {
-					"description": "command.warn.option.target.description"
+					"description": "The user to warn."
 				},
 				"reason": {
-					"description": "command.warn.option.reason.description"
+					"description": "The reason."
 				}
 			}
 		},
 		"whois": {
-			"name": "command.whois.name",
-			"description": "command.whois.description",
+			"name": "Whois",
+			"description": "Show some infos about a user.",
 			"option": {
 				"target": {
-					"description": "command.whois.option.target.description"
+					"description": "The user to show infos for."
+				}
+			}
+		},
+		"generic": {
+			"unknownSubCommand": {
+				"title": "Unknown subcommand.",
+				"description": "Could not find this subcommand. You may find what you are searching for executing `help {{{command}}}`"
+			},
+			"configuration": {
+				"first-init": {
+					"title": "First initialization",
+					"description": "It appears like it is the first time you are running this command. Your configuration has been created and you should now be able to repeat the command."
 				}
 			}
 		}
@@ -592,9 +896,610 @@
 				"description": "You are missing the permission `{{{permission}}}`."
 			},
 			"unknownCommand": {
-				"title": "commands.generic.unknownCommand.title",
-				"description": "commands.generic.unknownCommand.description"
+				"title": "Unknown command.",
+				"description": "Could not find this command."
 			}
+		}
+	},
+	"moderation": {
+		"cannotBan": {
+			"title": "Could not ban this user.",
+			"description": "An error occured banning this user. This may occur if the user rank is above mine."
+		},
+		"muteRoleUndefined": {
+			"title": "Could not mute.",
+			"description": "You must set the mute role before being able to use this command. `configuration set moderation.muteRole roleId`"
+		}
+	},
+	"commandsHelp": {
+		"title": "Help for the command {{{name}}}",
+		"command": {
+			"configuration": {
+				"help": {
+					"subcommand": {
+						"description": "Show the help for the configuration command, such as the available subcommands."
+					}
+				},
+				"load": {
+					"subcommand": {
+						"description": "Forcely load the configuration from the server. This should not be needed."
+					}
+				},
+				"save": {
+					"subcommand": {
+						"description": "Forcely save the configuration to the server. This should not be needed."
+					}
+				},
+				"set": {
+					"key": {
+						"description": "The configuration key to set."
+					},
+					"value": {
+						"description": "The new value to define."
+					},
+					"subcommand": {
+						"description": "Change a configuration value with its key."
+					}
+				},
+				"view": {
+					"key": {
+						"description": "The configuration key to view."
+					},
+					"subcommand": {
+						"description": "View a configuration key. Current value, default value and type are shown here."
+					}
+				},
+				"reset": {
+					"key": {
+						"description": "The configuration key to reset."
+					},
+					"subcommand": {
+						"description": "Reset a configuration key to its default value."
+					}
+				}
+			},
+			"globalpermission": {
+				"help": {
+					"subcommand": {
+						"description": "Show the help for the global permission command, such as the available subcommands."
+					}
+				},
+				"load": {
+					"subcommand": {
+						"description": "Forcely load the permissions from the server. This should not be needed."
+					}
+				},
+				"save": {
+					"subcommand": {
+						"description": "Forcely save the permissions to the server. This should not be needed."
+					}
+				},
+				"set": {
+					"target": {
+						"description": "The target scope."
+					},
+					"permission": {
+						"description": "The permission key."
+					},
+					"value": {
+						"description": "The permission value (true/false)."
+					},
+					"priority": {
+						"description": "The priority, the lower the better. (or the other way i dont remember lol)"
+					},
+					"subcommand": {
+						"description": "{{{command}}}"
+					}
+				},
+				"view": {
+					"target": {
+						"description": "The target scope."
+					},
+					"permission": {
+						"description": "The permission key."
+					},
+					"subcommand": {
+						"description": "{{{command}}}"
+					}
+				},
+				"remove": {
+					"target": {
+						"description": "The target scope."
+					},
+					"permission": {
+						"description": "The permission key."
+					},
+					"subcommand": {
+						"description": "{{{command}}}"
+					}
+				}
+			},
+			"userconfiguration": {
+				"help": {
+					"subcommand": {
+						"description": "Show the help for the user configuration command, such as the available subcommands."
+					}
+				},
+				"load": {
+					"subcommand": {
+						"description": "Forcely load the configuration from the server. This should not be needed."
+					}
+				},
+				"save": {
+					"subcommand": {
+						"description": "Forcely save the configuration to the server. This should not be needed."
+					}
+				},
+				"set": {
+					"key": {
+						"description": "The configuration key to set."
+					},
+					"value": {
+						"description": "The new value to define."
+					},
+					"subcommand": {
+						"description": "Change a configuration value with its key."
+					}
+				},
+				"view": {
+					"key": {
+						"description": "The configuration key to view."
+					},
+					"subcommand": {
+						"description": "View a configuration key. Current value, default value and type are shown here."
+					}
+				},
+				"reset": {
+					"key": {
+						"description": "The configuration key to reset."
+					},
+					"subcommand": {
+						"description": "Reset a configuration key to its default value."
+					}
+				}
+			},
+			"globalconfiguration": {
+				"help": {
+					"subcommand": {
+						"description": "Show the help for the global configuration command, such as the available subcommands."
+					}
+				},
+				"load": {
+					"subcommand": {
+						"description": "Forcely load the configuration from the server. This should not be needed."
+					}
+				},
+				"save": {
+					"subcommand": {
+						"description": "Forcely save the configuration to the server. This should not be needed."
+					}
+				},
+				"set": {
+					"key": {
+						"description": "The configuration key to set."
+					},
+					"value": {
+						"description": "The new value to define."
+					},
+					"subcommand": {
+						"description": "Change a configuration value with its key."
+					}
+				},
+				"view": {
+					"key": {
+						"description": "The configuration key to view."
+					},
+					"subcommand": {
+						"description": "View a configuration key. Current value, default value and type are shown here."
+					}
+				},
+				"reset": {
+					"key": {
+						"description": "The configuration key to reset."
+					},
+					"subcommand": {
+						"description": "Reset a configuration key to its default value."
+					}
+				}
+			},
+			"permission": {
+				"help": {
+					"subcommand": {
+						"description": "Show the help for the permission command, such as the available subcommands."
+					}
+				},
+				"load": {
+					"subcommand": {
+						"description": "Forcely load the permissions from the server. This should not be needed."
+					}
+				},
+				"save": {
+					"subcommand": {
+						"description": "Forcely save the permissions to the server. This should not be needed."
+					}
+				},
+				"set": {
+					"target": {
+						"description": "The target scope."
+					},
+					"permission": {
+						"description": "The permission key."
+					},
+					"value": {
+						"description": "The permission value (true/false)."
+					},
+					"priority": {
+						"description": "The priority, the lower the better. (or the other way i dont remember lol)"
+					},
+					"subcommand": {
+						"description": "{{{command}}}"
+					}
+				},
+				"view": {
+					"target": {
+						"description": "The target scope."
+					},
+					"permission": {
+						"description": "The permission key."
+					},
+					"subcommand": {
+						"description": "{{{command}}}"
+					}
+				},
+				"remove": {
+					"target": {
+						"description": "The target scope."
+					},
+					"permission": {
+						"description": "The permission key."
+					},
+					"subcommand": {
+						"description": "{{{command}}}"
+					}
+				}
+			},
+			"avatar": {
+				"target": {
+					"user": {
+						"description": "The user to show the avatar of."
+					}
+				},
+				"public": {
+					"boolean": {
+						"description": "Show the public avatar instead of the server avatar."
+					}
+				}
+			},
+			"ban": {
+				"target": {
+					"user": {
+						"description": "The user to ban."
+					}
+				},
+				"reason": {
+					"string": {
+						"description": "The reason."
+					}
+				},
+				"duration": {
+					"string": {
+						"description": "The duration (ex: 30mn, 2h, 1d)."
+					}
+				}
+			},
+			"deletepunishment": {
+				"caseid": {
+					"number": {
+						"description": "The case ID of the punishment to remove."
+					}
+				},
+				"reason": {
+					"string": {
+						"description": "The reason for the removal."
+					}
+				}
+			},
+			"lastmessages": {
+				"target": {
+					"user": {
+						"description": "The user to see the last messages of."
+					}
+				},
+				"page": {
+					"integer": {
+						"description": "The page, if there are multiple pages."
+					}
+				}
+			},
+			"moderationlogs": {
+				"target": {
+					"user": {
+						"description": "The user to see the moderation logs of."
+					}
+				},
+				"page": {
+					"integer": {
+						"description": "The page, if there are multiple pages."
+					}
+				}
+			},
+			"moderationstatistics": {
+				"target": {
+					"user": {
+						"description": "The user to see the moderation stats of."
+					}
+				}
+			},
+			"mute": {
+				"target": {
+					"user": {
+						"description": "The user to mute."
+					}
+				},
+				"reason": {
+					"string": {
+						"description": "The reason."
+					}
+				},
+				"duration": {
+					"string": {
+						"description": "The duration (ex: 30mn, 2h, 1d)."
+					}
+				}
+			},
+			"note": {
+				"target": {
+					"user": {
+						"description": "The user to note."
+					}
+				},
+				"reason": {
+					"string": {
+						"description": "The reason aka the note."
+					}
+				}
+			},
+			"punishmenttranscript": {
+				"caseid": {
+					"number": {
+						"description": "The case ID of the punishment to see the transcript of."
+					}
+				},
+				"page": {
+					"integer": {
+						"description": "The page, if there are multiple pages."
+					}
+				}
+			},
+			"purge": {
+				"any": {
+					"amount": {
+						"description": "The amount of messages to remove."
+					},
+					"subcommand": {
+						"description": "Remove a number of messages from the channel."
+					}
+				},
+				"user": {
+					"target": {
+						"description": "The user to remove messages from."
+					},
+					"amount": {
+						"description": "The amount of messages to remove."
+					},
+					"subcommand": {
+						"description": "Remove a number of messages from the channel sent by a certain user."
+					}
+				},
+				"match": {
+					"target": {
+						"description": "The text to search for."
+					},
+					"amount": {
+						"description": "The amount of messages to remove."
+					},
+					"subcommand": {
+						"description": "Remove a number of messages from the channel containing certain text."
+					}
+				}
+			},
+			"roleadder": {
+				"addrole": {
+					"role": {
+						"description": "The role to add."
+					},
+					"subcommand": {
+						"description": "Add a role to the list of roles to be added."
+					}
+				},
+				"removerole": {
+					"role": {
+						"description": "The role to remove."
+					},
+					"subcommand": {
+						"description": "Remove a role from the list of roles to be added."
+					}
+				},
+				"addtoblacklist": {
+					"role": {
+						"description": "The role to add."
+					},
+					"subcommand": {
+						"description": "Add a role to the blacklist. User having this role wont be fetched."
+					}
+				},
+				"removefromblacklist": {
+					"role": {
+						"description": "The role to remove."
+					},
+					"subcommand": {
+						"description": "Remove a role from the blacklist. User having this role wont be fetched."
+					}
+				},
+				"addtowhitelist": {
+					"role": {
+						"description": "The role to add."
+					},
+					"subcommand": {
+						"description": "Add a role to the whitelist. User will must have those roles to be fetched."
+					}
+				},
+				"removefromwhitelist": {
+					"role": {
+						"description": "The role to remove."
+					},
+					"subcommand": {
+						"description": "Remove a role from the whitelist. User will must have those roles to be fetched."
+					}
+				},
+				"logaddedusers": {
+					"value": {
+						"description": "True/False"
+					},
+					"subcommand": {
+						"description": "Choose to log the added users or not."
+					}
+				},
+				"prepare": {
+					"subcommand": {
+						"description": "Fetch the users within settings."
+					}
+				},
+				"trigger": {
+					"subcommand": {
+						"description": "Add roles to the users. Be careful, this cannot be undone."
+					}
+				},
+				"clear": {
+					"subcommand": {
+						"description": "Clear a pending role adding process. (Clear a previously done prepare)"
+					}
+				},
+				"fixroles": {
+					"subcommand": {
+						"description": "Fix roles in the lists. (Remove #deleted-roles)"
+					}
+				}
+			},
+			"russianroulette": {
+				"starttimer": {
+					"integer": {
+						"description": "The amount of time before the Russian Roulette starts, in seconds."
+					}
+				},
+				"winners": {
+					"integer": {
+						"description": "The amount of winners."
+					}
+				},
+				"prize": {
+					"string": {
+						"description": "The prize for the winner."
+					}
+				}
+			},
+			"samplecommand": {
+				"sampleoption": {
+					"string": {
+						"description": "No idea what this is."
+					}
+				}
+			},
+			"say": {
+				"text": {
+					"string": {
+						"description": "The text to be said by the bot."
+					}
+				},
+				"channel": {
+					"channel": {
+						"description": "The channel to send the message to."
+					}
+				},
+				"toggle": {
+					"boolean": {
+						"description": "Toggle say. When enabled the bot will remove and re say your messages."
+					}
+				}
+			},
+			"sticky": {
+				"target": {
+					"user": {
+						"description": "The user to sticky note."
+					}
+				},
+				"reason": {
+					"string": {
+						"description": "The reason aka the note."
+					}
+				}
+			},
+			"unban": {
+				"target": {
+					"user": {
+						"description": "The user to unban."
+					}
+				},
+				"reason": {
+					"string": {
+						"description": "The reason."
+					}
+				}
+			},
+			"unmute": {
+				"target": {
+					"user": {
+						"description": "The user to unmute."
+					}
+				},
+				"reason": {
+					"string": {
+						"description": "The reason."
+					}
+				}
+			},
+			"warn": {
+				"target": {
+					"user": {
+						"description": "The user to warn."
+					}
+				},
+				"reason": {
+					"string": {
+						"description": "The reason."
+					}
+				}
+			},
+			"whois": {
+				"target": {
+					"user": {
+						"description": "The user to show infos for."
+					}
+				}
+			}
+		},
+		"generic": {
+			"type": {
+				"undefined": "Undefined (thats a bug)",
+				"subcommand": "Subcommand",
+				"string": "String (Text)",
+				"integer": "Integer",
+				"boolean": "Boolean (True / False)",
+				"user": "User (ID, Mention or Tag)",
+				"channel": "User (ID, Mention)",
+				"role": "Role (ID or Mention)",
+				"mentionnable": "User or Role (ID or Mention)",
+				"number": "Number",
+				"attachment": "Attachment"
+			}
+		},
+		"arg": {
+			"fieldTitle": "**{{{required}}}[{{{type}}}] {{{name}}}**",
+			"fieldDescription": " {{{description}}}"
+		},
+		"subArg": {
+			"fieldTitle": "\n**┗{{{required}}}[{{{type}}}] {{{name}}}**",
+			"fieldDescription": " {{{description}}}"
 		}
 	}
 }

@@ -248,12 +248,12 @@ module.exports = {
             CommandExecution.returnSuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.startingAddingCycle.title`, {amount: CommandExecution.Guild.data.roleadder.queue.size}));
             CommandExecution.Guild.data.roleadder.queue.forEach(async user => {
                 let LogUserSave = {
-                    user: User.User.id,
-                    reason: CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.User.User.tag, TriggerUserId: CommandExecution.User.User.id}),
+                    user: User.user.id,
+                    reason: CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.User.user.tag, TriggerUserId: CommandExecution.User.user.id}),
                     roles: CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd'),
                 }
 
-                await user.roles.add(RolesToAdd, CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.User.User.tag, TriggerUserId: CommandExecution.User.User.id})).then(() => {
+                await user.roles.add(RolesToAdd, CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.User.user.tag, TriggerUserId: CommandExecution.User.user.id})).then(() => {
                     CommandExecution.Guild.data.roleadder.queue.success.push(LogUserSave);
                 }).catch(() => {
                     CommandExecution.Guild.data.roleadder.queue.failed.push(LogUserSave);

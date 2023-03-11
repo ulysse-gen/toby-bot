@@ -57,7 +57,7 @@ exports.execute = async (req, res, next) => {
                 guild: Guild,
                 user: User
             };
-            message.author = User.User;
+            message.author = User.user;
             return message;
         }).catch(e => {
             return res.status(500).json(req.__('error.commands.cannot_initiate'));
