@@ -123,6 +123,10 @@
 				"configUnchanged": {
 					"title": "Configuration unchanged.",
 					"description": "Looks like it was already that way sir."
+				},
+				"keyNotFound": {
+					"title": "Count not find this key.",
+					"description": "This configuration entry does not exist."
 				}
 			},
 			"set": {
@@ -245,6 +249,10 @@
 				"configUnchanged": {
 					"title": "Configuration unchanged.",
 					"description": "Looks like it was already that way sir."
+				},
+				"keyNotFound": {
+					"title": "Count not find this key.",
+					"description": "This configuration entry does not exist."
 				}
 			},
 			"set": {
@@ -477,6 +485,9 @@
 			"help": {
 				"title": "Shhhhhh.. dont tell anyone",
 				"description": "I havent done this part yet.."
+			},
+			"set": {
+				"title": "command.permission.set.title"
 			}
 		},
 		"punishmenttranscript": {
@@ -822,6 +833,10 @@
 				"configUnchanged": {
 					"title": "Configuration unchanged.",
 					"description": "Looks like it was already that way sir."
+				},
+				"keyNotFound": {
+					"title": "Count not find this key.",
+					"description": "This configuration entry does not exist."
 				}
 			},
 			"set": {

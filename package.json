@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "dumb-init node ./src/index.js",
-    "start-dev": "nodemon ./src/index.js --ignore locales/"
+    "start-dev": "nodemon --legacy-watch ./src/index.js --ignore locales/"
   },
   "author": "UlysseGenie#9555",
   "license": "ISC",

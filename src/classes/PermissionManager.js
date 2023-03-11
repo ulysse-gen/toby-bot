@@ -10,7 +10,7 @@ module.exports = class PermissionManager extends ConfigurationManager {
     constructor() {
         super();
 
-        this.permission = this.configuration;
+        this.permissions = this.configuration;
 
         this.initialized = false;
     }
