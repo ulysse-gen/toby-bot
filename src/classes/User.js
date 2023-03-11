@@ -13,7 +13,7 @@ const SQLConfigurationManager = require('./SQLConfigurationManager');
 module.exports = class User {
     constructor(UserManager, user) {
         this.UserManager = UserManager;
-        this.user = user;
+        this.User = user;
         this.id = user.id;
 
         this.initialized = false;

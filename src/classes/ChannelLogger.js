@@ -11,7 +11,7 @@ module.exports = class ChannelLogger {
 
     async initialize() {
         if (!this.Config.inChannel || this.Config.channel == "none")return false;
-        return this.Guild.guild.channels.fetch(this.Config.channel).then(async channel => {
+        return this.Guild.Guild.channels.fetch(this.Config.channel).then(async channel => {
             let CanSend = await channel.permissionsFor(this.Guild.GuildManager.TobyBot.client.user.id).has(Permissions.FLAGS.SEND_MESSAGES);
             if (typeof CanSend != "boolean" ||!CanSend)return false;
             this.channel = channel;

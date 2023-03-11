@@ -56,9 +56,9 @@ module.exports = {
             }
             let User = await CommandExecution.Guild.getUserFromArg(CommandExecution.options.target);
             if (typeof User == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.description`, {}));
-            await CommandExecution.replyMainEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.purging.user.title`, { userTag: User.user.tag, amount: CommandExecution.options.amount }), CommandExecution.i18n.__(`command.${this.name}.purging.user.description`, { userTag: User.user.tag, amount: CommandExecution.options.amount }));
+            await CommandExecution.replyMainEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.purging.user.title`, { userTag: User.User.tag, amount: CommandExecution.options.amount }), CommandExecution.i18n.__(`command.${this.name}.purging.user.description`, { userTag: User.User.tag, amount: CommandExecution.options.amount }));
             
-            let filterFunction = (!CommandExecution.IsSlashCommand) ? (message) => message.author.id == User.user.id : (message) => (message.author.id == User.user.id && message.id != CommandExecution.Trigger.id);
+            let filterFunction = (!CommandExecution.IsSlashCommand) ? (message) => message.author.id == User.User.id : (message) => (message.author.id == User.User.id && message.id != CommandExecution.Trigger.id);
             
             let PurgedStatus = await purgeMessages(CommandExecution.Channel, CommandExecution.options.amount, filterFunction, lastMessage.id);
             let PurgedAmount = PurgedStatus.amount;
@@ -67,7 +67,7 @@ module.exports = {
                 if (PurgedStatus.error.fatal)return CommandExecution.returnErrorEmbed({followUpIfReturned: true, ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.fatalError.title`), CommandExecution.i18n.__(`command.${this.name}.error.fatalError.description`, {error: CommandExecution.i18n.__(`command.commandError.${PurgedStatus.error.name}`)}));
                 CommandExecution.returnWarningEmbed({followUpIfReturned: true, ephemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.nonFatalError.title`), CommandExecution.i18n.__(`command.${this.name}.error.nonFatalError.description`, {error: CommandExecution.i18n.__(`command.commandError.${PurgedStatus.error.name}`)}));
             }
-            return CommandExecution.returnSuccessEmbed({followUpIfReturned: true, ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.purged.user.title`, { userTag: User.user.tag, amount: CommandExecution.options.amount, realAmount: PurgedAmount }), CommandExecution.i18n.__(`command.${this.name}.purged.user.description`, { userTag: User.user.tag, amount: CommandExecution.options.amount, realAmount: PurgedAmount }));
+            return CommandExecution.returnSuccessEmbed({followUpIfReturned: true, ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.purged.user.title`, { userTag: User.User.tag, amount: CommandExecution.options.amount, realAmount: PurgedAmount }), CommandExecution.i18n.__(`command.${this.name}.purged.user.description`, { userTag: User.User.tag, amount: CommandExecution.options.amount, realAmount: PurgedAmount }));
         }
 
         let purgeMatch = async () => {

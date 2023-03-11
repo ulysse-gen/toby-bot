@@ -23,7 +23,7 @@ module.exports = class AutoModerationRun {
         this.startTimer = moment();
         console.log(`AutoModeration Scan started [0ms]`)
 
-        this.User = await this.message.TobyBot.guild.guild.members.fetch(this.User);
+        this.User = await this.message.TobyBot.Guild.Guild.members.fetch(this.User);
         //if (this.AutoModeration.hasPermission(this, `automod.*`))return true;
         if (!this.Guild.ConfigurationManager.get("autoModeration.status"))return true;
 
@@ -102,10 +102,10 @@ module.exports = class AutoModerationRun {
         if (await this.AutoModeration.TobyBot.ConfigurationManager.get('logging.autoModerationLogs.inChannel') && typeof this.AutoModeration.TobyBot.loggers.autoModerationLogs != "undefined"){
             let embed = new MessageEmbed().setTitle(this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.title')).setDescription(this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.description', {violations: Object.keys(this.violationsProcessed).map(e => {
                 return `**${e}**: ${this.violationsProcessed[e].triggers.length} violations.`;
-            }).join('\n')})).setColor(this.Guild.ConfigurationManager.get('style.colors.main')).setAuthor({name: this.User.user.tag, iconURL: await this.Guild.getUserPfp(this.User)});
+            }).join('\n')})).setColor(this.Guild.ConfigurationManager.get('style.colors.main')).setAuthor({name: this.User.User.tag, iconURL: await this.Guild.getUserPfp(this.User)});
             embed.addField(this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.field.user.title'), this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.field.user.description', {userId: this.User.id}), true);
             embed.addField(this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.field.channel.title'), this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.field.channel.description', {channelId: this.Channel.id}), true);
-            embed.addField(this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.field.guild.title'), this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.field.guild.description', {guildId: this.Guild.guild.id}), true);
+            embed.addField(this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.field.guild.title'), this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.field.guild.description', {guildId: this.Guild.Guild.id}), true);
             embed.addField(this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.field.violationsCount.title'), this.AutoModeration.TobyBot.i18n.__('channelLogging.autoModerationLogs.field.violationsCount.description', {count: this.violations.length}), true);
             this.AutoModeration.TobyBot.loggers.autoModerationLogs.logRaw({embeds: [embed]});
         }
@@ -113,7 +113,7 @@ module.exports = class AutoModerationRun {
         if (await this.Guild.ConfigurationManager.get('logging.autoModerationLogs.inChannel') && typeof this.Guild.loggers.autoModerationLogs != "undefined"){
             let embed = new MessageEmbed().setTitle(this.Guild.i18n.__('channelLogging.autoModerationLogs.title')).setDescription(this.Guild.i18n.__('channelLogging.autoModerationLogs.description', {violations: Object.keys(this.violationsProcessed).map(e => {
                 return `**${e}**: ${this.violationsProcessed[e].triggers.length} violations.`;
-            }).join('\n')})).setColor(this.Guild.ConfigurationManager.get('style.colors.main')).setAuthor({name: this.User.user.tag, iconURL: await this.Guild.getUserPfp(this.User)});
+            }).join('\n')})).setColor(this.Guild.ConfigurationManager.get('style.colors.main')).setAuthor({name: this.User.User.tag, iconURL: await this.Guild.getUserPfp(this.User)});
             embed.addField(this.Guild.i18n.__('channelLogging.autoModerationLogs.field.user.title'), this.Guild.i18n.__('channelLogging.autoModerationLogs.field.user.description', {userId: this.User.id}), true);
             embed.addField(this.Guild.i18n.__('channelLogging.autoModerationLogs.field.channel.title'), this.Guild.i18n.__('channelLogging.autoModerationLogs.field.channel.description', {channelId: this.Channel.id}), true);
             embed.addField(this.Guild.i18n.__('channelLogging.autoModerationLogs.field.violationsCount.title'), this.Guild.i18n.__('channelLogging.autoModerationLogs.field.violationsCount.description', {count: this.violations.length}), true);

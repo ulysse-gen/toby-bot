@@ -320,7 +320,7 @@ module.exports = class TobyBot {
             if (this.ConfigurationManager.get('communityGuild').replaceAll(' ', '') == "")return false;
             this.CommunityGuild = await this.GuildManager.getGuildById(this.ConfigurationManager.get('communityGuild'));
             if (typeof this.CommunityGuild == "undefined")return false;
-            if (this.CommunityGuild.guild.available == false)return false;
+            if (this.CommunityGuild.Guild.available == false)return false;
             this.ConfigurationManager.i18n = this.CommunityGuild.i18n; //Attach Global PermissionManager to the client objects
             this.PermissionManager.i18n = this.CommunityGuild.i18n; //Attach Global PermissionManager to the client objects
             return (typeof this.CommunityGuild == "undefined") ? false : true;

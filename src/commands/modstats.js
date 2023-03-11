@@ -29,7 +29,7 @@ module.exports = {
             title: CommandExecution.i18n.__(`command.${this.name}.mainembed.title`),
             color: CommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
             author: {
-                name: User.user.tag,
+                name: User.User.tag,
                 iconURL: `${UserPFP}?size=64`
             }
         });
@@ -56,7 +56,7 @@ module.exports = {
                 }
             }
 
-            CommandExecution.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`moderatorId\`='${User.user.id}' AND \`guildId\`='${CommandExecution.Guild.guild.id}'`, async (error, results) => {
+            CommandExecution.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`moderatorId\`='${User.User.id}' AND \`guildId\`='${CommandExecution.Guild.Guild.id}'`, async (error, results) => {
                 if (error) {
                     ErrorLog.log(`An error occured trying to query the SQL pool.`);
                     res(stats);
@@ -109,14 +109,14 @@ module.exports = {
         embed.addField(`**Total (last 7 days):**`, `${stats.sevenDays.mutes + stats.sevenDays.bans + stats.sevenDays.kicks + stats.sevenDays.warns}`, true);
         embed.addField(`**Total (last 30 days):**`, `${stats.thirtyDays.mutes + stats.thirtyDays.bans + stats.thirtyDays.kicks + stats.thirtyDays.warns}`, true);
         embed.addField(`**Total (all time):**`, `${stats.allTime.mutes + stats.allTime.bans + stats.allTime.kicks + stats.allTime.warns}`, true);
-        if (User.user.id == "280063634477154306") embed.addField(`**Important infos:**`, `Whatever the stats can be, Kilo is still a very bad mod.`, true); //Kilo
-        if (User.user.id == "737886546182799401") embed.addField(`**Important infos:**`, `Wait hm.. I'm not a kitten.`, true); //Flair
-        if (User.user.id == "899655742389358612") embed.addField(`**Important infos:**`, `huh?`, true); //Olle
-        if (User.user.id == "762760262683459654") embed.addField(`**Important infos:**`, `I'm very indecisive so could you make one up for me?`, true); //Aiko
-        if (User.user.id == "913934813524799490") embed.addField(`**Important infos:**`, `The original sebs badge creator.`, true); //Sebs
-        if (User.user.id == "408726936286658561") embed.addField(`**Important infos:**`, `<:teddy_bear:945443955263303750>`, true); //Bassie
-        if (User.user.id == "580943656232419329") embed.addField(`**Important infos:**`, `aaaaaaaaaaaaaaaaa`, true); //Ama
-        embed.addField(`**Infos**`, `UserID : ${User.user.id} • <t:${moment().unix()}>`, false);
+        if (User.User.id == "280063634477154306") embed.addField(`**Important infos:**`, `Whatever the stats can be, Kilo is still a very bad mod.`, true); //Kilo
+        if (User.User.id == "737886546182799401") embed.addField(`**Important infos:**`, `Wait hm.. I'm not a kitten.`, true); //Flair
+        if (User.User.id == "899655742389358612") embed.addField(`**Important infos:**`, `huh?`, true); //Olle
+        if (User.User.id == "762760262683459654") embed.addField(`**Important infos:**`, `I'm very indecisive so could you make one up for me?`, true); //Aiko
+        if (User.User.id == "913934813524799490") embed.addField(`**Important infos:**`, `The original sebs badge creator.`, true); //Sebs
+        if (User.User.id == "408726936286658561") embed.addField(`**Important infos:**`, `<:teddy_bear:945443955263303750>`, true); //Bassie
+        if (User.User.id == "580943656232419329") embed.addField(`**Important infos:**`, `aaaaaaaaaaaaaaaaa`, true); //Ama
+        embed.addField(`**Infos**`, `UserID : ${User.User.id} • <t:${moment().unix()}>`, false);
 
         
         return CommandExecution.returnRaw({embeds: [embed]});

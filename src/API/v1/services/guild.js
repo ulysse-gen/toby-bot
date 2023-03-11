@@ -207,7 +207,7 @@ exports.getGuildMembers = async (req, res, next) => {
         let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
 
         if (Guild) {
-            let Members = await Guild.guild.members.fetch();
+            let Members = await Guild.Guild.members.fetch();
             return res.status(200).json(Members);
         } else {
             return res.status(404).json(req.__('error.guild_not_found'));
@@ -226,7 +226,7 @@ exports.getGuildRoles = async (req, res, next) => {
         let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
 
         if (Guild) {
-            let Roles = await Guild.guild.roles.fetch();
+            let Roles = await Guild.Guild.roles.fetch();
             return res.status(200).json(Roles);
         } else {
             return res.status(404).json(req.__('error.guild_not_found'));
@@ -245,7 +245,7 @@ exports.getGuildChanels = async (req, res, next) => {
         let Guild = await req.API.TobyBot.GuildManager.getGuildById(guildId);
 
         if (Guild) {
-            let Channels = await Guild.guild.channels.fetch();
+            let Channels = await Guild.Guild.channels.fetch();
             return res.status(200).json(Channels);
         } else {
             return res.status(404).json(req.__('error.guild_not_found'));

@@ -42,7 +42,7 @@ module.exports = {
                 CommandExecution.options.role = CommandExecution.options.value;
             }
             if (CommandExecution.options.role.startsWith('<@&'))CommandExecution.options.role = CommandExecution.options.role.replace('<@&', '').replace('>', '');
-            let RoleToAdd = await CommandExecution.Guild.guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
+            let RoleToAdd = await CommandExecution.Guild.Guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
 
             if (!RoleToAdd)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.couldNotAddRole.title`), CommandExecution.i18n.__(`command.${this.name}.couldNotAddRole.description`));
             let CurrentRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd').push(CommandExecution.options.role);
@@ -58,7 +58,7 @@ module.exports = {
                 CommandExecution.options.role = CommandExecution.options.value;
             }
             if (CommandExecution.options.role.startsWith('<@&'))CommandExecution.options.role = CommandExecution.options.role.replace('<@&', '').replace('>', '');
-            let RoleToRemove = await CommandExecution.Guild.guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
+            let RoleToRemove = await CommandExecution.Guild.Guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
 
             if (!RoleToRemove)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.couldNotRemoveRole.title`), CommandExecution.i18n.__(`command.${this.name}.couldNotRemoveRole.description`));
             let CurrentRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd').filter(role => role != RoleToRemove);
@@ -75,7 +75,7 @@ module.exports = {
                 CommandExecution.options.role = CommandExecution.options.value;
             }
             if (CommandExecution.options.role.startsWith('<@&'))CommandExecution.options.role = CommandExecution.options.role.replace('<@&', '').replace('>', '');
-            let RoleToAdd = await CommandExecution.Guild.guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
+            let RoleToAdd = await CommandExecution.Guild.Guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
 
             if (!RoleToAdd)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.couldNotAddRole.title`), CommandExecution.i18n.__(`command.${this.name}.couldNotAddRole.description`));
             let CurrentRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.blacklist').push(CommandExecution.options.role);
@@ -91,7 +91,7 @@ module.exports = {
                 CommandExecution.options.role = CommandExecution.options.value;
             }
             if (CommandExecution.options.role.startsWith('<@&'))CommandExecution.options.role = CommandExecution.options.role.replace('<@&', '').replace('>', '');
-            let RoleToRemove = await CommandExecution.Guild.guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
+            let RoleToRemove = await CommandExecution.Guild.Guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
 
             if (!RoleToRemove)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.couldNotRemoveRole.title`), CommandExecution.i18n.__(`command.${this.name}.couldNotRemoveRole.description`));
             let CurrentRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.blacklist').filter(role => role != RoleToRemove);
@@ -108,7 +108,7 @@ module.exports = {
                 CommandExecution.options.role = CommandExecution.options.value;
             }
             if (CommandExecution.options.role.startsWith('<@&'))CommandExecution.options.role = CommandExecution.options.role.replace('<@&', '').replace('>', '');
-            let RoleToAdd = await CommandExecution.Guild.guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
+            let RoleToAdd = await CommandExecution.Guild.Guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
 
             if (!RoleToAdd)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.couldNotAddRole.title`), CommandExecution.i18n.__(`command.${this.name}.couldNotAddRole.description`));
             let CurrentRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.whitelist').push(CommandExecution.options.role);
@@ -124,7 +124,7 @@ module.exports = {
                 CommandExecution.options.role = CommandExecution.options.value;
             }
             if (CommandExecution.options.role.startsWith('<@&'))CommandExecution.options.role = CommandExecution.options.role.replace('<@&', '').replace('>', '');
-            let RoleToRemove = await CommandExecution.Guild.guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
+            let RoleToRemove = await CommandExecution.Guild.Guild.roles.fetch(CommandExecution.options.role).catch(e => undefined);
 
             if (!RoleToRemove)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.couldNotRemoveRole.title`), CommandExecution.i18n.__(`command.${this.name}.couldNotRemoveRole.description`));
             let CurrentRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.whitelist').filter(role => role != RoleToRemove);
@@ -141,7 +141,7 @@ module.exports = {
                 let rolesLeft = CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd').length;
                 if (rolesLeft == 0)res(true);
                 CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd').forEach(async role => {
-                    let CouldFetchRole = await CommandExecution.Guild.guild.roles.fetch(role).then(fRole => (typeof fRole == "undefined" || fRole == null) ? undefined : fRole).catch(e => undefined);
+                    let CouldFetchRole = await CommandExecution.Guild.Guild.roles.fetch(role).then(fRole => (typeof fRole == "undefined" || fRole == null) ? undefined : fRole).catch(e => undefined);
                     if (!CouldFetchRole){
                         let CurrentRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd').filter(roleIt => roleIt != role);
                         CommandExecution.Guild.ConfigurationManager.set('roleadder.rolesToAdd', CurrentRoles);
@@ -154,7 +154,7 @@ module.exports = {
                 let rolesLeft = CommandExecution.Guild.ConfigurationManager.get('roleadder.whitelist').length;
                 if (rolesLeft == 0)res(true);
                 CommandExecution.Guild.ConfigurationManager.get('roleadder.whitelist').forEach(async role => {
-                    let CouldFetchRole = await CommandExecution.Guild.guild.roles.fetch(role).then(fRole => (typeof fRole == "undefined" || fRole == null) ? undefined : fRole).catch(e => undefined);
+                    let CouldFetchRole = await CommandExecution.Guild.Guild.roles.fetch(role).then(fRole => (typeof fRole == "undefined" || fRole == null) ? undefined : fRole).catch(e => undefined);
                     if (!CouldFetchRole){
                         let CurrentRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.whitelist').filter(roleIt => roleIt != role);
                         CommandExecution.Guild.ConfigurationManager.set('roleadder.whitelist', CurrentRoles);
@@ -167,7 +167,7 @@ module.exports = {
                 let rolesLeft = CommandExecution.Guild.ConfigurationManager.get('roleadder.blacklist').length;
                 if (rolesLeft == 0)res(true);
                 CommandExecution.Guild.ConfigurationManager.get('roleadder.blacklist').forEach(async role => {
-                    let CouldFetchRole = await CommandExecution.Guild.guild.roles.fetch(role).then(fRole => (typeof fRole == "undefined" || fRole == null) ? undefined : fRole).catch(e => undefined);
+                    let CouldFetchRole = await CommandExecution.Guild.Guild.roles.fetch(role).then(fRole => (typeof fRole == "undefined" || fRole == null) ? undefined : fRole).catch(e => undefined);
                     if (!CouldFetchRole){
                         let CurrentRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.blacklist').filter(roleIt => roleIt != role);
                         CommandExecution.Guild.ConfigurationManager.set('roleadder.blacklist', CurrentRoles);
@@ -185,7 +185,7 @@ module.exports = {
             
             let RolesToAdd = CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd');
             if (RolesToAdd.length == 0)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.noRoleSet.title`), CommandExecution.i18n.__(`command.${this.name}.noRoleSet.description`));
-            RolesToAdd.map(role => CommandExecution.Guild.guild.roles.fetch(role).catch(e=>undefined));
+            RolesToAdd.map(role => CommandExecution.Guild.Guild.roles.fetch(role).catch(e=>undefined));
 
             let WhitelistedRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.whitelist');
 
@@ -202,7 +202,7 @@ module.exports = {
 
             CommandExecution.Guild.data.roleadder.trackerInterval = setInterval(updateFetchTrackerEmbed, 5000);
 
-            let FetchedUsers = await CommandExecution.Guild.guild.members.fetch({force: true, cache: false}).then(members => members.filter(member => {
+            let FetchedUsers = await CommandExecution.Guild.Guild.members.fetch({force: true, cache: false}).then(members => members.filter(member => {
                 let UserHasAllRoles = RolesToAdd.every((RoleToAdd) => member.roles.cache.has(RoleToAdd));
                 let UserHasAllWhitelistedRoles = WhitelistedRoles.every((whitelistedRole) => member.roles.cache.has(whitelistedRole));
                 let UserHasAnyBlacklistedRoles = member.roles.cache.some((userRole) => userRole.id == BlacklistedRoles);
@@ -230,7 +230,7 @@ module.exports = {
             
             let RolesToAdd = CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd');
             if (RolesToAdd.length == 0)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.noRoleSet.title`), CommandExecution.i18n.__(`command.${this.name}.noRoleSet.description`));
-            RolesToAdd.map(role => CommandExecution.Guild.guild.roles.fetch(role).catch(e=>undefined));
+            RolesToAdd.map(role => CommandExecution.Guild.Guild.roles.fetch(role).catch(e=>undefined));
 
             let TrackerEmbedFields = [
                 {name: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.totalAmount.name`), value: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.totalAmount.value`, {amount: (CommandExecution.Guild.data.roleadder.queue.size) ? CommandExecution.Guild.data.roleadder.queue.size : 0}), inline: true},
@@ -248,12 +248,12 @@ module.exports = {
             CommandExecution.returnSuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.startingAddingCycle.title`, {amount: CommandExecution.Guild.data.roleadder.queue.size}));
             CommandExecution.Guild.data.roleadder.queue.forEach(async user => {
                 let LogUserSave = {
-                    user: user.user.id,
-                    reason: CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.User.user.tag, TriggerUserId: CommandExecution.User.user.id}),
+                    user: User.User.id,
+                    reason: CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.User.User.tag, TriggerUserId: CommandExecution.User.User.id}),
                     roles: CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd'),
                 }
 
-                await user.roles.add(RolesToAdd, CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.User.user.tag, TriggerUserId: CommandExecution.User.user.id})).then(() => {
+                await user.roles.add(RolesToAdd, CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.User.User.tag, TriggerUserId: CommandExecution.User.User.id})).then(() => {
                     CommandExecution.Guild.data.roleadder.queue.success.push(LogUserSave);
                 }).catch(() => {
                     CommandExecution.Guild.data.roleadder.queue.failed.push(LogUserSave);

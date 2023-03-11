@@ -15,7 +15,7 @@ module.exports = {
         let embed = new MessageEmbed({
             color: User.displayHexColor,
             author: {
-                name: User.user.tag,
+                name: User.User.tag,
                 iconURL: `${UserPFP}?size=64`
             },
             image: {
@@ -57,6 +57,6 @@ function toAcknowledgements(user, guild, userPermissions, ) {
     if (serverAdministratorArray.every(permission => {
             return userPermissions.includes(permission)
         })) currentAcknowledgements = `**Server Administrator**`;
-    if (guild.ownerId == user.user.id) currentAcknowledgements = `***Server Owner***`;
+    if (guild.ownerId == User.User.id) currentAcknowledgements = `***Server Owner***`;
     return currentAcknowledgements;
 }

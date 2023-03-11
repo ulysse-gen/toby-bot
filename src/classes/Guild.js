@@ -23,7 +23,7 @@ module.exports = class Guild {
     constructor(GuildManager, guild) {
         this.GuildManager = GuildManager;
 
-        this.guild = guild;
+        this.Guild = guild;
 
         this.name = guild.name;
         this.locale = 'en-US';
@@ -255,9 +255,9 @@ module.exports = class Guild {
     }
 
     async getUserPfp(user, publicOnly = false) {
-        if (typeof user == "undefined" || (typeof user.user.avatar == "undefined" && typeof user.avatar == "undefined")) return `https://tobybot.xyz/assets/imgs/default_discord_avatar.png`;
+        if (typeof user == "undefined" || (typeof User.User.avatar == "undefined" && typeof user.avatar == "undefined")) return `https://tobybot.xyz/assets/imgs/default_discord_avatar.png`;
         return new Promise((res, _rej) => {
-            let urlBase = (user.avatar != null && !publicOnly) ? `https://cdn.discordapp.com/guilds/${user.guild.id}/users/${user.user.id}/avatars/${user.avatar}` : `https://cdn.discordapp.com/avatars/${user.user.id}/${user.user.avatar}`;
+            let urlBase = (user.avatar != null && !publicOnly) ? `https://cdn.discordapp.com/guilds/${user.guild.id}/users/${User.User.id}/avatars/${user.avatar}` : `https://cdn.discordapp.com/avatars/${User.User.id}/${User.User.avatar}`;
             urlExists(`${urlBase}.gif`, function (_err, exists) {
                 res((exists) ? `${urlBase}.gif` : `${urlBase}.webp`);
             });

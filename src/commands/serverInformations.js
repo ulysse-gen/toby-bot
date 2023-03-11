@@ -10,14 +10,14 @@ module.exports = {
     enabled: true,
     hasSlashCommand: true,
     async execute(CommandExecution) {
-        let Owner = await CommandExecution.Guild.getUserFromArg(CommandExecution.Guild.guild.ownerId);
+        let Owner = await CommandExecution.Guild.getUserFromArg(CommandExecution.Guild.Guild.ownerId);
         let OwnerPFP = await CommandExecution.Guild.getUserPfp(Owner);
 
         let GuildPFP = await CommandExecution.Guild.getGuildPfp();
         let GuildBanner = await CommandExecution.Guild.getGuildBanner();
 
         let embed = new MessageEmbed({
-            title: CommandExecution.i18n.__(`command.${this.name}.embed.title`, {guildName: CommandExecution.Guild.guild.name}),
+            title: CommandExecution.i18n.__(`command.${this.name}.embed.title`, {guildName: CommandExecution.Guild.Guild.name}),
             color: CommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
             image: {
                 url: `${GuildBanner}?size=600`
@@ -42,47 +42,47 @@ module.exports = {
         let emojis = [];
         let emojisParts = [];
 
-        await CommandExecution.Guild.guild.members.fetch().then(fetchedMembers => {
+        await CommandExecution.Guild.Guild.members.fetch().then(fetchedMembers => {
             fetchedMembers.forEach(fetchedUser => {
                 if (fetchedUser.user.bot) members.bots++;
                 if (!fetchedUser.user.bot) members.users++;
             });
         });
 
-        await CommandExecution.Guild.guild.channels.fetch().then(fetchedChannels => {
+        await CommandExecution.Guild.Guild.channels.fetch().then(fetchedChannels => {
             fetchedChannels.forEach(fetchedChannel => {
                 if (fetchedChannel.type == "GUILD_TEXT") channels.text++;
                 if (fetchedChannel.type == "GUILD_VOICE") channels.voice++;
             });
         });
 
-        await CommandExecution.TobyBot.client.guilds.fetch(CommandExecution.Guild.guild.id).then(fetchedGuild => {
+        await CommandExecution.TobyBot.client.guilds.fetch(CommandExecution.Guild.Guild.id).then(fetchedGuild => {
             emojis = fetchedGuild.emojis.cache.map(e => e.toString());
         }).catch(e => {
             return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotGetEmojis.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotGetEmojis.description`));
         });
 
         let BoostTier = `None`;
-        if (CommandExecution.Guild.guild.premiumTier.premiumTier == "TIER_1")BoostTier = `1`;
-        if (CommandExecution.Guild.guild.premiumTier.premiumTier == "TIER_2")BoostTier = `2`;
-        if (CommandExecution.Guild.guild.premiumTier.premiumTier == "TIER_3")BoostTier = `3`;
+        if (CommandExecution.Guild.Guild.premiumTier.premiumTier == "TIER_1")BoostTier = `1`;
+        if (CommandExecution.Guild.Guild.premiumTier.premiumTier == "TIER_2")BoostTier = `2`;
+        if (CommandExecution.Guild.Guild.premiumTier.premiumTier == "TIER_3")BoostTier = `3`;
 
         embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.owner.name`), `<@${Owner.user.id}>(${Owner.user.id})`, true);
-        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.serverId.name`), `${CommandExecution.Guild.guild.id}`, true);
-        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.description.name`), `${(CommandExecution.Guild.guild.description != null) ? CommandExecution.Guild.guild.description : `No description set.`}`, false);
+        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.serverId.name`), `${CommandExecution.Guild.Guild.id}`, true);
+        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.description.name`), `${(CommandExecution.Guild.Guild.description != null) ? CommandExecution.Guild.Guild.description : `No description set.`}`, false);
         embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.members.name`, {amount: members.users + members.bots}), `**${members.users}** users.\n**${members.bots}** bots.`, true);
         embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.channels.name`, {amount: channels.voice + channels.text}), `**${channels.text}** text.\n**${channels.voice}** voice.`, true);
-        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.created.name`), `<t:${moment(CommandExecution.Guild.guild.createdTimestamp).unix()}>\n<t:${moment(CommandExecution.Guild.guild.createdTimestamp).unix()}:R>`, true);
-        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.roles.name`), `**${await CommandExecution.Guild.guild.roles.fetch().then(fetchedRoles => fetchedRoles.size)}** roles.`, true);
-        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.boosts.name`), `**${CommandExecution.Guild.guild.premiumSubscriptionCount}** boosters.\nLevel ${BoostTier}`, true);
+        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.created.name`), `<t:${moment(CommandExecution.Guild.Guild.createdTimestamp).unix()}>\n<t:${moment(CommandExecution.Guild.Guild.createdTimestamp).unix()}:R>`, true);
+        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.roles.name`), `**${await CommandExecution.Guild.Guild.roles.fetch().then(fetchedRoles => fetchedRoles.size)}** roles.`, true);
+        embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.boosts.name`), `**${CommandExecution.Guild.Guild.premiumSubscriptionCount}** boosters.\nLevel ${BoostTier}`, true);
 
         emojisParts = splitArrayIntoChunksOfLen(emojis, 25);
         let part = 0;
         emojisParts.forEach(remojisPart => {
             part++;
-            embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.emojis.name`, {part: part, totalPart:emojisParts.length, total: (CommandExecution.Guild.guild.emojis.cache.size != 0) ? `${CommandExecution.Guild.guild.emojis.cache.size}` : `0`}), (CommandExecution.Guild.guild.emojis.cache.size != 0) ? `${remojisPart.join(' ')}` : `None`, (part == 1) ? false : true);
+            embed.addField(CommandExecution.i18n.__(`command.${this.name}.embed.field.emojis.name`, {part: part, totalPart:emojisParts.length, total: (CommandExecution.Guild.Guild.emojis.cache.size != 0) ? `${CommandExecution.Guild.Guild.emojis.cache.size}` : `0`}), (CommandExecution.Guild.Guild.emojis.cache.size != 0) ? `${remojisPart.join(' ')}` : `None`, (part == 1) ? false : true);
         });
-        embed.addField(`**Infos**`, `GuildID: ${CommandExecution.Guild.guild.id} • <t:${moment().unix()}>`, false);
+        embed.addField(`**Infos**`, `GuildID: ${CommandExecution.Guild.Guild.id} • <t:${moment().unix()}>`, false);
 
         return CommandExecution.returnRaw({embeds: [embed]});
     },

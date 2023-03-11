@@ -12,7 +12,7 @@ module.exports = {
         let User = await ContextMenuCommandExecution.Guild.getMemberById(ContextMenuCommandExecution.Trigger.targetUser.id);
         let UserPFP = await ContextMenuCommandExecution.Guild.getUserPfp(User);
 
-        let logs = ContextMenuCommandExecution.Guild.MessageManager.getLastMessagesByUser(User.user.id);
+        let logs = ContextMenuCommandExecution.Guild.MessageManager.getLastMessagesByUser(User.User.id);
         if (typeof logs == "undefined" || logs.length == 0)return ContextMenuCommandExecution.returnErrorEmbed({}, ContextMenuCommandExecution.i18n.__(`command.${this.name}.error.noLogs.title`), ContextMenuCommandExecution.i18n.__(`command.${this.name}.error.noLogs.description`, {}));
 
         let embedFields = [];
@@ -20,9 +20,9 @@ module.exports = {
         let embed = new MessageEmbed({
             title: ContextMenuCommandExecution.i18n.__(`command.${this.name}.embed.title`),
             color: ContextMenuCommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
-            description: ContextMenuCommandExecution.i18n.__(`command.${this.name}.embed.description`, {userId: User.user.id}),
+            description: ContextMenuCommandExecution.i18n.__(`command.${this.name}.embed.description`, {userId: User.User.id}),
             author: {
-                name: User.user.tag,
+                name: User.User.tag,
                 iconURL: `${UserPFP}?size=64`
             }
         });
@@ -45,7 +45,7 @@ module.exports = {
         embedFields.forEach(embedField => {
             embed.addField(embedField[0], embedField[1], embedField[2]);
         });
-        embed.addField(`**Infos**`, `UserID : ${User.user.id} • <t:${moment().unix()}>`, false);
+        embed.addField(`**Infos**`, `UserID : ${User.User.id} • <t:${moment().unix()}>`, false);
         
         return ContextMenuCommandExecution.returnRaw({embeds: [embed]});
     },

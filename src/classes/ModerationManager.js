@@ -35,7 +35,7 @@ module.exports = class ModerationManager {
 
         let historyLog = JSON.stringify(await this.Guild.MessageManager.getLastMessagesByUser(PunishedId));
 
-        let values = [type, (typeof length == "number") ? `active` : (typeof length == "boolean") ? (length == false) ? "info" : "indefinite" : "indefinite", this.Guild.guild.id, PunishedId, PunisherId, reason, historyLog, expireDate];
+        let values = [type, (typeof length == "number") ? `active` : (typeof length == "boolean") ? (length == false) ? "info" : "indefinite" : "indefinite", this.Guild.Guild.id, PunishedId, PunisherId, reason, historyLog, expireDate];
         let valueNames = ["type", "status", "guildId", "userId", "moderatorId", "reason", "logs", "expires"];
 
         if (await this.Guild.GuildManager.TobyBot.ConfigurationManager.get('logging.commandExecution.inSQL'))await this.Guild.GuildManager.TobyBot.SQLLogger.logModerationAction(PunishedId, PunisherId, type, reason, length, historyLog);
@@ -50,7 +50,7 @@ module.exports = class ModerationManager {
                     ErrorLog.log(`Could not insert punishment.`);
                     res(false);
                 }
-                if (type == "Mute" || type == "Ban" || type == "Sticky") _this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='overwritten' WHERE \`userId\`='${PunishedId}' AND \`guildId\`='${this.Guild.guild.id}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite' OR \`status\`='info') AND NOT \`numId\`='${results.insertId}'`);
+                if (type == "Mute" || type == "Ban" || type == "Sticky") _this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='overwritten' WHERE \`userId\`='${PunishedId}' AND \`guildId\`='${this.Guild.Guild.id}' AND \`type\`='${type}' AND (\`status\`='active' OR \`status\`='indefinite' OR \`status\`='info') AND NOT \`numId\`='${results.insertId}'`);
                 res(results.insertId);
             });
         });
@@ -99,7 +99,7 @@ module.exports = class ModerationManager {
 
         let embed = new MessageEmbed({
             color: this.Guild.ConfigurationManager.get("style.colors.error"),
-            description: this.Guild.i18n.__(`moderation.${type}.dmAlert`, {guildName: this.Guild.guild.name}),
+            description: this.Guild.i18n.__(`moderation.${type}.dmAlert`, {guildName: this.Guild.Guild.name}),
             author: {
                 name: Punished.user.tag,
                 iconURL: `${PunishedPfp}?size=64`
@@ -115,7 +115,7 @@ module.exports = class ModerationManager {
         let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Note`, PunishReason);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Note`, PunishReason, undefined, silent);
-        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.note`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
+        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.note`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
         return true;
     }
 
@@ -123,7 +123,7 @@ module.exports = class ModerationManager {
         let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Sticky`, PunishReason);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Sticky`, PunishReason, undefined, silent);
-        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.sticky`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
+        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.sticky`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
         return true;
     }
 
@@ -131,7 +131,7 @@ module.exports = class ModerationManager {
         let Punisher = (await this.Guild.getMemberById((!asBot) ? CommandExecution.Executor.id : this.Guild.TobyBot.client.id));
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Warn`, PunishReason);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Warn`, PunishReason, undefined, silent);
-        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.warn`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
+        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.warn`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
         if (this.Guild.ConfigurationManager.get("moderation.sendWarnInDM"))this.sendPlayerPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Warn`, PunishReason, undefined);
         return true;
     }
@@ -147,7 +147,7 @@ module.exports = class ModerationManager {
         }
         if (typeof MuteRole == "undefined" || MuteRole == null) return CommandExecution.returnErrorEmbed(sendOption, CommandExecution.i18n.__("moderation.muteRoleUndefined.title"), CommandExecution.i18n.__("moderation.muteRoleUndefined.description"));
 
-        let Continue = await Punished.roles.add(MuteRole, this.Guild.i18n.__("moderation.auditLog.muteReason", {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id})).then(()=>true).catch(e => {
+        let Continue = await Punished.roles.add(MuteRole, this.Guild.i18n.__("moderation.auditLog.muteReason", {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id})).then(()=>true).catch(e => {
             CommandExecution.returnErrorEmbed(sendOption, CommandExecution.i18n.__("moderation.cannotAddMuteRole.title"), CommandExecution.i18n.__("moderation.cannotAddMuteRole.description", {error: e}));
             return false;
         });
@@ -156,7 +156,7 @@ module.exports = class ModerationManager {
 
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Mute`, PunishReason, PunishDuration);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Mute`, PunishReason, PunishDuration, silent);
-        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.mute`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
+        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.mute`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
         if (this.Guild.ConfigurationManager.get("moderation.sendMuteInDM"))this.sendPlayerPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Mute`, PunishReason, PunishDuration);
         return true;
     }
@@ -166,13 +166,13 @@ module.exports = class ModerationManager {
 
         let MuteRole = await this.Guild.getRoleById(this.Guild.ConfigurationManager.get('moderation.muteRole'));
 
-        await unPunished.roles.remove(MuteRole, this.Guild.i18n.__("moderation.auditLog.unMuteReason", {punishedId: unPunished.user.id, updaterTag: `${unPunisher.user.username}#${unPunisher.user.discriminator}`, updaterId: unPunisher.user.id, updateReason: unPunishReason, guildId: this.Guild.guild.id})).then(async () => {
-            this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unmuted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.guild.id}' AND \`type\`='Mute' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
-            MainLog.log(this.Guild.GuildManager.TobyBot.i18n.__("bot.moderation.unmute", {punishedId: unPunished.user.id, updaterTag: `${unPunisher.user.username}#${unPunisher.user.discriminator}`, updaterId: unPunisher.user.id, updateReason: unPunishReason, guildId: this.Guild.guild.id}));
+        await unPunished.roles.remove(MuteRole, this.Guild.i18n.__("moderation.auditLog.unMuteReason", {punishedId: unPunished.user.id, updaterTag: `${unPunisher.user.username}#${unPunisher.user.discriminator}`, updaterId: unPunisher.user.id, updateReason: unPunishReason, guildId: this.Guild.Guild.id})).then(async () => {
+            this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unmuted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.Guild.id}' AND \`type\`='Mute' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
+            MainLog.log(this.Guild.GuildManager.TobyBot.i18n.__("bot.moderation.unmute", {punishedId: unPunished.user.id, updaterTag: `${unPunisher.user.username}#${unPunisher.user.discriminator}`, updaterId: unPunisher.user.id, updateReason: unPunishReason, guildId: this.Guild.Guild.id}));
         }).catch((e) => {
-            if (!e.fatal)this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unmuted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.guild.id}' AND \`type\`='Mute' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
+            if (!e.fatal)this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unmuted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.Guild.id}' AND \`type\`='Mute' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
             if (e.code == 100) {
-                ErrorLog.error(`Could not fetch the mute role, the mute role should be defined again. [Guild ${this.Guild.guild.id}]`);
+                ErrorLog.error(`Could not fetch the mute role, the mute role should be defined again. [Guild ${this.Guild.Guild.id}]`);
             } else {
                 console.log("1", e);
             }
@@ -185,13 +185,13 @@ module.exports = class ModerationManager {
 
         let MuteRole = await this.Guild.getRoleById(this.Guild.ConfigurationManager.get('moderation.muteRole'));
 
-        await PunishmentGuild.guild.bans.remove(indPunishment.userId, this.Guild.i18n.__("moderation.auditLog.unbanReason", {updaterTag: `${Updater.user.username}#${Updater.user.discriminator}`, updaterId: Updater.user.id, punishReason: PunishReason, updateReason: UpdateReason, guildId: indPunishment.guildId})).then(async () => {
-            this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unbanned', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.guild.id}' AND \`type\`='Ban' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
-            MainLog.log(this.Guild.GuildManager.TobyBot.i18n.__("bot.moderation.unban", {punishedId: unPunished.user.id, updaterTag: `${unPunisher.user.username}#${unPunisher.user.discriminator}`, updaterId: unPunisher.user.id, updateReason: unPunishReason, guildId: this.Guild.guild.id}));
+        await PunishmentGuild.Guild.bans.remove(indPunishment.userId, this.Guild.i18n.__("moderation.auditLog.unbanReason", {updaterTag: `${Updater.user.username}#${Updater.user.discriminator}`, updaterId: Updater.user.id, punishReason: PunishReason, updateReason: UpdateReason, guildId: indPunishment.guildId})).then(async () => {
+            this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unbanned', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.Guild.id}' AND \`type\`='Ban' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
+            MainLog.log(this.Guild.GuildManager.TobyBot.i18n.__("bot.moderation.unban", {punishedId: unPunished.user.id, updaterTag: `${unPunisher.user.username}#${unPunisher.user.discriminator}`, updaterId: unPunisher.user.id, updateReason: unPunishReason, guildId: this.Guild.Guild.id}));
         }).catch((e) => {
-            if (!e.fatal)this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unmuted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.guild.id}' AND \`type\`='Ban' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
+            if (!e.fatal)this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='unmuted', \`updaterId\`=?, \`updateReason\`=?, \`updateTimestamp\`=? WHERE \`userId\`='${unPunished.user.id}' AND \`guildId\`='${this.Guild.Guild.id}' AND \`type\`='Ban' AND (\`status\`='active' OR \`status\`='indefinite')`, [unPunisher.user.id, unPunishReason, moment().format(`YYYY-MM-DD HH:mm-ss`)]);
             if (e.code == 10026) {
-                ErrorLog.error(`Could not fetch ban. The ban is probably already removed. [Guild ${this.Guild.guild.id}]`);
+                ErrorLog.error(`Could not fetch ban. The ban is probably already removed. [Guild ${this.Guild.Guild.id}]`);
             } else {
                 console.log("2", e);
             }
@@ -208,7 +208,7 @@ module.exports = class ModerationManager {
             sendOption.ephemeral = true;
         }
 
-        let Continue = await Punished.kick(this.Guild.i18n.__("moderation.auditLog.kickReason", {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id})).then(()=>true).catch(e => {
+        let Continue = await Punished.kick(this.Guild.i18n.__("moderation.auditLog.kickReason", {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id})).then(()=>true).catch(e => {
             CommandExecution.returnErrorEmbed(sendOption, CommandExecution.i18n.__("moderation.cannotKick.title"), CommandExecution.i18n.__("moderation.cannotKick.description", {error: e}));
             return false;
         });
@@ -217,7 +217,7 @@ module.exports = class ModerationManager {
 
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Kick`, PunishReason);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Kick`, PunishReason, undefined, silent);
-        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.kick`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
+        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.kick`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
         if (this.Guild.ConfigurationManager.get("moderation.sendKickInDM"))this.sendPlayerPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Kick`, PunishReason, undefined);
         return true;
     }
@@ -233,7 +233,7 @@ module.exports = class ModerationManager {
 
         let Continue = await Punished.ban({
             days: 7,
-            reason: this.Guild.i18n.__("moderation.auditLog.banReason", {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id})
+            reason: this.Guild.i18n.__("moderation.auditLog.banReason", {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id})
         }).then(()=>true).catch(e => {
             CommandExecution.returnErrorEmbed(sendOption, CommandExecution.i18n.__("moderation.cannotBan.title"), CommandExecution.i18n.__("moderation.cannotBan.description", {error: e}));
             return false;
@@ -243,7 +243,7 @@ module.exports = class ModerationManager {
 
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Ban`, PunishReason, PunishDuration);
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Ban`, PunishReason, PunishDuration, silent);
-        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.ban`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
+        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.ban`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
         if (this.Guild.ConfigurationManager.get("moderation.sendBanInDM"))this.sendPlayerPunishment(CommandExecution, CaseId, Punished.user.id, Punisher.user.id, `Ban`, PunishReason, PunishDuration);
         return true;
     }
@@ -258,9 +258,9 @@ module.exports = class ModerationManager {
             sendOption.ephemeral = true;
         }
 
-        let Continue = await this.Guild.guild.bans.create(Punished.user.id, {
+        let Continue = await this.Guild.Guild.bans.create(Punished.user.id, {
             days: 7,
-            reason: this.Guild.i18n.__("moderation.auditLog.banReason", {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id})
+            reason: this.Guild.i18n.__("moderation.auditLog.banReason", {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id})
         }).then(()=>true).catch(e => {
             CommandExecution.returnErrorEmbed(sendOption, CommandExecution.i18n.__("moderation.cannotBan.title"), CommandExecution.i18n.__("moderation.cannotBan.description", {error: e}));
             return false;
@@ -270,14 +270,14 @@ module.exports = class ModerationManager {
 
         let CaseId = await this.log(Punished.user.id, Punisher.user.id, `Ban`, PunishReason, );
         this.sendPunishEmbed(CommandExecution, CaseId, Punished, Punisher, `Ban`, PunishReason, undefined, silent);
-        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.ban`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.guild.id, caseId: CaseId}));
+        MainLog.log(CommandExecution.TobyBot.i18n.__(`bot.moderation.ban`, {punisherTag: `${Punisher.user.username}#${Punisher.user.discriminator}`, punisherId: Punisher.user.id, punishedTag: `${Punished.user.username}#${Punished.user.discriminator}`, punishedId: Punished.user.id, punishReason: PunishReason, guildId: this.Guild.Guild.id, caseId: CaseId}));
         return true;
     }
 
     async isUserPunished(PunishedId, type) {
         let _this = this;
         return new Promise((res, _rej) => {
-            _this.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`userId\`='${PunishedId}' AND \`type\`='${type}' AND \`guildId\`='${this.Guild.guild.id}' AND (\`status\`='active' OR \`status\`='indefinite')`, async (error, results) => {
+            _this.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`userId\`='${PunishedId}' AND \`type\`='${type}' AND \`guildId\`='${this.Guild.Guild.id}' AND (\`status\`='active' OR \`status\`='indefinite')`, async (error, results) => {
                 if (error) {
                     ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}]`);
                     res(null);
@@ -291,7 +291,7 @@ module.exports = class ModerationManager {
     async getPunishementByCaseId(caseId) {
         let _this = this;
         return new Promise((res, rej) => {
-            _this.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`numId\`='${caseId}' AND \`guildId\`='${this.Guild.guild.id}'`, async (error, results) => {
+            _this.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`numId\`='${caseId}' AND \`guildId\`='${this.Guild.Guild.id}'`, async (error, results) => {
                 if (error) {
                     ErrorLog.log(`An error occured trying to query the SQL pool. [${error.toString()}]`);
                     res(null);
@@ -331,7 +331,7 @@ module.exports = class ModerationManager {
                         if (typeof PunishmentGuild == "undefined")return ErrorLog.error(`Could not fetch guild ${indPunishment.guildId}`);
 
                         if (indPunishment.type == "Ban"){
-                            await PunishmentGuild.guild.bans.remove(indPunishment.userId, this.Guild.i18n.__("moderation.auditLog.unbanReason", {updaterTag: `${Updater.user.username}#${Updater.user.discriminator}`, updaterId: Updater.user.id, punishReason: PunishReason, updateReason: UpdateReason, guildId: indPunishment.guildId})).then(async () => {
+                            await PunishmentGuild.Guild.bans.remove(indPunishment.userId, this.Guild.i18n.__("moderation.auditLog.unbanReason", {updaterTag: `${Updater.user.username}#${Updater.user.discriminator}`, updaterId: Updater.user.id, punishReason: PunishReason, updateReason: UpdateReason, guildId: indPunishment.guildId})).then(async () => {
                                 this.Guild.SQLPool.query(`UPDATE \`moderation\` SET \`status\`='expired', \`updaterId\`='${this.Guild.GuildManager.TobyBot.ConfigurationManager.get('appId')}', \`updateReason\`='expired', \`updateTimestamp\`='${moment().format(`YYYY-MM-DD HH:mm-ss`)}' WHERE \`numId\`=${indPunishment.numId}`);
                                 MainLog.log(this.Guild.GuildManager.TobyBot.i18n.__("bot.moderation.unban", {updaterTag: `${Updater.user.username}#${Updater.user.discriminator}`, updaterId: Updater.user.id, punishReason: PunishReason, updateReason: UpdateReason, guildId: indPunishment.guildId}));
                             }).catch((e) => {

@@ -17,7 +17,7 @@ module.exports = {
         let embed = new MessageEmbed({
             color: User.displayHexColor,
             author: {
-                name: User.user.tag,
+                name: User.User.tag,
                 iconURL: `${UserPFP}?size=64`
             },
             image: {
