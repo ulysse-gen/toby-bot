@@ -1,67 +1,38 @@
 {
-	"interaction.couldNotProcess": "This interaction could not be processed.",
-	"interaction.slashCommand.notBuilt": "This slash command isnt built yet or has failed. You may want to try the regular command system with the `{{{prefix}}}` prefix.",
-	"channelLogging.commandExecution.title": "Command executed",
-	"channelLogging.commandExecution.description": "{{{command}}}",
-	"channelLogging.commandExecution.field.executor.title": "Executor",
-	"channelLogging.commandExecution.field.executor.description": "<@{{{userId}}}>",
-	"channelLogging.commandExecution.field.channel.title": "Channel",
-	"channelLogging.commandExecution.field.channel.description": "<#{{{channelId}}}>",
-	"channelLogging.commandExecution.field.realUser.title": "Real executor",
-	"channelLogging.commandExecution.field.realUser.description": "<@{{{realUserId}}}>",
-	"channelLogging.commandExecution.field.realChannel.title": "Real channel",
-	"channelLogging.commandExecution.field.realChannel.description": "<#{{{realChannelId}}}>",
-	"channelLogging.commandExecution.error.deny.title": "Command denied",
-	"channelLogging.commandExecution.error.deny.description": "{{{command}}}",
-	"channelLogging.commandExecution.error.unknown.title": "Unknown command",
-	"channelLogging.commandExecution.error.unknown.description": "{{{command}}}",
-	"channelLogging.commandExecution.field.permission.title": "Permission",
-	"channelLogging.commandExecution.field.permission.description": "`{{{permission}}}`",
-	"moderation.Warn.dmAlert": "You have been warned in {{{guildName}}}",
-	"moderation.Mute.dmAlert": "You have been muted in {{{guildName}}}",
-	"moderation.Kick.dmAlert": "You have been kicked in {{{guildName}}}",
-	"moderation.Ban.dmAlert": "You have been banned in {{{guildName}}}",
-	"moderation.auditLog.muteReason": "Muted by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
-	"moderation.auditLog.unMuteReason": "Unmuted by {{{updaterTag}}}({{{updaterId}}}) for {{{updateReason}}}",
-	"moderation.auditLog.kickReason": "Kicked by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
-	"moderation.auditLog.banReason": "Banned by {{{punisherTag}}}({{{punisherId}}}) for {{{punishReason}}}.",
-	"moderation.auditLog.unbanReason": "Unbanned by {{{updaterTag}}}({{{updaterId}}}) for {{{updateReason}}}",
-	"moderation.auditLog.autoRemute": "Mute auto applied after re-join.",
-	"configuration.logging.enablingWithoutChannel.title": "Cannot enable channel logging.",
-	"configuration.logging.enablingWithoutChannel.description": "You must first set a channel on the configuration key `{{{otherKey}}}`",
-	"configuration.logging.settingWhileChannelDisabled.title": "You may now enable channel logging.",
-	"configuration.logging.settingWhileChannelDisabled.description": "We're almost set ! Now enable channel logging with `{{{otherKey}}}`",
-	"configuration.logging.cannotFetchChannel.title": "Could not fetch logging channel.",
-	"configuration.logging.cannotFetchChannel.description": "Could not fetch the specified channel. Check that you typed the right ID.",
-	"configuration.logging.noChannelPermission.title": "Cannot type in there.",
-	"configuration.logging.noChannelPermission.description": "I dont have the permission to type in that channel.",
-	"configuration.logging.couldNotInitLogger.title": "Could not initialize the logger.",
-	"configuration.logging.couldNotInitLogger.description": "An error occured while initializing the logger.",
-	"configuration.role.cannotFetchRole.title": "Could not fetch role.",
-	"configuration.role.cannotFetchRole.description": "Could not fetch the specified role. Check that you typed the right ID.",
-	"configuration.locale.notPossibleLocale.title": "Localization not available",
-	"configuration.locale.notPossibleLocale.description": "This lang is not available, available languages are currently {{{possibleLocales}}}.",
-	"interaction.contextMenu.notBuilt": "This context menu command isnt built yet or has failed.",
-	"channelLogging.contextCommandExecution.title": "Context menu command executed",
-	"channelLogging.contextCommandExecution.description": "{{{command}}}",
-	"channelLogging.contextCommandExecution.error.unknown.title": "Unknown context menu command",
-	"channelLogging.contextCommandExecution.error.unknown.description": "{{{command}}}",
-	"interaction.russianroulette.notRunningInChannel": "This russian roulette is not running anymore.",
-	"interaction.russianroulette.wrongId": "This russian roulette is not running anymore.",
-	"interaction.russianroulette.joined": "You have joined the Russian Roulette.",
-	"interaction.russianroulette.canceled": "You have canceled the Russian Roulette.",
-	"interaction.russianroulette.joinCurrentlyPlaying": "You cannot join a running Russian Roulette.",
-	"interaction.russianroulette.cancelCurrentlyPlaying": "You cannot cancel a running Russian Roulette, use the Stop button.",
-	"interaction.russianroulette.alreadyJoined": "You have already joined this Russian Roulette.",
-	"interaction.russianroulette.stop": "Russian Roulette stopped.",
-	"interaction.russianroulette.alive.alive": "You are alive, I am proud of you.",
-	"interaction.russianroulette.alive.eliminated": "i got bad news. ur eliminated.",
-	"channelLogging.autoModerationLogs.title": "channelLogging.autoModerationLogs.title",
-	"channelLogging.autoModerationLogs.description": "channelLogging.autoModerationLogs.description",
-	"channelLogging.autoModerationLogs.field.user.title": "channelLogging.autoModerationLogs.field.user.title",
-	"channelLogging.autoModerationLogs.field.user.description": "channelLogging.autoModerationLogs.field.user.description",
-	"channelLogging.autoModerationLogs.field.channel.title": "channelLogging.autoModerationLogs.field.channel.title",
-	"channelLogging.autoModerationLogs.field.channel.description": "channelLogging.autoModerationLogs.field.channel.description",
-	"channelLogging.autoModerationLogs.field.violationsCount.title": "channelLogging.autoModerationLogs.field.violationsCount.title",
-	"channelLogging.autoModerationLogs.field.violationsCount.description": "channelLogging.autoModerationLogs.field.violationsCount.description"
+	"channelLogging": {
+		"commandExecution": {
+			"error": {
+				"deny": {
+					"title": "channelLogging.commandExecution.error.deny.title",
+					"description": "channelLogging.commandExecution.error.deny.description"
+				},
+				"unknown": {
+					"title": "channelLogging.commandExecution.error.unknown.title",
+					"description": "channelLogging.commandExecution.error.unknown.description"
+				}
+			},
+			"field": {
+				"executor": {
+					"title": "channelLogging.commandExecution.field.executor.title",
+					"description": "channelLogging.commandExecution.field.executor.description"
+				},
+				"channel": {
+					"title": "channelLogging.commandExecution.field.channel.title",
+					"description": "channelLogging.commandExecution.field.channel.description"
+				},
+				"realUser": {
+					"title": "channelLogging.commandExecution.field.realUser.title",
+					"description": "channelLogging.commandExecution.field.realUser.description"
+				},
+				"realChannel": {
+					"title": "channelLogging.commandExecution.field.realChannel.title",
+					"description": "channelLogging.commandExecution.field.realChannel.description"
+				},
+				"permission": {
+					"title": "channelLogging.commandExecution.field.permission.title",
+					"description": "channelLogging.commandExecution.field.permission.description"
+				}
+			}
+		}
+	}
 }

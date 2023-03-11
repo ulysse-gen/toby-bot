@@ -41,6 +41,7 @@ module.exports = class CommandManager {
                 LocaleLog.log('[Missing Locale][commands]' + value + ` in ` + locale);
                 return value;
             },
+            objectNotation: true
         });
 
         this.initialized = false; //Set the main initialized variable to false
@@ -117,6 +118,7 @@ module.exports = class CommandManager {
         let fetchedCommand = await this.fetch(command);
         return new CommandExecution(message, fetchedCommand, commandOptions, this).execute().catch(e=>{
             //CommandExecution.Channel.send('An error occured executing the command. Reach <@231461358200291330> for help.'); //CommandExecution.Channel may not be defined at this point
+            console.log(e);
             throw new ErrorBuilder(`Could not execute command.`, {cause: e}).setType('COMMAND_EXECUTION_ERROR').logError();
         });
     }

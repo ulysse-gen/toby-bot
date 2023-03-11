@@ -10,8 +10,6 @@
 //Importing NodeJS modules
 const { I18n } = require('i18n');
 
-console.log('oh it is !');
-
 //Importing classes
 const FileLogger = require('./classes/FileLogger');
 const TobyBot = require('./classes/TobyBot');
@@ -34,7 +32,7 @@ const i18n = new I18n({
         LocaleLog.log('[Missing Locale][backend]' + value + ` in ` + locale);
         return value;
     },
-    
+    objectNotation: true
 });
 
 const GlobalBot = new TobyBot(i18n, PackageInformations); //This is the bot

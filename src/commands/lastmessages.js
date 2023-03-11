@@ -12,11 +12,11 @@ module.exports = {
     async execute(CommandExecution) {
         if (typeof CommandExecution.options.target == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noTargetSpecified.description`, {}));
 
-        let User = await CommandExecution.Guild.getMemberById(CommandExecution.options.target);
+        let User = await CommandExecution.Guild.getUserFromArg(CommandExecution.options.target);
         if (typeof User == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.description`, {}));
         let UserPFP = await CommandExecution.Guild.getUserPfp(User);
 
-        let logs = CommandExecution.Guild.MessageManager.getLastMessagesByUser(User.User.id);
+        let logs = CommandExecution.Guild.MessageManager.getLastMessagesByUser(User.user.id);
         if (typeof logs == "undefined" || logs.length == 0)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noLogs.title`), CommandExecution.i18n.__(`command.${this.name}.error.noLogs.description`, {}));
 
         let embedFields = [];
@@ -24,17 +24,17 @@ module.exports = {
         let embed = new MessageEmbed({
             title: CommandExecution.i18n.__(`command.${this.name}.embed.title`),
             color: CommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
-            description: CommandExecution.i18n.__(`command.${this.name}.embed.description`, {userId: User.User.id}),
+            description: CommandExecution.i18n.__(`command.${this.name}.embed.description`, {userId: User.user.id}),
             author: {
-                name: User.User.tag,
+                name: User.user.tag,
                 iconURL: `${UserPFP}?size=64`
             }
         });
 
         logs.forEach(logEntry => {
-            let FieldBody = CommandExecution.i18n.__(`command.${this.name}.embed.fieldBody`, {content: logEntry.message.content, attachments: (logEntry.message.attachments.values.length == 0) ? `None` : `[**URL**](${logEntry.message.attachments.values.join(`) [**URL**](`)})`, stickers: (typeof logEntry.message.stickers.values == "undefined" || logEntry.message.stickers.values.length == 0) ? `None` : `[**URL**](${logEntry.message.stickers.values.join(`) [**URL**](`)})`, channelId: logEntry.channelId, timestamp: moment(logEntry.message.createdTimestamp).unix(), deleted: (logEntry.deleted) ? CommandExecution.i18n.__(`command.${this.name}.embed.fieldBody.deletedKeyword`) : '', edited: (logEntry.history.length != 0) ? CommandExecution.i18n.__(`command.${this.name}.embed.fieldBody.editedKeyword`) : '' });
+            let FieldBody = CommandExecution.i18n.__(`command.${this.name}.embed.fieldBody`, {content: logEntry.message.content, attachments: (logEntry.message.attachments.values.length == 0) ? `None` : `[**URL**](${logEntry.message.attachments.values.join(`) [**URL**](`)})`, stickers: (typeof logEntry.message.stickers.values == "undefined" || logEntry.message.stickers.values.length == 0) ? `None` : `[**URL**](${logEntry.message.stickers.values.join(`) [**URL**](`)})`, channelId: logEntry.channelId, timestamp: moment(logEntry.message.createdTimestamp).unix(), deleted: (logEntry.deleted) ? CommandExecution.i18n.__(`command.${this.name}.embed.keywords.deleted`) : '', edited: (logEntry.edited) ? CommandExecution.i18n.__(`command.${this.name}.embed.keywords.edited`) : '' });
             if (FieldBody.length > 1024){
-                FieldBody = CommandExecution.i18n.__(`command.${this.name}.embed.fieldBody`, {content: indMessage.content.trimEllip(1021-FieldBody.replace(indMessage.content, ``).length), attachments: (logEntry.message.attachments.values.length == 0) ? `None` : `[**URL**](${logEntry.message.attachments.values.join(`) [**URL**](`)})`, stickers: (typeof logEntry.message.stickers.values == "undefined" || logEntry.message.stickers.values.length == 0) ? `None` : `[**URL**](${logEntry.message.stickers.values.join(`) [**URL**](`)})`, channelId: logEntry.channelId, timeStamp: moment(logEntry.message.createdTimestamp).unix(), deleted: (logEntry.deleted) ? CommandExecution.i18n.__(`command.${this.name}.embed.fieldBody.deletedKeyword`) : '', edited: (logEntry.history.length != 0) ? CommandExecution.i18n.__(`command.${this.name}.embed.fieldBody.editedKeyword`) : '' });
+                FieldBody = CommandExecution.i18n.__(`command.${this.name}.embed.fieldBody`, {content: indMessage.content.trimEllip(1000-FieldBody.replace(indMessage.content, ``).length), attachments: (logEntry.message.attachments.values.length == 0) ? `None` : `[**URL**](${logEntry.message.attachments.values.join(`) [**URL**](`)})`, stickers: (typeof logEntry.message.stickers.values == "undefined" || logEntry.message.stickers.values.length == 0) ? `None` : `[**URL**](${logEntry.message.stickers.values.join(`) [**URL**](`)})`, channelId: logEntry.channelId, timeStamp: moment(logEntry.message.createdTimestamp).unix(), deleted: (logEntry.deleted) ? CommandExecution.i18n.__(`command.${this.name}.embed.keywords.deleted`) : '', edited: (logEntry.history.length != 0) ? CommandExecution.i18n.__(`command.${this.name}.embed.keywords.edited`) : '' });
             }
             embedFields.push([CommandExecution.i18n.__(`command.${this.name}.embed.fieldName`), FieldBody, false]);
         });
@@ -61,7 +61,7 @@ module.exports = {
         embedFields.forEach(embedField => {
             embed.addField(embedField[0], embedField[1], embedField[2]);
         });
-        embed.addField(`**Infos**`, `UserID : ${User.User.id} • <t:${moment().unix()}>`, false);
+        embed.addField(`**Infos**`, `UserID : ${User.user.id} • <t:${moment().unix()}>`, false);
         
         return CommandExecution.returnRaw({embeds: [embed]});
     },

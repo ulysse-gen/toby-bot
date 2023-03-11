@@ -34,6 +34,7 @@ module.exports = class API {
                 LocaleLog.log('[Missing Locale][API]' + value + ` in ` + locale);
                 return value;
             },
+            objectNotation: true
         });
 
         this.version = TobyBot.PackageInformations.apiVersion;

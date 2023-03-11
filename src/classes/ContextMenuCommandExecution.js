@@ -33,6 +33,7 @@ module.exports = class ContextMenuCommandExecution {
                 LocaleLog.log('[Missing Locale][commands]' + value + ` in ` + locale);
                 return value;
             },
+            objectNotation: true
         });
     }
 

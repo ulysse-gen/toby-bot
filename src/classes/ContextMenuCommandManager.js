@@ -40,6 +40,7 @@ module.exports = class ContextMenuCommandManager {
                 LocaleLog.log('[Missing Locale][commands]' + value + ` in ` + locale);
                 return value;
             },
+            objectNotation: true
         });
 
         this.initialized = false; //Set the main initialized variable to false

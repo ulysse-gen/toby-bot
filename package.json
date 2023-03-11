@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "dumb-init node ./src/index.js",
-    "start-dev": "nodemon --legacy-watch ./src/index.js --ignore locales/"
+    "start-dev": "nodemon ./src/index.js --ignore locales/"
   },
   "author": "UlysseGenie#9555",
   "license": "ISC",
@@ -29,6 +29,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
+    "nestjs-i18n": "^10.2.6",
     "nodemon": "^2.0.21",
     "pretty-ms": "^7.0.1",
     "random-number": "^0.0.9",

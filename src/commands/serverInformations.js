@@ -44,8 +44,8 @@ module.exports = {
 
         await CommandExecution.Guild.Guild.members.fetch().then(fetchedMembers => {
             fetchedMembers.forEach(fetchedUser => {
-                if (fetchedUser.user.bot) members.bots++;
-                if (!fetchedUser.user.bot) members.users++;
+                if (fetchedUser.User.bot) members.bots++;
+                if (!fetchedUser.User.bot) members.users++;
             });
         });
 

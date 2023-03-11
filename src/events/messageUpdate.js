@@ -34,13 +34,14 @@ module.exports = {
             return undefined;
         });
 
+        if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
+        if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
+
         message.TobyBot.Guild.MessageManager.updateMessage(oldMessage, message).catch(e => { 
             ErrorLog.error(`An error occured trying to update the message log:`);
             console.log(e);
         }); //Log messages update*/
-
-        if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
-        if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
+        
         return true;
     }
 }

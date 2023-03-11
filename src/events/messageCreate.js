@@ -41,14 +41,13 @@ module.exports = {
             return undefined;
         });
 
+        if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
+        if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
+
         message.TobyBot.Guild.MessageManager.addMessage(message).catch(e => { 
             ErrorLog.error(`An error occured trying to log the message:`);
             console.log(e);
         }); //Log messages
-
-        if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
-        if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
-
 
         /** Disabling AutoModeration cuz not any close to be done, and other things are prioritized over this.
         let autoMod = await TobyBot.AutoModeration.examine(message);

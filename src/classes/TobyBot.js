@@ -93,7 +93,7 @@ module.exports = class TobyBot {
         this.LifeMetric.addEntry("SQLInit");
         await this.SQLInit();
 
-        MainLog.log(this.i18n.__('bot.start', {version: this.PackageInformations.version.green}));
+        MainLog.log(this.i18n.__('bot.starting', {version: this.PackageInformations.version.green}));
         this.LifeMetric.addEntry("ManagersInit");
         await this.initManagers().catch(e => { throw e }); //Init the managers
         this.LifeMetric.addEntry("EventAttach");

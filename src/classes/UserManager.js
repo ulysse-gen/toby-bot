@@ -49,7 +49,7 @@ module.exports = class UserManager {
     }
 
     async getUser(user, createIfNonExistant = false) {
-        if (typeof this.users[user.id] == "object" && typeof this.users[user.id].user != "undefined") return this.users[user.id];
+        if (typeof this.users[user.id] == "object" && typeof this.users[user.id].User != "undefined") return this.users[user.id];
         this.users[user.id] = new User(this, user);
         await this.users[user.id].initialize(createIfNonExistant).catch(e => { 
             delete this.users[user.id];

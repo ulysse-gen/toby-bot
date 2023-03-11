@@ -32,7 +32,7 @@ module.exports = class GuildManager {
     }
 
     async getGuild(guild) {
-        if (typeof this.guilds[guild.id] == "object" && typeof this.guilds[guild.id].guild != "undefined") return this.guilds[guild.id];
+        if (typeof this.guilds[guild.id] == "object" && typeof this.guilds[guild.id].Guild != "undefined") return this.guilds[guild.id];
         this.guilds[guild.id] = new Guild(this, guild);
         await this.guilds[guild.id].initialize().catch(e => { 
             delete this.guilds[guild.id];

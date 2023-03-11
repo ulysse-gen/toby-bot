@@ -39,6 +39,7 @@ module.exports = class Guild {
                 LocaleLog.log('[Missing Locale][guild]' + value + ` in ` + locale);
                 return value;
             },
+            objectNotation: true
         });
 
         this.waitingForMessageData = {
@@ -158,16 +159,16 @@ module.exports = class Guild {
 
     async getUserFromArg(userString, fallbackUser = undefined) {
         if (!userString)return fallbackUser;
-        let user = await this.Guild.members.fetch({
+        let User = await this.Guild.members.fetch({
             force: true
         }).then(members => members.find(member => member.user.tag === userString));
         if (userString.startsWith('<@'))userString = userString.replace('<@', '').slice(0, -1);
-        if (typeof user == "undefined") user = await this.Guild.members.fetch(userString, {
+        if (typeof User == "undefined") User = await this.Guild.members.fetch(userString, {
             force: true
         }).catch(e => {
             return fallbackUser;
         });
-        return user;
+        return User;
     }
 
     async getRoleFromArg(roleSrting) {
@@ -254,10 +255,10 @@ module.exports = class Guild {
         return false;
     }
 
-    async getUserPfp(user, publicOnly = false) {
-        if (typeof user == "undefined" || (typeof User.User.avatar == "undefined" && typeof user.avatar == "undefined")) return `https://tobybot.xyz/assets/imgs/default_discord_avatar.png`;
+    async getUserPfp(User, publicOnly = false) {
+        if (typeof User == "undefined" || (typeof User.user.avatar == "undefined" && typeof User.avatar == "undefined")) return `https://tobybot.xyz/assets/imgs/default_discord_avatar.png`;
         return new Promise((res, _rej) => {
-            let urlBase = (user.avatar != null && !publicOnly) ? `https://cdn.discordapp.com/guilds/${user.guild.id}/users/${User.User.id}/avatars/${user.avatar}` : `https://cdn.discordapp.com/avatars/${User.User.id}/${User.User.avatar}`;
+            let urlBase = (User.avatar != null && !publicOnly) ? `https://cdn.discordapp.com/guilds/${User.guild.id}/users/${User.user.id}/avatars/${User.avatar}` : `https://cdn.discordapp.com/avatars/${User.user.id}/${User.user.avatar}`;
             urlExists(`${urlBase}.gif`, function (_err, exists) {
                 res((exists) ? `${urlBase}.gif` : `${urlBase}.webp`);
             });

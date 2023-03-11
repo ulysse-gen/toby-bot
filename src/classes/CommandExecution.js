@@ -35,6 +35,7 @@ module.exports = class CommandExecution {
                 LocaleLog.log('[Missing Locale][commands]' + value + ` in ` + locale);
                 return value;
             },
+            objectNotation: true
         });
     }
 
@@ -67,8 +68,9 @@ module.exports = class CommandExecution {
      */
     async buildContext() {
         this.Executor = (this.IsSlashCommand) ? this.Trigger.user : this.Trigger.author;
-        this.RealExecutor = (this.IsSlashCommand) ? this.Trigger.user : this.Trigger.author;
+        this.RealExecutor = this.Executor
         this.GuildExecutor = await this.Trigger.TobyBot.Guild.Guild.members.fetch(this.Executor);
+        this.RealGuildExecutor = this.GuildExecutor
         this.Channel = this.Trigger.channel;
         this.RealChannel = this.Channel;
         this.Guild = this.Trigger.TobyBot.Guild;
@@ -110,7 +112,8 @@ module.exports = class CommandExecution {
                         if (["spoofExecutor"].includes(modifierName)){
                             let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofExecutor`);
                             if (!checkPermission)return {permissionDenied: `commands.spoofExecutor`};
-                            this.Executor = (await this.Guild.getMemberById(modifierValue));
+                            this.Executor = (await this.Guild.getMemberById(modifierValue)).user;
+                            this.GuildExecutor = (await this.Guild.getMemberById(modifierValue));
         
                             this.spoofing = true;
                             this.CommandOptions = this.CommandOptions.filter(function(e) { return e !== argument });
@@ -210,7 +213,7 @@ module.exports = class CommandExecution {
 
     async logExecution() {
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inSQL'))await this.TobyBot.SQLLogger.logCommandExecution(this);
-        if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole'))MainLog.log(this.TobyBot.i18n.__((typeof this.spoofing != "undefined") ? 'bot.command.execution.spoofed' : 'bot.command.execution', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, command: `${this.Command.name}`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
+        if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inConsole'))MainLog.log(this.TobyBot.i18n.__((typeof this.spoofing != "undefined") ? 'bot.command.execution.spoofed' : 'bot.command.execution.normal', {user: `${this.Executor.username}#${this.Executor.discriminator}(${this.Executor.id})`, realUser: `${this.RealExecutor.username}#${this.RealExecutor.discriminator}(${this.RealExecutor.id})`, command: `${this.Command.name}`, location: `${this.Channel.id}@${this.Channel.guild.id}`, realLocation: `${this.RealChannel.id}@${this.RealChannel.guild.id}`}));
         if (await this.TobyBot.ConfigurationManager.get('logging.commandExecution.inChannel') && typeof this.TobyBot.loggers.commandExecution != "undefined"){
             let embed = new MessageEmbed().setTitle(this.TobyBot.i18n.__('channelLogging.commandExecution.title')).setDescription(this.TobyBot.i18n.__('channelLogging.commandExecution.description', {command: `${this.Command.name} ${Object.entries(this.options).map(([key, val]) => `**${key}**:${val}`).join(' ')}`})).setColor(this.Guild.ConfigurationManager.get('style.colors.main'));
             embed.addField(this.TobyBot.i18n.__('channelLogging.commandExecution.field.executor.title'), this.TobyBot.i18n.__('channelLogging.commandExecution.field.executor.description', {userId: this.Executor.id, realUserId: this.RealExecutor.id}), true);
@@ -240,7 +243,7 @@ module.exports = class CommandExecution {
 
     async makeSQLLog(type, specificity = undefined) {
         let contextReturn = {guildId: this.Guild.Guild.id, channelId: this.Channel.id, triggerId: this.Trigger.id, executorId: this.Executor.id, IsSlashCommand: this.IsSlashCommand};
-        if (typeof this.spoofing == "boolean" && this.spoofing)contextReturn = Object.assign({spoofedFrom: {guildId: this.RealGuild.Guild.id, channelId: this.RealChannel.id, executorId: this.RealExecutor.id} }, locationReturn);
+        if (typeof this.spoofing == "boolean" && this.spoofing)contextReturn = Object.assign({spoofedFrom: {guildId: this.RealGuild.Guild.id, channelId: this.RealChannel.id, executorId: this.RealExecutor.id} });
 
         let contentReturn = {};
 

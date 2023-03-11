@@ -11,32 +11,42 @@ module.exports = class MessageManager {
         this.allMessages = [];
     }
 
-    getLastMEssagesByGuild(guildId) {
-        return (this.allMessages.filter(x=>x.guildId == guildId));
+    getLastMEssagesByGuild(guildId, amount = 999) {
+        return this.allMessages.filter(x=>x.guildId == guildId).splice(0, amount);
     }
 
-    getLastMEssagesByChannel(channelId) {
-        return (this.allMessages.filter(x=>x.channelId == channelId));
+    getLastMEssagesByChannel(channelId, amount = 999) {
+        return this.allMessages.filter(x=>x.channelId == channelId).splice(0, amount);
     }
 
-    getLastMessagesByUser(userId) {
-        return (this.allMessages.filter(x=>x.userId == userId));
+    getLastMessagesByUser(userId, amount = 999) {
+        return this.allMessages.filter(x=>x.userId == userId).splice(0, amount);
+    }
+
+    getMessageByMessageId(messageId, amount = 999) {
+        return this.allMessages.filter(x=>x.messageId == messageId).splice(0, amount);
     }
 
     getMessageById(messageId) {
-        return (this.allMessages.filter(x=>x.messageId == messageId))[0];
+        return this.allMessages.find(x =>x.id == messageId)
+    }
+
+    async getMessageIndexById(messageId) {
+        return this.allMessages.findIndex(x =>x.id == messageId)
     }
 
     async updateMessage(oldMessage, newMessage) {
-        let messageToUpdate = this.getMessageById(oldMessage.id);
+        let messageToUpdate = this.getMessageById(`${oldMessage.channel.guild.id}-${oldMessage.channel.id}-${oldMessage.id}`);
         if (typeof messageToUpdate == "undefined")return this.addMessage(newMessage);
         messageToUpdate.history.push(oldMessage);
         messageToUpdate.message = newMessage;
+        messageToUpdate.edited = true;
         return true;
     }
 
-    async deleteMessage(message) {
-        let messageToUpdate = this.getMessageById(message.id);
+    async deleteMessage(oldMessage) {
+        let messageToUpdate = await this.getMessageById(`${oldMessage.channel.guild.id}-${oldMessage.channel.id}-${oldMessage.id}`);
+        if (typeof messageToUpdate == "undefined")this.addMessage(oldMessage);
         messageToUpdate.deleted = true;
         return true;
     }
@@ -49,11 +59,12 @@ module.exports = class MessageManager {
             guildId: message.channel.guild.id,
             userId: message.author.id,
             deleted: false,
+            edited: false,
             message: message,
             history: []
         };
         this.allMessages.unshift(MessageEntry);
-        if (this.allMessages.length >= this.maxMessagesStored) this.allMessages.splice(this.maxMessagesStored-1, this.allMessages.length - this.maxMessagesStored);
+        if (this.allMessages.length >= this.maxMessagesStored) this.allMessages.splice(0, this.maxMessagesStored);
         return true;
     }
 }
