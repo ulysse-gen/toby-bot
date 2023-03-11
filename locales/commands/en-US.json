@@ -902,6 +902,15 @@
 					"description": "It appears like it is the first time you are running this command. Your configuration has been created and you should now be able to repeat the command."
 				}
 			}
+		},
+		"gpt": {
+			"name": "command.gpt.name",
+			"description": "command.gpt.description",
+			"option": {
+				"prompt": {
+					"description": "command.gpt.option.prompt.description"
+				}
+			}
 		}
 	},
 	"commands": {

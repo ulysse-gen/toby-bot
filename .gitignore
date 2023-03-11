@@ -45,4 +45,5 @@ typings/
 yarn-debug.log*
 yarn-error.log*
 .env
+.env-dev
 docker-compose-dev.yml

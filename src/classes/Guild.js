@@ -67,6 +67,9 @@ module.exports = class Guild {
                 success: [],
                 trackerMessage: undefined,
                 fetchDone: false
+            },
+            GPT: {
+                users: {}
             }
         }
 

@@ -111,7 +111,7 @@ module.exports = class CommandManager {
 
     async handle(message) {
         if (process.env.TOBYBOT_API_ONLY === "true")return true;
-        let prefixUsed = [this.TobyBot.ConfigurationManager.get('prefixes'), message.TobyBot.Guild.ConfigurationManager.get('prefixes'), message.TobyBot.Guild.ConfigurationManager.get('prefix')].flat().filter((item, pos, self) => self.indexOf(item) == pos).find(e => message.content.startsWith(e));
+        let prefixUsed = [this.TobyBot.ConfigurationManager.get('prefixes'), this.TobyBot.ConfigurationManager.get('prefix'), message.TobyBot.Guild.ConfigurationManager.get('prefixes'), message.TobyBot.Guild.ConfigurationManager.get('prefix')].flat().filter((item, pos, self) => self.indexOf(item) == pos).find(e => message.content.startsWith(e));
         if (!prefixUsed)return undefined;
         let commandOptions=message.content.replace(/\s+/g, ' ').trim().split(' ');
         let command=commandOptions.shift().replace(prefixUsed, '');
