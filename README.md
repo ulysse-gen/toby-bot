@@ -44,34 +44,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 - Nothin'
 
-### Deployment
-
-Normal Deployment:
-```bash
-  git clone https://github.com/ulysse-gen/toby-bot
-  cd toby-bot/website
-  docker build -t tobybot-gui:8.1-apache . < ./website/Dockerfile # Get-Content Dockerfile | docker build -t tobybot-gui:8.1-apache .
-  cd ../
-  docker build -t tobybot:4.0.0 . < Dockerfile #Get-Content Dockerfile | docker build -t tobybot:4.0.0 .
-  docker-compose up -d
-```
-
-Fast Deployment (Linux):
-```bash
-  git clone https://github.com/ulysse-gen/toby-bot && cd toby-bot/website && docker build -t tobybot-gui:8.1-apache . < ./website/Dockerfile && cd ../ && docker build -t tobybot:4.0.0 . < Dockerfile && docker-compose up -d
-```
-
-Fast Deployment (PowerShell):
-```PowerShell
-  git clone https://github.com/ulysse-gen/toby-bot; cd toby-bot/website; Get-Content Dockerfile | docker build -t tobybot-gui:8.1-apache .; cd ../; Get-Content Dockerfile | docker build -t tobybot:4.0.0 .; docker-compose up -d
-```
-
-Reload (PowerShell):
-```PowerShell
-  cd website; Get-Content Dockerfile | docker build -t tobybot-gui:8.1-apache .; cd ../; Get-Content Dockerfile | docker build -t tobybot:4.0.0 .; docker-compose up -d
-```
-
-Environment variables:
+## Environment variables:
 ```
 MARIADB_HOST (Default: 'MariaDB-TobyBot'): The database container's name/hostname.
 MARIADB_DATABASE_NC (Default: 'tobybot-v4') : The database name.
