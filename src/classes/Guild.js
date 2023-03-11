@@ -87,7 +87,7 @@ module.exports = class Guild {
         if (!this.initialized)return undefined;
         let apiVersion = {};
         apiVersion.numId = this.numId;
-        apiVersion.guild = this.guild;
+        apiVersion.guild = this.Guild;
         apiVersion.locale = this.locale;
         apiVersion.configuration = this.ConfigurationManager.configuration;
         apiVersion.permissions = this.ConfigurationManager.permissions;
@@ -96,8 +96,8 @@ module.exports = class Guild {
     }
 
     async initialize() {
-        this.ConfigurationManager = new SQLConfigurationManager('guilds', `\`id\` = '${this.guild.id}'`, undefined, JSON.stringify(require('/app/configurations/defaults/GuildConfiguration.json')));
-        this.PermissionManager = new SQLPermissionManager('guilds', `\`id\` = '${this.guild.id}'`, undefined, require('/app/configurations/defaults/GuildPermissions.json'));
+        this.ConfigurationManager = new SQLConfigurationManager('guilds', `\`id\` = '${this.Guild.id}'`, undefined, JSON.stringify(require('/app/configurations/defaults/GuildConfiguration.json')));
+        this.PermissionManager = new SQLPermissionManager('guilds', `\`id\` = '${this.Guild.id}'`, undefined, require('/app/configurations/defaults/GuildPermissions.json'));
         this.ModerationManager = new ModerationManager(this);
         await this.ConfigurationManager.initialize(true, this);
         this.isSetup = this.ConfigurationManager.get('system.setup-done');
@@ -110,7 +110,7 @@ module.exports = class Guild {
 
     async loadSQLContent(checkForUpdate = false) {
         return new Promise((res, _rej) => {
-            this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.guild.id}'`, (error, results) => {
+            this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.Guild.id}'`, (error, results) => {
                 if (error)throw error;
                 if (results.length != 0){
                     this.numId = results[0].numId;
@@ -128,10 +128,10 @@ module.exports = class Guild {
 
     async createInSQL() {
         return new Promise((res, _rej) => {
-            this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.guild.id}'`, (error, results) => {
+            this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.Guild.id}'`, (error, results) => {
                 if (error)throw error;
                 if (results.length == 0){
-                    this.SQLPool.query(`INSERT INTO \`guilds\` (id, name, locale, configuration, permissions) VALUES (?,?,?,?,?)`, [this.guild.id, this.guild.name, this.guild.preferredLocale, JSON.stringify(require('/app/configurations/defaults/GuildConfiguration.json')), JSON.stringify(require('/app/configurations/defaults/GuildPermissions.json'))], async (error, results) => {
+                    this.SQLPool.query(`INSERT INTO \`guilds\` (id, name, locale, configuration, permissions) VALUES (?,?,?,?,?)`, [this.Guild.id, this.Guild.name, this.Guild.preferredLocale, JSON.stringify(require('/app/configurations/defaults/GuildConfiguration.json')), JSON.stringify(require('/app/configurations/defaults/GuildPermissions.json'))], async (error, results) => {
                         if (error)throw new ErrorBuilder(`Could not insert the guild in the database.`, {cause: error}).setType('SQL_ERROR').logError();
                         if (results.affectedRows != 1) throw new ErrorBuilder(`Could not insert the guild in the database.`).setType('SQL_ERROR').logError();
                         res(true);
@@ -158,11 +158,11 @@ module.exports = class Guild {
 
     async getUserFromArg(userString, fallbackUser = undefined) {
         if (!userString)return fallbackUser;
-        let user = await this.guild.members.fetch({
+        let user = await this.Guild.members.fetch({
             force: true
         }).then(members => members.find(member => member.user.tag === userString));
         if (userString.startsWith('<@'))userString = userString.replace('<@', '').slice(0, -1);
-        if (typeof user == "undefined") user = await this.guild.members.fetch(userString, {
+        if (typeof user == "undefined") user = await this.Guild.members.fetch(userString, {
             force: true
         }).catch(e => {
             return fallbackUser;
@@ -171,9 +171,9 @@ module.exports = class Guild {
     }
 
     async getRoleFromArg(roleSrting) {
-        let role = await this.guild.roles.fetch().then(roles => roles.find(role => role.name === roleSrting));
+        let role = await this.Guild.roles.fetch().then(roles => roles.find(role => role.name === roleSrting));
         if (roleSrting.startsWith('<@&'))roleSrting = roleSrting.replace('<@&', '').slice(0, -1);
-        if (typeof role == "undefined") role = await this.guild.roles.fetch(roleSrting, {
+        if (typeof role == "undefined") role = await this.Guild.roles.fetch(roleSrting, {
             force: true
         }).catch(e => {
             return undefined;
@@ -182,19 +182,19 @@ module.exports = class Guild {
     }
 
     async getMemberById(userId) {
-        return this.guild.members.fetch(userId, {
+        return this.Guild.members.fetch(userId, {
             force: true
         }).catch(e => undefined);
     }
 
     async getChannelById(channelId) {
-        return this.guild.channels.fetch(channelId, {
+        return this.Guild.channels.fetch(channelId, {
             force: true
         }).catch(e => undefined);
     }
 
     async getRoleById(roleId) {
-        return this.guild.roles.fetch(roleId, {
+        return this.Guild.roles.fetch(roleId, {
             force: true
         }).catch(e => undefined);
     }
@@ -213,7 +213,7 @@ module.exports = class Guild {
 
     async getGuildPfp() {
         return new Promise((res, rej) => {
-            let baseOfUrl = `https://cdn.discordapp.com/icons/${this.guild.id}/${this.guild.icon}`;
+            let baseOfUrl = `https://cdn.discordapp.com/icons/${this.Guild.id}/${this.Guild.icon}`;
             urlExists(`${baseOfUrl}.gif`, function (err, exists) {
                 res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
             });
@@ -222,7 +222,7 @@ module.exports = class Guild {
 
     async getGuildBanner() {
         return new Promise((res, rej) => {
-            let baseOfUrl = `https://cdn.discordapp.com/banners/${this.guild.id}/${this.guild.banner}`;
+            let baseOfUrl = `https://cdn.discordapp.com/banners/${this.Guild.id}/${this.Guild.banner}`;
             urlExists(`${baseOfUrl}.gif`, function (err, exists) {
                 res((exists) ? `${baseOfUrl}.gif` : `${baseOfUrl}.webp`);
             });

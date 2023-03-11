@@ -10,6 +10,8 @@
 //Importing NodeJS modules
 const { I18n } = require('i18n');
 
+console.log('oh it is !');
+
 //Importing classes
 const FileLogger = require('./classes/FileLogger');
 const TobyBot = require('./classes/TobyBot');

@@ -23,7 +23,7 @@ module.exports = class User {
         if (!this.initialized)return undefined;
         let apiVersion = {};
         apiVersion.id = this.id;
-        apiVersion.user = this.user;
+        apiVersion.user = this.User;
         apiVersion.configuration = this.ConfigurationManager.configuration;
         apiVersion.permissionLevel = this.permissionLevel;
         return apiVersion;
@@ -38,7 +38,7 @@ module.exports = class User {
     }
 
     async initialize(createIfNonExistant = false) {
-        this.ConfigurationManager = new SQLConfigurationManager('users', `\`id\` = '${this.user.id}'`, undefined, require('/app/configurations/defaults/UserConfiguration.json'));
+        this.ConfigurationManager = new SQLConfigurationManager('users', `\`id\` = '${this.User.id}'`, undefined, require('/app/configurations/defaults/UserConfiguration.json'));
         await this.ConfigurationManager.initialize(createIfNonExistant, undefined, this);
         await this.loadSQLContent();
         this.initialized = true;
@@ -47,7 +47,7 @@ module.exports = class User {
 
     async loadSQLContent(checkForUpdate = false) {
         return new Promise((res, _rej) => {
-            this.UserManager.SQLPool.query(`SELECT * FROM \`users\` WHERE id='${this.user.id}'`, (error, results) => {
+            this.UserManager.SQLPool.query(`SELECT * FROM \`users\` WHERE id='${this.User.id}'`, (error, results) => {
                 if (error)throw error;
                 if (results.length != 0){
                     this.numId = results[0].numId;
@@ -63,10 +63,10 @@ module.exports = class User {
 
     async createInSQL() {
         return new Promise((res, _rej) => {
-            this.UserManager.SQLPool.query(`SELECT * FROM \`users\` WHERE id='${this.user.id}'`, (error, results) => {
+            this.UserManager.SQLPool.query(`SELECT * FROM \`users\` WHERE id='${this.User.id}'`, (error, results) => {
                 if (error)throw error;
                 if (results.length == 0){
-                    this.UserManager.SQLPool.query(`INSERT INTO \`users\` (id, configuration) VALUES (?,?)`, [this.user.id, JSON.stringify(require('/app/configurations/defaults/UserConfiguration.json'))], async (error, results) => {
+                    this.UserManager.SQLPool.query(`INSERT INTO \`users\` (id, configuration) VALUES (?,?)`, [this.User.id, JSON.stringify(require('/app/configurations/defaults/UserConfiguration.json'))], async (error, results) => {
                         if (error)throw error;
                         if (results.affectedRows != 1) throw new ErrorBuilder('Could not insert user in the database').logError();
                         res(true);
@@ -79,9 +79,9 @@ module.exports = class User {
     }
 
     async getUserPfp(publicOnly = false) {
-        if (typeof this.user.avatar == "undefined" && typeof this.avatar == "undefined") return `https://tobybot.xyz/assets/imgs/default_discord_avatar.png`;
+        if (typeof this.User.avatar == "undefined" && typeof this.avatar == "undefined") return `https://tobybot.xyz/assets/imgs/default_discord_avatar.png`;
         return new Promise((res, _rej) => {
-            let urlBase = (this.avatar != null && !publicOnly) ? `https://cdn.discordapp.com/users/${this.user.id}/users/${this.user.id}/avatars/${this.avatar}` : `https://cdn.discordapp.com/avatars/${this.user.id}/${this.user.avatar}`;
+            let urlBase = (this.avatar != null && !publicOnly) ? `https://cdn.discordapp.com/users/${this.User.id}/users/${this.User.id}/avatars/${this.avatar}` : `https://cdn.discordapp.com/avatars/${this.User.id}/${this.User.avatar}`;
             urlExists(`${urlBase}.gif`, function (_err, exists) {
                 res((exists) ? `${urlBase}.gif` : `${urlBase}.webp`);
             });

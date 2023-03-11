@@ -22,7 +22,7 @@ module.exports = {
         if (typeof TobyBot.ConfigurationManager.get('blocked.users')[interaction.user.id] != "undefined")return false;
         if (typeof TobyBot.ConfigurationManager.get('blocked.guilds')[interaction.guildId] != "undefined")return false;
 
-        interaction.TobyBot.guild = await TobyBot.GuildManager.getGuild(interaction.member.guild).catch(e => { 
+        interaction.TobyBot.Guild = await TobyBot.GuildManager.getGuild(interaction.member.guild).catch(e => { 
             ErrorLog.error(`${__filename}: An error occured trying to fetch the guild:`);
             console.log(e);
             return undefined;
@@ -34,13 +34,13 @@ module.exports = {
             return undefined;
         });
 
-        if (typeof interaction.TobyBot.guild == "undefined" || !interaction.TobyBot.guild.initialized) return false;
+        if (typeof interaction.TobyBot.Guild == "undefined" || !interaction.TobyBot.Guild.initialized) return false;
 
         if (interaction.isCommand())return TobyBot.CommandManager.handleSlash(interaction).catch(e => {
             ErrorLog.error(`${__filename}: An error occured while processing the command:`);
             console.log(e);
             return interaction.reply({
-                content: interaction.TobyBot.guild.i18n.__('interaction.slashCommand.notBuilt', {prefix:  interaction.TobyBot.guild.ConfigurationManager.get('prefix')}),
+                content: interaction.TobyBot.Guild.i18n.__('interaction.slashCommand.notBuilt', {prefix:  interaction.TobyBot.Guild.ConfigurationManager.get('prefix')}),
                 ephemeral: true
             });
         });
@@ -49,28 +49,28 @@ module.exports = {
             ErrorLog.error(`${__filename}: An error occured while processing the command:`);
             console.log(e);
             return interaction.reply({
-                content: interaction.TobyBot.guild.i18n.__('interaction.contextMenu.notBuilt'),
+                content: interaction.TobyBot.Guild.i18n.__('interaction.contextMenu.notBuilt'),
                 ephemeral: true
             });
         });
 
         if (interaction.isButton()){
-            if (typeof interaction.TobyBot.guild.waitingForInteractionData == "function")return interaction.TobyBot.guild.waitingForInteractionData[interaction.customId](interaction);
+            if (typeof interaction.TobyBot.Guild.waitingForInteractionData == "function")return interaction.TobyBot.Guild.waitingForInteractionData[interaction.customId](interaction);
 
             if (interaction.customId.startsWith('russianroulette-')){
                 let InteractionId = interaction.customId;
                 let Action = InteractionId.split('-')[1];
                 let RRID = InteractionId.split('-')[2];
 
-                if (typeof interaction.TobyBot.guild.data.russianroulette.channels[interaction.channelId] == "undefined")return interaction.reply({
-                    content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.notRunningInChannel'),
+                if (typeof interaction.TobyBot.Guild.data.russianroulette.channels[interaction.channelId] == "undefined")return interaction.reply({
+                    content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.notRunningInChannel'),
                     ephemeral: true
                 });
 
-                let russianRoulette = interaction.TobyBot.guild.data.russianroulette.channels[interaction.channelId];
+                let russianRoulette = interaction.TobyBot.Guild.data.russianroulette.channels[interaction.channelId];
 
                 if (RRID != russianRoulette.id)return interaction.reply({
-                    content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.wrongId'),
+                    content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.wrongId'),
                     ephemeral: true
                 });
 
@@ -83,7 +83,7 @@ module.exports = {
         }
 
         return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.couldNotProcess'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.couldNotProcess'),
             ephemeral: true,
         });
     }

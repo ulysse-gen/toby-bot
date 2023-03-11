@@ -69,7 +69,7 @@ module.exports = class ContextMenuCommandExecution {
         this.GuildExecutor = await this.Trigger.TobyBot.Guild.Guild.members.fetch(this.Executor);
         this.Channel = this.Trigger.channel;
         this.RealChannel = this.Channel;
-        this.Guild = this.Trigger.TobyBot.guild;
+        this.Guild = this.Trigger.TobyBot.Guild;
         this.RealGuild = this.Guild;
         this.User = this.Trigger.TobyBot.user;
         this.RealUser = this.User;
@@ -235,7 +235,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      * @param color Color of the embed
      */
-     async returnEmbed(options = {}, title, description = undefined, fields = [], color = this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')){
+     async returnEmbed(options = {}, title, description = undefined, fields = [], color = this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.main')){
         if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new ErrorBuilder(`Title must be a non empty string`).setType('TYPE_ERROR').logError();
         var returnOptions = Object.assign({ephemeral: true, slashOnly: false, followUpIfReturned: false}, options);
         if (returnOptions.slashOnly && !this.IsSlashCommand)return true;
@@ -257,7 +257,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async returnMainEmbed(options = {}, title, description = undefined, fields = []){
-        return this.returnEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main'));
+        return this.returnEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.main'));
     }
 
     /** Finish the execution by returning an embed
@@ -268,7 +268,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async returnSuccessEmbed(options = {}, title, description = undefined, fields = []){
-        return this.returnEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.success'));
+        return this.returnEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.success'));
     }
 
     /** Finish the execution by returning an embed
@@ -279,7 +279,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async returnErrorEmbed(options = {}, title = this.i18n.__(`commands.generic.error.title`), description = undefined, fields = []){
-        return this.returnEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error'));
+        return this.returnEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.error'));
     }
 
     /** Finish the execution by returning an embed
@@ -290,7 +290,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async returnWarningEmbed(options = {}, title = this.i18n.__(`commands.generic.warning.title`), description = undefined, fields = []){
-        return this.returnEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning'));
+        return this.returnEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.warning'));
     }
 
     /** Reply to the execution by replying an embed
@@ -314,7 +314,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async replyMainEmbed(options = {}, title, description = undefined, fields = []){
-        return this.replyEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main'));
+        return this.replyEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.main'));
     }
 
     /** Reply to the execution by replying an embed
@@ -325,7 +325,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async replyErrorEmbed(options = {}, title, description = undefined, fields = []){
-        return this.replyEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error'));
+        return this.replyEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.error'));
     }
 
     /** Reply to the execution by replying an embed
@@ -336,7 +336,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async replySuccessEmbed(options = {}, title, description = undefined, fields = []){
-        return this.replyEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.success'));
+        return this.replyEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.success'));
     }
 
     /** Reply to the execution by replying an embed
@@ -347,7 +347,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async replyWarningEmbed(options = {}, title, description = undefined, fields = []){
-        return this.replyEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning'));
+        return this.replyEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.warning'));
     }
 
 
@@ -357,7 +357,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      * @param color Color of the embed
      */
-     async sendEmbed(title, description = undefined, fields = [], color = this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main')){
+     async sendEmbed(title, description = undefined, fields = [], color = this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.main')){
         if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new ErrorBuilder(`Title must be a non empty string.`).setType('TYPE_ERROR').logError();
         let embed = new MessageEmbed().setTitle(title).setColor(color);
         if (typeof description == "string" && description.replaceAll(' ', '') != "") embed.setDescription(description);
@@ -373,7 +373,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async sendMainEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.main'));
+        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.main'));
     }
 
     /** Reply to the execution by replying an embed
@@ -382,7 +382,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async sendSuccessEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.success'));
+        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.success'));
     }
 
     /** Reply to the execution by replying an embed
@@ -391,7 +391,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async sendErrorEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.error'));
+        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.error'));
     }
 
     /** Reply to the execution by replying an embed
@@ -400,7 +400,7 @@ module.exports = class ContextMenuCommandExecution {
      * @param fields Fields array of the embed
      */
      async sendWarningEmbed(options = {}, title, description = undefined, fields = []){
-        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.guild.ConfigurationManager.get('style.colors.warning'));
+        return this.sendEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.warning'));
     }
 
     async returnRaw(...args){

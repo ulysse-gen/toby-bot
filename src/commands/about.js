@@ -11,8 +11,6 @@ module.exports = {
     async execute(CommandExecution) {
         let fields = [
             [CommandExecution.i18n.__(`command.${this.name}.fields.developer.title`), CommandExecution.i18n.__(`command.${this.name}.fields.developer.content`), true],
-            [CommandExecution.i18n.__(`command.${this.name}.fields.originalIdea.title`), CommandExecution.i18n.__(`command.${this.name}.fields.originalIdea.content`), true],
-            [CommandExecution.i18n.__(`command.${this.name}.fields.dobiasTray.title`), CommandExecution.i18n.__(`command.${this.name}.fields.dobiasTray.content`), true],
             [CommandExecution.i18n.__(`command.${this.name}.fields.guildPrefix.title`), CommandExecution.i18n.__(`command.${this.name}.fields.guildPrefix.content`, {guildPrefix: CommandExecution.Guild.ConfigurationManager.get('prefix')}), true],
             [CommandExecution.i18n.__(`command.${this.name}.fields.globalPrefix.title`), CommandExecution.i18n.__(`command.${this.name}.fields.globalPrefix.content`, {globalPrefix: CommandExecution.TobyBot.ConfigurationManager.get('prefix')}), true],
             [CommandExecution.i18n.__(`command.${this.name}.fields.uptime.title`), prettyMilliseconds(CommandExecution.TobyBot.client.uptime), true],

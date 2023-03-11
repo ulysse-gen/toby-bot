@@ -18,7 +18,7 @@ module.exports = {
                 return true;
             }else {
                 CommandExecution.Guild.waitingForMessageData.say.channels[CommandExecution.Channel.id][CommandExecution.Executor.id] = async (message) => {
-                    let channelToSendTo = (typeof CommandExecution.options.channel == "undefined") ? message.channel : await CommandExecution.Trigger.TobyBot.guild.getChannelById(CommandExecution.options.channel);
+                    let channelToSendTo = (typeof CommandExecution.options.channel == "undefined") ? message.channel : await CommandExecution.Trigger.TobyBot.Guild.getChannelById(CommandExecution.options.channel);
                     channelToSendTo.send(message.content);
                     message.delete();
                 };
@@ -29,7 +29,7 @@ module.exports = {
 
         if (typeof CommandExecution.options.text != "string" || CommandExecution.options.text.replaceAll(' ', '') == "")throw new ErrorBuilder(CommandExecution.i18n.__('command.say.error.textMustExistNotEmpty')).setType('COMMAND_EXECUTION_ERROR').logError();
 
-        let channelToSendTo = (typeof CommandExecution.options.channel == "undefined") ? CommandExecution.Channel : await CommandExecution.Trigger.TobyBot.guild.getChannelById(CommandExecution.options.channel);
+        let channelToSendTo = (typeof CommandExecution.options.channel == "undefined") ? CommandExecution.Channel : await CommandExecution.Trigger.TobyBot.Guild.getChannelById(CommandExecution.options.channel);
 
         channelToSendTo.send(CommandExecution.options.text);
         CommandExecution.Trigger.delete();

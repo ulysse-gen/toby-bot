@@ -14,7 +14,7 @@ module.exports = class AutoModerationRun {
         
         this.User = this.message.author;
         this.Channel = this.message.channel;
-        this.Guild = this.message.TobyBot.guild;
+        this.Guild = this.message.TobyBot.Guild;
 
         this.violations = [];
     }

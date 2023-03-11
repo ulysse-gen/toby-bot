@@ -27,13 +27,13 @@ module.exports = {
 
         if (typeof TobyBot.ConfigurationManager.get('blocked.guilds')[message.channel.guild.id] != "undefined")return false;
 
-        message.TobyBot.guild = await TobyBot.GuildManager.getGuild(message.channel.guild).catch(e => { 
+        message.TobyBot.Guild = await TobyBot.GuildManager.getGuild(message.channel.guild).catch(e => { 
             ErrorLog.error(`${__filename}: An error occured trying to fetch the guild:`);
             console.log(e);
             return undefined;
         });
 
-        if (typeof message.TobyBot.guild == "undefined" || !message.TobyBot.guild.initialized) return false;
+        if (typeof message.TobyBot.Guild == "undefined" || !message.TobyBot.Guild.initialized) return false;
 
         message.TobyBot.user = await TobyBot.UserManager.getUser(message.author).catch(e => { 
             ErrorLog.error(`${__filename}: An error occured trying to fetch the user:`);
@@ -41,7 +41,7 @@ module.exports = {
             return undefined;
         });
 
-        message.TobyBot.guild.MessageManager.addMessage(message).catch(e => { 
+        message.TobyBot.Guild.MessageManager.addMessage(message).catch(e => { 
             ErrorLog.error(`An error occured trying to log the message:`);
             console.log(e);
         }); //Log messages
@@ -60,7 +60,7 @@ module.exports = {
         });
 
         if (!commandExecution){
-            let waitingForMessage = await message.TobyBot.guild.waitingForMessage(message).catch(e => {
+            let waitingForMessage = await message.TobyBot.Guild.waitingForMessage(message).catch(e => {
                 throw new ErrorBuilder(`An error occured trying to handle the waitingForMessage.`, {cause: e}).setType(ErrorType.WaitingForMessage);
             });
     

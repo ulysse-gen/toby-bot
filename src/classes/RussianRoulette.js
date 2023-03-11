@@ -193,47 +193,47 @@ module.exports = class RussianRoulette {
 
     async joinByInteraction(interaction) {
         if (this.status == "playing")return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.joinCurrentlyPlaying'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.joinCurrentlyPlaying'),
             ephemeral: true
         });
         let User = await this.CommandExecution.Guild.getMemberById(interaction.TobyBot.user.id);
         if (this.players.map(p => p.id).includes(User.id))return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.alreadyJoined'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.alreadyJoined'),
             ephemeral: true
         });
         this.players.push(User);
         return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.joined'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.joined'),
             ephemeral: true
         });
     }
 
     async leaveByInteraction(interaction) {
         if (this.status == "playing")return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.leaveCurrentlyPlaying'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.leaveCurrentlyPlaying'),
             ephemeral: true
         });
         let User = await this.CommandExecution.Guild.getMemberById(interaction.TobyBot.user.id);
         if (!this.players.map(p => p.id).includes(User.id))return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.notJoined'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.notJoined'),
             ephemeral: true
         });
         this.players = this.players.filter(function(p) { return p.id !== User.id });
         return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.left'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.left'),
             ephemeral: true
         });
     }
 
     async cancelByInteraction(interaction) {
         if (this.status == "playing")return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.cancelCurrentlyPlaying'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.cancelCurrentlyPlaying'),
             ephemeral: true
         });
         //let User = await this.CommandExecution.Guild.getMemberById(interaction.TobyBot.user.id);
         this.cancel('interaction');
         return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.canceled'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.canceled'),
             ephemeral: true
         });
     }
@@ -242,27 +242,27 @@ module.exports = class RussianRoulette {
         //let User = await this.CommandExecution.Guild.getMemberById(interaction.TobyBot.user.id);
         this.cancel('stopped');
         return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.stop'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.stop'),
             ephemeral: true
         });
     }
 
     async amIAliveByInteraction(interaction) {
         if (this.status != "playing")return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.notCurrentlyPlaying'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.notCurrentlyPlaying'),
             ephemeral: true
         });
         let User = await this.CommandExecution.Guild.getMemberById(interaction.TobyBot.user.id);
         if (!this.players.map(p => p.id).includes(User.id))return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.notJoined'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.notJoined'),
             ephemeral: true
         });
         if (this.alivePlayers.map(p => p.id).includes(User.id))return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.alive.alive'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.alive.alive'),
             ephemeral: true
         });
         return interaction.reply({
-            content: interaction.TobyBot.guild.i18n.__('interaction.russianroulette.alive.eliminated'),
+            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.alive.eliminated'),
             ephemeral: true
         });
     }

@@ -100,13 +100,13 @@ module.exports = class ContextMenuCommandManager {
 
     async hasPermission(ContextMenuCommandExecution) {
         let globalPermissions = await ContextMenuCommandExecution.TobyBot.PermissionManager.userHasPermission(ContextMenuCommandExecution.Command.permission, ContextMenuCommandExecution.GuildExecutor, ContextMenuCommandExecution.Channel);
-        let guildPermissions = await ContextMenuCommandExecution.Trigger.TobyBot.guild.PermissionManager.userHasPermission(ContextMenuCommandExecution.Command.permission, ContextMenuCommandExecution.GuildExecutor, ContextMenuCommandExecution.Channel, true);
+        let guildPermissions = await ContextMenuCommandExecution.Trigger.TobyBot.Guild.PermissionManager.userHasPermission(ContextMenuCommandExecution.Command.permission, ContextMenuCommandExecution.GuildExecutor, ContextMenuCommandExecution.Channel, true);
         return (globalPermissions) ? true : guildPermissions;
     }
 
     async hasPermissionPerContext(ContextMenuCommandExecution, permission) {
         let globalPermissions = await ContextMenuCommandExecution.TobyBot.PermissionManager.userHasPermission(permission, ContextMenuCommandExecution.GuildExecutor, ContextMenuCommandExecution.Channel);
-        let guildPermissions = await ContextMenuCommandExecution.Trigger.TobyBot.guild.PermissionManager.userHasPermission(permission, ContextMenuCommandExecution.GuildExecutor, ContextMenuCommandExecution.Channel, true);
+        let guildPermissions = await ContextMenuCommandExecution.Trigger.TobyBot.Guild.PermissionManager.userHasPermission(permission, ContextMenuCommandExecution.GuildExecutor, ContextMenuCommandExecution.Channel, true);
         return (globalPermissions) ? true : guildPermissions;
     }
 }
