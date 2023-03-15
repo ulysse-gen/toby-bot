@@ -13,8 +13,8 @@ COPY ["package.json", "package-lock.json*", "/app/"]
 
 RUN npm ci --only=production && mv node_modules /app/
 
-#USER node
+COPY . /app
 
-COPY --chown=node:node . /app
+
 
 CMD ["npm run start"]

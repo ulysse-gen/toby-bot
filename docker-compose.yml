@@ -20,7 +20,7 @@ services:
       timeout: 1s
       retries: 5
   tobybot:
-    restart: "no"
+    restart: unless-stopped
     image: tobybot:alpha4.0.0
     container_name: TobyBot
     tty: true
@@ -29,6 +29,7 @@ services:
     networks:
       - tobybot
       - bridge
+      - nginx-proxy-manager
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -42,6 +43,23 @@ services:
         - .env
     volumes:
       - data:/data
+  tobybot-webgui:
+    restart: unless-stopped
+    image: tobybot-gui:1.0
+    container_name: TobyBot-WebGUI
+    command: npm run start
+    networks:
+      - tobybot
+      - bridge
+      - nginx-proxy-manager
+    build:
+      context: ./webgui/
+      dockerfile: ./Dockerfile
+    environment:
+      - NODE_ENV=production
+      - MARIADB_CHARSET=UTF8MB4_UNICODE_CI
+    env_file:
+        - .env
 volumes:
   data:
   mysql:
@@ -51,5 +69,5 @@ networks:
     internal: true
   bridge:
     driver: bridge
-  nginx_proxy_manager:
+  nginx-proxy-manager:
    external: true

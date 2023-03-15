@@ -1,11 +1,12 @@
 {
   "name": "tobybot-webgui",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "start": "http-server -P http://localhost:8080? dist"
   },
   "dependencies": {
     "assert": "^2.0.0",
