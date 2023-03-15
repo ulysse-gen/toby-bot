@@ -51,3 +51,5 @@ networks:
     internal: true
   bridge:
     driver: bridge
+  nginx_proxy_manager:
+   external: true

@@ -1,6 +1,7 @@
 <?php
 require_once('src/php/config.inc.php');
 $configurationDocumentation = tobybotApiRequest("/v1/documentation/configuration/guild");
+print_r($configurationDocumentation);
 ?>
 <link rel="stylesheet" href="/src/css/documentation/main.css">
 <section class="full-width documentation">

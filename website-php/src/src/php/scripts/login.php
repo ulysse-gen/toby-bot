@@ -13,7 +13,8 @@ $_SESSION['discord_access_token'] = discordApiRequest($discord_Token_URL, array(
     'redirect_uri' => $website_Base_Url."/login/next",
     'code' => $_GET['code']
 ))->access_token;
-$_SESSION['tobybot_access_token'] = tobybotApiRequest('/v1/users/authByDiscordToken', array('discordToken' => $_SESSION['discord_access_token']))->token->token;
+$_SESSION['tobybot_access_token'] = tobybotApiRequest('/v1/users/authByDiscordToken', array('discordToken' => $_SESSION['discord_access_token']));
+print_r($_SESSION['tobybot_access_token']);
 $_SESSION['discord_guilds'] = discordApiRequest("$discord_Api_Base/users/@me/guilds");
 
 $_SESSION['tobybot_user'] = tobybotApiRequest('/v1/users/me');

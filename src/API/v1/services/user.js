@@ -347,3 +347,52 @@ exports.authByDiscordToken = async (req, res, next) => {
         return res.status(500).json(req.__('error.unknown'));
     }
 }
+
+exports.authByDiscordCode = async (req, res, next) => {
+    const { code, redirect_uri } = req.body;
+
+    if (!code)return res.status(401).json(req.__('error.required', {required: 'code'}));
+
+    try {
+        const requestOptions = {
+            method: "POST",
+            body: new URLSearchParams({
+                client_id: process.env['VUE_APP_OAUTH2_CLIENT_ID'],
+                client_secret: process.env['VUE_APP_OAUTH2_CLIENT_SECRET'],
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: (redirect_uri) ? redirect_uri : 'https://tobybot.xyz/login',
+            }),
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          };
+        let discordToken = await fetch("https://discord.com/api/oauth2/token", requestOptions).then(response =>response.json());
+        let discordUser = await axios({
+            method: 'get',
+            url: 'https://discord.com/api/users/@me',
+            headers: {'Authorization': `Bearer ${discordToken.access_token}`}
+        }).then(res => res.data);
+
+        let User = await req.API.TobyBot.UserManager.getUserById(discordUser.id);
+
+        if (User) {
+            User = User.tokenVersion();
+
+            const expireIn = 24 * 60 * 60;
+            const token    = jwt.sign({
+                tokenIdentifier: crypto.randomBytes(8).toString('hex'),
+                User: User
+            },
+            req.API.secret,
+            {
+                expiresIn: expireIn
+            });
+            res.header('Authorization', 'Bearer ' + token);
+            return res.status(200).json({user: discordUser, discordToken: {access_token: discordToken.access_token, expireIn: discordToken.expires_in, refresh_token: discordToken.refresh_token}, tobybotToken: {token: token, expireIn: expireIn}});
+        } else {
+            return res.status(404).json(req.__('error.user_not_found'));
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(req.__('error.unknown'));
+    }
+}

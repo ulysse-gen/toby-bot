@@ -34,6 +34,10 @@
 		"dm": {
 			"incoming": "Received DM from {{{user}}}. Message body: {{{content}}}",
 			"outgoing": "Sent DM to {{{user}}}. Message body: {{{content}}}"
+		},
+		"inputToken": {
+			"couldNotLogin": "Could not login with the provided token.",
+			"question": "Please enter the bot token:"
 		}
 	},
 	"channelLogging": {

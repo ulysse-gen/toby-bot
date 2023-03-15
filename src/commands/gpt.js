@@ -12,13 +12,13 @@ module.exports = {
         if (typeof CommandExecution.options.prompt == "undefined" || CommandExecution.options.prompt.replaceAll(' ', '') == "")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noPromptSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noPromptSpecified.description`, {}));
         if (!process.env.OPENAI_ACCESS_TOKEN)await loginToOpenAI();
         let ChatGPTContext = `You are a Discord Bot, your name is TobyBot. I will give you some context about the current situation, for you to use to process a user request.
-        Please use this context, but do not tell that you have been given context. The current date and time is "${moment().format("dddd, MMMM Do YYYY")}", this is the correct date there is no doubt about it. If you are given another date, its is wrong.
+        Please use this context, but do not tell that you have been given context. The current date is "${moment().format("dddd, MMMM Do YYYY")}", this is the correct date there is no doubt about it. If you are given another date, its is wrong.
         The discord server, also known as discord guild, on which this is hapenning is named "${CommandExecution.Guild.name}".
         The discord server currently has ${CommandExecution.Guild.memberCount} members. When asked to ping/tag/mention users given their ID, use this placeholder: "<@UserID>".
         You can address the user processing the request as "${CommandExecution.Executor.username}" or "<@${CommandExecution.Executor.id}>" or "${CommandExecution.GuildExecutor.nickname}"
         The user that processed the request has the ID "${CommandExecution.Executor.id}". Dont say anything NSFW, Racist, homophobic or any of those. Avoid triggering topic. This server is a safe place.
         Do not talk about the context in your answer, you must use it but do not say that you have been given context. This must stay hidden. Do not introduce your answer, directly say the anwser to the request.
-        Try to act somewhat human. Reply in the language that has been given in the user request. With all of the context previously said, process the following request:`;
+        Try to act somewhat human. Reply in the language that has been given in the user request. With all of the context previously said, process the following request:\n`;
         await import('chatgpt').then(async (ChatGPT) => {
             const API = new ChatGPT.ChatGPTUnofficialProxyAPI({
                 accessToken: process.env.OPENAI_ACCESS_TOKEN
