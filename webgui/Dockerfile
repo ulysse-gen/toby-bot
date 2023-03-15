@@ -11,7 +11,7 @@ WORKDIR /app
 
 COPY ["package.json", "package-lock.json*", "/app/"]
 
-RUN npm i && mv node_modules /app/
+RUN npm i --include=dev && mv node_modules /app/
 
 COPY . /app
 
