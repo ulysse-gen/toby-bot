@@ -6,6 +6,7 @@ import ConfigurationDocumentationView from "../views/ConfigurationDocumentationV
 import GuildConfigurationDocumentationView from "../views/GuildConfigurationDocumentationView.vue";
 import UserConfigurationDocumentationView from "../views/UserConfigurationDocumentationView.vue";
 import SystemConfigurationDocumentationView from "../views/SystemConfigurationDocumentationView.vue";
+import ManageGuild from "../views/ManageGuild.vue";
 import LoginView from "../views/LoginView.vue";
 
 const routes: Array<RouteRecordRaw> = [
@@ -23,6 +24,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/login",
     name: "login",
     component: LoginView,
+  },
+  {
+    path: "/manage/:guildId",
+    name: "guild manage",
+    component: ManageGuild,
+    props: true,
   },
   {
     path: "/documentation",

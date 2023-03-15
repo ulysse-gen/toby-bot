@@ -7,6 +7,7 @@
 		"token_required": "error.token_required",
 		"unknown": "error.unknown",
 		"token_not_valid": "error.token_not_valid",
-		"no_permission": "error.no_permission"
+		"no_permission": "error.no_permission",
+		"guild_not_found": "error.guild_not_found"
 	}
 }

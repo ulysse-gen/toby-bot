@@ -228,7 +228,7 @@ exports.auth = async (req, res, next) => {
                     const expireIn = 24 * 60 * 60;
                     const token    = jwt.sign({
                         tokenIdentifier: crypto.randomBytes(8).toString('hex'),
-                        User: User
+                        User: User.tokenVersion()
                     },
                     req.API.secret,
                     {
@@ -331,7 +331,7 @@ exports.authByDiscordToken = async (req, res, next) => {
             const expireIn = 24 * 60 * 60;
             const token    = jwt.sign({
                 tokenIdentifier: crypto.randomBytes(8).toString('hex'),
-                User: User
+                User: User.tokenVersion()
             },
             req.API.secret,
             {

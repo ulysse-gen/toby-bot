@@ -278,4 +278,20 @@ button {
     }
   }
 }
+
+@media (max-width: 999px) {
+  .main {
+    padding: 9rem 1.5rem 1.5rem 1.5rem;
+
+    section {
+      h2.section-title {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  #toast-notifications {
+    max-width: 60%;
+  }
+}
 </style>

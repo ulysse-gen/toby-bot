@@ -39,6 +39,7 @@
                 v-html="documentationEntry.typeText"
               ></span
             ></span>
+            <span class="path-string">Key: {{ documentationEntry.path }}</span>
             <span class="default-value"
               >Default value: {{ documentationEntry.defaultValueDisplay }}</span
             >

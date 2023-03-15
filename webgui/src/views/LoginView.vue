@@ -15,9 +15,11 @@ export default defineComponent({
 
     return {
       // access a mutation
-      user: (data: DiscordUser) => store.commit("user", data),
-      discordToken: (data: DiscordToken) => store.commit("discordToken", data),
-      tobybotToken: (data: TobyBotToken) => store.commit("tobybotToken", data),
+      setUser: (data: DiscordUser) => store.commit("setUser", data),
+      setDiscordToken: (data: DiscordToken) =>
+        store.commit("setDiscordToken", data),
+      setTobybotToken: (data: TobyBotToken) =>
+        store.commit("setTobybotToken", data),
     };
   },
   created() {
@@ -35,14 +37,17 @@ export default defineComponent({
         requestOptions
       )
         .then((response) => {
-          if (response.status == 401)
-            return this.$router.push(`/login?redirect=` + window.location);
+          if (response.status == 401) return this.$router.push(`/login`);
           return response.json();
         })
         .then((response) => {
-          this.user(response.user);
-          this.discordToken(response.discordToken);
-          this.tobybotToken(response.tobybotToken);
+          console.log(response);
+          this.setUser(response.user);
+          this.setDiscordToken(response.discordToken);
+          this.setTobybotToken(response.tobybotToken);
+        })
+        .then(() => {
+          return this.$router.push(`/home`);
         });
     } else {
       window.location =

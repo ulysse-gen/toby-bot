@@ -6,6 +6,7 @@ import {
   DiscordUser,
   MainStore,
   TobyBotToken,
+  DiscordGuild,
 } from "@/interfaces/main";
 
 export default createStore({
@@ -23,8 +24,21 @@ export default createStore({
     user: null,
     discordToken: null,
     tobybotToken: null,
+    guilds: [],
   } as MainStore,
   getters: {
+    user(state) {
+      return state.user;
+    },
+    discordToken(state) {
+      return state.discordToken;
+    },
+    tobybotToken(state) {
+      return state.tobybotToken;
+    },
+    guilds(state) {
+      return state.guilds;
+    },
     isLoggedIn(state) {
       return (
         state.user != null &&
@@ -34,14 +48,22 @@ export default createStore({
     },
   },
   mutations: {
-    user(state, data) {
+    setUser(state, data) {
       state.user = data;
     },
-    discordToken(state, data) {
+    setDiscordToken(state, data) {
       state.discordToken = data;
     },
-    tobybotToken(state, data) {
+    setTobybotToken(state, data) {
       state.tobybotToken = data;
+    },
+    logout(state) {
+      state.user = null;
+      state.discordToken = null;
+      state.tobybotToken = null;
+    },
+    setGuilds(state, data) {
+      state.guilds = data;
     },
   },
   actions: {},

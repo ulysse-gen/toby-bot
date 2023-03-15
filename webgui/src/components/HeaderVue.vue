@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <div id="header" class="header">
     <div id="logo">
       <h1 id="bot-name" hidden>TobyBot</h1>
       <router-link to="/">
@@ -22,8 +22,8 @@
       <nav>
         <router-link to="/home">HOME</router-link>
         <router-link to="/documentation">DOCUMENTATION</router-link>
-        <router-link v-if="isLoggedIn()" to="/logout">LOGOUT</router-link>
-        <router-link v-if="!isLoggedIn()" to="/login">LOGIN</router-link>
+        <a v-if="isLoggedIn()" @click="logout">LOGOUT</a>
+        <a v-if="!isLoggedIn()" @click="login">LOGIN</a>
       </nav>
     </div>
   </div>
@@ -41,7 +41,14 @@ export default defineComponent({
     return {
       // access a mutation
       isLoggedIn: () => store.getters.isLoggedIn,
+      logout: () => store.commit("logout"),
     };
+  },
+  methods: {
+    login() {
+      window.location =
+        `https://discord.com/api/oauth2/authorize?client_id=${process.env["VUE_APP_OAUTH2_CLIENT_ID"]}&scope=identify%20email%20guilds%20guilds.members.read&response_type=code&prompt=consent&redirect_uri=${window.location.origin}/login` as unknown as Location;
+    },
   },
 });
 </script>
@@ -87,6 +94,7 @@ export default defineComponent({
         flex: 1 0;
         border-left: 1px solid var(--background-secondary);
         border-right: 1px solid var(--background-secondary);
+        cursor: pointer;
 
         &:hover {
           background-color: var(--background-secondary);
@@ -141,6 +149,37 @@ div#top_logo_animated {
 
   &:hover {
     transform: scale(1.01);
+  }
+}
+
+@media (max-width: 999px) {
+  .header {
+    height: 4rem;
+    flex-direction: column;
+    align-items: center;
+    -webkit-box-shadow: 0px -4px 15px 9px rgba(0, 0, 0, 0.64);
+    box-shadow: 0px -4px 15px 9px rgba(0, 0, 0, 0.64);
+    margin-bottom: 1.5rem;
+
+    #logo {
+      display: flex;
+      justify-content: center;
+      max-height: 40%;
+      width: 100%;
+      border-bottom: 1px solid var(--background-secondary);
+    }
+
+    #nav {
+      width: 100%;
+      nav {
+        a {
+          font-size: 0.8rem;
+          flex: 1 1;
+          border-left: 1px solid var(--background-secondary);
+          border-right: 1px solid var(--background-secondary);
+        }
+      }
+    }
   }
 }
 </style>
