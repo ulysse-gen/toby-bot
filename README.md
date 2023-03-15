@@ -46,13 +46,20 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ## Environment variables:
 ```
-MARIADB_HOST (Default: 'MariaDB-TobyBot'): The database container's name/hostname.
-MARIADB_DATABASE_NC (Default: 'tobybot-v4') : The database name.
-MARIADB_CONNECTION_LIMIT (Default: 10)   : The amount of connections to be created in the pool.
-MARIADB_ROOT_PASSWORD (Default: none)    : The root password for the database.
+MARIADB_HOST (Default: 'MariaDB-TobyBot')     : The database container's name/hostname.
+MARIADB_DATABASE_NC (Default: 'tobybot-v4')   : The database name.
+MARIADB_CONNECTION_LIMIT (Default: 10)        : The amount of connections to be created in the pool.
+MARIADB_ROOT_PASSWORD (Default: none)         : The root password for the database.
 
-TOBYBOT_API_HOST (Default: 'TobyBot')    : The API container's name/hostname.
-TOBYBOT_API_PORT (Default: 6845)         : The port to be used for the API.
-TOBYBOT_API_ONLY (Default: false)        : Run only the API and ignore everything else.
-TOBYBOT_API_SECRET (Default: none)       : The secret to be used by JWT on the API.
+TOBYBOT_API_HOST (Default: 'TobyBot')         : The API container's name/hostname.
+VUE_APP_TOBYBOT_API_HOST (Default: 'TobyBot') : The API container's name/hostname.
+TOBYBOT_API_PORT (Default: 6845)              : The port to be used for the API.
+VUE_APP_TOBYBOT_API_PORT (Default: 6845)      : The port to be used for the API.
+TOBYBOT_API_ONLY (Default: false)             : Run only the API and ignore everything else.
+TOBYBOT_API_SECRET (Default: none)            : The secret to be used by JWT on the API.
+
+OPENAI_EMAIL (Default: none)                  : The email for the OpenAI account for the ChatGPT fonctions.
+OPENAI_PASSWORD (Default: none)               : The password for the OpenAI account for the ChatGPT fonctions.
+
+VUE_APP_OAUTH2_CLIENT_ID (Default: none)      : The ClientID Of the bot.
 ```
