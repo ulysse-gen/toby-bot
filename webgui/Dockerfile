@@ -11,7 +11,7 @@ WORKDIR /app
 
 COPY ["package.json", "package-lock.json*", "/app/"]
 
-RUN npm ci --only=production && mv node_modules /app/
+RUN npm ci --include=dev && mv node_modules /app/
 
 COPY . /app
 
