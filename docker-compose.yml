@@ -29,7 +29,7 @@ services:
     networks:
       - tobybot
       - bridge
-      - nginx-proxy-manager
+      - nginx_proxy_manager
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -51,7 +51,7 @@ services:
     networks:
       - tobybot
       - bridge
-      - nginx-proxy-manager
+      - nginx_proxy_manager
     build:
       context: ./webgui/
       dockerfile: ./Dockerfile
@@ -69,5 +69,5 @@ networks:
     internal: true
   bridge:
     driver: bridge
-  nginx-proxy-manager:
+  nginx_proxy_manager:
    external: true
