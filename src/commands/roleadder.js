@@ -403,7 +403,7 @@ module.exports = {
 
             slashCommand.addSubcommand(subCommand => {
                 subCommand.setName('prepare')
-                    .setDescription(i18n.__(`command.${this.name}.subcommand.preapre.description`));
+                    .setDescription(i18n.__(`command.${this.name}.subcommand.prepare.description`));
     
                 return subCommand;
             });

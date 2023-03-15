@@ -537,88 +537,88 @@
 			"description": "Reload some components of the bot."
 		},
 		"roleadder": {
-			"name": "command.roleadder.name",
-			"description": "command.roleadder.description",
+			"name": "Role adder",
+			"description": "Utility to add roles to members using filters.",
 			"subcommand": {
 				"addrole": {
-					"description": "command.roleadder.subcommand.addrole.description"
+					"description": "Add a role to the list of roles to be added."
 				},
 				"removerole": {
-					"description": "command.roleadder.subcommand.removerole.description"
+					"description": "Remove a role from the list of roles to be added."
 				},
 				"addtoblacklist": {
-					"description": "command.roleadder.subcommand.addtoblacklist.description"
+					"description": "Add a role to the blacklist. User having this role wont be fetched."
 				},
 				"removefromblacklist": {
-					"description": "command.roleadder.subcommand.removefromblacklist.description"
+					"description": "Remove a role from the blacklist. User having this role wont be fetched."
 				},
 				"addtowhitelist": {
-					"description": "command.roleadder.subcommand.addtowhitelist.description"
+					"description": "Add a role to the whitelist. User will must have those roles to be fetched."
 				},
 				"removefromwhitelist": {
-					"description": "command.roleadder.subcommand.removefromwhitelist.description"
+					"description": "Remove a role from the whitelist. User will must have those roles to be fetched."
 				},
 				"logaddedusers": {
-					"description": "command.roleadder.subcommand.logaddedusers.description"
+					"description": "Choose to log the added users or not."
 				},
-				"preapre": {
-					"description": "command.roleadder.subcommand.preapre.description"
+				"prepare": {
+					"description": "Fetch the users within settings."
 				},
 				"trigger": {
-					"description": "command.roleadder.subcommand.trigger.description"
+					"description": "Add roles to the users. Be careful, this cannot be undone."
 				},
 				"clear": {
-					"description": "command.roleadder.subcommand.clear.description"
+					"description": "Clear a pending role adding process. (Clear a previously done prepare)"
 				},
 				"fixroles": {
-					"description": "command.roleadder.subcommand.fixroles.description"
+					"description": "Fix roles in the lists. (Remove #deleted-roles)"
 				}
 			},
 			"addrole": {
 				"option": {
 					"role": {
-						"description": "command.roleadder.addrole.option.role.description"
+						"description": "The role to add."
 					}
 				}
 			},
 			"removerole": {
 				"option": {
 					"role": {
-						"description": "command.roleadder.removerole.option.role.description"
+						"description": "The role to remove."
 					}
 				}
 			},
 			"addtoblacklist": {
 				"option": {
 					"role": {
-						"description": "command.roleadder.addtoblacklist.option.role.description"
+						"description": "The role to add."
 					}
 				}
 			},
 			"removefromblacklist": {
 				"option": {
 					"role": {
-						"description": "command.roleadder.removefromblacklist.option.role.description"
+						"description": "The role to remove."
 					}
 				}
 			},
 			"addtowhitelist": {
 				"option": {
 					"role": {
-						"description": "command.roleadder.addtowhitelist.option.role.description"
+						"description": "The role to add."
 					}
 				}
 			},
 			"removefromwhitelist": {
 				"option": {
 					"role": {
-						"description": "command.roleadder.removefromwhitelist.option.role.description"
+						"description": "The role to remove."
 					}
 				}
 			},
 			"logaddedusers": {
 				"option": {
-					"description": "command.roleadder.logaddedusers.option.description"
+					"description": "True/False"
 				}
 			}
 		},

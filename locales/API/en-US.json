@@ -1,13 +1,31 @@
 {
-	"name": "name",
+	"name": "TobyBot API",
 	"route": {
-		"unknown": "route.unknown"
+		"unknown": "Welcome to TobyBot's API. There's nothing there.",
+		"v1": {
+			"defaultMessage": "Welcome to TobyBot's API v1. You could have more fun, but the endpoints arent publicly shared yet.",
+			"any": {
+				"defaultMessage": "Welcome to TobyBot's API v1."
+			}
+		}
 	},
 	"error": {
-		"token_required": "error.token_required",
-		"unknown": "error.unknown",
-		"token_not_valid": "error.token_not_valid",
-		"no_permission": "error.no_permission",
-		"guild_not_found": "error.guild_not_found"
+		"not_found": "Not found.",
+		"required": "Missing {{{required}}}.",
+		"wrong_credentials": "Wrong credentials.",
+		"no_api_account": "No api account, you can contact UlysseGenie#9555 to create one if needed, which should not be the case, until the API get any public access.",
+		"token_required": "Token required.",
+		"token_not_valid": "Invalid token.",
+		"no_permission": "You dont have the permission to access this.",
+		"unknown": "An unknown error occured. {{{error}}}",
+		"user_not_found": "User not found.",
+		"guild_not_found": "Guild not found.",
+		"missing_permission": "Missing permission {{{required}}}.",
+		"channel_not_found": "Channel not found.",
+		"commands.permission_denied": "You dont have the permission to execute this command in this context.",
+		"command_not_found": "Command not found.",
+		"configuration_first_init": "error.configuration_first_init",
+		"configuration_key_not_found": "Configuration key not found.",
+		"configuration_unchanged": "Configuration enchanged."
 	}
 }

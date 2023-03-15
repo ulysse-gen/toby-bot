@@ -3,34 +3,34 @@
 		"commandExecution": {
 			"error": {
 				"deny": {
-					"title": "channelLogging.commandExecution.error.deny.title",
-					"description": "channelLogging.commandExecution.error.deny.description"
+					"title": "Command denied",
+					"description": "{{{command}}}"
 				},
 				"unknown": {
-					"title": "channelLogging.commandExecution.error.unknown.title",
-					"description": "channelLogging.commandExecution.error.unknown.description"
+					"title": "Unknown command",
+					"description": "{{{command}}}"
 				}
 			},
 			"field": {
 				"executor": {
-					"title": "channelLogging.commandExecution.field.executor.title",
-					"description": "channelLogging.commandExecution.field.executor.description"
+					"title": "Executor",
+					"description": "<@{{{userId}}}>"
 				},
 				"channel": {
-					"title": "channelLogging.commandExecution.field.channel.title",
-					"description": "channelLogging.commandExecution.field.channel.description"
+					"title": "Channel",
+					"description": "<#{{{channelId}}}>"
 				},
 				"realUser": {
-					"title": "channelLogging.commandExecution.field.realUser.title",
-					"description": "channelLogging.commandExecution.field.realUser.description"
+					"title": "Real executor",
+					"description": "<@{{{realUserId}}}>"
 				},
 				"realChannel": {
-					"title": "channelLogging.commandExecution.field.realChannel.title",
-					"description": "channelLogging.commandExecution.field.realChannel.description"
+					"title": "Real channel",
+					"description": "<#{{{realChannelId}}}>"
 				},
 				"permission": {
-					"title": "channelLogging.commandExecution.field.permission.title",
-					"description": "channelLogging.commandExecution.field.permission.description"
+					"title": "Permission",
+					"description": "`{{{permission}}}`"
 				}
 			}
 		}
