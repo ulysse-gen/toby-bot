@@ -943,6 +943,10 @@
 		"slap": {
 			"name": "Slap",
 			"description": "Slap a user."
+		},
+		"kiss": {
+			"name": "Kiss",
+			"description": "Kiss a user."
 		}
 	},
 	"commands": {

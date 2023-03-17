@@ -27,7 +27,6 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Embedfail
 - Hi
 - Invitelink?
-- Kiss
 - Makeembed?
 - Remindme
 - Rockpaperscissors
