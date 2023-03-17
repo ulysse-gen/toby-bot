@@ -37,18 +37,18 @@ module.exports = class MessageManager {
 
     async updateMessage(oldMessage, newMessage) {
         let messageToUpdate = this.getMessageById(`${oldMessage.channel.guild.id}-${oldMessage.channel.id}-${oldMessage.id}`);
-        if (typeof messageToUpdate == "undefined")return this.addMessage(newMessage);
+        if (typeof messageToUpdate == "undefined")messageToUpdate = this.addMessage(newMessage);
         messageToUpdate.history.push(oldMessage);
         messageToUpdate.message = newMessage;
         messageToUpdate.edited = true;
-        return true;
+        return messageToUpdate;
     }
 
     async deleteMessage(oldMessage) {
         let messageToUpdate = await this.getMessageById(`${oldMessage.channel.guild.id}-${oldMessage.channel.id}-${oldMessage.id}`);
-        if (typeof messageToUpdate == "undefined")this.addMessage(oldMessage);
+        if (typeof messageToUpdate == "undefined")messageToUpdate = this.addMessage(oldMessage);
         messageToUpdate.deleted = true;
-        return true;
+        return messageToUpdate;
     }
 
     async addMessage(message) {
@@ -65,6 +65,6 @@ module.exports = class MessageManager {
         };
         this.allMessages.unshift(MessageEntry);
         if (this.allMessages.length >= this.maxMessagesStored) this.allMessages.splice(0, this.maxMessagesStored);
-        return true;
+        return MessageEntry;
     }
 }

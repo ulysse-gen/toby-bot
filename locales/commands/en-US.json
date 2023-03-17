@@ -904,12 +904,16 @@
 			}
 		},
 		"gpt": {
-			"name": "command.gpt.name",
-			"description": "command.gpt.description",
+			"name": "Chat GPT",
+			"description": "Make a request to GPT4.5",
 			"option": {
 				"prompt": {
-					"description": "command.gpt.option.prompt.description"
+					"description": "The prompt to send to ChatGPT"
 				}
+			},
+			"couldNotLogin": {
+				"title": "Could not login.",
+				"description": "too poor for main api so using stuff to bypass so i may be banned / blocked lol f"
 			}
 		}
 	},

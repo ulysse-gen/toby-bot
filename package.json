@@ -31,12 +31,14 @@
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
     "nestjs-i18n": "^10.2.6",
+    "node-fetch": "^2.6.9",
     "nodemon": "^2.0.21",
     "openai-authenticator": "^0.0.3",
     "pretty-ms": "^7.0.1",
     "random-number": "^0.0.9",
     "remove-accents": "^0.4.2",
     "timestring": "^6.0.0",
-    "url-exists": "^1.0.3"
+    "url-exists": "^1.0.3",
+    "zongji": "^0.5.1"
   }
 }

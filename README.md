@@ -42,7 +42,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ### Fixes:
 
-- Nothin'
+- Command not showing when logging command denied in console
 
 ## Environment variables:
 ```

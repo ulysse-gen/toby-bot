@@ -10,7 +10,10 @@ module.exports = {
     enabled: true,
     async execute(CommandExecution) {
         if (typeof CommandExecution.options.prompt == "undefined" || CommandExecution.options.prompt.replaceAll(' ', '') == "")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noPromptSpecified.title`), CommandExecution.i18n.__(`command.${this.name}.error.noPromptSpecified.description`, {}));
-        if (!process.env.OPENAI_ACCESS_TOKEN)await loginToOpenAI();
+        if (!process.env.OPENAI_ACCESS_TOKEN){
+            let login = await loginToOpenAI();
+            if (!login)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.couldNotLogin.title`), CommandExecution.i18n.__(`command.${this.name}.couldNotLogin.description`, {}));
+        }
         let ChatGPTContext = `You are a Discord Bot, your name is TobyBot. I will give you some context about the current situation, for you to use to process a user request.
         Please use this context, but do not tell that you have been given context. The current date is "${moment().format("dddd, MMMM Do YYYY")}", this is the correct date there is no doubt about it. If you are given another date, its is wrong.
         The discord server, also known as discord guild, on which this is hapenning is named "${CommandExecution.Guild.name}".
@@ -27,6 +30,8 @@ module.exports = {
                 CommandExecution.Guild.data.GPT.users[CommandExecution.Executor.id] = {conversationId: res.conversationId, parentMessageId: res.parentMessageId, creationTimestamp: moment()};
                 return await CommandExecution.Channel.send(res.text);
             }).catch(e=>console.log(e));
+        }).catch(e => {
+            CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.failed.title`), CommandExecution.i18n.__(`command.${this.name}.failed.description`, {}));
         });
     },
     async optionsFromArgs (CommandExecution) {
@@ -84,11 +89,12 @@ module.exports = {
 }
 
 async function loginToOpenAI() {
+    let fetch = require('node-fetch');
     return await import('openai-authenticator')
         .then(async (Authenticator) => {
             const authenticator = new Authenticator.default();
-            let token = await authenticator.login(process.env.OPENAI_EMAIL, process.env.OPENAI_PASSWORD);
+            let token = await authenticator.login(process.env.OPENAI_EMAIL, process.env.OPENAI_PASSWORD, );
             process.env.OPENAI_ACCESS_TOKEN = token.accessToken;
-            return process.env.OPENAI_ACCESS_TOKEN;
-        });
+            return true;
+        }).catch(e => false);
 }
