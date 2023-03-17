@@ -5,6 +5,7 @@ const jwt    = require('jsonwebtoken');
 const _    = require('lodash');
 const { ErrorBuilder } = require('/app/src/classes/Errors');
 const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager');
+const fetch = require('node-fetch');
 
 
 exports.getMine = async (req, res, next) => {
