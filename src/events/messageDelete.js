@@ -34,8 +34,8 @@ module.exports = {
             return undefined;
         });
 
-        if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
         if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
+        if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
 
         message.TobyBot.Guild.MessageManager.deleteMessage(message).catch(e => { 
             ErrorLog.error(`An error occured trying to update the message log:`);
