@@ -947,6 +947,10 @@
 		"kiss": {
 			"name": "Kiss",
 			"description": "Kiss a user."
+		},
+		"hi": {
+			"name": "Hi",
+			"description": "Say hi to a user."
 		}
 	},
 	"commands": {
