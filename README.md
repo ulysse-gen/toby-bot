@@ -18,19 +18,19 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Auto moderation
 - Changelog of some kind (& update alert in channel?)
 - Command cooldowns
+- Reply function to fun commands (ex: embedfail, hi, slap, kiss, hug)
 
 ### Commands:
 
-- Autokick
+- Autokick?
 - Choose
 - Coinflip
-- Embedfail
 - Invitelink?
 - Makeembed?
-- Remindme
-- Rockpaperscissors
+- Remindme?
+- Rockpaperscissors?
 - Roleadder
-- Rolldice
+- Rolldice?
 - SendDM
 - Lockdown?
 

@@ -951,6 +951,10 @@
 		"hi": {
 			"name": "Hi",
 			"description": "Say hi to a user."
+		},
+		"embedfail": {
+			"name": "Embed fail",
+			"description": "Mock an embed fail. Be careful not to embed fail yourself!"
 		}
 	},
 	"commands": {
