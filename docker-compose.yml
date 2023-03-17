@@ -21,7 +21,7 @@ services:
       retries: 5
   tobybot:
     restart: unless-stopped
-    image: tobybot:alpha4.0.0
+    image: tobybot:latest
     container_name: TobyBot
     tty: true
     stdin_open: true
@@ -45,7 +45,7 @@ services:
       - data:/data
   tobybot-webgui:
     restart: unless-stopped
-    image: tobybot-gui:1.0
+    image: tobybot-gui:latest
     container_name: TobyBot-WebGUI
     command: npm run start
     networks:
