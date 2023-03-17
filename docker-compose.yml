@@ -11,7 +11,7 @@ services:
     environment:
       - MARIADB_CHARSET=UTF8MB4_UNICODE_CI
     env_file:
-        - .env
+        - .env.production
     volumes:
       - mysql:/var/lib/mysql
     healthcheck:
@@ -40,7 +40,7 @@ services:
       - NODE_ENV=production
       - MARIADB_CHARSET=UTF8MB4_UNICODE_CI
     env_file:
-        - .env
+        - .env.production
     volumes:
       - data:/data
   tobybot-webgui:
@@ -59,7 +59,7 @@ services:
       - NODE_ENV=production
       - MARIADB_CHARSET=UTF8MB4_UNICODE_CI
     env_file:
-        - .env
+        - ./webgui/.env.production
 volumes:
   data:
   mysql:

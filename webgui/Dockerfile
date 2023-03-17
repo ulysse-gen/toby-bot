@@ -9,7 +9,7 @@ RUN npm install -g http-server
 
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "/app/"]
+COPY ["package.json", "package-lock.json*", ".env*", "/app/"]
 
 RUN npm ci --include=dev && mv node_modules /app/
 
