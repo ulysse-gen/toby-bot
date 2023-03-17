@@ -255,8 +255,8 @@
 					"description": "This configuration entry does not exist."
 				},
 				"configCheckNotDefined": {
-					"title": "command.globalconfiguration.error.configCheckNotDefined.title",
-					"description": "command.globalconfiguration.error.configCheckNotDefined.description"
+					"title": "Could not check config.",
+					"description": "The config checker for this config type is not defined."
 				}
 			},
 			"set": {
@@ -931,6 +931,10 @@
 					"description": "If you dont specify the prompt you wont go far sir."
 				}
 			}
+		},
+		"welcome": {
+			"name": "Welcome",
+			"description": "Welcome a user to the server."
 		}
 	},
 	"commands": {
