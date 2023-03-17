@@ -37,11 +37,11 @@ export default defineComponent({
         `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/users/authByDiscordCode`,
         requestOptions
       )
-        .then((response) => {
+        .then((response: any) => {
           if (response.status == 401) return this.$router.push(`/login`);
           return response.json();
         })
-        .then((response) => {
+        .then((response: any) => {
           console.log(response);
           this.setUser(response.user);
           this.setDiscordToken(response.discordToken);
@@ -50,7 +50,7 @@ export default defineComponent({
         .then(() => {
           return this.$router.push(`/home`);
         })
-        .catch((e) => {
+        .catch((e: any) => {
           console.log(e);
         });
     } else {

@@ -1,7 +1,5 @@
 const { defineConfig } = require("@vue/cli-service");
-const webpack = require("webpack");
-const Dotenv = require('dotenv-webpack');
-const path = require('path');
+const Dotenv = require("dotenv-webpack");
 
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -14,8 +12,6 @@ module.exports = defineConfig({
         http: require.resolve("stream-http"),
       },
     },
-    plugins: [
-      new Dotenv()
-    ],
+    plugins: [new Dotenv()],
   },
 });
