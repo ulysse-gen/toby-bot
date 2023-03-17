@@ -19,6 +19,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Changelog of some kind (& update alert in channel?)
 - Command cooldowns
 - Reply function to fun commands (ex: embedfail, hi, slap, kiss, hug)
+- Make translations for fun commands (ex: embedfail, hi, slap, kiss, hug, welcome)
 
 ### Commands:
 
