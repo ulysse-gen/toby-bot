@@ -34,7 +34,6 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Roleadder
 - Rolldice
 - SendDM
-- Slap
 - Lockdown?
 
 ### Fixes:

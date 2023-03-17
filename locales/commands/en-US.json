@@ -939,6 +939,10 @@
 		"hug": {
 			"name": "Hug",
 			"description": "Send a hug to a user."
+		},
+		"slap": {
+			"name": "Slap",
+			"description": "Slap a user."
 		}
 	},
 	"commands": {
