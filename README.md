@@ -55,7 +55,9 @@ OPENAI_PASSWORD (Default: none)               : The password for the OpenAI acco
 
 VUE_APP_TOBYBOT_API_HOST (Default: 'TobyBot') : The API container's name/hostname.
 VUE_APP_TOBYBOT_API_PORT (Default: 6845)      : The port to be used for the API.
-VUE_APP_OAUTH2_CLIENT_ID (Default: none)      : The ClientID Of the bot.
+VUE_APP_OAUTH2_CLIENT_ID (Default: none)      : The ClientID of the bot.
+
+OAUTH2_CLIENT_SECRET (Default: none)          : The Client Secret of the bot.
 ```
 
 ## .env Placeholder
@@ -75,4 +77,6 @@ OPENAI_PASSWORD=fjz7fdw@MWQ6vgq2edc
 VUE_APP_TOBYBOT_API_HOST=api.tobybot.xyz
 VUE_APP_TOBYBOT_API_PORT=80
 VUE_APP_OAUTH2_CLIENT_ID=XXXXXXXXXXXXXXXXXXX
+
+OAUTH2_CLIENT_SECRET=XXXXXXXXXXXXXXX
 ```

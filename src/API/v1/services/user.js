@@ -358,7 +358,7 @@ exports.authByDiscordCode = async (req, res, next) => {
             method: "POST",
             body: new URLSearchParams({
                 client_id: process.env['VUE_APP_OAUTH2_CLIENT_ID'],
-                client_secret: process.env['VUE_APP_OAUTH2_CLIENT_SECRET'],
+                client_secret: process.env['OAUTH2_CLIENT_SECRET'],
                 grant_type: 'authorization_code',
                 code: code,
                 redirect_uri: (redirect_uri) ? redirect_uri : 'https://tobybot.xyz/login',

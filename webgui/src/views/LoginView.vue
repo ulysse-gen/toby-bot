@@ -6,6 +6,7 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { DiscordToken, DiscordUser, TobyBotToken } from "../interfaces/main";
+import fetch from "node-fetch";
 
 export default defineComponent({
   name: "LoginView",
@@ -48,6 +49,9 @@ export default defineComponent({
         })
         .then(() => {
           return this.$router.push(`/home`);
+        })
+        .catch((e) => {
+          console.log(e);
         });
     } else {
       window.location =
