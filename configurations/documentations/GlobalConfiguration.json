@@ -41,6 +41,52 @@
         "editable": true,
         "default": ""
     },
+    "presence": {
+        "mode": {
+            "name": "Presence mode",
+            "description": "The presence mode",
+            "type": "String(PresenceMode)",
+            "editable": true,
+            "default": "loop"
+        },
+        "startup": {
+            "name": "Startup presence",
+            "description": "The presence that appears the first 15 seconds after the bot starts",
+            "type": "Object",
+            "editable": true,
+            "default": "{\"status\":\"online\",\"activities\":[{\"name\":\"wakey wakey\",\"type\":\"PLAYING\"}]}"
+        },
+        "shutdown": {
+            "name": "Shutdown presence",
+            "description": "The presence that appears when the bot stops",
+            "type": "Object",
+            "editable": true,
+            "default": "{\"status\":\"dnd\",\"activities\":[{\"name\":\"Going to sleep\",\"type\":\"PLAYING\"}]}"
+        },
+        "custom": {
+            "name": "Custom presence",
+            "description": "The presence that appears when the presence mode is set to 'custom'.",
+            "type": "Object",
+            "editable": true,
+            "default": "{\"status\":\"online\",\"activities\":[{\"name\":\"Custom presence\",\"type\":\"PLAYING\"}]}"
+        },
+        "loop": {
+            "time": {
+                "name": "Presence loop time",
+                "description": "The time in millisecond that the presence will loop.",
+                "type": "Integer",
+                "editable": true,
+                "default": 120000
+            },
+            "presences": {
+                "name": "Presence loop presences",
+                "description": "The presences that the bot will loop in 'loop' mode.",
+                "type": "Object(Array)",
+                "editable": true,
+                "default": "[]"
+            }
+        }
+    },
     "style": {
         "colors": {
             "success": {

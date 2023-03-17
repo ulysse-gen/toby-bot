@@ -27,6 +27,7 @@ const Console = require('./Console');
 const MYSQLWatcher = require('./MYSQLWatcher');
 const AutoModeration = require('./AutoModeration');
 const { ErrorBuilder, ErrorType } = require('./Errors');
+const PresenceManager = require('./PresenceManager');
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -74,6 +75,7 @@ module.exports = class TobyBot {
         this.ConfigurationManager = undefined;
         this.PermissionManager = undefined;
         this.MetricManager = new MetricManager();
+        this.PresenceManager = new PresenceManager(this);
         this.Console = new Console(this);
         this.LifeMetric = this.MetricManager.createMetric("LifeMetric"); //Create the main "LifeMetric" that will follow everything that might happen which is code related (e.g. errors)
         this.AutoModeration = new AutoModeration(this);
@@ -177,6 +179,7 @@ module.exports = class TobyBot {
         this.client.PermissionManager = this.PermissionManager; //Attach Global PermissionManager to the client objects
         this.client.CommandManager = this.CommandManager; //Attach Global PermissionManager to the client objects
         this.client.MetricManager = this.MetricManager; //Attach Global MetricManager to the client objects
+        this.client.PresenceManager = this.PresenceManager; //Attach Global PresenceManager to the client objects
         return true;
     }
 
@@ -224,6 +227,7 @@ module.exports = class TobyBot {
 
     async finalTouch() {
         this.ModerationManager = new ModerationManager(this.CommunityGuild); //Create the Global CommandManager
+        this.PresenceManager.Initialize();
 
         setInterval(() => this.ModerationManager.clearExpired(), 10000); //Clear expired punishments every 10 seconds
         this.ModerationManager.clearExpired();

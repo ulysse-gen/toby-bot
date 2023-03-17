@@ -253,6 +253,10 @@
 				"keyNotFound": {
 					"title": "Count not find this key.",
 					"description": "This configuration entry does not exist."
+				},
+				"configCheckNotDefined": {
+					"title": "command.globalconfiguration.error.configCheckNotDefined.title",
+					"description": "command.globalconfiguration.error.configCheckNotDefined.description"
 				}
 			},
 			"set": {

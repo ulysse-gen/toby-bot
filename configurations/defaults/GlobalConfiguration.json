@@ -10,6 +10,56 @@
     "domainName": "tobybot.xyz",
     "apiDomain": "api.tobybot.xyz",
     "communityGuild": "",
+    "presence": {
+        "mode": "loop",
+        "startup": {
+            "status": "online",
+            "activities": [{
+                "name": "wakey wakey",
+                "type": "PLAYING"
+            }]
+        },
+        "shutdown": {
+            "status": "dnd",
+            "activities": [{
+                "name": "Going to sleep",
+                "type": "PLAYING"
+            }]
+        },
+        "custom": {
+            "status": "online",
+            "activities": [{
+                "name": "Custom presence",
+                "type": "PLAYING"
+            }]
+        },
+        "loop": {
+            "time": 120000,
+            "presences": [
+                {
+                    "status": "dnd",
+                    "activities": [{
+                        "name": "You Made Me A Fool",
+                        "type": "LISTENING"
+                    }]
+                },
+                {
+                    "status": "online",
+                    "activities": [{
+                        "name": "Never Gonna Give You Up",
+                        "type": "LISTENING"
+                    }]
+                },
+                {
+                    "status": "away",
+                    "activities": [{
+                        "name": "Y'all messages",
+                        "type": "WATCHING"
+                    }]
+                }
+            ]
+        }
+    },
     "style": {
         "colors": {
             "success": "#00FF68",

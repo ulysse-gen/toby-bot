@@ -38,6 +38,9 @@
 		"inputToken": {
 			"couldNotLogin": "Could not login with the provided token.",
 			"question": "Please enter the bot token:"
+		},
+		"presence": {
+			"started": "Presence manager started on mode {{{mode}}}."
 		}
 	},
 	"channelLogging": {

@@ -77,6 +77,17 @@ module.exports = {
 
             ConfigurationManager.set(CommandExecution.options.key, KeyDefaultValue);
 
+            if (typeof _.get(ConfigurationFunctions, CommandExecution.options.key) == "function"){
+                let updateFunction = await _.get(ConfigurationFunctions, CommandExecution.options.key)(CommandExecution.TobyBot, ConfigurationManager, CommandExecution.options.key);
+                if (typeof updateFunction == "object") {
+                    if (typeof updateFunction.status == "boolean" && updateFunction.status == false){
+                        ConfigurationManager.set(CommandExecution.options.key, KeyValue);
+                        return CommandExecution.replyErrorEmbed({ephemeral: null}, updateFunction.title, (typeof updateFunction.description == "string") ? updateFunction.description : undefined, (typeof updateFunction.fields == "object") ? updateFunction.fields : undefined);
+                    }
+                    if (typeof updateFunction.status == "object" && updateFunction.status == null)CommandExecution.replyWarningEmbed({ephemeral: null}, updateFunction.title, (typeof updateFunction.description == "string") ? updateFunction.description : undefined, (typeof updateFunction.fields == "object") ? updateFunction.fields : undefined);
+                }
+            }
+
             CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.reset.title`, { name: KeyName, key: CommandExecution.options.key }), CommandExecution.i18n.__(`command.${this.name}.reset.description`, { name: KeyName, key: CommandExecution.options.key }));
             return true;
         }
