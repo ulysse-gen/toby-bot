@@ -15,8 +15,7 @@ module.exports = defineConfig({
     },
     plugins: [
       new Dotenv({
-        path: '../.env',
-        systemvars: true
+        path: path.resolve(__dirname, '..', '.env')
       })
     ],
   },
