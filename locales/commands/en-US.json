@@ -326,6 +326,12 @@
 			"help": {
 				"title": "Shhhhhh.. dont tell anyone",
 				"description": "I havent done this part yet.."
+			},
+			"set": {
+				"title": "command.globalpermission.set.title"
+			},
+			"remove": {
+				"title": "command.globalpermission.remove.title"
 			}
 		},
 		"help": {
@@ -914,6 +920,12 @@
 			"couldNotLogin": {
 				"title": "Could not login.",
 				"description": "too poor for main api so using stuff to bypass so i may be banned / blocked lol f"
+			},
+			"error": {
+				"noPromptSpecified": {
+					"title": "No prompt specified.",
+					"description": "If you dont specify the prompt you wont go far sir."
+				}
 			}
 		}
 	},

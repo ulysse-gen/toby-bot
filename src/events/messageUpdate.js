@@ -34,7 +34,7 @@ module.exports = {
             return undefined;
         });
 
-        if (message.type == "APPLICATION_COMMAND" || message.author.bot) return; //Skip if its a bot or an app message
+        if (message.type == "APPLICATION_COMMAND" || !message.author || message.author.bot) return; //Skip if its a bot or an app message or user is not defined
         if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
 
         message.TobyBot.Guild.MessageManager.updateMessage(oldMessage, message).catch(e => { 

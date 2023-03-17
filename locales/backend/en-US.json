@@ -12,7 +12,7 @@
 			"execution": {
 				"spoofed": "{{{realUser}}} executed {{{command}}} in {{{realLocation}}} [Spoofed as {{{user}}} in {{{location}}}]",
 				"normal": "{{{user}}} executed {{{command}}} in {{{location}}}",
-				"permissionDenied": "{{{user}}} tried executing {{{command}}} in {{{location}}} but has been denied the permission {{{permission}}}",
+				"permissionDenied": "{{{user}}} tried executing a command in {{{location}}} but has been denied the permission {{{permission}}}",
 				"unknownCommand": "{{{realUser}}} tried to execute an unknown command in {{{realLocation}}}"
 			}
 		},
