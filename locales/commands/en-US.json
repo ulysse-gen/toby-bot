@@ -935,6 +935,10 @@
 		"welcome": {
 			"name": "Welcome",
 			"description": "Welcome a user to the server."
+		},
+		"hug": {
+			"name": "Hug",
+			"description": "Send a hug to a user."
 		}
 	},
 	"commands": {

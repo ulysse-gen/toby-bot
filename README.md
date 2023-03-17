@@ -17,6 +17,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Saving configuration & permission history | Backup possible, no implemented user-wise yet
 - Auto moderation
 - Changelog of some kind (& update alert in channel?)
+- Command cooldowns
 
 ### Commands:
 
@@ -25,7 +26,6 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Coinflip
 - Embedfail
 - Hi
-- Hug
 - Invitelink?
 - Kiss
 - Makeembed?
