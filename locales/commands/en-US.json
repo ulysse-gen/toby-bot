@@ -153,7 +153,7 @@
 					},
 					"WebGUI": {
 						"title": "More on the Web Panel:",
-						"description": "This feature is coming later (hmm ofc it is)"
+						"description": "[Documentation about this configuration key](https://tobybot.xyz/documentation/configurations/guild#{{{key}}})"
 					}
 				},
 				"title": "Configuration key {{{key}}}",
@@ -279,7 +279,7 @@
 					},
 					"WebGUI": {
 						"title": "More on the Web Panel:",
-						"description": "This feature is coming later (hmm ofc it is)"
+						"description": "[Documentation about this configuration key](https://tobybot.xyz/documentation/configurations/system#{{{key}}})"
 					}
 				},
 				"title": "Configuration key {{{key}}}",
@@ -869,7 +869,7 @@
 					},
 					"WebGUI": {
 						"title": "More on the Web Panel:",
-						"description": "This feature is coming later (hmm ofc it is)"
+						"description": "[Documentation about this configuration key](https://tobybot.xyz/documentation/configurations/user#{{{key}}})"
 					}
 				},
 				"title": "Configuration key {{{key}}}",
