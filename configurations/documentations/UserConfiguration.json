@@ -1,4 +1,27 @@
 {
+    "system": {
+        "config-version": {
+            "name": "Config version",
+            "description": "The config version",
+            "type": "String",
+            "editable": false,
+            "default": "0.0"
+        },
+        "config-type": {
+            "name": "Config type",
+            "description": "The config type",
+            "type": "String",
+            "editable": false,
+            "default": "user"
+        },
+        "setup-done": {
+            "name": "Setup done",
+            "description": "If the server setup is done",
+            "type": "Boolean",
+            "editable": false,
+            "default": false
+        }
+    },
     "locale": {
         "name": "Locale",
         "description": "The lang the bot will reply to you in. (if enabled in guild)",

@@ -42,7 +42,6 @@ export default defineComponent({
           return response.json();
         })
         .then((response: any) => {
-          console.log(response);
           this.setUser(response.user);
           this.setDiscordToken(response.discordToken);
           this.setTobybotToken(response.tobybotToken);

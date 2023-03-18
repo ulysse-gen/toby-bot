@@ -47,6 +47,7 @@ export interface DiscordGuild {
 
 export interface DiscordGuildToby {
   numId: number;
+  configuration: ConfigurationDepth;
   guild: {
     id: string;
     name: string;
@@ -103,3 +104,56 @@ export interface DiscordGuildToby {
   locale: string;
   isSetup: boolean;
 }
+
+export interface DocumentationEntry {
+  name: string;
+  description: string;
+  type: string;
+  editable: boolean;
+  default: any;
+}
+
+export type ConfigurationEntry = {
+  name: string;
+  description: string;
+  type: string;
+  typeText: string;
+  editable: boolean;
+  defaultValue: any;
+  defaultValueDisplay: string;
+  value: any;
+};
+
+export type ConfigurationEntryPath = {
+  name: string;
+  description: string;
+  type: string;
+  typeText: string;
+  editable: boolean;
+  defaultValue: any;
+  defaultValueDisplay: string;
+  value: any;
+  path: string;
+};
+
+export interface DocumentationEntryPath {
+  name: string;
+  description: string;
+  type: string;
+  typeText: string;
+  editable: boolean;
+  defaultValue: any;
+  defaultValueDisplay: string;
+  path: string;
+}
+
+export interface ConfigurationDepth {
+  [key: string]: ConfigurationEntry | ConfigurationDepth;
+}
+
+export interface DocumentationDepth {
+  [key: string]: DocumentationEntry | DocumentationDepth;
+}
+
+export type DocumentationList = Array<DocumentationEntryPath>;
+export type ConfigurationList = Array<ConfigurationEntryPath>;

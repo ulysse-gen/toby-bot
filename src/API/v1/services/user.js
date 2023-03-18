@@ -5,7 +5,6 @@ const jwt    = require('jsonwebtoken');
 const _    = require('lodash');
 const { ErrorBuilder } = require('/app/src/classes/Errors');
 const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager');
-const fetch = require('node-fetch');
 
 
 exports.getMine = async (req, res, next) => {
@@ -355,18 +354,18 @@ exports.authByDiscordCode = async (req, res, next) => {
     if (!code)return res.status(401).json(req.__('error.required', {required: 'code'}));
 
     try {
-        const requestOptions = {
-            method: "POST",
-            body: new URLSearchParams({
+        let discordToken = await axios({
+            method: 'post',
+            url: "https://discord.com/api/oauth2/token",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            data: new URLSearchParams({
                 client_id: process.env['VUE_APP_OAUTH2_CLIENT_ID'],
                 client_secret: process.env['OAUTH2_CLIENT_SECRET'],
                 grant_type: 'authorization_code',
                 code: code,
                 redirect_uri: (redirect_uri) ? redirect_uri : 'https://tobybot.xyz/login',
-            }),
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          };
-        let discordToken = await fetch("https://discord.com/api/oauth2/token", requestOptions).then(response =>response.json());
+            })
+        }).then(res => res.data);
         let discordUser = await axios({
             method: 'get',
             url: 'https://discord.com/api/users/@me',

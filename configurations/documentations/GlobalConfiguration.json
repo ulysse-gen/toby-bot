@@ -1,4 +1,20 @@
 {
+    "system": {
+        "config-version": {
+            "name": "Config version",
+            "description": "The config version",
+            "type": "String",
+            "editable": false,
+            "default": "0.0"
+        },
+        "config-type": {
+            "name": "Config type",
+            "description": "The config type",
+            "type": "String",
+            "editable": false,
+            "default": "global"
+        }
+    },
     "appName": {
         "name": "Application name",
         "description": "The name of the bot.",

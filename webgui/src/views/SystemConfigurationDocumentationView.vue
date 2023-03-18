@@ -15,37 +15,11 @@
       </p>
       <br /><br />
       <div class="documentation">
-        <div
+        <DocumentationEntryVue
           v-for="documentationEntry in documentationEntries"
-          :id="documentationEntry.path"
           :key="documentationEntry.path"
-          class="documentation-entry"
-        >
-          <div class="infos">
-            <span class="name">{{ documentationEntry.name }}</span
-            ><span class="description">{{
-              documentationEntry.description
-            }}</span>
-          </div>
-          <div class="details">
-            <span class="type"
-              ><span class="type-string"
-                >Type: {{ documentationEntry.type }}</span
-              ><span
-                class="type-text"
-                v-html="documentationEntry.typeText"
-              ></span
-            ></span>
-            <span class="path-string">Key: {{ documentationEntry.path }}</span>
-            <span class="default-value"
-              >Default value: {{ documentationEntry.defaultValueDisplay }}</span
-            >
-            <span v-if="!documentationEntry.editable" class="editable"
-              >I dont even know why you're looking there, this is not even
-              editable.</span
-            >
-          </div>
-        </div>
+          :data="documentationEntry"
+        ></DocumentationEntryVue>
       </div>
     </section>
   </div>
@@ -54,10 +28,19 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
+import {
+  DocumentationDepth,
+  DocumentationList,
+  DocumentationEntry,
+  DocumentationEntryPath,
+} from "../interfaces/main";
+import DocumentationEntryVue from "../components/DocumentationEntry.vue";
 
 export default defineComponent({
   name: "ConfigurationDocumentationView",
-  components: {},
+  components: {
+    DocumentationEntryVue,
+  },
   setup() {
     const store = useStore();
 
@@ -103,7 +86,11 @@ export default defineComponent({
     ) {
       for (const key in documentation) {
         let path = (subPath == "" ? "" : subPath + ".") + key;
-        if ((documentation[key] as DocumentationEntry).type !== undefined) {
+        if (
+          (documentation[key] as DocumentationEntry).type !== undefined &&
+          (documentation[key] as DocumentationEntry).name !== undefined &&
+          (documentation[key] as DocumentationEntry).description !== undefined
+        ) {
           let documentationEntry = documentation[key] as DocumentationEntry;
           this.documentationEntries.push({
             name: documentationEntry.name,
@@ -166,41 +153,9 @@ export default defineComponent({
     },
   },
 });
-
-interface DocumentationEntry {
-  name: string;
-  description: string;
-  type: string;
-  editable: boolean;
-  default: any;
-}
-
-interface DocumentationEntryPath {
-  name: string;
-  description: string;
-  type: string;
-  typeText: string;
-  editable: boolean;
-  defaultValue: any;
-  defaultValueDisplay: string;
-  path: string;
-}
-
-interface DocumentationDepth {
-  [key: string]: DocumentationEntry | DocumentationDepth;
-}
-
-type DocumentationList = Array<DocumentationEntryPath>;
 </script>
 
 <style lang="scss" scoped>
-* {
-  user-select: text;
-  ::selection {
-    background-color: var(--accent-color);
-  }
-}
-
 .main {
   display: flex;
   padding: 5rem 1.5rem 1.5rem 1.5rem;
