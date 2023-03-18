@@ -1,1 +1,114 @@
-{}
+{
+	"command": {
+		"about": {
+			"name": "À propos",
+			"description": "Affiche quelques informations sur le bot.",
+			"fields": {
+				"developer": {
+					"title": "Développeur:",
+					"content": "<@231461358200291330>"
+				},
+				"guildPrefix": {
+					"title": "Préfixe du serveur:",
+					"content": "{{{guildPrefix}}}"
+				},
+				"globalPrefix": {
+					"title": "Préfixe global:",
+					"content": "{{{globalPrefix}}}"
+				},
+				"uptime": {
+					"title": "Uptime:"
+				},
+				"botVersion": {
+					"title": "Version:"
+				},
+				"nodeVersion": {
+					"title": "Version NodeJS:"
+				},
+				"discordJsVersion": {
+					"title": "Version DiscordJS:"
+				},
+				"latency": {
+					"title": "Latence:",
+					"content": "{{{latency}}}ms"
+				},
+				"apiLatency": {
+					"title": "Latence API:",
+					"content": "{{{apiLatency}}}ms"
+				}
+			},
+			"title": "À propos"
+		},
+		"russianroulette": {
+			"name": "Roulette russe",
+			"description": "Lance une roulette russe.",
+			"option": {
+				"starttimer": {
+					"description": "Définis un temps personnalisé pour le démarrage."
+				},
+				"winners": {
+					"description": "Le nombre de gagnants."
+				},
+				"prize": {
+					"description": "La récompense pour le-a gagnant."
+				}
+			},
+			"button": {
+				"join": "Rejoindre 🥖",
+				"cancel": "Annuler 🥖",
+				"stop": "Arrêter 🥖",
+				"alive": "Suis-je en vie ? 🥖"
+			},
+			"prestart": {
+				"title": "La Roulette Russe démarre dans {{{timer}}} secondes.",
+				"description": "**Clique** sur le **bouton rejoindre** ci dessous pour rejoindre la **Roulette Russe** 🥖 {{{prize}}}\nJoueurs actuels **{{{playerAmount}}}** : {{{playerList}}}"
+			},
+			"joining": {
+				"title": "La Roulette Russe démarre dans {{{timer}}} secondes.",
+				"description": "**Clique** sur le **bouton rejoindre** ci dessous pour rejoindre la **Roulette Russe** 🥖 {{{prize}}}\nJoueurs actuels **{{{playerAmount}}}** : {{{playerList}}}"
+			},
+			"startingsoon": {
+				"title": "La Roulette Russe est sur le point de démarrer."
+			},
+			"cancel": {
+				"notenoughplayers": {
+					"title": "Roulette Russe annulée.",
+					"description": "Pas assez de joueurs pour lancer une Roulette Russe."
+				},
+				"interaction": {
+					"title": "command.russianroulette.cancel.interaction.title",
+					"description": "command.russianroulette.cancel.interaction.description"
+				},
+				"stopped": {
+					"title": "command.russianroulette.cancel.stopped.title",
+					"description": "command.russianroulette.cancel.stopped.description"
+				}
+			},
+			"canceled": {
+				"title": "La Roulette Russe à été annulée.",
+				"description": "Quelqu'un était contre.. a priori."
+			},
+			"starting": {
+				"title": "La Roulette Russe démarre !",
+				"description": "La Roulette Russe démarre ! Joueurs: **{{{playerAmount}}}**."
+			},
+			"round": {
+				"title": "{{{playerTag}}} 🔫",
+				"description": "La barillet tourne..",
+				"elimination": {
+					"title": "{{{playerTag}}} 💥🔫  **BANG**",
+					"description": "<@{{{playerId}}}> éliminé."
+				}
+			},
+			"finished": {
+				"title": "La Roulette Russe est finie !",
+				"description": "Nous pouvons tous applaudire {{{winnersId}}} !"
+			},
+			"prize": {
+				"mute": {
+					"reason": "command.russianroulette.prize.mute.reason"
+				}
+			}
+		}
+	}
+}
