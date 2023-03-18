@@ -37,7 +37,8 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ### Fixes:
 
-- Nothin'
+- Russian Roulette interaction permission check
+- Interaction language
 
 ## Environment variables:
 ```
