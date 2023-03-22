@@ -272,7 +272,7 @@ module.exports = class TobyBot {
             })
         });
         if (!SchemaExists) await new Promise((res, rej) => {
-            SQLConnection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.MARIADB_DATABASE_NC}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; USE \`${process.env.MARIADB_DATABASE_NC}\`; ` + fs.readFileSync(`${process.cwd()}/SQL_Structure/tobybot-${this.PackageInformations.version}-structure.sql`).toString(), async (err, result) => {
+            SQLConnection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.MARIADB_DATABASE_NC}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; USE \`${process.env.MARIADB_DATABASE_NC}\`; ` + fs.readFileSync(`${process.cwd()}/configurations/SQL_Structure/tobybot-${this.PackageInformations.version}-structure.sql`).toString(), async (err, result) => {
                 if (err) throw err;
                 MainLog.log(`Created database and imported structure.`);
                 res(true);
