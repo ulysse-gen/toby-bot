@@ -28,14 +28,14 @@ module.exports = {
 
         if (typeof message.TobyBot.Guild == "undefined" || !message.TobyBot.Guild.initialized) return false;
 
+        if (message.type == "APPLICATION_COMMAND" || !message.author || message.author.bot) return; //Skip if its a bot or an app message or user is not defined
+        if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
+
         message.TobyBot.user = await TobyBot.UserManager.getUser(message.author).catch(e => { 
             ErrorLog.error(`${__filename}: An error occured trying to fetch the user:`);
             console.log(e);
             return undefined;
         });
-
-        if (message.type == "APPLICATION_COMMAND" || !message.author || message.author.bot) return; //Skip if its a bot or an app message or user is not defined
-        if (message.author.id == TobyBot.client.user.id) return; //Skip if himself
 
         message.TobyBot.Guild.MessageManager.deleteMessage(message).catch(e => { 
             ErrorLog.error(`An error occured trying to update the message log:`);
