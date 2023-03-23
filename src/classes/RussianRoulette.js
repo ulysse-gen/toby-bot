@@ -51,7 +51,7 @@ module.exports = class RussianRoulette {
 
         this.messages = [];
 
-        this.subPermissions = CommandExecution.Command.subPermissions;
+        this.permissions = CommandExecution.Command.permissions;
     }
 
     async init() {
@@ -199,7 +199,7 @@ module.exports = class RussianRoulette {
             ephemeral: true
         });
         let User = await this.CommandExecution.Guild.getMemberById(interaction.user.id);
-        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, User, this.subPermissions.join)))return interaction.reply({
+        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, User, this.permissions.join)))return interaction.reply({
             content: this.i18n.__('interaction.russianroulette.joinDenied'),
             ephemeral: true
         });
@@ -220,7 +220,7 @@ module.exports = class RussianRoulette {
             ephemeral: true
         });
         let User = await this.CommandExecution.Guild.getMemberById(interaction.user.id);
-        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, User, this.subPermissions.leave)))return interaction.reply({
+        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, User, this.permissions.leave)))return interaction.reply({
             content: this.i18n.__('interaction.russianroulette.leaveDenied'),
             ephemeral: true
         });
@@ -240,7 +240,7 @@ module.exports = class RussianRoulette {
             content: this.i18n.__('interaction.russianroulette.cancelCurrentlyPlaying'),
             ephemeral: true
         });
-        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, await this.CommandExecution.Guild.getMemberById(interaction.user.id), this.subPermissions.cancel)))return interaction.reply({
+        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, await this.CommandExecution.Guild.getMemberById(interaction.user.id), this.permissions.cancel)))return interaction.reply({
             content: this.i18n.__('interaction.russianroulette.canceledDenied'),
             ephemeral: true
         });
@@ -252,7 +252,7 @@ module.exports = class RussianRoulette {
     }
 
     async stopByInteraction(interaction) {
-        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, await this.CommandExecution.Guild.getMemberById(interaction.user.id), this.subPermissions.stop)))return interaction.reply({
+        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, await this.CommandExecution.Guild.getMemberById(interaction.user.id), this.permissions.stop)))return interaction.reply({
             content: this.i18n.__('interaction.russianroulette.stopDenied'),
             ephemeral: true
         });
@@ -292,7 +292,7 @@ module.exports = class RussianRoulette {
                     run: async (RussianRoulette, user) => {
                         let isUserAlreadyMuted = await RussianRoulette.CommandExecution.Guild.ModerationManager.isUserPunished(user.id, 'Mute');
                         if (isUserAlreadyMuted) return RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute.alreadymuted`, {userId: user.id}));
-                        //await RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute`, {userTag: User.user.tag , muteDuration: `one minute `}));
+                        //await RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute`, {userTag: User.user.username + "#" + User.user.discriminator , muteDuration: `one minute `}));
                         let Punished = await RussianRoulette.CommandExecution.Guild.getUserFromArg(user.id);
                         return RussianRoulette.CommandExecution.Guild.ModerationManager.muteUser(RussianRoulette.CommandExecution, Punished, this.i18n.__(`command.russianroulette.prize.mute.reason`), 1*60);
                     }
@@ -306,7 +306,7 @@ module.exports = class RussianRoulette {
                     run: async (RussianRoulette, user) => {
                         let isUserAlreadyMuted = await RussianRoulette.CommandExecution.Guild.ModerationManager.isUserPunished(user.id, 'Mute');
                         if (isUserAlreadyMuted) return RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute.alreadymuted`, {userId: user.id}));
-                        //await RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute`, {userTag: User.user.tag , muteDuration: `five minutes `}));
+                        //await RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute`, {userTag: User.user.username + "#" + User.user.discriminator , muteDuration: `five minutes `}));
                         let Punished = await RussianRoulette.CommandExecution.Guild.getUserFromArg(user.id);
                         return RussianRoulette.CommandExecution.Guild.ModerationManager.muteUser(RussianRoulette.CommandExecution, Punished, this.i18n.__(`command.russianroulette.prize.mute.reason`), 5*60);
                     }
@@ -320,7 +320,7 @@ module.exports = class RussianRoulette {
                     run: async (RussianRoulette, user) => {
                         let isUserAlreadyMuted = await RussianRoulette.CommandExecution.Guild.ModerationManager.isUserPunished(user.id, 'Mute');
                         if (isUserAlreadyMuted) return RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute.alreadymuted`, {userId: user.id}));
-                        //await RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute`, {userTag: User.user.tag , muteDuration: `ten minutes `}));
+                        //await RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute`, {userTag: User.user.username + "#" + User.user.discriminator , muteDuration: `ten minutes `}));
                         let Punished = await RussianRoulette.CommandExecution.Guild.getUserFromArg(user.id);
                         return RussianRoulette.CommandExecution.Guild.ModerationManager.muteUser(RussianRoulette.CommandExecution, Punished, this.i18n.__(`command.russianroulette.prize.mute.reason`), 10*60);
                     }
@@ -334,7 +334,7 @@ module.exports = class RussianRoulette {
                     run: async (RussianRoulette, user) => {
                         let isUserAlreadyMuted = await RussianRoulette.CommandExecution.Guild.ModerationManager.isUserPunished(user.id, 'Mute');
                         if (isUserAlreadyMuted) return RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute.alreadymuted`, {userId: user.id}));
-                        //await RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute`, {userTag: User.user.tag , muteDuration: `30 minutes `}));
+                        //await RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute`, {userTag: User.user.username + "#" + User.user.discriminator , muteDuration: `30 minutes `}));
                         let Punished = await RussianRoulette.CommandExecution.Guild.getUserFromArg(user.id);
                         return RussianRoulette.CommandExecution.Guild.ModerationManager.muteUser(RussianRoulette.CommandExecution, Punished, this.i18n.__(`command.russianroulette.prize.mute.reason`), 30*60);
                     }
@@ -348,7 +348,7 @@ module.exports = class RussianRoulette {
                     run: async (RussianRoulette, user) => {
                         let isUserAlreadyMuted = await RussianRoulette.CommandExecution.Guild.ModerationManager.isUserPunished(user.id, 'Mute');
                         if (isUserAlreadyMuted) return RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute.alreadymuted`, {userId: user.id}));
-                        //await RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute`, {userTag: User.user.tag , muteDuration: `one hour `}));
+                        //await RussianRoulette.CommandExecution.sendMainEmbed(this.i18n.__(`command.russianroulette.prize.mute`, {userTag: User.user.username + "#" + User.user.discriminator , muteDuration: `one hour `}));
                         let Punished = await RussianRoulette.CommandExecution.Guild.getUserFromArg(user.id);
                         return RussianRoulette.CommandExecution.Guild.ModerationManager.muteUser(RussianRoulette.CommandExecution, Punished, this.i18n.__(`command.russianroulette.prize.mute.reason`), 60*60);
                     }

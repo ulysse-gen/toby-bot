@@ -22,7 +22,7 @@ module.exports = {
                 [CommandExecution.i18n.__(`command.${this.name}.fields.blacklist.title`), CommandExecution.i18n.__(`command.${this.name}.fields.blacklist.content`, {roles: (CommandExecution.Guild.ConfigurationManager.get('roleadder.blacklist').length != 0) ? `<@&${CommandExecution.Guild.ConfigurationManager.get('roleadder.blacklist').join('>, <@&')}>` : `None`}), true],
                 [CommandExecution.i18n.__(`command.${this.name}.fields.whitelist.title`), CommandExecution.i18n.__(`command.${this.name}.fields.whitelist.content`, {roles: (CommandExecution.Guild.ConfigurationManager.get('roleadder.whitelist').length != 0) ? `<@&${CommandExecution.Guild.ConfigurationManager.get('roleadder.whitelist').join('>, <@&')}>` : `None`}), true],
             ];
-            if (typeof CommandExecution.Guild.data.roleadder.queue != "undefined") fields.push(["RoleAdder Pending:", `Users waiting for their role(s): \`${CommandExecution.Guild.data.roleadder.queue.size}\``, false])
+            if (CommandExecution.Guild.data.roleadder.queue) fields.push(["RoleAdder Pending:", `Users waiting for their role(s): \`${CommandExecution.Guild.data.roleadder.queue.length}\``, false])
             return CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.title`), undefined, fields);
         }
 
@@ -182,7 +182,7 @@ module.exports = {
 
         if (["prepare", "fetch"].includes(CommandExecution.options.subcommand)) {
             if (!CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, this.permissions.use))CommandExecution.denyPermission(this.permissions.use);
-            
+            CommandExecution.Guild.data.roleadder.queue = []
             let RolesToAdd = CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd');
             if (RolesToAdd.length == 0)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.noRoleSet.title`), CommandExecution.i18n.__(`command.${this.name}.noRoleSet.description`));
             RolesToAdd.map(role => CommandExecution.Guild.Guild.roles.fetch(role).catch(e=>undefined));
@@ -192,11 +192,11 @@ module.exports = {
             let BlacklistedRoles = CommandExecution.Guild.ConfigurationManager.get('roleadder.blacklist');
 
             let TrackerEmbedFields = [
-                {name: CommandExecution.i18n.__(`command.${this.name}.fetchTrackerEmbed.total.name`), value: CommandExecution.i18n.__(`command.${this.name}.fetchTrackerEmbed.total.value`, {amount: (CommandExecution.Guild.data.roleadder.queue) ? CommandExecution.Guild.data.roleadder.queue.size : 0}), inline: true}
+                {name: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.fetchTrackerEmbed.total.name`), value: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.fetchTrackerEmbed.total.value`, {amount: (CommandExecution.Guild.data.roleadder.queue) ? CommandExecution.Guild.data.roleadder.queue.length : 0}), inline: true}
             ]
             let TrackerEmbed = new MessageEmbed().setColor(CommandExecution.Guild.ConfigurationManager.get('style.colors.main'))
-            .setTitle(CommandExecution.i18n.__(`command.${this.name}.fetchTrackerEmbed.title`))
-            .setDescription(CommandExecution.i18n.__(`command.${this.name}.fetchTrackerEmbed.description`, {amount: (CommandExecution.Guild.data.roleadder.queue) ? CommandExecution.Guild.data.roleadder.queue.size : 0}))
+            .setTitle(CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.fetchTrackerEmbed.title`))
+            .setDescription(CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.fetchTrackerEmbed.description`, {amount: (CommandExecution.Guild.data.roleadder.queue) ? CommandExecution.Guild.data.roleadder.queue.length : 0}))
             .addFields(TrackerEmbedFields)
             CommandExecution.Guild.data.roleadder.trackerMessage = await CommandExecution.Channel.send({embeds: [TrackerEmbed]});
 
@@ -210,13 +210,17 @@ module.exports = {
                 if (WhitelistedRoles.length == 0)UserHasAllWhitelistedRoles = true;
                 if (BlacklistedRoles.length == 0)UserHasAnyBlacklistedRoles = false;
 
+                if (!UserHasAllRoles && !UserHasAnyBlacklistedRoles && UserHasAllWhitelistedRoles){
+                    CommandExecution.Guild.data.roleadder.queue.push(member);
+                }
                 return (!UserHasAllRoles && !UserHasAnyBlacklistedRoles && UserHasAllWhitelistedRoles);
             }));
 
             clearInterval(CommandExecution.Guild.data.roleadder.trackerInterval);
+            updateFetchTrackerEmbed();
 
             if (FetchedUsers.size == 0)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.noUsersFetched.title`));
-            CommandExecution.Guild.data.roleadder.queue = FetchedUsers;
+            CommandExecution.Guild.data.roleadder.queue = FetchedUsers.map(u => u);
             CommandExecution.Guild.data.roleadder.fetchDone = true;
 
             return CommandExecution.returnSuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.usersFetched.title`, {amount: FetchedUsers.size}));
@@ -225,55 +229,56 @@ module.exports = {
         if (["trigger"].includes(CommandExecution.options.subcommand)) {
             if (!CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, this.permissions.use))CommandExecution.denyPermission(this.permissions.use);
 
-            if (CommandExecution.Guild.data.roleadder.queue.size == 0)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.noUsersInQueue.title`));
-            if (CommandExecution.Guild.data.roleadder.fetchDone)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.fetchNotDone.title`));
+            if (!CommandExecution.Guild.data.roleadder.queue || CommandExecution.Guild.data.roleadder.queue.length == 0)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.noUsersInQueue.title`));
+            if (!CommandExecution.Guild.data.roleadder.fetchDone)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.fetchNotDone.title`));
             
             let RolesToAdd = CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd');
             if (RolesToAdd.length == 0)return CommandExecution.returnErrorEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.noRoleSet.title`), CommandExecution.i18n.__(`command.${this.name}.noRoleSet.description`));
             RolesToAdd.map(role => CommandExecution.Guild.Guild.roles.fetch(role).catch(e=>undefined));
 
             let TrackerEmbedFields = [
-                {name: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.totalAmount.name`), value: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.totalAmount.value`, {amount: (CommandExecution.Guild.data.roleadder.queue.size) ? CommandExecution.Guild.data.roleadder.queue.size : 0}), inline: true},
-                {name: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.successAmount.name`), value: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.successAmount.value`, {amount: CommandExecution.Guild.data.roleadder.success.length}), inline: true},
-                {name: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.failedAmount.name`), value: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.failedAmount.value`, {amount: CommandExecution.Guild.data.roleadder.failed.length}), inline: true}
+                {name: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.totalAmount.name`), value: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.totalAmount.value`, {amount: (CommandExecution.Guild.data.roleadder.queue.length) ? CommandExecution.Guild.data.roleadder.queue.length : 0}), inline: true},
+                {name: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.successAmount.name`), value: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.successAmount.value`, {amount: CommandExecution.Guild.data.roleadder.success.length}), inline: true},
+                {name: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.failedAmount.name`), value: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.failedAmount.value`, {amount: CommandExecution.Guild.data.roleadder.failed.length}), inline: true}
             ]
             let TrackerEmbed = new MessageEmbed().setColor(CommandExecution.Guild.ConfigurationManager.get('style.colors.main'))
-            .setTitle(CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.title`))
-            .setDescription(CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.description`, {amount: CommandExecution.Guild.data.roleadder.queue.size}))
+            .setTitle(CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.title`))
+            .setDescription(CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.description`, {amount: CommandExecution.Guild.data.roleadder.queue.length}))
             .addFields(TrackerEmbedFields)
             CommandExecution.Guild.data.roleadder.trackerMessage = await CommandExecution.Channel.send({embeds: [TrackerEmbed]});
 
             CommandExecution.Guild.data.roleadder.trackerInterval = setInterval(updateTriggerTrackerEmbed, 5000);
 
-            CommandExecution.returnSuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.startingAddingCycle.title`, {amount: CommandExecution.Guild.data.roleadder.queue.size}));
-            CommandExecution.Guild.data.roleadder.queue.forEach(async user => {
+            CommandExecution.returnSuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.startingAddingCycle.title`, {amount: CommandExecution.Guild.data.roleadder.queue.length}));
+            CommandExecution.Guild.data.roleadder.queue.forEach(async User => {
                 let LogUserSave = {
                     user: User.user.id,
-                    reason: CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.User.user.tag, TriggerUserId: CommandExecution.User.user.id}),
+                    reason: CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.RealUser.tag, TriggerUserId: CommandExecution.RealUser.id}),
                     roles: CommandExecution.Guild.ConfigurationManager.get('roleadder.rolesToAdd'),
                 }
 
-                await user.roles.add(RolesToAdd, CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.User.user.tag, TriggerUserId: CommandExecution.User.user.id})).then(() => {
-                    CommandExecution.Guild.data.roleadder.queue.success.push(LogUserSave);
+                await User.roles.add(RolesToAdd, CommandExecution.Guild.ConfigurationManager.get('roleadder.addReason', {TriggerReason: 'Manually triggered', TriggerUserTag: CommandExecution.RealUser.tag, TriggerUserId: CommandExecution.RealUser.id})).then(() => {
+                    CommandExecution.Guild.data.roleadder.success.push(LogUserSave);
                 }).catch(() => {
-                    CommandExecution.Guild.data.roleadder.queue.failed.push(LogUserSave);
+                    CommandExecution.Guild.data.roleadder.failed.push(LogUserSave);
                 })
             });
 
             clearInterval(CommandExecution.Guild.data.roleadder.trackerInterval);
+            updateTriggerTrackerEmbed();
 
-            return CommandExecution.returnSuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.addingCycleDone.title`, {amount: CommandExecution.Guild.data.roleadder.queue.size, successAmount: CommandExecution.Guild.data.roleadder.success.length, failedAmount: CommandExecution.Guild.data.roleadder.failed.length}));
+            return CommandExecution.returnSuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.addingCycleDone.title`, {amount: CommandExecution.Guild.data.roleadder.queue.length, successAmount: CommandExecution.Guild.data.roleadder.success.length, failedAmount: CommandExecution.Guild.data.roleadder.failed.length}));
         }
 
         return CommandExecution.returnMainEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.title`), CommandExecution.i18n.__(`command.${this.name}.defaultEmbed.description`));
 
         async function updateFetchTrackerEmbed() {
             let TrackerEmbedFields = [
-                {name: CommandExecution.i18n.__(`command.${this.name}.fetchTrackerEmbed.total.name`), value: CommandExecution.i18n.__(`command.${this.name}.fetchTrackerEmbed.total.value`, {amount: (CommandExecution.Guild.data.roleadder.queue) ? CommandExecution.Guild.data.roleadder.queue.size : 0}), inline: true}
+                {name: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.fetchTrackerEmbed.total.name`), value: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.fetchTrackerEmbed.total.value`, {amount: (CommandExecution.Guild.data.roleadder.queue) ? CommandExecution.Guild.data.roleadder.queue.length : 0}), inline: true}
             ]
             let TrackerEmbed = new MessageEmbed().setColor(CommandExecution.Guild.ConfigurationManager.get('style.colors.main'))
-            .setTitle(CommandExecution.i18n.__(`command.${this.name}.fetchTrackerEmbed.title`))
-            .setDescription(CommandExecution.i18n.__(`command.${this.name}.fetchTrackerEmbed.description`, {amount: (CommandExecution.Guild.data.roleadder.queue) ? CommandExecution.Guild.data.roleadder.queue.size : 0}))
+            .setTitle(CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.fetchTrackerEmbed.title`))
+            .setDescription(CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.fetchTrackerEmbed.description`, {amount: (CommandExecution.Guild.data.roleadder.queue) ? CommandExecution.Guild.data.roleadder.queue.length : 0}))
             .addFields(TrackerEmbedFields)
             
             return CommandExecution.Guild.data.roleadder.trackerMessage.edit({embeds: [TrackerEmbed]});
@@ -281,13 +286,13 @@ module.exports = {
         
         async function updateTriggerTrackerEmbed() {
             let TrackerEmbedFields = [
-                {name: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.totalAmount.name`), value: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.totalAmount.value`, {amount: (CommandExecution.Guild.data.roleadder.queue.size) ? CommandExecution.Guild.data.roleadder.queue.size : 0}), inline: true},
-                {name: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.successAmount.name`), value: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.successAmount.value`, {amount: CommandExecution.Guild.data.roleadder.success.length}), inline: true},
-                {name: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.failedAmount.name`), value: CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.failedAmount.value`, {amount: CommandExecution.Guild.data.roleadder.failed.length}), inline: true}
+                {name: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.totalAmount.name`), value: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.totalAmount.value`, {amount: (CommandExecution.Guild.data.roleadder.queue.length) ? CommandExecution.Guild.data.roleadder.queue.length : 0}), inline: true},
+                {name: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.successAmount.name`), value: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.successAmount.value`, {amount: CommandExecution.Guild.data.roleadder.success.length}), inline: true},
+                {name: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.failedAmount.name`), value: CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.failedAmount.value`, {amount: CommandExecution.Guild.data.roleadder.failed.length}), inline: true}
             ]
             let TrackerEmbed = new MessageEmbed().setColor(CommandExecution.Guild.ConfigurationManager.get('style.colors.main'))
-                .setTitle(CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.title`))
-                .setDescription(CommandExecution.i18n.__(`command.${this.name}.triggerTrackerEmbed.description`, {amount: CommandExecution.Guild.data.roleadder.queue.size}))
+                .setTitle(CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.title`))
+                .setDescription(CommandExecution.i18n.__(`command.${CommandExecution.Command.name}.triggerTrackerEmbed.description`, {amount: CommandExecution.Guild.data.roleadder.queue.length}))
                 .addFields(TrackerEmbedFields)
             
             return CommandExecution.Guild.data.roleadder.trackerMessage.edit({embeds: [TrackerEmbed]});

@@ -332,10 +332,10 @@
 				"description": "I havent done this part yet.."
 			},
 			"set": {
-				"title": "command.globalpermission.set.title"
+				"title": "Permission set."
 			},
 			"remove": {
-				"title": "command.globalpermission.remove.title"
+				"title": "Permission removed."
 			}
 		},
 		"help": {
@@ -404,7 +404,7 @@
 				"title": "Moderation logs"
 			},
 			"noLogs": "This user has no moderation logs.",
-			"searchThruPages": "command.moderationlogs.searchThruPages"
+			"searchThruPages": "Use `moderationlogs <User> [page number]` to search through pages. [{{{currentPage}}}/{{{totalPages}}}]"
 		},
 		"moderationstatistics": {
 			"name": "Moderation statistics",
@@ -497,21 +497,21 @@
 				"description": "I havent done this part yet.."
 			},
 			"set": {
-				"title": "command.permission.set.title"
+				"title": "Permission set."
 			},
 			"view": {
 				"all": {
-					"title": "command.permission.view.all.title",
-					"description": "command.permission.view.all.description",
+					"title": "Permission list",
+					"description": "Here is a list of the permissions defined for the target {{{targetName}}}",
 					"field": {
-						"name": "command.permission.view.all.field.name",
-						"description": "command.permission.view.all.field.description"
+						"name": "{{{permissionKey}}}",
+						"description": "**[{{{permissionPriority}}}]** {{{permissionValue}}} {{{temporary}}}"
 					}
 				}
 			},
-			"searchThruPages": "command.permission.searchThruPages",
+			"searchThruPages": "Use `permissions <User> [page number]` to search through pages. [{{{currentPage}}}/{{{totalPages}}}]",
 			"remove": {
-				"title": "command.permission.remove.title"
+				"title": "Permission removed."
 			}
 		},
 		"punishmenttranscript": {
@@ -644,6 +644,77 @@
 				"option": {
 					"description": "True/False"
 				}
+			},
+			"fields": {
+				"logaddeduser": {
+					"title": "Log added users",
+					"content": "{{{enabled}}}"
+				},
+				"reason": {
+					"title": "Adding reason:",
+					"content": "{{{reason}}}"
+				},
+				"roles": {
+					"title": "Roles to add:",
+					"content": "{{{roles}}}"
+				},
+				"blacklist": {
+					"title": "Roles to blacklist:",
+					"content": "{{{roles}}}"
+				},
+				"whitelist": {
+					"title": "Roles to whitelist:",
+					"content": "{{{roles}}}"
+				}
+			},
+			"title": "Role Adder",
+			"roleAdded": {
+				"title": "Role successfully added."
+			},
+			"fetchTrackerEmbed": {
+				"total": {
+					"name": "Fetched members:",
+					"value": "{{{amount}}}"
+				},
+				"title": "Started fetching members",
+				"description": "This message will be edited to track progression"
+			},
+			"usersFetched": {
+				"title": "Successfully fethched {{{amount}}} users(s)."
+			},
+			"fetchNotDone": {
+				"title": "Fetch is not done, cannot trigger."
+			},
+			"triggerTrackerEmbed": {
+				"totalAmount": {
+					"name": "Total fetched members:",
+					"value": "{{{amount}}}"
+				},
+				"successAmount": {
+					"name": "Added:",
+					"value": "{{{amount}}}"
+				},
+				"failedAmount": {
+					"name": "Failed:",
+					"value": "{{{amount}}}"
+				},
+				"title": "Started adding roles.",
+				"description": "This message will be edited to track progression"
+			},
+			"startingAddingCycle": {
+				"title": "Starting adding cycle."
+			},
+			"addingCycleDone": {
+				"title": "Adding cycle done. Successfully added role to {{{successAmount}}} users. Failed to add to {{{failedAmount}}}"
+			},
+			"roleRemoved": {
+				"title": "Role removed."
+			},
+			"noUsersInQueue": {
+				"title": "No users in queue. Please fetch."
+			},
+			"defaultEmbed": {
+				"description": "This subcommand is not found. Please use the help command to see more about subcommands."
 			}
 		},
 		"russianroulette": {
@@ -713,7 +784,7 @@
 			},
 			"prize": {
 				"mute": {
-					"reason": "command.russianroulette.prize.mute.reason"
+					"reason": "[RR Auto]Muted for winning the Russian Roulette."
 				}
 			}
 		},
@@ -913,6 +984,10 @@
 				"target": {
 					"description": "The user to show infos for."
 				}
+			},
+			"embed": {
+				"title": "command.whois.embed.title",
+				"description": "command.whois.embed.description"
 			}
 		},
 		"generic": {

@@ -9,7 +9,7 @@ module.exports = {
     category: "fun",
     enabled: true,
     hasSlashCommand: true,
-    subPermissions: {
+    permissions: {
         cancel: "command.russianroulette.cancel",
         stop: "command.russianroulette.stop",
         join: "command.russianroulette.play",

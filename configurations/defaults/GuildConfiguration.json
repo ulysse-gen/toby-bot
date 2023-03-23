@@ -79,7 +79,7 @@
     "roleadder": {
         "trigger": "none",
         "logAddedUsers": true,
-        "addReason": "Added using RoleAdded | {{{TriggerReason}}} by {{{TriggerUserTag}}}",
+        "addReason": "Added using RoleAdder | {{{TriggerReason}}} by {{{TriggerUserTag}}}",
         "rolesToAdd": [],
         "blacklist": [],
         "whitelist": []
