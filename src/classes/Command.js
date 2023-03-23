@@ -13,7 +13,7 @@ module.exports = class Command {
         this.category = command.category;
         this.enabled = command.enabled;
         this.permission = command.permission;
-        this.permissions = (command.permissions) ? command.permissions : {};
+        this.subPermissions = (command.subPermissions) ? command.subPermissions : {};
 
         this.execute = command.execute;
         this.optionsFromArgs = command.optionsFromArgs;

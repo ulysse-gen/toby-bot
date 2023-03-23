@@ -9,6 +9,12 @@ module.exports = {
     category: "fun",
     enabled: true,
     hasSlashCommand: true,
+    subPermissions: {
+        cancel: "command.russianroulette.cancel",
+        stop: "command.russianroulette.stop",
+        join: "command.russianroulette.play",
+        leave: "command.russianroulette.play",
+    },
     async execute(CommandExecution) {
         if (typeof CommandExecution.Guild.data.russianroulette.channels[CommandExecution.Channel.id] != "undefined")
             return CommandExecution.returnErrorEmbed({emphemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.alreadyrunning`));

@@ -91,12 +91,12 @@ module.exports = class CommandManager {
                 Routes.applicationCommands(this.TobyBot.client.user.id), {
                     body: this.TobyBot.commandsToRegister
                 },
-            );*/
+            );
             await this.TobyBot.rest.put(
                 Routes.applicationGuildCommands(this.TobyBot.client.user.id, '719963783677870173'), {
                     body: this.TobyBot.commandsToRegister
                 },
-            );
+            );*/
             MainLog.log(this.TobyBot.i18n.__('bot.registeredCommands', {amount: this.TobyBot.commandsToRegister.length.toString().green}));
         } catch (error) {
             MainLog.log(this.TobyBot.i18n.__('bot.registeredCommands.error', {amount: this.TobyBot.commandsToRegister.length.toString().green, error: error.toString()}));
@@ -148,6 +148,12 @@ module.exports = class CommandManager {
     async hasPermissionPerContext(CommandExecution, permission) {
         let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(permission, CommandExecution.GuildExecutor, CommandExecution.Channel);
         let guildPermissions = await CommandExecution.Trigger.TobyBot.Guild.PermissionManager.userHasPermission(permission, CommandExecution.GuildExecutor, CommandExecution.Channel, true);
+        return (globalPermissions) ? true : guildPermissions;
+    }
+
+    async userHasPermissionPerContext(CommandExecution, GuildUser, permission) {
+        let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(permission, GuildUser, CommandExecution.Channel);
+        let guildPermissions = await CommandExecution.Trigger.TobyBot.Guild.PermissionManager.userHasPermission(permission, GuildUser, CommandExecution.Channel, true);
         return (globalPermissions) ? true : guildPermissions;
     }
 }

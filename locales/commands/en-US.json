@@ -498,6 +498,20 @@
 			},
 			"set": {
 				"title": "command.permission.set.title"
+			},
+			"view": {
+				"all": {
+					"title": "command.permission.view.all.title",
+					"description": "command.permission.view.all.description",
+					"field": {
+						"name": "command.permission.view.all.field.name",
+						"description": "command.permission.view.all.field.description"
+					}
+				}
+			},
+			"searchThruPages": "command.permission.searchThruPages",
+			"remove": {
+				"title": "command.permission.remove.title"
 			}
 		},
 		"punishmenttranscript": {
@@ -669,12 +683,12 @@
 					"description": "Not enough players to start the russian roulette."
 				},
 				"interaction": {
-					"title": "command.russianroulette.cancel.interaction.title",
-					"description": "command.russianroulette.cancel.interaction.description"
+					"title": "Russian Roulette canceled.",
+					"description": "Russian Roulette has been canceled."
 				},
 				"stopped": {
-					"title": "command.russianroulette.cancel.stopped.title",
-					"description": "command.russianroulette.cancel.stopped.description"
+					"title": "Russian Roulette stopped.",
+					"description": "Russian Roulette has been stopped."
 				}
 			},
 			"canceled": {
@@ -1568,6 +1582,24 @@
 		"subArg": {
 			"fieldTitle": "\n**┗{{{required}}}[{{{type}}}] {{{name}}}**",
 			"fieldDescription": " {{{description}}}"
+		}
+	},
+	"interaction": {
+		"russianroulette": {
+			"joined": "You joined the Russian Roulette. May the odds be ever in your favor!",
+			"alreadyJoined": "You have already joined!",
+			"canceled": "Russian Roulette canceled.",
+			"alive": {
+				"alive": "You are still alive!",
+				"eliminated": "I got bad news.."
+			},
+			"stop": "Russian Roulette stopped.",
+			"notRunningInChannel": "No Russian Roulette currenly running here.",
+			"canceledDenied": "You do not have the permission to cancel the Russian Roulette.",
+			"joinDenied": "You do not have the permission to join the Russian Roulette.",
+			"cancelCurrentlyPlaying": "You cannot cancel a currently playing Russian Roulette. You need to use the stop button.",
+			"notJoined": "You are not currently playing.",
+			"stopDenied": "You do not have the permission to stop the Russian Roulette."
 		}
 	}
 }

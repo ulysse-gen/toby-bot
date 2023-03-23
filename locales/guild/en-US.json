@@ -44,7 +44,7 @@
 			"unbanReason": "Unbanned by {{{updaterTag}}}({{{updaterId}}}) for {{{updateReason}}}",
 			"autoRemute": "Mute auto applied after re-join."
 		},
-		"dmAlert" : {
+		"dmAlert": {
 			"Mute": "You have been muted in {{{guildName}}}",
 			"Warn": "You have been warned in {{{guildName}}}",
 			"Kick": "You have been kicked in {{{guildName}}}",
@@ -52,15 +52,12 @@
 		}
 	},
 	"interaction": {
+		"slashCommand": {
+			"notBuilt": "This slash command is not built yet."
+		},
 		"russianroulette": {
-			"joined": "You joined the Russian Roulette. May the odds be ever in your favor!",
-			"alreadyJoined": "You have already joined!",
-			"canceled": "Russian Roulette canceled.",
-			"alive": {
-				"alive": "You are still alive!",
-				"eliminated": "I got bad news.."
-			},
-			"stop": "Russian Roulette stopped."
+			"wrongId": "This russian roulette is not running anymore.",
+			"notRunningInChannel": "This russian roulette is not running anymore."
 		}
 	},
 	"configuration": {

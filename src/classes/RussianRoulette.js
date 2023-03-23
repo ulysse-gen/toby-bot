@@ -50,6 +50,8 @@ module.exports = class RussianRoulette {
         }
 
         this.messages = [];
+
+        this.subPermissions = CommandExecution.Command.subPermissions;
     }
 
     async init() {
@@ -193,76 +195,90 @@ module.exports = class RussianRoulette {
 
     async joinByInteraction(interaction) {
         if (this.status == "playing")return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.joinCurrentlyPlaying'),
+            content: this.i18n.__('interaction.russianroulette.joinCurrentlyPlaying'),
             ephemeral: true
         });
-        let User = await this.CommandExecution.Guild.getMemberById(interaction.TobyBot.user.id);
+        let User = await this.CommandExecution.Guild.getMemberById(interaction.user.id);
+        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, User, this.subPermissions.join)))return interaction.reply({
+            content: this.i18n.__('interaction.russianroulette.joinDenied'),
+            ephemeral: true
+        });
         if (this.players.map(p => p.id).includes(User.id))return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.alreadyJoined'),
+            content: this.i18n.__('interaction.russianroulette.alreadyJoined'),
             ephemeral: true
         });
         this.players.push(User);
         return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.joined'),
+            content: this.i18n.__('interaction.russianroulette.joined'),
             ephemeral: true
         });
     }
 
     async leaveByInteraction(interaction) {
         if (this.status == "playing")return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.leaveCurrentlyPlaying'),
+            content: this.i18n.__('interaction.russianroulette.leaveCurrentlyPlaying'),
             ephemeral: true
         });
-        let User = await this.CommandExecution.Guild.getMemberById(interaction.TobyBot.user.id);
+        let User = await this.CommandExecution.Guild.getMemberById(interaction.user.id);
+        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, User, this.subPermissions.leave)))return interaction.reply({
+            content: this.i18n.__('interaction.russianroulette.leaveDenied'),
+            ephemeral: true
+        });
         if (!this.players.map(p => p.id).includes(User.id))return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.notJoined'),
+            content: this.i18n.__('interaction.russianroulette.notJoined'),
             ephemeral: true
         });
         this.players = this.players.filter(function(p) { return p.id !== User.id });
         return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.left'),
+            content: this.i18n.__('interaction.russianroulette.left'),
             ephemeral: true
         });
     }
 
     async cancelByInteraction(interaction) {
         if (this.status == "playing")return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.cancelCurrentlyPlaying'),
+            content: this.i18n.__('interaction.russianroulette.cancelCurrentlyPlaying'),
             ephemeral: true
         });
-        //let User = await this.CommandExecution.Guild.getMemberById(interaction.TobyBot.user.id);
+        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, await this.CommandExecution.Guild.getMemberById(interaction.user.id), this.subPermissions.cancel)))return interaction.reply({
+            content: this.i18n.__('interaction.russianroulette.canceledDenied'),
+            ephemeral: true
+        });
         this.cancel('interaction');
         return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.canceled'),
+            content: this.i18n.__('interaction.russianroulette.canceled'),
             ephemeral: true
         });
     }
 
     async stopByInteraction(interaction) {
-        //let User = await this.CommandExecution.Guild.getMemberById(interaction.TobyBot.user.id);
+        if (!(await this.CommandExecution.CommandManager.userHasPermissionPerContext(this.CommandExecution, await this.CommandExecution.Guild.getMemberById(interaction.user.id), this.subPermissions.stop)))return interaction.reply({
+            content: this.i18n.__('interaction.russianroulette.stopDenied'),
+            ephemeral: true
+        });
         this.cancel('stopped');
         return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.stop'),
+            content: this.i18n.__('interaction.russianroulette.stop'),
             ephemeral: true
         });
     }
 
     async amIAliveByInteraction(interaction) {
         if (this.status != "playing")return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.notCurrentlyPlaying'),
+            content: this.i18n.__('interaction.russianroulette.notCurrentlyPlaying'),
             ephemeral: true
         });
-        let User = await this.CommandExecution.Guild.getMemberById(interaction.TobyBot.user.id);
+        let User = await this.CommandExecution.Guild.getMemberById(interaction.user.id);
         if (!this.players.map(p => p.id).includes(User.id))return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.notJoined'),
+            content: this.i18n.__('interaction.russianroulette.notJoined'),
             ephemeral: true
         });
         if (this.alivePlayers.map(p => p.id).includes(User.id))return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.alive.alive'),
+            content: this.i18n.__('interaction.russianroulette.alive.alive'),
             ephemeral: true
         });
         return interaction.reply({
-            content: interaction.TobyBot.Guild.i18n.__('interaction.russianroulette.alive.eliminated'),
+            content: this.i18n.__('interaction.russianroulette.alive.eliminated'),
             ephemeral: true
         });
     }
