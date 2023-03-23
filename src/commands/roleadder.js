@@ -180,6 +180,14 @@ module.exports = {
             return CommandExecution.returnSuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.rolesFixed.title`));
         }
 
+        if (CommandExecution.options.subcommand == "clear") {
+            if (!CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, this.permissions.use))CommandExecution.denyPermission(this.permissions.use);
+            
+            CommandExecution.Guild.data.roleadder.queue = undefined;
+
+            return CommandExecution.returnSuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.cleared.title`));
+        }
+
         if (["prepare", "fetch"].includes(CommandExecution.options.subcommand)) {
             if (!CommandExecution.CommandManager.hasPermissionPerContext(CommandExecution, this.permissions.use))CommandExecution.denyPermission(this.permissions.use);
             CommandExecution.Guild.data.roleadder.queue = []
@@ -266,6 +274,7 @@ module.exports = {
 
             clearInterval(CommandExecution.Guild.data.roleadder.trackerInterval);
             updateTriggerTrackerEmbed();
+            CommandExecution.Guild.data.roleadder.queue = undefined;
 
             return CommandExecution.returnSuccessEmbed({ephemeral: false}, CommandExecution.i18n.__(`command.${this.name}.addingCycleDone.title`, {amount: CommandExecution.Guild.data.roleadder.queue.length, successAmount: CommandExecution.Guild.data.roleadder.success.length, failedAmount: CommandExecution.Guild.data.roleadder.failed.length}));
         }

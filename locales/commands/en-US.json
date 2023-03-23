@@ -715,6 +715,9 @@
 			},
 			"defaultEmbed": {
 				"description": "This subcommand is not found. Please use the help command to see more about subcommands."
+			},
+			"cleared": {
+				"title": "Role Adder queue cleared."
 			}
 		},
 		"russianroulette": {
