@@ -61,12 +61,12 @@
       </div>
     </section>
     <datalist id="channels">
-      <option v-for="channel in channels" :key="channel.id">
+      <option v-for="channel in channels" :key="channel.id" :value="channel.id">
         {{ channel.name }}
       </option>
     </datalist>
     <datalist id="roles">
-      <option v-for="role in roles" :key="role.id">
+      <option v-for="role in roles" :key="role.id" :value="role.id">
         {{ role.name }}
       </option>
     </datalist>
