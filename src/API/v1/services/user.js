@@ -19,6 +19,8 @@ exports.getUserById = async (req, res, next) => {
 
     try {
         let User = await req.API.TobyBot.UserManager.getUserById(userId);
+        let ConfigurationManager = User.ConfigurationManager;
+        if (!ConfigurationManager.initialized)await User.initialize(true);
 
         if (User) {
             return res.status(200).json(User.apiVersion());
@@ -216,6 +218,8 @@ exports.auth = async (req, res, next) => {
 
     try {
         let User = await req.API.TobyBot.UserManager.getUserById(userId);
+        let ConfigurationManager = User.ConfigurationManager;
+        if (!ConfigurationManager.initialized)await User.initialize(true);
 
         if (User) {
             if (!User.password)return res.status(418).json(req.__('error.no_api_account'));
@@ -257,6 +261,8 @@ exports.authAs = async (req, res, next) => {
 
     try {
         let User = await req.API.TobyBot.UserManager.getUserById(userId);
+        let ConfigurationManager = User.ConfigurationManager;
+        if (!ConfigurationManager.initialized)await User.initialize(true);
 
         if (User) {
             if (!User.password)return res.status(418).json(req.__('error.no_api_account'));
@@ -291,7 +297,10 @@ exports.authByTempToken = async (req, res, next) => {
     if (!tempToken)return res.status(401).json(req.__('error.required', {required: 'tempToken'}));
 
     try {
-        User = req.User.tokenVersion();
+        let User = req.User;
+        let ConfigurationManager = User.ConfigurationManager;
+        if (!ConfigurationManager.initialized)await User.initialize(true);
+        User = User.tokenVersion();
 
         const expireIn = 24 * 60 * 60;
         const token    = jwt.sign({
@@ -324,6 +333,8 @@ exports.authByDiscordToken = async (req, res, next) => {
         }).then(res => res.data);
 
         let User = await req.API.TobyBot.UserManager.getUserById(discordUser.id);
+        let ConfigurationManager = User.ConfigurationManager;
+        if (!ConfigurationManager.initialized)await User.initialize(true);
 
         if (User) {
             User = User.tokenVersion();
@@ -373,6 +384,8 @@ exports.authByDiscordCode = async (req, res, next) => {
         }).then(res => res.data);
 
         let User = await req.API.TobyBot.UserManager.getUserById(discordUser.id);
+        let ConfigurationManager = User.ConfigurationManager;
+        if (!ConfigurationManager.initialized)await User.initialize(true);
 
         if (User) {
             User = User.tokenVersion();

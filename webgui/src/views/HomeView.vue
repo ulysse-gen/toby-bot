@@ -98,20 +98,17 @@ export default defineComponent({
     },
     async fetchIsAdmin() {
       if (!this.store.state.tobybotToken) return this.login();
-      return fetch(
+      this.isAdmin = await fetch(
         `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/system/haspermission/ADMIN`,
         {
           headers: {
             Authorization: "Bearer " + this.store.state.tobybotToken.token,
           },
         }
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((response) => {
-          this.isAdmin = response;
-        });
+      ).then((response) => {
+        if (response.status == 200) return true;
+        return false;
+      });
     },
     login() {
       window.location =

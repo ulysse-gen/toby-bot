@@ -11,9 +11,15 @@
           :</span
         ><br />
         <span class="code-font"
-          >configuration view &#60;configuration key&#62;<br />
-          configuration reset &#60;configuration key&#62;<br />
-          configuration set &#60;configuration key&#62; &#60;value&#62;</span
+          >{{
+            URLSearchParams.has("prefix") ? URLSearchParams.get("prefix") : ""
+          }}configuration view &#60;configuration key&#62;<br />
+          {{
+            URLSearchParams.has("prefix") ? URLSearchParams.get("prefix") : ""
+          }}configuration reset &#60;configuration key&#62;<br />
+          {{
+            URLSearchParams.has("prefix") ? URLSearchParams.get("prefix") : ""
+          }}configuration set &#60;configuration key&#62; &#60;value&#62;</span
         >
       </p>
       <br /><br />
@@ -49,6 +55,7 @@ export default defineComponent({
       error: false,
       documentation: {} as DocumentationDepth,
       documentationEntries: [] as DocumentationList,
+      URLSearchParams: new URLSearchParams(window.location.search),
     };
   },
   created() {

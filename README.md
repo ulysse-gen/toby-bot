@@ -12,7 +12,6 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ### Todo:
 
-- Web GUI (gosh i suck at making GUIs i swear..) | On its way!
 - Auto setup (auto grab log channels, mute role etc..) [Discord-made & Web-Gui-made ?]
 - Token scanner (check for token in messages [& reset them ?])
 - Configuration converter (switching between configuration version without losing data)
@@ -22,6 +21,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Command cooldowns
 - Reply function to fun commands (ex: embedfail, hi, slap, kiss, hug)
 - Make translations for fun commands (ex: embedfail, hi, slap, kiss, hug, welcome)
+- WebGUI Notifications
 
 ### Commands:
 
@@ -38,7 +38,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ### Fixes:
 
-- Nothin'
+- Boolean not updating when using WebGUI
 
 ## Environment variables:
 ```

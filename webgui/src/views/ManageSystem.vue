@@ -1,54 +1,17 @@
 <template>
   <div class="main">
     <section v-if="!loaded" class="full-width loading-anim">
-      <h2 class="section-title">Loading guild data..</h2>
+      <h2 class="section-title">Loading bot data..</h2>
     </section>
     <section v-if="loaded" class="full-width server-details">
       <h2 class="section-title">
         Managing
-        <span id="guildName" class="server-name">{{ guild.guild.name }}</span>
+        <span id="guildName" class="server-name">TobyBot</span>
       </h2>
-
-      <div class="guild-stats">
-        <span id="guildMembersCount" class="stats-entry"
-          ><span class="stats-name">Members</span>:
-          <span class="stats-value">{{ guild.guild.memberCount }}</span></span
-        >
-        <span id="guildChannelsCount" class="stats-entry"
-          ><span class="stats-name">Channels</span>:
-          <span class="stats-value">{{
-            guild.guild.channels.length
-          }}</span></span
-        >
-        <span id="guildRolesCount" class="stats-entry"
-          ><span class="stats-name">Roles</span>:
-          <span class="stats-value">{{ guild.guild.roles.length }}</span></span
-        >
-        <span id="guildBansCount" class="stats-entry"
-          ><span class="stats-name">Bans</span>:
-          <span class="stats-value">{{ guild.guild.bans.length }}</span></span
-        >
-        <span id="guildEmojisCount" class="stats-entry"
-          ><span class="stats-name">Emojis</span>:
-          <span class="stats-value">{{ guild.guild.emojis.length }}</span></span
-        >
-        <span id="guildStickersCount" class="stats-entry"
-          ><span class="stats-name">Stickers</span>:
-          <span class="stats-value">{{
-            guild.guild.stickers.length
-          }}</span></span
-        >
-        <span id="guildBoostersCount" class="stats-entry"
-          ><span class="stats-name">Boosters</span>:
-          <span class="stats-value">{{
-            guild.guild.premiumSubscriptionCount
-          }}</span></span
-        >
-      </div>
     </section>
 
     <section v-if="loaded" class="half-width server-config">
-      <h2 class="section-title">Server configuration</h2>
+      <h2 class="section-title">TobyBot configuration</h2>
       <p class="section-description">Adjust your configuration here :</p>
       <h1>WIP</h1>
       <div id="configuration-zone" class="configuration">
@@ -60,16 +23,6 @@
         ></ConfigurationEntryVue>
       </div>
     </section>
-    <datalist id="channels">
-      <option v-for="channel in channels" :key="channel.id" :value="channel.id">
-        {{ channel.name }}
-      </option>
-    </datalist>
-    <datalist id="roles">
-      <option v-for="role in roles" :key="role.id" :value="role.id">
-        {{ role.name }}
-      </option>
-    </datalist>
   </div>
 </template>
 
@@ -89,11 +42,10 @@ import {
 import ConfigurationEntryVue from "../components/ConfigurationEntry.vue";
 
 export default defineComponent({
-  name: "ManageGuild",
+  name: "ManageSystem",
   components: {
     ConfigurationEntryVue,
   },
-  props: ["guildId"],
   setup() {
     const store = useStore();
 
@@ -104,17 +56,14 @@ export default defineComponent({
   data() {
     return {
       loaded: false,
-      guild: {} as DiscordGuildToby,
       configuration: {},
       documentation: {},
-      channels: [] as Array<DiscordChannel>,
-      roles: [] as Array<DiscordRole>,
       configurationEntries: [] as ConfigurationList,
     };
   },
   created() {
     fetch(
-      `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/guilds/${this.guildId}`,
+      `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/system/configuration`,
       {
         headers: {
           Authorization: "Bearer " + this.store.state.tobybotToken.token,
@@ -125,14 +74,16 @@ export default defineComponent({
         return response.json();
       })
       .then((response) => {
-        this.guild = response;
-        this.configuration = this.guild.configuration;
+        return (this.configuration = response);
       })
       .then(() => {
         fetch(
-          `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/documentation/configuration/guild`,
+          `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/documentation/configuration/system`,
           {
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + this.store.state.tobybotToken.token,
+            },
           }
         )
           .then((response) => {
@@ -146,34 +97,6 @@ export default defineComponent({
             );
             this.loaded = true;
           });
-      });
-    fetch(
-      `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/guilds/${this.guildId}/channels`,
-      {
-        headers: {
-          Authorization: "Bearer " + this.store.state.tobybotToken.token,
-        },
-      }
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((response) => {
-        this.channels = response;
-      });
-    fetch(
-      `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/guilds/${this.guildId}/roles`,
-      {
-        headers: {
-          Authorization: "Bearer " + this.store.state.tobybotToken.token,
-        },
-      }
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((response) => {
-        this.roles = response;
       });
   },
   methods: {
@@ -271,7 +194,7 @@ export default defineComponent({
         },
       };
       fetch(
-        `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/guilds/${this.guildId}/configuration/${configuration.path}`,
+        `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/system/configuration/${configuration.path}`,
         requestOptions
       ).then((response: any) => {
         if (response.status == 200) return response.json();

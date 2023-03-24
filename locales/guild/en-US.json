@@ -66,6 +66,12 @@
 				"title": "Could not fetch role.",
 				"description": "Could not fetch the specified role. Please make sure that you typed the right ID."
 			}
+		},
+		"locale": {
+			"notPossibleLocale": {
+				"title": "configuration.locale.notPossibleLocale.title",
+				"description": "configuration.locale.notPossibleLocale.description"
+			}
 		}
 	}
 }

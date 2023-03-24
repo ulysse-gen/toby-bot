@@ -7,9 +7,15 @@
         accessible thru slash commands as well as normal commands using the bot
         prefix.<br />
         <span class="code-font"
-          >userconfiguration view &#60;configuration key&#62;<br />
-          userconfiguration reset &#60;configuration key&#62;<br />
-          userconfiguration set &#60;configuration key&#62;
+          >{{
+            URLSearchParams.has("prefix") ? URLSearchParams.get("prefix") : ""
+          }}userconfiguration view &#60;configuration key&#62;<br />
+          {{
+            URLSearchParams.has("prefix") ? URLSearchParams.get("prefix") : ""
+          }}userconfiguration reset &#60;configuration key&#62;<br />
+          {{
+            URLSearchParams.has("prefix") ? URLSearchParams.get("prefix") : ""
+          }}userconfiguration set &#60;configuration key&#62;
           &#60;value&#62;</span
         >
       </p>
@@ -46,6 +52,7 @@ export default defineComponent({
       error: false,
       documentation: {} as DocumentationDepth,
       documentationEntries: [] as DocumentationList,
+      URLSearchParams: new URLSearchParams(window.location.search),
     };
   },
   created() {

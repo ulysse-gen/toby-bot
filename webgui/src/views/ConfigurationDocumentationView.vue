@@ -19,7 +19,13 @@
         Go here to learn more about the guild configuration
       </p>
 
-      <router-link to="/documentation/configurations/guild"
+      <router-link
+        :to="
+          URLSearchParams.has('prefix')
+            ? '/documentation/configurations/guild?prefix=' +
+              URLSearchParams.get('prefix')
+            : '/documentation/configurations/guild'
+        "
         ><button>Guild configuration documentation</button></router-link
       >
     </section>
@@ -30,7 +36,13 @@
         Go here to learn more about the user configuration
       </p>
 
-      <router-link to="/documentation/configurations/user"
+      <router-link
+        :to="
+          URLSearchParams.has('prefix')
+            ? '/documentation/configurations/user?prefix=' +
+              URLSearchParams.get('prefix')
+            : '/documentation/configurations/user'
+        "
         ><button>User configuration documentation</button></router-link
       >
     </section>
@@ -43,6 +55,11 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "ConfigurationDocumentationView",
   components: {},
+  data() {
+    return {
+      URLSearchParams: new URLSearchParams(window.location.search),
+    };
+  },
 });
 </script>
 
