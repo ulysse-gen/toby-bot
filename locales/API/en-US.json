@@ -26,6 +26,10 @@
 		"command_not_found": "Command not found.",
 		"configuration_first_init": "error.configuration_first_init",
 		"configuration_key_not_found": "Configuration key not found.",
-		"configuration_unchanged": "Configuration enchanged."
+		"configuration_unchanged": "Configuration enchanged.",
+		"cannot_parse_json": "error.cannot_parse_json",
+		"commands": {
+			"cannot_initiate": "error.commands.cannot_initiate"
+		}
 	}
 }

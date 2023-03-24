@@ -75,7 +75,7 @@ module.exports = class CommandExecution {
         this.RealChannel = this.Channel;
         this.Guild = this.Trigger.TobyBot.Guild;
         this.RealGuild = this.Guild;
-        this.User = this.Trigger.TobyBot.user;
+        this.User = this.Trigger.TobyBot.User;
         this.RealUser = this.User;
 
         this.i18n.setLocale(this.Guild.locale);

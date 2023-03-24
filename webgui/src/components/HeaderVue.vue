@@ -22,8 +22,13 @@
       <nav>
         <router-link to="/home">HOME</router-link>
         <router-link to="/documentation">DOCUMENTATION</router-link>
-        <a v-if="isLoggedIn()" @click="logout">LOGOUT</a>
-        <a v-if="!isLoggedIn()" @click="login">LOGIN</a>
+        <a
+          v-if="store.getters.isLoggedIn"
+          @click="() => store.commit('logout')"
+        >
+          LOGOUT
+        </a>
+        <a v-if="!store.getters.isLoggedIn" @click="login">LOGIN</a>
       </nav>
     </div>
   </div>
@@ -40,8 +45,7 @@ export default defineComponent({
 
     return {
       // access a mutation
-      isLoggedIn: () => store.getters.isLoggedIn,
-      logout: () => store.commit("logout"),
+      store,
     };
   },
   methods: {

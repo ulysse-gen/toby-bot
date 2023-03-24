@@ -16,11 +16,7 @@ export default defineComponent({
 
     return {
       // access a mutation
-      setUser: (data: DiscordUser) => store.commit("setUser", data),
-      setDiscordToken: (data: DiscordToken) =>
-        store.commit("setDiscordToken", data),
-      setTobybotToken: (data: TobyBotToken) =>
-        store.commit("setTobybotToken", data),
+      store,
     };
   },
   created() {
@@ -42,9 +38,9 @@ export default defineComponent({
           return response.json();
         })
         .then((response: any) => {
-          this.setUser(response.user);
-          this.setDiscordToken(response.discordToken);
-          this.setTobybotToken(response.tobybotToken);
+          this.store.commit("setUser", response.user);
+          this.store.commit("setDiscordToken", response.discordToken);
+          this.store.commit("setTobybotToken", response.tobybotToken);
         })
         .then(() => {
           return this.$router.push(`/home`);

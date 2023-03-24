@@ -1,13 +1,8 @@
 import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
 import Cookies from "js-cookie";
-import {
-  DiscordToken,
-  DiscordUser,
-  MainStore,
-  TobyBotToken,
-  DiscordGuild,
-} from "@/interfaces/main";
+import { router } from "../main";
+import { MainStore } from "@/interfaces/main";
 
 export default createStore({
   plugins: [
@@ -27,18 +22,6 @@ export default createStore({
     guilds: [],
   } as MainStore,
   getters: {
-    user(state) {
-      return state.user;
-    },
-    discordToken(state) {
-      return state.discordToken;
-    },
-    tobybotToken(state) {
-      return state.tobybotToken;
-    },
-    guilds(state) {
-      return state.guilds;
-    },
     isLoggedIn(state) {
       return (
         state.user != null &&
@@ -49,21 +32,20 @@ export default createStore({
   },
   mutations: {
     setUser(state, data) {
-      state.user = data;
+      return (state.user = data);
     },
     setDiscordToken(state, data) {
-      state.discordToken = data;
+      return (state.discordToken = data);
     },
     setTobybotToken(state, data) {
-      state.tobybotToken = data;
+      return (state.tobybotToken = data);
     },
     logout(state) {
-      state.user = null;
-      state.discordToken = null;
-      state.tobybotToken = null;
+      router.push("/");
+      state.user = state.discordToken = state.tobybotToken = null;
     },
     setGuilds(state, data) {
-      state.guilds = data;
+      return (state.guilds = data);
     },
   },
   actions: {},

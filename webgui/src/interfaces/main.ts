@@ -157,3 +157,24 @@ export interface DocumentationDepth {
 
 export type DocumentationList = Array<DocumentationEntryPath>;
 export type ConfigurationList = Array<ConfigurationEntryPath>;
+
+export interface DiscordChannel {
+  name: string;
+  id: string;
+}
+
+export interface DiscordRole {
+  name: string;
+  id: string;
+}
+
+export interface TobyBotCommand {
+  title: string;
+  description: string;
+  name: string;
+  aliases: Array<string>;
+  category: string;
+  enabled: boolean;
+  permission: string;
+  options: Array<any>;
+}

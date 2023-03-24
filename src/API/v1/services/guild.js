@@ -175,8 +175,8 @@ exports.patchGuildConfigurationKey = async (req, res, next) => {
         }
 
         if (KeyType.startsWith('Object')) {
-            if (_.isEqual(KeyValue, KeyNewValue))return res.status(200).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
-        } else if (KeyValue == KeyNewValue)return res.status(200).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
+            if (_.isEqual(KeyValue, KeyNewValue))return res.status(304).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
+        } else if (KeyValue == KeyNewValue)return res.status(304).json({error: null, title: req.__('error.configuration_unchanged'), before: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyValue }, after: { name: KeyName, description: KeyDescription, type: KeyType, defaultValue: KeyDefaultValue, value: KeyNewValue }});
 
         await ConfigurationManager.set(configurationKey, KeyNewValue);
 

@@ -1,102 +1,182 @@
 <template>
-  <div v-if="data.editable" :id="data.path" class="configuration-entry">
-    <div v-if="data.type.startsWith('String') && data.type == 'String(Color)'">
+  <div
+    v-if="configuration.editable"
+    :id="configuration.path"
+    class="configuration-entry"
+  >
+    <div
+      v-if="
+        configuration.type.startsWith('String') &&
+        configuration.type == 'String(Color)'
+      "
+    >
       <div class="setting-input color-input">
         <div class="infos">
-          <span class="name">{{ data.name }}</span>
-          <span class="description">{{ data.description }}</span>
+          <span class="name">{{ configuration.name }}</span>
+          <span class="description">{{ configuration.description }}</span>
         </div>
         <div class="inputs">
           <input
-            :id="data.path"
+            :id="configuration.path"
             class="input"
             type="color"
-            :value="data.value"
+            :value="configuration.value"
+            @change="updateValue"
           />
-          <button class="positive-button save">SAVE</button>
+          <button class="positive-button save" @click="saveValue">SAVE</button>
         </div>
       </div>
     </div>
     <div
       v-else-if="
-        data.type.startsWith('String') && data.type == 'String(UserId)'
+        configuration.type.startsWith('String') &&
+        configuration.type == 'String(UserId)'
       "
     >
       <div class="setting-input member-input">
         <div class="infos">
-          <span class="name">{{ data.name }}</span>
-          <span class="description">{{ data.description }}</span>
+          <span class="name">{{ configuration.name }}</span>
+          <span class="description">{{ configuration.description }}</span>
         </div>
         <div class="inputs">
           <input
-            :id="data.path"
+            :id="configuration.path"
             class="input"
             type="list"
             list="members"
-            :value="data.value"
+            :value="configuration.value"
+            @change="updateValue"
           />
-          <button class="positive-button save">SAVE</button>
+          <button class="positive-button save" @click="saveValue">SAVE</button>
         </div>
       </div>
     </div>
     <div
       v-else-if="
-        data.type.startsWith('String') && data.type == 'String(ChannelId)'
+        configuration.type.startsWith('String') &&
+        configuration.type == 'String(ChannelId)'
       "
     >
       <div class="setting-input channel-input">
         <div class="infos">
-          <span class="name">{{ data.name }}</span>
-          <span class="description">{{ data.description }}</span>
+          <span class="name">{{ configuration.name }}</span>
+          <span class="description">{{ configuration.description }}</span>
         </div>
         <div class="inputs">
           <input
-            :id="data.path"
+            :id="configuration.path"
             class="input"
             type="list"
             list="channels"
-            :value="data.value"
+            :value="configuration.value"
+            @change="updateValue"
           />
-          <button class="positive-button save">SAVE</button>
+          <button class="positive-button save" @click="saveValue">SAVE</button>
         </div>
       </div>
     </div>
     <div
       v-else-if="
-        data.type.startsWith('String') && data.type == 'String(RoleId)'
+        configuration.type.startsWith('String') &&
+        configuration.type == 'String(RoleId)'
       "
     >
       <div class="setting-input role-input">
         <div class="infos">
-          <span class="name">{{ data.name }}</span>
-          <span class="description">{{ data.description }}</span>
+          <span class="name">{{ configuration.name }}</span>
+          <span class="description">{{ configuration.description }}</span>
         </div>
         <div class="inputs">
           <input
-            :id="data.path"
+            :id="configuration.path"
             class="input"
             type="list"
             list="roles"
-            :value="data.value"
+            :value="configuration.value"
+            @change="updateValue"
           />
-          <button class="positive-button save">SAVE</button>
+          <button class="positive-button save" @click="saveValue">SAVE</button>
+        </div>
+      </div>
+    </div>
+    <div v-else-if="configuration.type == 'Boolean'">
+      <div class="setting-input boolean-input">
+        <div class="infos">
+          <span class="name">{{ configuration.name }}</span>
+          <span class="description">{{ configuration.description }}</span>
+        </div>
+        <div class="inputs">
+          <div class="checkbox">
+            <input
+              :id="configuration.path"
+              class="input"
+              type="checkbox"
+              :checked="configuration.value"
+              @change="switchBoolean"
+            />
+            <div class="checkmark">
+              {{ configuration.value ? "Enabled" : "Disabled" }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      v-else-if="
+        configuration.type.startsWith('Object') &&
+        configuration.type == 'Object(Array)'
+      "
+    >
+      <div class="setting-input array-input">
+        <div class="infos">
+          <span class="name">{{ configuration.name }}</span>
+          <span class="description">{{ configuration.description }}</span>
+        </div>
+        <div class="inputs">
+          <div class="array">
+            <div
+              v-for="(entry, key) in configuration.value"
+              :key="entry"
+              class="arrayEntry"
+            >
+              <input
+                type="text"
+                :value="entry"
+                @change="(e) => updateArrayValue(e, key)"
+              />
+              <button
+                class="danger-button outline-button deleteFromArray"
+                @click="deleteFromArray(key)"
+              >
+                X
+              </button>
+            </div>
+          </div>
+          <button
+            class="positive-button outline-button addToArray"
+            @click="addToArray"
+          >
+            Add new entry
+          </button>
+          <button class="positive-button save" @click="saveValue">SAVE</button>
         </div>
       </div>
     </div>
     <div v-else>
       <div class="setting-input string-input">
         <div class="infos">
-          <span class="name">{{ data.name }}</span>
-          <span class="description">{{ data.description }}</span>
+          <span class="name">{{ configuration.name }}</span>
+          <span class="description">{{ configuration.description }}</span>
         </div>
         <div class="inputs">
           <input
-            :id="data.path"
+            :id="configuration.path"
             class="input"
             type="text"
-            :value="data.value"
+            :value="configuration.value"
+            @change="updateValue"
           />
-          <button class="positive-button save">SAVE</button>
+          <button class="positive-button save" @click="saveValue">SAVE</button>
         </div>
       </div>
     </div>
@@ -108,7 +188,38 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "ConfigurationEntry",
-  props: ["data"],
+  props: ["data_prop"],
+  data() {
+    return {
+      configuration: this.data_prop,
+    };
+  },
+  methods: {
+    updateValue(event: any) {
+      this.configuration.value = event.target.value;
+    },
+    switchBoolean() {
+      this.configuration.value = !this.configuration.value;
+      this.saveValue();
+    },
+    saveValue() {
+      this.$emit("updateConfiguration", this.configuration);
+    },
+    updateArrayValue(event: any, key: number) {
+      if (
+        typeof event.target.value == "undefined" ||
+        (typeof event.target.value == "string" && event.target.value == "")
+      )
+        return this.configuration.value.splice(key, 1);
+      this.configuration.value[key] = event.target.value;
+    },
+    addToArray() {
+      this.configuration.value.push(undefined);
+    },
+    deleteFromArray(key: number) {
+      this.configuration.value.splice(key, 1);
+    },
+  },
 });
 </script>
 
@@ -122,15 +233,15 @@ export default defineComponent({
 }
 
 .configuration-entry {
-  .setting-input {
-    background-color: var(--background-secondary-alt);
-    padding: 0.4rem 0.8rem 0.8rem 0.8rem;
-    flex-direction: column;
-    border-radius: 0.2rem;
-    margin: 0.5rem;
-    display: flex;
-    flex: 1 1 45%;
+  background-color: var(--background-secondary-alt);
+  padding: 0.4rem 0.8rem 0.8rem 0.8rem;
+  flex-direction: column;
+  border-radius: 0.2rem;
+  margin: 0.5rem;
+  display: flex;
+  flex: 1 1 45%;
 
+  .setting-input {
     .infos {
       margin-bottom: 0.4rem;
 
@@ -144,7 +255,7 @@ export default defineComponent({
     .inputs {
       display: flex;
       flex-direction: row;
-      height: 2rem;
+      min-height: 2rem;
 
       .save {
         margin-left: 0.2rem;

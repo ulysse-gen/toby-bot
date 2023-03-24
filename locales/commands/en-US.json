@@ -789,6 +789,9 @@
 				"mute": {
 					"reason": "[RR Auto]Muted for winning the Russian Roulette."
 				}
+			},
+			"error": {
+				"alreadyrunning": "command.russianroulette.error.alreadyrunning"
 			}
 		},
 		"samplecommand": {
@@ -813,7 +816,8 @@
 				"toggle": {
 					"description": "Toggle say. When enabled the bot will remove and re say your messages."
 				}
-			}
+			},
+			"sent": "command.say.sent"
 		},
 		"serverinformations": {
 			"name": "Server informations",

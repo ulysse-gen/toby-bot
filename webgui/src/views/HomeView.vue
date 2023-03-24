@@ -1,15 +1,22 @@
 <template>
   <div class="main">
-    <section class="full-width">
+    <section v-if="store.state.user" class="full-width">
       <h2 class="section-title">
-        Welcome {{ user.username }}#{{ user.discriminator }} !
+        Welcome {{ store.state.user.username }}#{{
+          store.state.user.discriminator
+        }}
+        !
       </h2>
       <p class="section-description justify-text">
         Find down below all you might need to explore, use and configure TobyBot
         to suit your needs.
       </p>
     </section>
-    <section class="full-width">
+    <AdminPanel v-if="isAdmin"></AdminPanel>
+    <section v-if="!loaded" class="full-width loading-anim">
+      <h2 class="section-title">Loading guilds..</h2>
+    </section>
+    <section v-if="loaded" class="full-width">
       <h2 class="section-title">
         Servers you're in ({{ guilds.length }} servers) :
       </h2>
@@ -50,31 +57,66 @@
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 import { DiscordGuild } from "../interfaces/main";
+import AdminPanel from "../components/AdminPanel.vue";
 
 export default defineComponent({
   name: "HomeView",
-  components: {},
+  components: { AdminPanel },
   setup() {
     const store = useStore();
 
     return {
-      // access a mutation
-      user: store.getters.user,
-      discordToken: store.state.discordToken,
-      guilds: store.state.guilds,
-      setGuilds: (data: Array<DiscordGuild>) => store.commit("setGuilds", data),
+      store,
+      guilds: [] as Array<DiscordGuild>,
+      isAdmin: false,
+    };
+  },
+  data() {
+    return {
+      loaded: false,
     };
   },
   created() {
-    fetch("https://discord.com/api/users/@me/guilds", {
-      headers: { Authorization: "Bearer " + this.discordToken.access_token },
-    })
-      .then((response) => {
-        return response.json();
+    this.fetchDiscorUser();
+    this.fetchIsAdmin();
+  },
+  methods: {
+    async fetchDiscorUser() {
+      if (!this.store.state.discordToken) return this.login();
+      return fetch("https://discord.com/api/users/@me/guilds", {
+        headers: {
+          Authorization: "Bearer " + this.store.state.discordToken.access_token,
+        },
       })
-      .then((response) => {
-        this.setGuilds(response);
-      });
+        .then((response) => {
+          return response.json();
+        })
+        .then((response) => {
+          this.loaded = true;
+          this.guilds = response;
+        });
+    },
+    async fetchIsAdmin() {
+      if (!this.store.state.tobybotToken) return this.login();
+      return fetch(
+        `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/system/haspermission/ADMIN`,
+        {
+          headers: {
+            Authorization: "Bearer " + this.store.state.tobybotToken.token,
+          },
+        }
+      )
+        .then((response) => {
+          return response.json();
+        })
+        .then((response) => {
+          this.isAdmin = response;
+        });
+    },
+    login() {
+      window.location =
+        `https://discord.com/api/oauth2/authorize?client_id=${process.env["VUE_APP_OAUTH2_CLIENT_ID"]}&scope=identify%20email%20guilds%20guilds.members.read&response_type=code&prompt=consent&redirect_uri=${window.location.origin}/login` as unknown as Location;
+    },
   },
 });
 </script>

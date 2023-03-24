@@ -51,13 +51,13 @@ exports.execute = async (req, res, next) => {
         let commandOptions = ((typeof options != "undefined") ? options : '').replace(/\s+/g, ' ').trim().split(' ');
 
 
-        let FakeTrigger = await Channel.send(Guild.ConfigurationManager.get('prefix') + Command.name + ' ' + commandOptions.join(' ')).then(message => {
+        let FakeTrigger = await Channel.send(Guild.ConfigurationManager.get('prefix') + Command.name + ' ' + commandOptions.join(' ')).then(async message => {
             message.TobyBot = {
                 TobyBot: req.API.TobyBot,
-                guild: Guild,
-                user: User
+                Guild: Guild,
+                User: User
             };
-            message.author = User.user;
+            message.author = User.User;
             return message;
         }).catch(e => {
             return res.status(500).json(req.__('error.commands.cannot_initiate'));

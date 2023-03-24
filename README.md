@@ -5,6 +5,8 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 ## Inside things:
 
 - GuildManager, UserManager, Guild, User extending original Discord's managers
+- Switch to TypeScript (When V4 is done) + Make Types + Import types to managers
+- Improve storage (Snowflakes?, Change Database engine?, such things)
 
 ## Todo, Commands, Ideas & Fixes :
 
@@ -20,8 +22,6 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Command cooldowns
 - Reply function to fun commands (ex: embedfail, hi, slap, kiss, hug)
 - Make translations for fun commands (ex: embedfail, hi, slap, kiss, hug, welcome)
-- Switch to TypeScript (When V4 is done) + Make Types + Import types to managers
-- Improve storage (Snowflakes?, Change Database engine?, such things)
 
 ### Commands:
 
@@ -32,7 +32,6 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Makeembed?
 - Remindme?
 - Rockpaperscissors?
-- Roleadder
 - Rolldice?
 - SendDM
 - Lockdown?

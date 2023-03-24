@@ -28,7 +28,7 @@ module.exports = {
             return undefined;
         });
 
-        interaction.TobyBot.user = await TobyBot.UserManager.getUser(interaction.user).catch(e => { 
+        interaction.TobyBot.User = await TobyBot.UserManager.getUser(interaction.user).catch(e => { 
             ErrorLog.error(`${__filename}: An error occured trying to fetch the user:`);
             console.log(e);
             return undefined;

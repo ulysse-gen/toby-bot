@@ -1,6 +1,9 @@
 <template>
   <div class="main">
-    <section class="full-width server-details">
+    <section v-if="!loaded" class="full-width loading-anim">
+      <h2 class="section-title">Loading guild data..</h2>
+    </section>
+    <section v-if="loaded" class="full-width server-details">
       <h2 class="section-title">
         Managing
         <span id="guildName" class="server-name">{{ guild.guild.name }}</span>
@@ -44,7 +47,7 @@
       </div>
     </section>
 
-    <section class="half-width server-config">
+    <section v-if="loaded" class="half-width server-config">
       <h2 class="section-title">Server configuration</h2>
       <p class="section-description">Adjust your configuration here :</p>
       <h1>WIP</h1>
@@ -52,7 +55,8 @@
         <ConfigurationEntryVue
           v-for="configurationEntry in configurationEntries"
           :key="configurationEntry.path"
-          :data="configurationEntry"
+          :data_prop="configurationEntry"
+          @updateConfiguration="updateConfiguration"
         ></ConfigurationEntryVue>
       </div>
     </section>
@@ -76,7 +80,9 @@ import {
   ConfigurationDepth,
   ConfigurationEntry,
   ConfigurationList,
+  DiscordChannel,
   DiscordGuildToby,
+  DiscordRole,
   DocumentationDepth,
   DocumentationEntry,
 } from "../interfaces/main";
@@ -92,18 +98,18 @@ export default defineComponent({
     const store = useStore();
 
     return {
-      user: store.getters.user,
-      discordToken: store.state.discordToken,
-      tobybotToken: store.state.tobybotToken,
+      store,
+      loaded: false,
     };
   },
   data() {
     return {
+      loading: true,
       guild: {} as DiscordGuildToby,
       configuration: {},
       documentation: {},
-      channels: [],
-      roles: [],
+      channels: [] as Array<DiscordChannel>,
+      roles: [] as Array<DiscordRole>,
       configurationEntries: [] as ConfigurationList,
     };
   },
@@ -111,7 +117,9 @@ export default defineComponent({
     fetch(
       `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/guilds/${this.guildId}`,
       {
-        headers: { Authorization: "Bearer " + this.tobybotToken.token },
+        headers: {
+          Authorization: "Bearer " + this.store.state.tobybotToken.token,
+        },
       }
     )
       .then((response) => {
@@ -120,11 +128,32 @@ export default defineComponent({
       .then((response) => {
         this.guild = response;
         this.configuration = this.guild.configuration;
+      })
+      .then(() => {
+        fetch(
+          `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/documentation/configuration/guild`,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            this.documentation = data;
+            this.makeConfigurationEntries(
+              this.documentation,
+              this.configuration
+            );
+            this.loaded = true;
+          });
       });
     fetch(
       `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/guilds/${this.guildId}/channels`,
       {
-        headers: { Authorization: "Bearer " + this.tobybotToken.token },
+        headers: {
+          Authorization: "Bearer " + this.store.state.tobybotToken.token,
+        },
       }
     )
       .then((response) => {
@@ -136,7 +165,9 @@ export default defineComponent({
     fetch(
       `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/guilds/${this.guildId}/roles`,
       {
-        headers: { Authorization: "Bearer " + this.tobybotToken.token },
+        headers: {
+          Authorization: "Bearer " + this.store.state.tobybotToken.token,
+        },
       }
     )
       .then((response) => {
@@ -144,20 +175,6 @@ export default defineComponent({
       })
       .then((response) => {
         this.roles = response;
-      });
-
-    fetch(
-      `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/documentation/configuration/guild`,
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        this.documentation = data;
-        this.makeConfigurationEntries(this.documentation, this.configuration);
       });
   },
   methods: {
@@ -235,6 +252,31 @@ export default defineComponent({
       } else if (type == "Boolean") {
         return defaultValue ? "true" : "false";
       }
+    },
+    updateConfiguration(configuration: any) {
+      const requestOptions = {
+        method: "PATCH",
+        body: JSON.stringify({
+          value:
+            typeof configuration.value == "object"
+              ? JSON.stringify(configuration.value)
+              : configuration.value,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.store.state.tobybotToken.token,
+        },
+      };
+      fetch(
+        `${location.protocol}//${process.env["VUE_APP_TOBYBOT_API_HOST"]}:${process.env["VUE_APP_TOBYBOT_API_PORT"]}/v1/guilds/${this.guildId}/configuration/${configuration.path}`,
+        requestOptions
+      ).then((response: any) => {
+        if (response.status == 200) return response.json();
+        return console.log(
+          `An error occured processing the request. Status code: ${response.status}.`
+        );
+      });
+      return true;
     },
   },
 });
@@ -330,168 +372,6 @@ section.bot-config {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    .setting-input {
-      background-color: var(--background-secondary-alt);
-      padding: 0.4rem 0.8rem 0.8rem 0.8rem;
-      flex-direction: column;
-      border-radius: 0.2rem;
-      margin: 0.5rem;
-      display: flex;
-      flex: 1 1 45%;
-
-      .infos {
-        margin-bottom: 0.4rem;
-
-        .description {
-          margin-left: 0.2rem;
-          font-size: 0.9rem;
-          color: var(--text-muted);
-        }
-      }
-
-      .inputs {
-        display: flex;
-        flex-direction: row;
-        height: 2rem;
-
-        .save {
-          margin-left: 0.2rem;
-          flex: 0 0;
-          width: 6rem;
-          height: 100%;
-        }
-      }
-
-      &.string-input,
-      &.channel-input,
-      &.member-input,
-      &.role-input,
-      &.guild-input {
-        .inputs {
-          input {
-            padding-left: 0.5rem;
-            flex: 1 0;
-            background-color: var(--background-primary);
-            outline: none;
-            border: 1px solid var(--background-secondary);
-            border-radius: 0.2rem;
-            color: var(--font-primary);
-          }
-        }
-      }
-
-      &.color-input {
-        .inputs {
-          input {
-            height: 2rem;
-            flex: 1 0;
-            background-color: var(--background-primary);
-            outline: none;
-            border: 1px solid var(--background-secondary);
-            border-radius: 0.2rem;
-            color: var(--font-primary);
-          }
-        }
-      }
-
-      &.boolean-input {
-        .inputs {
-          .checkbox {
-            flex: 1 0;
-            position: relative;
-            .input {
-              z-index: 10;
-              position: absolute;
-              opacity: 0;
-              cursor: pointer;
-              height: 0;
-              width: 0;
-              width: 100%;
-              height: 100%;
-            }
-
-            .checkmark {
-              border-radius: 0.2rem;
-              transition-duration: 0.15s;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background-color: var(--button-danger-background);
-              cursor: pointer;
-            }
-          }
-
-          .checkbox input:checked ~ .checkmark {
-            background-color: var(--button-positive-background);
-          }
-
-          .checkbox input:checked:hover ~ .checkmark {
-            background-color: var(--button-positive-background-hover);
-          }
-
-          .checkbox input:hover ~ .checkmark {
-            background-color: var(--button-danger-background-hover);
-          }
-        }
-      }
-
-      &.array-input {
-        height: fit-content;
-
-        .inputs {
-          display: flex;
-          flex-direction: column;
-          height: fit-content;
-
-          .array {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-
-            .arrayEntry {
-              display: flex;
-              flex-direction: row;
-              margin-bottom: 0.2rem;
-
-              input {
-                height: 2rem;
-                background-color: var(--background-primary);
-                outline: none;
-                border: 1px solid var(--background-secondary);
-                border-radius: 0.2rem;
-                color: var(--font-primary);
-                flex: 1 0;
-              }
-
-              button {
-                margin-left: 0.2rem;
-                height: 2.3rem;
-                width: 2.3rem;
-              }
-            }
-          }
-
-          .addToArray {
-            margin: 0 0 0.4rem 0;
-            flex: unset;
-            width: 100%;
-            height: 2rem;
-          }
-
-          .save {
-            margin: 0;
-            flex: unset;
-            width: 100%;
-            height: 2rem;
-          }
-        }
-      }
-    }
   }
 }
 </style>
