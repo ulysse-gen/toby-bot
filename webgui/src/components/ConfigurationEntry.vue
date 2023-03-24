@@ -200,7 +200,13 @@ export default defineComponent({
     },
     switchBoolean() {
       this.configuration.value = !this.configuration.value;
-      this.saveValue();
+      this.saveValueToString();
+    },
+    saveValueJSON() {
+      this.$emit("updateConfiguration", JSON.stringify(this.configuration));
+    },
+    saveValueToString() {
+      this.$emit("updateConfiguration", this.configuration.toString());
     },
     saveValue() {
       this.$emit("updateConfiguration", this.configuration);

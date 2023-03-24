@@ -163,9 +163,9 @@ exports.patchGuildConfigurationKey = async (req, res, next) => {
                 return res.status(400).json(req.__('error.cannot_parse_float'));
             }
         }else if (["Boolean"].includes(KeyType)){
-            if ([true, "true","1","yes","y","oui","o"].includes(KeyNewValue)){
+            if (["true","1","yes","y","oui","o"].includes(KeyNewValue)){
                 KeyNewValue = true;
-            }else if ([false, "false","0","no","n","non"].includes(KeyNewValue)) {
+            }else if (["false","0","no","n","non"].includes(KeyNewValue)) {
                 KeyNewValue = false;
             } else {
                 return res.status(400).json(req.__('error.cannot_parse_boolean'));
