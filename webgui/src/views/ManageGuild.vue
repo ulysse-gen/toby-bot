@@ -260,6 +260,8 @@ export default defineComponent({
           value:
             typeof configuration.value == "object"
               ? JSON.stringify(configuration.value)
+              : typeof configuration.value == "boolean"
+              ? configuration.value.toString()
               : configuration.value,
         }),
         headers: {
