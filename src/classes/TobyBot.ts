@@ -340,14 +340,13 @@ export default class TobyBot {
         let tryLogin = async () => {
             let loggedIn = await this.client.login(this.ConfigurationManager.get('token')).then(()=>true).catch((e)=>{
                 MainLog.log(this.i18n.__('bot.inputToken.couldNotLogin'));
-                console.log(e);
+                return false;
             });
             if (loggedIn)this.rest = new REST({ version: '9' }).setToken(this.ConfigurationManager.get('token'));
             return loggedIn;
         }
 
         if (!await tryLogin()){
-            MainLog.log(this.i18n.__('bot.inputToken.couldNotLogin'));
             await this.ConfigurationManager.set('token', await this.Console.askForToken());
             MainLog.log(this.i18n.__('bot.inputToken.defined'));
             return this.attemptLogin(attempt+1);

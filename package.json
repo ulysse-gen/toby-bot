@@ -5,7 +5,7 @@
   "description": "Toby Bot Discord Utility Bot",
   "main": "index.js",
   "scripts": {
-    "start": "dumb-init node ./src/index.js",
+    "start": "dumb-init ts-node --transpile-only ./src/index.ts",
     "start-dev": "nodemon --legacy-watch --exec 'ts-node' ./src/index.ts --ignore locales/",
     "build": "tsc"
   },
