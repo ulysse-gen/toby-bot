@@ -1,5 +1,6 @@
 module.exports = class AutoModerationViolation {
     constructor(AutoModerationRun, CheckName, TriggerName, TriggerValue, Punishment) {
+        this.TobyBot = AutoModerationRun.TobyBot;
         this.AutoModerationRun = AutoModerationRun;
 
         this.checkName = CheckName;

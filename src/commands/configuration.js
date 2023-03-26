@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const _ = require('lodash');
-const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager');
+const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager').default;
 
 module.exports = {
     name: "configuration",

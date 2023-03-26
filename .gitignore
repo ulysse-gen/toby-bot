@@ -46,3 +46,4 @@ yarn-debug.log*
 yarn-error.log*
 **/.env*
 docker-compose-dev.yml
+/dist

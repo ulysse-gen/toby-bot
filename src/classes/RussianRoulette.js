@@ -4,13 +4,6 @@ const moment = require('moment');
 const crypto = require('crypto');
 const rn = require("random-number");
 
-//Importing classes
-const FileLogger = require('./FileLogger');
-
-//Creating objects
-const MainLog = new FileLogger();
-const ErrorLog = new FileLogger('error.log');
-
 
 module.exports = class RussianRoulette {
     constructor(CommandExecution) {

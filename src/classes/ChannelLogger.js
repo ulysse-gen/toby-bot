@@ -1,8 +1,9 @@
 const {MessageEmbed, Permissions} = require('discord.js');
-const { ErrorBuilder } = require('./Errors');
+const { UnknownError, TypeError } = require('./Errors');
 
 module.exports = class ChannelLogger {
     constructor(Guild, channelLoggingConfig) {
+        this.TobyBot = Guild.TobyBot;
         this.Guild = Guild;
         this.Config = channelLoggingConfig;
 
@@ -17,7 +18,7 @@ module.exports = class ChannelLogger {
             this.channel = channel;
             this.initialized = true;
             return true;
-        }).catch((e) => {throw new ErrorBuilder(`Could not initialize ChannelLogger`, {cause: e}).logError()});
+        }).catch((e) => {throw new UnknownError(`Could not initialize ChannelLogger`, {cause: e}).logError()});
     }
 
     /** Log text
@@ -26,7 +27,7 @@ module.exports = class ChannelLogger {
      */
     async log(content) {
         if (!this.initialized)return false;
-        if (typeof content != "string" || content.replaceAll(" ", "") == "") throw new ErrorBuilder(`Content must be a non empty string`).setType("TYPE_ERROR").logError();
+        if (typeof content != "string" || content.replaceAll(" ", "") == "") throw new TypeError(`Content must be a non empty string.`).logError();
         return this.channel.send(content);
     }
 
@@ -44,7 +45,7 @@ module.exports = class ChannelLogger {
      */
      async logEmbed(title, description = undefined, fields = [], color = this.Guild.ConfigurationManager.get('style.colors.main')){
          if (!this.initialized)return false;
-         if (typeof content != "string" || content.replaceAll(" ", "") == "") throw new ErrorBuilder(`Title must be a non empty string`).setType("TYPE_ERROR").logError();
+         if (typeof content != "string" || content.replaceAll(" ", "") == "") throw new TypeError(`Title must be a non empty string.`).logError();
         let embed = new MessageEmbed().setTitle(title).setColor(color);
         if (typeof description == "string" && description.replaceAll(' ', '') != "") embed.setDescription(description);
         if (typeof fields == "object" && fields.length > 0)

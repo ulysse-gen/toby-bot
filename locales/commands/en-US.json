@@ -170,6 +170,12 @@
 				"reason": {
 					"description": "The reason for the removal."
 				}
+			},
+			"error": {
+				"noCaseIdSpecified": {
+					"title": "Could not delete punishment.",
+					"description": "You need to specify the punishment ID."
+				}
 			}
 		},
 		"evaluate": {
@@ -200,7 +206,10 @@
 		},
 		"getapitoken": {
 			"name": "Get API Token",
-			"description": "Get a cute little API token to experience the amazing API I built."
+			"description": "Get a cute little API token to experience the amazing API I built.",
+			"error": {
+				"onlyslash": "This command is only available through slash commands for security reasons."
+			}
 		},
 		"globalconfiguration": {
 			"name": "Global configuration",
@@ -453,6 +462,12 @@
 				"reason": {
 					"description": "The reason aka the note."
 				}
+			},
+			"error": {
+				"noTargetSpecified": {
+					"title": "Could not note this user.",
+					"description": "You need to specify the user you want to note."
+				}
 			}
 		},
 		"permission": {
@@ -523,6 +538,12 @@
 				},
 				"page": {
 					"description": "The page, if there are multiple pages."
+				}
+			},
+			"error": {
+				"noCaseIdSpecified": {
+					"title": "Could not get the transcript.",
+					"description": "You need to specify the punishment ID."
 				}
 			}
 		},
@@ -817,7 +838,10 @@
 					"description": "Toggle say. When enabled the bot will remove and re say your messages."
 				}
 			},
-			"sent": "command.say.sent"
+			"sent": "Message sent.",
+			"error": {
+				"textMustExistNotEmpty": "The text must not be empty."
+			}
 		},
 		"serverinformations": {
 			"name": "Server informations",
@@ -862,6 +886,12 @@
 				"reason": {
 					"description": "The reason aka the note."
 				}
+			},
+			"error": {
+				"noTargetSpecified": {
+					"title": "Could not sticky note.",
+					"description": "You need to specify the user you want to sticky note."
+				}
 			}
 		},
 		"unban": {
@@ -874,6 +904,12 @@
 				"reason": {
 					"description": "The reason."
 				}
+			},
+			"error": {
+				"noTargetSpecified": {
+					"title": "Could not unban.",
+					"description": "You need to specify the user you want to unban."
+				}
 			}
 		},
 		"unmute": {
@@ -885,6 +921,12 @@
 				},
 				"reason": {
 					"description": "The reason."
+				}
+			},
+			"error": {
+				"noTargetSpecified": {
+					"title": "Could not unmute.",
+					"description": "You need to specify the user you want to unmute."
 				}
 			}
 		},
@@ -982,6 +1024,12 @@
 				"reason": {
 					"description": "The reason."
 				}
+			},
+			"error": {
+				"noTargetSpecified": {
+					"title": "Could not warn this user.",
+					"description": "You need to specify the user you want to warn."
+				}
 			}
 		},
 		"whois": {
@@ -993,8 +1041,29 @@
 				}
 			},
 			"embed": {
-				"title": "command.whois.embed.title",
-				"description": "command.whois.embed.description"
+				"title": "Whois",
+				"description": "Whois {{{userTag}}}?",
+				"field": {
+					"joined": {
+						"name": "Joined"
+					},
+					"registered": {
+						"name": "Registered"
+					},
+					"roles": {
+						"name": "Roles"
+					},
+					"permissions": {
+						"name": "Permissions"
+					},
+					"acknowledgements": {
+						"name": "Acknowledgements"
+					},
+					"specs": {
+						"name": "**Specifications**",
+						"content": "- Is really nice\n- Is really cool\n- Built by <@231461358200291330>"
+					}
+				}
 			}
 		},
 		"generic": {

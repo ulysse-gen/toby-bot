@@ -9,6 +9,7 @@ const leetSpeakConverter = require("/app/src/utils/leet-converter")
 
 module.exports = class AutoModerationRun {
     constructor(AutoModeration, message) {
+        this.TobyBot = AutoModeration.TobyBot;
         this.AutoModeration = AutoModeration;
         this.message = message;
         

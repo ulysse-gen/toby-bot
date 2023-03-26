@@ -9,12 +9,12 @@ RUN chmod +x /usr/local/bin/dumb-init
 
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "/app/"]
+COPY ["package.json", "package-lock.json*", "tsconfig.json", "/app/"]
 
 RUN npm ci --only=production && mv node_modules /app/
 
 COPY . /app
 
-
+RUN npm run build
 
 CMD ["npm run start"]

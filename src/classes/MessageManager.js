@@ -4,6 +4,7 @@
 
 module.exports = class MessageManager {
     constructor(Guild) {
+        this.TobyBot = Guild.TobyBot;
         this.Guild = Guild;
 
         this.maxMessagesStored = 250;

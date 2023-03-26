@@ -1,5 +1,6 @@
 module.exports = class ContextMenuCommand {
     constructor(ContextMenuCommandManager, command) {
+        this.TobyBot = ContextMenuCommandManager.TobyBot;
         this.ContextMenuCommandManager = ContextMenuCommandManager;
 
         this.name = command.name;

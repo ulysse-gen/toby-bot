@@ -107,11 +107,11 @@ function toKeyPermissions(userPermissions) {
     return newUserPermissions;
 }
 
-function toAcknowledgements(user, guild, userPermissions, ) {
+function toAcknowledgements(User, guild, userPermissions, ) {
     let currentAcknowledgements = `Server Member`;
     let serverModeratorArray = ['MANAGE_MESSAGES', 'MANAGE_NICKNAMES'];
     let serverAdministratorArray = ['ADMINISTRATOR'];
-    if (user.premiumSince != null) currentAcknowledgements = `Server Booster`;
+    if (User.premiumSince != null) currentAcknowledgements = `Server Booster`;
     if (serverModeratorArray.every(permission => {
             return userPermissions.includes(permission)
         })) currentAcknowledgements = `Server Moderator`;

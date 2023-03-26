@@ -3,7 +3,7 @@ const crypto   = require('crypto');
 const axios = require('axios').default;
 const jwt    = require('jsonwebtoken');
 const _    = require('lodash');
-const { ErrorBuilder } = require('/app/src/classes/Errors');
+const { UnknownError } = require('../../../classes/Errors');
 const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager');
 
 
@@ -225,7 +225,7 @@ exports.auth = async (req, res, next) => {
             if (!User.password)return res.status(418).json(req.__('error.no_api_account'));
 
             bcrypt.compare(password, User.password, function(err, response) {
-                if (err) throw new ErrorBuilder(`Could not verify password`, {cause: err}).logError();
+                if (err) throw new UnknownError(`Could not verify password`, {cause: err}).logError();
                 if (response) {
                     User = User.tokenVersion();
 

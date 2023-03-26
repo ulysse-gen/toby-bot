@@ -3,7 +3,7 @@
 /////////////////////////////////
 
 //Importing classes
-const { ErrorBuilder } = require('./Errors');
+const { UnknownError } = require('./Errors');
 const Metric = require('./Metric');
 
 module.exports = class MetricManager {
@@ -18,7 +18,7 @@ module.exports = class MetricManager {
     }
 
     endMetric(id) {
-        if (typeof this.metrics[id] == "undefined") throw new ErrorBuilder('Unknown metric.').logError();
+        if (typeof this.metrics[id] == "undefined") throw new UnknownError('Unknown metric.').logError();
         let metricToEnd = this.metrics[id];
         metricToEnd.addEntry(`end`);
         return metricToEnd;

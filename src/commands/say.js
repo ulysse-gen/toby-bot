@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const { ErrorBuilder } = require('/app/src/classes/Errors');
+const { CommandExecutionError } = require('../classes/Errors');
 
 module.exports = {
     name: "say",
@@ -27,12 +27,12 @@ module.exports = {
             }
         }
 
-        if (typeof CommandExecution.options.text != "string" || CommandExecution.options.text.replaceAll(' ', '') == "")throw new ErrorBuilder(CommandExecution.i18n.__('command.say.error.textMustExistNotEmpty')).setType('COMMAND_EXECUTION_ERROR').logError();
+        CommandExecution.Trigger.delete();
+        if (typeof CommandExecution.options.text != "string" || CommandExecution.options.text.replaceAll(' ', '') == "")return CommandExecution.returnErrorEmbed({ephemeral: true, slashOnly: true}, CommandExecution.i18n.__('command.say.error.textMustExistNotEmpty'));
 
         let channelToSendTo = (typeof CommandExecution.options.channel == "undefined") ? CommandExecution.Channel : await CommandExecution.Trigger.TobyBot.Guild.getChannelById(CommandExecution.options.channel);
 
         channelToSendTo.send(CommandExecution.options.text);
-        CommandExecution.Trigger.delete();
 
         await CommandExecution.returnSuccessEmbed({ephemeral: true, slashOnly: true}, CommandExecution.i18n.__(`command.${this.name}.sent`));
         return true;

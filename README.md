@@ -4,8 +4,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ## Inside things:
 
-- GuildManager, UserManager, Guild, User extending original Discord's managers
-- Switch to TypeScript (When V4 is done) + Make Types + Import types to managers
+- Switch to TypeScript + Make Types + Import types to managers - WIP
 - Improve storage (Snowflakes?, Change Database engine?, such things)
 
 ## Todo, Commands, Ideas & Fixes :
@@ -38,7 +37,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ### Fixes:
 
-- Boolean not updating when using WebGUI
+- Nothin'
 
 ## Environment variables:
 ```

@@ -1,8 +1,8 @@
-const { ErrorBuilder } = require("./Errors");
 const { MessageEmbed } = require('discord.js');
 
 module.exports = class Command {
     constructor(CommandManager, command) {
+        this.TobyBot = CommandManager.TobyBot;
         this.CommandManager = CommandManager;
 
         this.title = this.CommandManager.i18n.__(`command.${command.name}.name`);
