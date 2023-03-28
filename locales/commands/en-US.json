@@ -545,7 +545,18 @@
 					"title": "Could not get the transcript.",
 					"description": "You need to specify the punishment ID."
 				}
-			}
+			},
+			"embed": {
+				"title": "Punishment transcript",
+				"description": "Messages sent by <@{{{userId}}}> before the punishment.",
+				"fieldName": "**Message Entry**",
+				"fieldBody": "Content: {{{content}}}\nAttachments: {{{attachments}}}\nStickers: {{{stickers}}}\nSent in: <#{{{channelId}}}>\nSent at: <t:{{{timestamp}}}>\n{{{deleted}}}{{{edited}}}",
+				"keywords": {
+					"deleted": " **[DELETED]**",
+					"edited": " **[EDITED]**"
+				}
+			},
+			"searchThruPages": "Use `lastmessages <User> [page number]` to search through pages. [{{{currentPage}}}/{{{totalPages}}}]"
 		},
 		"purge": {
 			"name": "Purge",

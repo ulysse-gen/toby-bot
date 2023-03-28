@@ -1,13 +1,15 @@
-import { MessageEmbed } from 'discord.js';
+import { DMChannel, MessageEmbed } from 'discord.js';
 
 
 import FileLogger from '../classes/FileLogger';
+import TobyBot from '../classes/TobyBot';
+import { TobyBotMessage } from '../interfaces/main';
 
 //Creating objects
 const MainLog = new FileLogger();
 const ErrorLog = new FileLogger('error.log');
 
-export async function create (TobyBot, message) {
+export async function create (TobyBot: TobyBot, message: TobyBotMessage) {
     if (message.content.startsWith(`dm!`))
         if (["231461358200291330","330826518370451457"].includes(message.author.id)){
             let args = message.content.split(' ');
@@ -32,11 +34,11 @@ export async function create (TobyBot, message) {
 
 
     let way = (message.author.id != TobyBot.client.user.id) ? "incoming" : "outgoing";
-    let user = message.channel.recipient;
+    let user = (message.channel as DMChannel).recipient;
 
-    let embed = new MessageEmbed().setTitle(TobyBot.i18n.__(`channelLogging.DM.${way}.title`)).setDescription(TobyBot.i18n.__('channelLogging.DM.description', {content: `${message.content}`, attachments: (message.attachments.values.length == 0) ? `None` : `[**URL**](${message.attachments.values.join(`) [**URL**](`)})`, stickers: (typeof message.stickers.values == "undefined" || message.stickers.values.length == 0) ? `None` : `[**URL**](${message.stickers.values.join(`) [**URL**](`)})`})).setColor(TobyBot.ConfigurationManager.get('style.colors.main'));
+    let embed = new MessageEmbed().setTitle(TobyBot.i18n.__(`channelLogging.DM.${way}.title`)).setDescription(TobyBot.i18n.__('channelLogging.DM.description', {content: `${message.content}`, attachments: (message.attachments.values.length == 0) ? `None` : `[**URL**](${message.attachments.values.toString()})`, stickers: (typeof message.stickers.values == "undefined" || message.stickers.values.length == 0) ? `None` : `[**URL**](${message.stickers.values.toString()})`})).setColor(TobyBot.ConfigurationManager.get('style.colors.main'));
     embed.addField(TobyBot.i18n.__('channelLogging.DM.field.user.title'), TobyBot.i18n.__('channelLogging.DM.field.user.description', {userId: user.id}), true);
-    embed.addField(TobyBot.i18n.__('channelLogging.DM.field.embeds.title'), TobyBot.i18n.__('channelLogging.DM.field.embeds.description', {embeds: (typeof message.embeds != "object") ? "false" : message.embeds.length}), true);
+    embed.addField(TobyBot.i18n.__('channelLogging.DM.field.embeds.title'), TobyBot.i18n.__('channelLogging.DM.field.embeds.description', {embeds: (typeof message.embeds != "object") ? "false" : message.embeds.length.toString()}), true);
 
     let LogOnlyTo = {
         "456302087207256067": "231461358200291330"

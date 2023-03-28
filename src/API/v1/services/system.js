@@ -1,5 +1,5 @@
 const _    = require('lodash');
-const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager');
+const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager').default;
 
 exports.status = async (req, res, next) => {
     try {

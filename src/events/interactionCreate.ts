@@ -4,7 +4,9 @@
 
 //Importing classes
 import FileLogger from '../classes/FileLogger';
-import CommandExecution from '../classes/CommandExecution';
+import TobyBot from '../classes/TobyBot';
+import { TobyBotInteraction } from '../interfaces/main';
+import { CommandInteraction, GuildMember } from 'discord.js';
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -14,7 +16,7 @@ export default {
     name: 'interactionCreate',
     once: false,
     enabled: true,
-    async exec(TobyBot, interaction) {
+    async exec(TobyBot: TobyBot, interaction: TobyBotInteraction) {
         if (process.env.TOBYBOT_API_ONLY === "true")return true;
         if (!TobyBot.ready)return false;
         interaction.TobyBot = {TobyBot: TobyBot};
@@ -22,7 +24,7 @@ export default {
         if (typeof TobyBot.ConfigurationManager.get('blocked.users')[interaction.user.id] != "undefined")return false;
         if (typeof TobyBot.ConfigurationManager.get('blocked.guilds')[interaction.guildId] != "undefined")return false;
 
-        interaction.TobyBot.Guild = await TobyBot.GuildManager.getGuild(interaction.member.guild);
+        interaction.TobyBot.Guild = await TobyBot.GuildManager.getGuild((interaction.member as GuildMember).guild);
 
         interaction.TobyBot.User = await TobyBot.UserManager.getUser(interaction.user);
 
@@ -74,7 +76,7 @@ export default {
             }
         }
 
-        return interaction.reply({
+        return (interaction as unknown as CommandInteraction).reply({
             content: interaction.TobyBot.Guild.i18n.__('interaction.couldNotProcess'),
             ephemeral: true,
         });

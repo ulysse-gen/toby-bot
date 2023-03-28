@@ -60,5 +60,17 @@
 				}
 			}
 		}
+	},
+	"configuration": {
+		"logging": {
+			"enablingWithoutChannel": {
+				"title": "Could not enable logging.",
+				"description": "No channel is currently define, please define a channel before you enable."
+			},
+			"cannotFetchChannel": {
+				"title": "Could not enable logging.",
+				"description": "The defined channel could not be fetched."
+			}
+		}
 	}
 }

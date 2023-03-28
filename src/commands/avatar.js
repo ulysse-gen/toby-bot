@@ -11,7 +11,7 @@ module.exports = {
     async execute(CommandExecution) {
         let User = await CommandExecution.Guild.getUserFromArg(CommandExecution.options.target, CommandExecution.GuildExecutor);
         if (typeof User == "undefined")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.title`), CommandExecution.i18n.__(`command.${this.name}.error.userNotFound.description`, {}));
-        if (typeof CommandExecution.options.public != "boolean") CommandExecution.options.public = (["1", "yes", "oui", "y", "o", "true"].includes(CommandExecution.options.public)) ? true : false;
+        if (typeof CommandExecution.options.public != "boolean") CommandExecution.options.public = (["1", "yes", "oui", "y", "o", "true", "public", "main", "global"].includes(CommandExecution.options.public)) ? true : false;
         let UserPFP = await CommandExecution.Guild.getUserPfp(User, CommandExecution.options.public);
 
         let embed = new MessageEmbed({

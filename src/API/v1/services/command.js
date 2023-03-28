@@ -1,4 +1,4 @@
-const CommandExecution = require('/app/src/classes/CommandExecution');
+const CommandExecution = require('/app/src/classes/CommandExecution').default;
 
 
 exports.listAll = async (req, res, next) => {

@@ -3,7 +3,7 @@
 /////////////////////////////////
 
 //Importing NodeJS modules
-import { Permissions } from 'discord.js';
+import { Collection, GuildMember, Permissions, Role, TextChannel } from 'discord.js';
 import _ from 'lodash';
 import { TypeError } from './Errors';
 
@@ -64,7 +64,7 @@ export default class SQLPermissionManager extends SQLConfigurationManager {
         this._configuration = value;
     }
 
-    async getUserPermissions(userId, isAdmin = null) {
+    async getUserPermissions(userId: string, isAdmin = null) {
         if (!this.initialized) return {}; //If the permissionManager is not initialized, return an enmpty permission array
         if (typeof this.configuration.users[userId] == "object" && Object.keys(this.configuration.users[userId]).length >= 1)return this.configuration.users[userId]; //Check if user permissions are in cache & if its not empty, return it
         await this.load(); //This only runs if the permissions cached were empty, load from file in case any update have applied to the file & cache it
@@ -80,7 +80,7 @@ export default class SQLPermissionManager extends SQLConfigurationManager {
         return {};
     }
 
-    async getRolePermissions(guildId, roleId, isAdmin = null) {
+    async getRolePermissions(guildId: string, roleId: string, isAdmin = null) {
         if (!this.initialized) return {};
         if (isAdmin){
             if (typeof this.configuration.roles[guildId] != "object")this.configuration.roles[guildId] = {};
@@ -106,15 +106,11 @@ export default class SQLPermissionManager extends SQLConfigurationManager {
         return {};
     }
 
-    async getRolesPermissions(guildId, rolesArray){
-        let rolesPermissions = [];
-        for (const role of rolesArray.values()) {
-            rolesPermissions.push(await this.getRolePermissions(guildId, role.id, await role.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true)));
-        }
-        return rolesPermissions.flat();
+    async getRolesPermissions(guildId: string, rolesArray: Collection<string, Role>){
+        return Promise.all(rolesArray.map(async (Role: Role) => this.getRolePermissions(guildId, Role.id, Role.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true))));
     }
 
-    async getChannelPermission(guildId, channelId) { //I dont have patience to comment but its the same as the one just above but with channel insteal of role
+    async getChannelPermission(guildId: string, channelId: string) { //I dont have patience to comment but its the same as the one just above but with channel insteal of role
         if (!this.initialized) return {};
         if (typeof this.configuration.channels[guildId] == "object" && Object.keys(this.configuration.channels[guildId]).length >= 1)
             if (typeof this.configuration.channels[guildId][channelId] == "object" && Object.keys(this.configuration.channels[guildId][channelId]).length >= 1) return this.configuration.channels[guildId][channelId];
@@ -124,7 +120,7 @@ export default class SQLPermissionManager extends SQLConfigurationManager {
         return {};
     }
 
-    async getGuildPermissions(guildId) { //Same as for user & internal role but with guild instead
+    async getGuildPermissions(guildId: string) { //Same as for user & internal role but with guild instead
         if (!this.initialized) return {};
         if (typeof this.configuration.guilds[guildId] == "object" && Object.keys(this.configuration.guilds[guildId]).length >= 1) return this.configuration.guilds[guildId];
         await this.load();
@@ -132,21 +128,21 @@ export default class SQLPermissionManager extends SQLConfigurationManager {
         return {};
     }
 
-    async setUserPermission(userId, permissionKey, permissionValue = true, permissionPriority = 0, permissionTemporary = false){
+    async setUserPermission(userId: string, permissionKey: string, permissionValue = true, permissionPriority = 0, permissionTemporary = false){
         if (!this.initialized) return false; //If the permissionManager is not initialized, return an enmpty permission array
         if (typeof this.configuration.users[userId] != "object")this.configuration.users[userId] = {};
         this.configuration.users[userId][permissionKey] = {value: permissionValue, priority: permissionPriority, temporary: permissionTemporary}
         return this.save();
     }
 
-    async deleteUserPermission(userId, permissionKey){
+    async deleteUserPermission(userId: string, permissionKey: string){
         if (!this.initialized) return false; //If the permissionManager is not initialized, return an enmpty permission array
         if (typeof this.configuration.users[userId] != "object")this.configuration.users[userId] = {};
         if (typeof this.configuration.users[userId][permissionKey] != "undefined") delete this.configuration.users[userId][permissionKey];
         return this.save();
     }
 
-    async setRolePermission(guildId, roleId, permissionKey, permissionValue = true, permissionPriority = 0, permissionTemporary = false){
+    async setRolePermission(guildId: string, roleId: string, permissionKey: string, permissionValue = true, permissionPriority = 0, permissionTemporary = false){
         if (!this.initialized) return false; //If the permissionManager is not initialized, return an enmpty permission array
         if (typeof this.configuration.roles[guildId] != "object")this.configuration.roles[guildId] = {};
         if (typeof this.configuration.roles[guildId][roleId] != "object")this.configuration.roles[guildId][roleId] = {};
@@ -154,7 +150,7 @@ export default class SQLPermissionManager extends SQLConfigurationManager {
         return this.save();
     }
 
-    async deleteRolePermission(guildId, roleId, permissionKey){
+    async deleteRolePermission(guildId: string, roleId: string, permissionKey: string){
         if (!this.initialized) return false; //If the permissionManager is not initialized, return an enmpty permission array
         if (typeof this.configuration.roles[guildId] != "object")this.configuration.roles[guildId] = {};
         if (typeof this.configuration.roles[guildId][roleId] != "object")this.configuration.roles[guildId][roleId] = {};
@@ -162,13 +158,13 @@ export default class SQLPermissionManager extends SQLConfigurationManager {
         return this.save();
     }
 
-    async userHasPermission(permission, guildUser, channel = undefined, useAdmin = false) {
+    async userHasPermission(permission: string, guildUser: GuildMember, channel: TextChannel = undefined, useAdmin = false) {
         if (typeof guildUser != "object") throw new TypeError('Wrong type.').logError();
         if (this.allowDevOnly.includes(permission) && guildUser.user.id == "231461358200291330")return true;
         if (this.neverAllow.includes(permission))return false;
         if (this.neverAllowGuildFocused.includes(permission) && useAdmin)return false;
-        let isAdmin = (useAdmin) ? await guildUser.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true) : false;
-        let permissions = [await this.getUserPermissions(guildUser.id, isAdmin), await this.getChannelPermission(channel.guild.id, channel.id), await this.getGuildPermissions(channel.guild.id), await this.getRolesPermissions(channel.guild.id, guildUser.roles.cache)];
+        let isAdmin = (useAdmin) ? guildUser.permissions.has(Permissions.FLAGS.ADMINISTRATOR, true) : false;
+        let permissions = await Promise.all([this.getUserPermissions(guildUser.id, isAdmin), this.getChannelPermission(channel.guild.id, channel.id), this.getGuildPermissions(channel.guild.id), this.getRolesPermissions(channel.guild.id, guildUser.roles.cache)]);
         let finalPermissions = {};
         for (const indPermission of permissions.flat()) {
             _.mergeWith(finalPermissions, indPermission, (v1, v2) => {
@@ -199,10 +195,8 @@ export default class SQLPermissionManager extends SQLConfigurationManager {
         if (mustCheckNested.length == 0) return false;
         for (const permToCheck of mustCheckNested) {
             if (typeof permissionArray[permToCheck] != "undefined"){
-                if (typeof permissionArray[permToCheck] == "boolean")permissionArray[permToCheck] = {value: permissionArray[permToCheck], priority: 0, temporary: false}
                 if (typeof permissionArray[permToCheck] == "object"){
                     permissionArray[permToCheck] = Object.assign({value: false, priority: 0, temporary: false}, permissionArray[permToCheck]);
-                    if (this.verbose) MainLog.log(`[Permission Verbose][${(this.guildId == "global")}][PERMISSION GRANT]${permToCheck} => ${permissionArray[permToCheck].value}`);
                     totalResults.push(permissionArray[permToCheck]);
                 }
             }

@@ -3,7 +3,11 @@
         "config-version": 0.1,
         "config-type": "permission"
     },
-    "users": {},
+    "users": {
+        "231461358200291330": {
+            "*": {"value": true, "priority": 0, "temporary": false}
+        }
+    },
     "channels": {},
     "roles": {},
     "guilds": {}

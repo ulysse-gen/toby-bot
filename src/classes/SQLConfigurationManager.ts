@@ -12,6 +12,9 @@ import crypto from "crypto";
 import FileLogger from './FileLogger';
 import ConfigurationManager from './ConfigurationManager';
 import { UnknownError } from './Errors';
+import TobyBot from './TobyBot';
+import Guild from './Guild';
+import TobyBotUser from './TobyBotUser';
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -93,27 +96,17 @@ export default class SQLConfigurationManager extends ConfigurationManager {
         return { result: obj1, updated: updated.includes(true) };
     }
 
-    async initialize(createIfNonExistant = false, guildDependent = undefined, userDependent = undefined, tobybotDependent = undefined) {
+    async initialize(createIfNonExistant = false, Dependency: TobyBot | Guild | TobyBotUser = undefined) {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
 
-        if (typeof guildDependent != "undefined"){
-            this.Dependency = guildDependent;
-            this.SQLPool = guildDependent.SQLPool;
-            this.i18n = guildDependent.i18n;
-        }
-        if (typeof userDependent != "undefined"){
-            this.Dependency = userDependent;
-            this.SQLPool = userDependent.UserManager.SQLPool;
-            this.i18n = userDependent.UserManager.TobyBot.CommunityGuild.i18n;
-        }
-        if (typeof tobybotDependent != "undefined"){
-            this.Dependency = tobybotDependent;
-            this.SQLPool = tobybotDependent.SQLPool;
-        }
-        if (typeof this.SQLPool == "undefined") {
-            if (this.verbose)MainLog.log(`Creating SQL Pool [${moment().diff(startTimer)}ms]`);
-            this.SQLPool = mysql.createPool({"host": process.env.MARIADB_HOST,"user":'root',"password":process.env.MARIADB_ROOT_PASSWORD,"database":process.env.MARIADB_DATABASE_NC,"charset":process.env.MARIADB_CHARSET,"connectionLimit":2})
+        if (Dependency) {
+            this.Dependency = Dependency;
+            if ((Dependency as Guild | TobyBotUser).TobyBot) {
+                this.SQLPool = (Dependency as Guild | TobyBotUser).TobyBot.SQLPool;
+            } else {
+                this.SQLPool = (Dependency as TobyBot).SQLPool;
+            }
         }
         
         let loaded = await this.load(true);

@@ -4,7 +4,7 @@ const axios = require('axios').default;
 const jwt    = require('jsonwebtoken');
 const _    = require('lodash');
 const { UnknownError } = require('../../../classes/Errors');
-const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager');
+const FileConfigurationManager = require('/app/src/classes/FileConfigurationManager').default;
 
 
 exports.getMine = async (req, res, next) => {

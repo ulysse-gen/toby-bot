@@ -24,7 +24,6 @@ module.exports = {
         let embed = new MessageEmbed({
             title: CommandExecution.i18n.__(`command.${this.name}.embed.title`),
             color: CommandExecution.Guild.ConfigurationManager.get('style.colors.main'),
-            description: CommandExecution.i18n.__(`command.${this.name}.embed.description`, {userId: User.user.id}),
             author: {
                 name: User.user.tag,
                 iconURL: `${UserPFP}?size=64`

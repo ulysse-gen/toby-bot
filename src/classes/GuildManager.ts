@@ -3,6 +3,7 @@
 /////////////////////////////////
 
 //Importing classes
+import { Guild as DiscordGuild } from 'discord.js';
 import Guild from './Guild';
 import TobyBot from './TobyBot';
 
@@ -18,7 +19,7 @@ export default class GuildManager {
         this.guilds = {};
     }
 
-    async getGuildById(guildId) {
+    async getGuildById(guildId: string) {
         if (typeof this.guilds[guildId] != "undefined")return this.guilds[guildId];
         let guild = await this.TobyBot.client.guilds.fetch(guildId).catch(e=>undefined)
         if (typeof guild == "undefined" || guild.available == false)return undefined;
@@ -30,7 +31,7 @@ export default class GuildManager {
         return this.guilds[guildId];
     }
 
-    async getGuild(guild) {
+    async getGuild(guild: DiscordGuild) {
         if (typeof this.guilds[guild.id] == "object" && typeof this.guilds[guild.id].Guild != "undefined") return this.guilds[guild.id];
         this.guilds[guild.id] = new Guild(this, guild);
         await this.guilds[guild.id].initialize().catch(e => { 

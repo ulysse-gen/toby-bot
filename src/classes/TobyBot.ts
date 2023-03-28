@@ -59,7 +59,7 @@ export default class TobyBot {
     Console: Console;
     LifeMetric: Metric;
     AutoModeration: AutoModeration;
-    loggers: {commandExecution?:ChannelLogger};
+    loggers: {commandExecution?:ChannelLogger, DM?:ChannelLogger};
     ready: boolean;
     catchErrorsPreventClose: boolean;
     shuttingDown: boolean;
@@ -177,13 +177,13 @@ export default class TobyBot {
         this.LifeMetric.addEntry("ConfigurationManagerCreate");
         this.ConfigurationManager = new SQLConfigurationManager('tobybot', undefined, undefined, require('/app/configurations/defaults/GlobalConfiguration.json')); //Create the Global ConfigurationManager
         this.LifeMetric.addEntry("ConfigurationManagerInit");
-        await this.ConfigurationManager.initialize(true, undefined, undefined, this); //Init the Global ConfigurationManager
+        await this.ConfigurationManager.initialize(true, this); //Init the Global ConfigurationManager
 
         
         this.LifeMetric.addEntry("PermissionManagerCreate");
         this.PermissionManager = new SQLPermissionManager('tobybot', undefined, undefined, require('/app/configurations/defaults/GlobalPermissions.json'), true); //Create the Global PermissionManager
         this.LifeMetric.addEntry("PermissionManagerInit");
-        await this.PermissionManager.initialize(true, undefined, undefined, this); //Init the Global PermissionManager
+        await this.PermissionManager.initialize(true, this); //Init the Global PermissionManager
 
         this.LifeMetric.addEntry("CommandManagerCreate");
         this.CommandManager = new CommandManager(this); //Create the Global CommandManager

@@ -6,15 +6,15 @@
 //Importing NodeJS Modules
 import fs from 'fs';
 import { I18n } from 'i18n';
-import { Routes } from 'discord-api-types/v9';
 
 //Importing classes
 import Command from './Command';
 import CommandExecution from './CommandExecution';
 import FileLogger from './FileLogger';
-import { setLocale } from 'i18n';
 import TobyBot from './TobyBot';
 import { CommandExecutionError, FatalError } from './Errors';
+import { TobyBotCommandInteraction, TobyBotMessage } from '../interfaces/main';
+import { GuildMember } from 'discord.js';
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -30,7 +30,7 @@ export default class CommandManager {
     initialized: boolean;
     verbose: boolean;
     registerCommands: boolean;
-    constructor(TobyBot, commandsFolder = "/") {
+    constructor(TobyBot: TobyBot, commandsFolder = "/") {
         this.TobyBot = TobyBot;
 
         this.commandsFolder = commandsFolder; //The folder where the commands are (starting from ./src/commands)
@@ -110,11 +110,11 @@ export default class CommandManager {
         return true;
     }
 
-    fetch(command) {
+    fetch(command: string) {
         return this.commands.find(indCommand => (!(typeof indCommand.enabled == "boolean" && !indCommand.enabled) && (indCommand.name == command || (typeof indCommand.aliases == "object" && indCommand.aliases.includes(command)))) ? indCommand : undefined);
     }
 
-    async handle(message) {
+    async handle(message: TobyBotMessage) {
         if (process.env.TOBYBOT_API_ONLY === "true")return true;
         let prefixUsed = [this.TobyBot.ConfigurationManager.get('prefixes'), this.TobyBot.ConfigurationManager.get('prefix'), message.TobyBot.Guild.ConfigurationManager.get('prefixes'), message.TobyBot.Guild.ConfigurationManager.get('prefix')].flat().filter((item, pos, self) => self.indexOf(item) == pos).find(e => message.content.startsWith(e));
         if (!prefixUsed)return undefined;
@@ -127,9 +127,9 @@ export default class CommandManager {
         });
     }
 
-    async handleSlash(interaction) {
+    async handleSlash(interaction: TobyBotCommandInteraction) {
         let fetchedCommand = await this.fetch(interaction.commandName);
-        return new CommandExecution(interaction, fetchedCommand, interaction.options._hoistedOptions, this, true).execute().catch(e=>{
+        return new CommandExecution(interaction, fetchedCommand, interaction.options/*._hoistedOptions*/, this, true).execute().catch(e=>{
             //CommandExecution.Channel.send('An error occured executing the command. Reach <@231461358200291330> for help.'); //CommandExecution.Channel may not be defined at this point
             throw new CommandExecutionError(`Could not execute command.`, {cause: e, command: fetchedCommand}).logError();
         });
@@ -144,19 +144,19 @@ export default class CommandManager {
         return false;
     }
 
-    async hasPermission(CommandExecution) {
+    async hasPermission(CommandExecution: CommandExecution) {
         let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(CommandExecution.Command.permission, CommandExecution.GuildExecutor, CommandExecution.Channel);
         let guildPermissions = await CommandExecution.Trigger.TobyBot.Guild.PermissionManager.userHasPermission(CommandExecution.Command.permission, CommandExecution.GuildExecutor, CommandExecution.Channel, true);
         return (globalPermissions) ? true : guildPermissions;
     }
 
-    async hasPermissionPerContext(CommandExecution, permission) {
+    async hasPermissionPerContext(CommandExecution: CommandExecution, permission: string) {
         let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(permission, CommandExecution.GuildExecutor, CommandExecution.Channel);
         let guildPermissions = await CommandExecution.Trigger.TobyBot.Guild.PermissionManager.userHasPermission(permission, CommandExecution.GuildExecutor, CommandExecution.Channel, true);
         return (globalPermissions) ? true : guildPermissions;
     }
 
-    async userHasPermissionPerContext(CommandExecution, GuildUser, permission) {
+    async userHasPermissionPerContext(CommandExecution: CommandExecution, GuildUser: GuildMember, permission: string) {
         let globalPermissions = await CommandExecution.TobyBot.PermissionManager.userHasPermission(permission, GuildUser, CommandExecution.Channel);
         let guildPermissions = await CommandExecution.Trigger.TobyBot.Guild.PermissionManager.userHasPermission(permission, GuildUser, CommandExecution.Channel, true);
         return (globalPermissions) ? true : guildPermissions;

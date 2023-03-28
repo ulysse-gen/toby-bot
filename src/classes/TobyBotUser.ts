@@ -5,33 +5,21 @@
 import { User as DiscordUser } from "discord.js";
 import { SQLError } from "./Errors";
 
-//Importing NodeJS modules
-const mysql = require(`mysql`);
-const { I18n } = require('i18n');
-const urlExists = require('url-exists');
-
 //Importing classes
 import SQLConfigurationManager from "./SQLConfigurationManager";
 import TobyBot from "./TobyBot";
-import TobyBotUser from "./TobyBotUser";
-import UserManager from "./UserManager";
 
-export default class User {
+export default class TobyBotUser {
     TobyBot: TobyBot;
-    UserManager: UserManager;
     User: DiscordUser;
-    id: string;
     initialized: boolean;
     ConfigurationManager: SQLConfigurationManager;
     permissionLevel: number;
     numId: number;
     password: string;
-    avatar: string;
-    constructor(UserManager: UserManager, user: DiscordUser) {
-        this.TobyBot = UserManager.TobyBot;
-        this.UserManager = UserManager;
+    constructor(TobyBot: TobyBot, user: DiscordUser) {
+        this.TobyBot = TobyBot;
         this.User = user;
-        this.id = user.id;
 
         this.initialized = false;
     }
@@ -39,7 +27,7 @@ export default class User {
     apiVersion (){
         if (!this.initialized)return undefined;
         let apiVersion = {
-            id: this.id,
+            id: this.User.id,
             user: this.User,
             configuration: this.ConfigurationManager.configuration,
             permissionLevel: this.permissionLevel
@@ -50,23 +38,23 @@ export default class User {
     tokenVersion () {
         if (!this.initialized)return undefined;
         let tokenVersion = {
-            id: this.id,
+            id: this.User.id,
             permissionLevel: this.permissionLevel
         };
         return tokenVersion;
     }
 
-    async initialize(createIfNonExistant = false) {
+    async initialize(createIfNonExistant = false): Promise<TobyBotUser> {
         this.ConfigurationManager = new SQLConfigurationManager('users', `\`id\` = '${this.User.id}'`, undefined, require('/app/configurations/defaults/UserConfiguration.json'));
-        await this.ConfigurationManager.initialize(createIfNonExistant, this as unknown as TobyBotUser);
+        await this.ConfigurationManager.initialize(createIfNonExistant, this);
         await this.loadSQLContent();
         this.initialized = true;
-        return true;
+        return this;
     }
 
     async loadSQLContent(checkForUpdate = false) {
         return new Promise((res, _rej) => {
-            this.UserManager.SQLPool.query(`SELECT * FROM \`users\` WHERE id='${this.User.id}'`, (error, results) => {
+            this.TobyBot.SQLPool.query(`SELECT * FROM \`users\` WHERE id='${this.User.id}'`, (error, results) => {
                 if (error)throw error;
                 if (results.length != 0){
                     this.numId = results[0].numId;
@@ -82,10 +70,10 @@ export default class User {
 
     async createInSQL() {
         return new Promise((res, _rej) => {
-            this.UserManager.SQLPool.query(`SELECT * FROM \`users\` WHERE id='${this.User.id}'`, (error, results) => {
+            this.TobyBot.SQLPool.query(`SELECT * FROM \`users\` WHERE id='${this.User.id}'`, (error, results) => {
                 if (error)throw new SQLError('Could not select user from the database.', {cause: error}).logError();
                 if (results.length == 0){
-                    this.UserManager.SQLPool.query(`INSERT INTO \`users\` (id, configuration) VALUES (?,?)`, [this.User.id, JSON.stringify(require('/app/configurations/defaults/UserConfiguration.json'))], async (error, results) => {
+                    this.TobyBot.SQLPool.query(`INSERT INTO \`users\` (id, configuration) VALUES (?,?)`, [this.User.id, JSON.stringify(require('/app/configurations/defaults/UserConfiguration.json'))], async (error, results) => {
                         if (error)throw new SQLError('Could not insert user in the database.', {cause: error}).logError();
                         if (results.affectedRows != 1) throw new SQLError('Could not insert user in the database.').logError();
                         res(true);
@@ -97,13 +85,8 @@ export default class User {
         });
     }
 
-    async getUserPfp(publicOnly = false) {
-        if (typeof this.User.avatar == "undefined" && typeof this.avatar == "undefined") return `https://tobybot.xyz/assets/imgs/default_discord_avatar.png`;
-        return new Promise((res, _rej) => {
-            let urlBase = (this.avatar != null && !publicOnly) ? `https://cdn.discordapp.com/users/${this.User.id}/users/${this.User.id}/avatars/${this.avatar}` : `https://cdn.discordapp.com/avatars/${this.User.id}/${this.User.avatar}`;
-            urlExists(`${urlBase}.gif`, function (_err, exists) {
-                res((exists) ? `${urlBase}.gif` : `${urlBase}.webp`);
-            });
-        });
+    async getPfp() {
+        if (typeof this.User.avatar == "undefined") return `https://tobybot.xyz/assets/imgs/default_discord_avatar.png`;
+        return this.User.avatarURL();
     }
 }
