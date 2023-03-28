@@ -147,14 +147,14 @@
         },
         "autoModerationLogs": {
             "inChannel": {
-                "name": "Log moderation actions in channel",
-                "description": "Should we log the moderation actions in the logging channel?",
+                "name": "Log auto moderation actions in channel",
+                "description": "Should we log the auto moderation actions in the logging channel?",
                 "type": "Boolean",
                 "editable": true,
                 "default": false
             },
             "channel": {
-                "name": "Auto moderation logging channel",
+                "name": "Auto auto moderation logging channel",
                 "description": "What is the auto moderation logging channel?",
                 "type": "String(ChannelId)",
                 "editable": true,

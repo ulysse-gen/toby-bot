@@ -1,4 +1,10 @@
 {
+	"channelLogging": {
+		"commandExecution": {
+			"title": "Command execution",
+			"description": "{{{command}}}"
+		}
+	},
 	"command": {
 		"about": {
 			"name": "About",

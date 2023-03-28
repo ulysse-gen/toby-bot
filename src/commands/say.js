@@ -27,7 +27,9 @@ module.exports = {
             }
         }
 
-        CommandExecution.Trigger.delete();
+        CommandExecution.Trigger.delete().catch(e => {
+            /*Could not delete trigger, might be caused by calling this command from the API*/
+        });
         if (typeof CommandExecution.options.text != "string" || CommandExecution.options.text.replaceAll(' ', '') == "")return CommandExecution.returnErrorEmbed({ephemeral: true, slashOnly: true}, CommandExecution.i18n.__('command.say.error.textMustExistNotEmpty'));
 
         let channelToSendTo = (typeof CommandExecution.options.channel == "undefined") ? CommandExecution.Channel : await CommandExecution.Trigger.TobyBot.Guild.getChannelById(CommandExecution.options.channel);
