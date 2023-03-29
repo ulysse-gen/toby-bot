@@ -1,7 +1,8 @@
 {
     "system": {
         "config-version": 0.1,
-        "config-type": "global"
+        "config-type": "global",
+        "bot-version": "alpha4.0.0"
     },
     "appName": "Toby Bot",
     "token": "",

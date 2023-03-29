@@ -26,7 +26,7 @@ export default {
 
         if (typeof Guild == "undefined" || !Guild.initialized) return false;
 
-        if (Guild.ModerationManager.isUserPunished(GuildMember.guild.id, 'Mute'))await Guild.autoReMute(GuildMember);
+        if (await Guild.ModerationManager.isUserPunished(GuildMember.guild.id, 'Mute'))await Guild.autoReMute(GuildMember);
         
         //MainLog.log(`${GuildMember.user.username} just joined ${GuildMember.guild.name}`);
         return true;

@@ -13,6 +13,13 @@
             "type": "String",
             "editable": false,
             "default": "global"
+        },
+        "bot-version": {
+            "name": "Bot version",
+            "description": "The current bot version, for the bot to know when the version changed",
+            "type": "String",
+            "editable": false,
+            "default": "alpha4.0.0"
         }
     },
     "appName": {
