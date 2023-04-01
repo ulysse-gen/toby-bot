@@ -37,10 +37,16 @@
 		},
 		"inputToken": {
 			"couldNotLogin": "Could not login with the provided token.",
-			"question": "Please enter the bot token:"
+			"question": "Please enter the bot token:",
+			"defined": "Bot token defined."
 		},
 		"presence": {
 			"started": "Presence manager started on mode {{{mode}}}."
+		},
+		"inputCommunityGuild": {
+			"couldNotFetch": "Could not fetch the community guild.",
+			"question": "Please enter the community guild ID:",
+			"defined": "Community guild defined."
 		}
 	},
 	"channelLogging": {
