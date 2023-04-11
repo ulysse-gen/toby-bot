@@ -829,7 +829,7 @@
 				}
 			},
 			"error": {
-				"alreadyrunning": "command.russianroulette.error.alreadyrunning"
+				"alreadyrunning": "The Russian Roulette is already running."
 			}
 		},
 		"samplecommand": {
@@ -1757,6 +1757,7 @@
 			"joined": "You joined the Russian Roulette. May the odds be ever in your favor!",
 			"alreadyJoined": "You have already joined!",
 			"canceled": "Russian Roulette canceled.",
+			"joinCurrentlyPlaying": "The Russian Roulette is already playing, join before next time!",
 			"alive": {
 				"alive": "You are still alive!",
 				"eliminated": "I got bad news.."

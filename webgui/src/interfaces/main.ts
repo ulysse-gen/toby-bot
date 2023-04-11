@@ -178,3 +178,19 @@ export interface TobyBotCommand {
   permission: string;
   options: Array<any>;
 }
+
+export interface Command {
+  title: string;
+  description: string;
+  name: string;
+  aliases: Array<string>;
+  category: string;
+  enabled: boolean;
+  permission: string;
+  options: Array<{
+    type: number;
+    name: string;
+    description: string;
+    options: Array<any>;
+  }>;
+}

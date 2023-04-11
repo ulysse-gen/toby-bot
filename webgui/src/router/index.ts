@@ -6,6 +6,7 @@ import ConfigurationDocumentationView from "../views/ConfigurationDocumentationV
 import GuildConfigurationDocumentationView from "../views/GuildConfigurationDocumentationView.vue";
 import UserConfigurationDocumentationView from "../views/UserConfigurationDocumentationView.vue";
 import SystemConfigurationDocumentationView from "../views/SystemConfigurationDocumentationView.vue";
+import CommandDocumentationView from "../views/CommandDocumentationView.vue";
 import ManageUser from "../views/ManageUser.vue";
 import ManageGuild from "../views/ManageGuild.vue";
 import ManageSystem from "../views/ManageSystem.vue";
@@ -54,6 +55,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/documentation/configurations",
     name: "configuration documentation",
     component: ConfigurationDocumentationView,
+  },
+  {
+    path: "/documentation/commands",
+    name: "commands documentation",
+    component: CommandDocumentationView,
   },
   {
     path: "/documentation/configurations/guild",
