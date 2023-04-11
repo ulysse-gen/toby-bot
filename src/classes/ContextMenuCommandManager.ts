@@ -49,7 +49,7 @@ export default class ContextMenuCommandManager {
         this.initialized = false; //Set the main initialized variable to false
         this.verbose = false; //To turn on console verbose
 
-        this.registerCommands = true;
+        this.registerCommands = false;
     }
 
     async initialize() {

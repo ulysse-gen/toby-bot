@@ -38,7 +38,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 
 ### Fixes:
 
-- Nothin'
+- Fix and reactivate slash commands
 
 ## Environment variables:
 ```
