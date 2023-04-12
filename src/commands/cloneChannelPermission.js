@@ -6,7 +6,7 @@ module.exports = {
     name: "clonechannelpermissions",
     aliases: ["ccp"],
     permission: "command.clonechannelpermissions",
-    category: "fun",
+    category: "administration",
     enabled: true,
     async execute(CommandExecution) {
         if (typeof CommandExecution.options.sourcechannel == "undefined" || CommandExecution.options.sourcechannel.replaceAll(' ', '') == "")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noSourceChannel.title`), CommandExecution.i18n.__(`command.${this.name}.error.noSourceChannel.description`, {}));
