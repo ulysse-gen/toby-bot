@@ -47,7 +47,8 @@
 			"couldNotFetch": "Could not fetch the community guild.",
 			"question": "Please enter the community guild ID:",
 			"defined": "Community guild defined."
-		}
+		},
+		"joinedGuild": "bot.joinedGuild"
 	},
 	"channelLogging": {
 		"DM": {
@@ -64,6 +65,20 @@
 					"title": "Embeds",
 					"description": "{{{embeds}}}"
 				}
+			}
+		},
+		"updates": {
+			"major": {
+				"title": "New major update! Enjoy {{{ newVersion }}}",
+				"description": "```{{{ changelog }}}```"
+			},
+			"feature": {
+				"title": "New feature update! Enjoy {{{ newVersion }}}",
+				"description": "```{{{ changelog }}}```"
+			},
+			"bugfix": {
+				"title": "New bugfix update. May {{{ newVersion }}} be less buggy.",
+				"description": "```{{{ changelog }}}```"
 			}
 		}
 	},

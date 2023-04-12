@@ -59,7 +59,7 @@ export default class TobyBot {
     Console: Console;
     LifeMetric: Metric;
     AutoModeration: AutoModeration;
-    loggers: {commandExecution?:ChannelLogger, DM?:ChannelLogger};
+    loggers: {commandExecution?:ChannelLogger, DM?:ChannelLogger, updates?:ChannelLogger};
     ready: boolean;
     catchErrorsPreventClose: boolean;
     shuttingDown: boolean;
@@ -129,9 +129,9 @@ export default class TobyBot {
 
         MainLog.log(this.i18n.__('bot.starting', {version: this.PackageInformations.version.green}));
         this.LifeMetric.addEntry("ManagersInit");
-        await this.initManagers().catch(e => { throw e }); //Init the managers
+        await this.initManagers(); //Init the managers
         this.LifeMetric.addEntry("EventAttach");
-        await this.attachEvents().catch(e => { throw e }); //Attach events
+        await this.attachEvents(); //Attach events
         this.LifeMetric.addEntry("BotLogin");
         await this.attemptLogin();
     }
@@ -145,8 +145,9 @@ export default class TobyBot {
         this.LifeMetric.addEntry("botReady");
         this.LifeMetric.addEntry("LoggersInit");
         this.LifeMetric.addEntry("SweeperInit");
-        await this.initLoggers().catch(e => { throw e }); //Attach loggers
-        await this.finalTouch().catch(e => { throw e }); //Final touch
+        await this.initLoggers(); //Attach loggers
+        await this.finalTouch(); //Final touch
+        await this.checkForUpdate();
         this.ready = true;
     }
 
@@ -390,6 +391,35 @@ export default class TobyBot {
 
         MainLog.log(this.i18n.__('bot.shuttingDown'));
         process.exit(0);
+    }
+
+    async checkForUpdate() {
+        if (this.PackageInformations.version == this.ConfigurationManager.get("system.bot-version"))return;
+        const regex = /[^-0-9.,]+/;
+        const CurrentVersionSplit = this.PackageInformations.version.split('.').map(i => i.replace(regex, ''));
+        const PreviousVersionSplit = this.ConfigurationManager.get("system.bot-version").split('.').map(i => i.replace(regex, ''));
+        this.ConfigurationManager.set("system.bot-version", this.PackageInformations.version.replace('silent', ''));
+        if (!this.PackageInformations.changelog || this.PackageInformations.changelog.replace(' ', '') == "" || this.PackageInformations.changelog.replace(' ', '') == "silent")return;
+        if (process.env.NODE_ENV == "development")return;
+        if (CurrentVersionSplit[0] < PreviousVersionSplit[0])return; //Downgrade major version
+        if (CurrentVersionSplit[0] > PreviousVersionSplit[0]){ //New major update
+            if (!this.ConfigurationManager.get('logging.updates.inChannel'))return;
+            this.loggers.updates.logMainEmbed(this.i18n.__('channelLogging.updates.major.title', {newVersion: this.ConfigurationManager.get("system.bot-version")}), this.i18n.__('channelLogging.updates.major.description', {changelog: this.PackageInformations.changelog}));
+            return;
+        }
+        if (CurrentVersionSplit[1] < PreviousVersionSplit[1])return; //Downgrade feature update
+        if (CurrentVersionSplit[1] > PreviousVersionSplit[1]){ //New feature update
+            if (!this.ConfigurationManager.get('logging.updates.inChannel'))return;
+            this.loggers.updates.logMainEmbed(this.i18n.__('channelLogging.updates.feature.title', {newVersion: this.ConfigurationManager.get("system.bot-version")}), this.i18n.__('channelLogging.updates.feature.description', {changelog: this.PackageInformations.changelog}));
+            return;
+        }
+        if (CurrentVersionSplit[2] < PreviousVersionSplit[2])return; //Downgrade bugfix update
+        if (CurrentVersionSplit[2] > PreviousVersionSplit[2]){ //New bugfix update
+            if (!this.ConfigurationManager.get('logging.updates.inChannel'))return;
+            this.loggers.updates.logMainEmbed(this.i18n.__('channelLogging.updates.bugfix.title', {newVersion: this.ConfigurationManager.get("system.bot-version")}), this.i18n.__('channelLogging.updates.bugfix.description', {changelog: this.PackageInformations.changelog}));
+            return;
+        }
+        return; //Version unchanged
     }
 
     async loadSQLContent(checkForUpdate = false) {

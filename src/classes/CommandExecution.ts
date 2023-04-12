@@ -330,7 +330,8 @@ export default class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
-     async returnMainEmbed(options = {}, title, description = undefined, fields = []){
+     async returnMainEmbed(options = {} as ReturnOptions, title, description = undefined, fields = []){
+        options.ephemeral = false;
         return this.returnEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.main'));
     }
 
@@ -341,7 +342,8 @@ export default class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
-     async returnSuccessEmbed(options = {}, title, description = undefined, fields = []){
+     async returnSuccessEmbed(options = {} as ReturnOptions, title, description = undefined, fields = []){
+        options.ephemeral = false;
         return this.returnEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.success'));
     }
 
@@ -387,7 +389,8 @@ export default class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
-     async replyMainEmbed(options = {}, title, description = undefined, fields = []){
+     async replyMainEmbed(options = {} as ReturnOptions, title, description = undefined, fields = []){
+        options.ephemeral = false;
         return this.replyEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.main'));
     }
 
@@ -409,7 +412,8 @@ export default class CommandExecution {
      * @param description Description of the embed
      * @param fields Fields array of the embed
      */
-     async replySuccessEmbed(options = {}, title, description = undefined, fields = []){
+     async replySuccessEmbed(options = {} as ReturnOptions, title, description = undefined, fields = []){
+        options.ephemeral = false;
         return this.replyEmbed(options, title, description, fields, this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.success'));
     }
 

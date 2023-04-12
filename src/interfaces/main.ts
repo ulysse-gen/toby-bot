@@ -10,6 +10,7 @@ import TobyBotUser from "../classes/TobyBotUser";
 import User from "../classes/User";
 
 export interface PackageInformations {
+  changelog: string;
   name: string,
   version: string,
   apiVersion: string,

@@ -1,6 +1,7 @@
 {
   "name": "tobybot",
-  "version": "alpha4.0.0",
+  "version": "alpha4.1.0",
+  "changelog": "- New command CloneChannelPermission\n- Added changelog updates\n- Multiple bugfixes",
   "apiVersion": "1.0",
   "description": "Toby Bot Discord Utility Bot",
   "main": "index.js",

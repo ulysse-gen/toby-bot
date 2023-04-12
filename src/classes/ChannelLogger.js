@@ -45,7 +45,7 @@ module.exports = class ChannelLogger {
      */
      async logEmbed(title, description = undefined, fields = [], color = this.Guild.ConfigurationManager.get('style.colors.main')){
          if (!this.initialized)return false;
-         if (typeof content != "string" || content.replaceAll(" ", "") == "") throw new TypeError(`Title must be a non empty string.`).logError();
+         if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new TypeError(`Title must be a non empty string.`).logError();
         let embed = new MessageEmbed().setTitle(title).setColor(color);
         if (typeof description == "string" && description.replaceAll(' ', '') != "") embed.setDescription(description);
         if (typeof fields == "object" && fields.length > 0)

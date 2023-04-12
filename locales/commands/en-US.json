@@ -1137,6 +1137,33 @@
 		"embedfail": {
 			"name": "Embed fail",
 			"description": "Mock an embed fail. Be careful not to embed fail yourself!"
+		},
+		"clonechannelpermissions": {
+			"name": "Channel Permission Cloner",
+			"description": "Copy the permission from a channel and apply it to another.",
+			"option": {
+				"sourcechannel": {
+					"description": "The source channel."
+				},
+				"receivechannel": {
+					"description": "The receiving channel."
+				}
+			},
+			"reason": "CloneChannelPermission from {{{ userTag }}}({{{ userId }}})",
+			"channelPermissionCloned": {
+				"title": "Channel permissions cloned.",
+				"description": "Channel permissions successfully applied."
+			},
+			"error": {
+				"couldNotFetchSourceChannel": {
+					"title": "Could not fetch the source channel.",
+					"description": "Failed to fetch the source channel, fetch the ID or the name to make sure you typed it right."
+				},
+				"couldNotFetchReceiveChannel": {
+					"title": "Could not fetch the receiving channel.",
+					"description": "Failed to fetch the receiving channel, fetch the ID or the name to make sure you typed it right."
+				}
+			}
 		}
 	},
 	"commands": {
@@ -1724,6 +1751,18 @@
 				"target": {
 					"user": {
 						"description": "The user to show infos for."
+					}
+				}
+			},
+			"clonechannelpermissions": {
+				"sourcechannel": {
+					"string": {
+						"description": "The channel to copy permissions from. Use channel id, or tag the channel, or use the channel name."
+					}
+				},
+				"receivechannel": {
+					"string": {
+						"description": "The channel to paste permissions to. Use channel id, or tag the channel, or use the channel name."
 					}
 				}
 			}

@@ -13,7 +13,7 @@ export class DefaultError implements Error {
         this.name = "DefaultError";
         this.message = message;
         this.handled = false;
-        this.cause = options.cause;
+        this.cause = options?.cause;
     }
 
     setMessage(message: string): AnyError {

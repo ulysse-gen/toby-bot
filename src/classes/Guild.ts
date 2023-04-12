@@ -191,6 +191,16 @@ export default class Guild {
         return User;
     }
 
+    async getChannelFromArg(channelString, fallbackChannel = undefined) {
+        if (!channelString)return fallbackChannel;
+        let Channel = await this.Guild.channels.fetch().then(channels => channels.find(channel => channel.name.toLowerCase() === channelString.toLowerCase()));
+        if (channelString.startsWith('<#'))channelString = channelString.replace('<#', '').slice(0, -1);
+        if (typeof Channel == "undefined") Channel = await this.Guild.channels.fetch(channelString).catch(e => {
+            return fallbackChannel;
+        });
+        return Channel;
+    }
+
     async getRoleFromArg(roleSrting) {
         let role = await this.Guild.roles.fetch().then(roles => roles.find(role => role.name === roleSrting));
         if (roleSrting.startsWith('<@&'))roleSrting = roleSrting.replace('<@&', '').slice(0, -1);
