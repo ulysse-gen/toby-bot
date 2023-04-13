@@ -1149,11 +1149,6 @@
 					"description": "The receiving channel."
 				}
 			},
-			"reason": "CloneChannelPermissions from {{{ userTag }}}({{{ userId }}})",
-			"channelPermissionCloned": {
-				"title": "Channel permissions cloned.",
-				"description": "Channel permissions successfully pasted."
-			},
 			"error": {
 				"noSourceChannel": {
 					"title": "No source channel specified.",
@@ -1171,6 +1166,136 @@
 					"title": "Could not fetch the receiving channel.",
 					"description": "Failed to fetch the receiving channel, check the ID or the name to make sure you typed it right."
 				}
+			}
+		},
+		"channel": {
+			"name": "Channel edition",
+			"description": "Edit channels names, permissions. Join a channel or play music.",
+			"rename": {
+				"reason": "Channel renamed by {{{ userTag }}}({{{ userId }}})"
+			},
+			"error": {
+				"noChannel": {
+					"title": "No channel specified.",
+					"description": "You need to specify a channel. Use the channel name, ID or tag it using #ChannelName."
+				},
+				"noName": {
+					"title": "No name specified.",
+					"description": "Please specify a new name for the channel."
+				},
+				"noChannelNorInVC": {
+					"title": "No channel specified.",
+					"description": "You need to specify a channel or be in a channel. Use the channel name, ID or tag it using #ChannelName."
+				},
+				"notInVC": {
+					"title": "I am not currently in a VC.",
+					"description": "I need to be in a VC for this to work."
+				},
+				"noURL": {
+					"title": "No URL or query specified.",
+					"description": "Please specify a video URL or title for me to look for."
+				},
+				"couldNotFetchChannel": {
+					"title": "Could not fetch the channel.",
+					"description": "Could not fetch the channel. Please verify the name or the ID."
+				}
+			},
+			"clonePermissions": {
+				"reason": "Channel permissions cloned by {{{ userTag }}}({{{ userId }}})",
+				"success": {
+					"title": "Channel permissions cloned.",
+					"description": "Channel permissions successfully pasted."
+				}
+			},
+			"subcommand": {
+				"rename": {
+					"description": "Rename a channel.",
+					"channel": {
+						"description": "The channel to rename. Use channel id, channel name or #channel."
+					},
+					"name": {
+						"description": "The new name for the channel."
+					}
+				},
+				"clonepermissions": {
+					"description": "Clone permissions from a channel to another.",
+					"sourcechannel": {
+						"description": "The channel to copy permissions from. Use channel id, channel name or #channel."
+					},
+					"receivechannel": {
+						"description": "The channel to paste permissions to. Use channel id, channel name or #channel."
+					}
+				},
+				"savepermissions": {
+					"description": "Save channel permissions to reuse later.",
+					"channel": {
+						"description": "The channel to save permissions from. Use channel id, channel name or #channel."
+					},
+					"permissionsetname": {
+						"description": "The name for the permissions set to save."
+					}
+				},
+				"applypermissions": {
+					"description": "Apply a saved permissions set.",
+					"channel": {
+						"description": "The channel to paste permissions to. Use channel id, channel name or #channel."
+					},
+					"permissionsetname": {
+						"description": "The name of the permission set to copy from."
+					}
+				},
+				"listpermissions": {
+					"description": "List a channel's permissions.",
+					"channel": {
+						"description": "The channel to list permissions of. Use channel id, channel name or #channel."
+					}
+				},
+				"listsavedpermissions": {
+					"description": "Show a list of all the different channel permissions set."
+				},
+				"join": {
+					"description": "Make me join a VC.",
+					"channel": {
+						"description": "The channel to join. Use channel id, channel name or #channel."
+					}
+				},
+				"leave": {
+					"description": "Make me leave the VC."
+				},
+				"play": {
+					"description": "Make me play a youtube video.",
+					"url": {
+						"description": "The URL or query to get a video from youtube."
+					}
+				}
+			},
+			"join": {
+				"success": {
+					"title": "Successfully joined.",
+					"description": "Ill do my best not to quoicouflop."
+				}
+			},
+			"leave": {
+				"success": {
+					"title": "ok. i left.",
+					"description": "pff."
+				}
+			},
+			"play": {
+				"noVideoFound": {
+					"title": "No video found."
+				},
+				"success": {
+					"title": "Now playing!",
+					"description": "Currently playing {{{ title }}} ({{{ duration }}})"
+				},
+				"couldNotParseYoutubeURL": {
+					"title": "Could not find this video."
+				}
+			},
+			"notDone": {
+				"title": "This subcommand is not done yet.",
+				"description": "Sorry."
 			}
 		}
 	},
@@ -1762,15 +1887,83 @@
 					}
 				}
 			},
-			"clonechannelpermissions": {
-				"sourcechannel": {
-					"string": {
-						"description": "The channel to copy permissions from. Use channel id, channel name or #channel."
+			"channel": {
+				"rename": {
+					"channel": {
+						"description": "The channel to rename. Use channel id, channel name or #channel."
+					},
+					"name": {
+						"description": "The new name for the channel."
+					},
+					"subcommand": {
+						"description": "Rename a channel."
 					}
 				},
-				"receivechannel": {
-					"string": {
+				"clonepermissions": {
+					"sourcechannel": {
+						"description": "The channel to copy permissions from. Use channel id, channel name or #channel."
+					},
+					"receivechannel": {
 						"description": "The channel to paste permissions to. Use channel id, channel name or #channel."
+					},
+					"subcommand": {
+						"description": "Clone permissions from a channel to another."
+					}
+				},
+				"savepermissions": {
+					"channel": {
+						"description": "The channel to save permissions from. Use channel id, channel name or #channel."
+					},
+					"permissionsetname": {
+						"description": "The name for the permissions set to save."
+					},
+					"subcommand": {
+						"description": "Save channel permissions to reuse later."
+					}
+				},
+				"applypermissions": {
+					"channel": {
+						"description": "The channel to save permissions to. Use channel id, channel name or #channel."
+					},
+					"permissionsetname": {
+						"description": "The name of the permission set to copy from."
+					},
+					"subcommand": {
+						"description": "Apply a saved permissions set."
+					}
+				},
+				"listpermissions": {
+					"channel": {
+						"description": "The channel to list permissions of. Use channel id, channel name or #channel."
+					},
+					"subcommand": {
+						"description": "List a channel's permissions."
+					}
+				},
+				"listsavedpermissions": {
+					"subcommand": {
+						"description": "Show a list of all the different channel permissions set."
+					}
+				},
+				"join": {
+					"channel": {
+						"description": "The channel to join. Use channel id, channel name or #channel."
+					},
+					"subcommand": {
+						"description": "Make me join a VC."
+					}
+				},
+				"leave": {
+					"subcommand": {
+						"description": "Make me leave the VC."
+					}
+				},
+				"play": {
+					"url": {
+						"description": "The URL or query to get a video from youtube."
+					},
+					"subcommand": {
+						"description": "Make me play a youtube video."
 					}
 				}
 			}

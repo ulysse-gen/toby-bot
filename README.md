@@ -16,29 +16,26 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Configuration converter (switching between configuration version without losing data)
 - Saving configuration & permission history | Backup possible, no implemented user-wise yet
 - Auto moderation
-- Changelog of some kind (& update alert in channel?)
 - Command cooldowns
 - Reply function to fun commands (ex: embedfail, hi, slap, kiss, hug)
 - Make translations for fun commands (ex: embedfail, hi, slap, kiss, hug, welcome)
 - WebGUI Notifications
-- Channel tool (Rename, permission tool (copy paste perms, backup perms etc)) + commands for permission copy paste
+- Channel tool (rename, clonepermissions, savepermissions, applypermissions, listpermissions, listsavedpermissions, join, leave, play) -- savepermissions, applypermissions, listpermissions, listsavedpermissions to do
 
 ### Commands:
 
 - Autokick?
-- Choose
-- Coinflip
-- Invitelink?
+- Choose?
+- Coinflip?
 - Makeembed?
 - Remindme?
 - Rockpaperscissors?
 - Rolldice?
-- SendDM
 - Lockdown?
 
 ### Fixes:
 
-- Fix and reactivate slash commands
+- Fix and reactivate slash commands and context menu commands
 
 ## Environment variables:
 ```

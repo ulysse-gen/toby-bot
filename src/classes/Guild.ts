@@ -88,6 +88,13 @@ export default class Guild {
                 success: [],
                 trackerMessage: undefined,
                 fetchDone: false
+            },
+            vc: {
+                connection: undefined,
+                player: undefined,
+                ready: undefined,
+                playing: undefined,
+                NowPlaying: undefined
             }
         }
 
@@ -191,9 +198,9 @@ export default class Guild {
         return User;
     }
 
-    async getChannelFromArg(channelString, fallbackChannel = undefined) {
+    async getChannelFromArg(channelString, fallbackChannel = undefined, channelType = undefined) {
         if (!channelString)return fallbackChannel;
-        let Channel = await this.Guild.channels.fetch().then(channels => channels.find(channel => channel.name.toLowerCase() === channelString.toLowerCase()));
+        let Channel = await this.Guild.channels.fetch().then(channels => channels.find(channel => (channel.name.toLowerCase() === channelString.toLowerCase() && (typeof channelType && undefined || channel.type == channelType))));
         if (channelString.startsWith('<#'))channelString = channelString.replace('<#', '').slice(0, -1);
         if (typeof Channel == "undefined") Channel = await this.Guild.channels.fetch(channelString).catch(e => {
             return fallbackChannel;

@@ -5,7 +5,9 @@
       <span class="description">{{ data.description }}</span>
     </div>
     <div class="arguments">
-      {{ JSON.stringify(data.options) }}
+      <!--{{ JSON.stringify(data.options) }}-->Gotta do it but there will be the
+      commands args and all, trust me, at some point itll be done even tho im a
+      lazy ass guy
     </div>
   </div>
 </template>
