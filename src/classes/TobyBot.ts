@@ -404,25 +404,19 @@ export default class TobyBot {
         if (CurrentVersionSplit[0] < PreviousVersionSplit[0])return; //Downgrade major version
         if (CurrentVersionSplit[0] > PreviousVersionSplit[0]){ //New major update
             if (!this.ConfigurationManager.get('logging.updates.inChannel'))return;
-            this.loggers.updates.logMainEmbed(this.i18n.__('channelLogging.updates.major.title', {newVersion: this.ConfigurationManager.get("system.bot-version")}), this.i18n.__('channelLogging.updates.major.description', {changelog: this.PackageInformations.changelog})).then(message => {
-                if (message.channel.type === 'GUILD_NEWS')message.crossport();
-            });
+            this.loggers.updates.logMainEmbed(this.i18n.__('channelLogging.updates.major.title', {newVersion: this.ConfigurationManager.get("system.bot-version")}), this.i18n.__('channelLogging.updates.major.description', {changelog: this.PackageInformations.changelog}));
             return;
         }
         if (CurrentVersionSplit[1] < PreviousVersionSplit[1])return; //Downgrade feature update
         if (CurrentVersionSplit[1] > PreviousVersionSplit[1]){ //New feature update
             if (!this.ConfigurationManager.get('logging.updates.inChannel'))return;
-            this.loggers.updates.logMainEmbed(this.i18n.__('channelLogging.updates.feature.title', {newVersion: this.ConfigurationManager.get("system.bot-version")}), this.i18n.__('channelLogging.updates.feature.description', {changelog: this.PackageInformations.changelog})).then(message => {
-                if (message.channel.type === 'GUILD_NEWS')message.crossport();
-            });
+            this.loggers.updates.logMainEmbed(this.i18n.__('channelLogging.updates.feature.title', {newVersion: this.ConfigurationManager.get("system.bot-version")}), this.i18n.__('channelLogging.updates.feature.description', {changelog: this.PackageInformations.changelog}));
             return;
         }
         if (CurrentVersionSplit[2] < PreviousVersionSplit[2])return; //Downgrade bugfix update
         if (CurrentVersionSplit[2] > PreviousVersionSplit[2]){ //New bugfix update
             if (!this.ConfigurationManager.get('logging.updates.inChannel'))return;
-            this.loggers.updates.logMainEmbed(this.i18n.__('channelLogging.updates.bugfix.title', {newVersion: this.ConfigurationManager.get("system.bot-version")}), this.i18n.__('channelLogging.updates.bugfix.description', {changelog: this.PackageInformations.changelog})).then(message => {
-                if (message.channel.type === 'GUILD_NEWS')message.crossport();
-            });
+            this.loggers.updates.logMainEmbed(this.i18n.__('channelLogging.updates.bugfix.title', {newVersion: this.ConfigurationManager.get("system.bot-version")}), this.i18n.__('channelLogging.updates.bugfix.description', {changelog: this.PackageInformations.changelog}));
             return;
         }
         return; //Version unchanged

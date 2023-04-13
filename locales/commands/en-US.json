@@ -1155,6 +1155,14 @@
 				"description": "Channel permissions successfully pasted."
 			},
 			"error": {
+				"noSourceChannel": {
+					"title": "No source channel specified.",
+					"description": "You ned to specify a source channel. Use the channel name, ID or tag it using #ChannelName."
+				},
+				"noReceiveChannel": {
+					"title": "No source channel specified.",
+					"description": "You ned to specify a source channel. Use the channel name, ID or tag it using #ChannelName."
+				},
 				"couldNotFetchSourceChannel": {
 					"title": "Could not fetch the source channel.",
 					"description": "Failed to fetch the source channel, check the ID or the name to make sure you typed it right."
