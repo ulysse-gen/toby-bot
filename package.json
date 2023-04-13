@@ -1,7 +1,7 @@
 {
   "name": "tobybot",
-  "version": "alpha4.1.2",
-  "changelog": "- New command CloneChannelPermission\n- Added changelog updates\n- Multiple bugfixes\n- Fixed updates changelog not pushing to following channels.",
+  "version": "alpha4.1.3",
+  "changelog": "- Update command name CloneChannelPermission => CloneChannelPermissions\n- Fixed some languages typos & names\n- Actually fixed updates changelog not pushing to following channels.",
   "apiVersion": "1.0",
   "description": "Toby Bot Discord Utility Bot",
   "main": "index.js",

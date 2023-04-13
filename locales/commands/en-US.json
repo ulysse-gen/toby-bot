@@ -1139,7 +1139,7 @@
 			"description": "Mock an embed fail. Be careful not to embed fail yourself!"
 		},
 		"clonechannelpermissions": {
-			"name": "Channel Permission Cloner",
+			"name": "Channel Permissions Cloner",
 			"description": "Copy the permission from a channel and apply it to another.",
 			"option": {
 				"sourcechannel": {
@@ -1149,19 +1149,19 @@
 					"description": "The receiving channel."
 				}
 			},
-			"reason": "CloneChannelPermission from {{{ userTag }}}({{{ userId }}})",
+			"reason": "CloneChannelPermissions from {{{ userTag }}}({{{ userId }}})",
 			"channelPermissionCloned": {
 				"title": "Channel permissions cloned.",
-				"description": "Channel permissions successfully applied."
+				"description": "Channel permissions successfully pasted."
 			},
 			"error": {
 				"couldNotFetchSourceChannel": {
 					"title": "Could not fetch the source channel.",
-					"description": "Failed to fetch the source channel, fetch the ID or the name to make sure you typed it right."
+					"description": "Failed to fetch the source channel, check the ID or the name to make sure you typed it right."
 				},
 				"couldNotFetchReceiveChannel": {
 					"title": "Could not fetch the receiving channel.",
-					"description": "Failed to fetch the receiving channel, fetch the ID or the name to make sure you typed it right."
+					"description": "Failed to fetch the receiving channel, check the ID or the name to make sure you typed it right."
 				}
 			}
 		}
@@ -1757,12 +1757,12 @@
 			"clonechannelpermissions": {
 				"sourcechannel": {
 					"string": {
-						"description": "The channel to copy permissions from. Use channel id, or tag the channel, or use the channel name."
+						"description": "The channel to copy permissions from. Use channel id, channel name or #channel."
 					}
 				},
 				"receivechannel": {
 					"string": {
-						"description": "The channel to paste permissions to. Use channel id, or tag the channel, or use the channel name."
+						"description": "The channel to paste permissions to. Use channel id, channel name or #channel."
 					}
 				}
 			}

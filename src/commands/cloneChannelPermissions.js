@@ -4,7 +4,7 @@ const prettyMilliseconds = require("pretty-ms");
 
 module.exports = {
     name: "clonechannelpermissions",
-    aliases: ["ccp"],
+    aliases: ["ccp", "clonechannelpermission"],
     permission: "command.clonechannelpermissions",
     category: "administration",
     enabled: true,
