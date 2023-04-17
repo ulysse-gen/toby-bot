@@ -1,9 +1,11 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { joinVoiceChannel, VoiceConnectionStatus, createAudioPlayer, StreamType, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
+const { joinVoiceChannel, VoiceConnectionStatus, createAudioPlayer, StreamType, createAudioResource, AudioPlayerStatus, entersState } = require('@discordjs/voice');
 const { MessageEmbed } = require('discord.js');
 const prettyMilliseconds = require("pretty-ms");
 const ytdl = require('ytdl-core');
-const ytsearch = require( 'yt-search' )
+const ytsearch = require( 'yt-search' );
+const { MusicSubscription } = require('../classes/MusicSubscription');
+const { Track } = require('../classes/Track');
 
 /*
 channel rename <Channel> <NewName>
@@ -85,110 +87,98 @@ module.exports = {
                 guildId: channel.guild.id,
                 adapterCreator: channel.guild.voiceAdapterCreator,
             });
-            
-            CommandExecution.Guild.data.vc.connection = connection;
 
-            connection.on(VoiceConnectionStatus.Signalling, () => {
-                CommandExecution.Guild.data.vc.ready = false;
-            });
+            CommandExecution.Guild.MusicSubscription = new MusicSubscription(connection);
 
-            connection.on(VoiceConnectionStatus.Connecting, () => {
-                CommandExecution.Guild.data.vc.ready = false;
-            });
+            try {
+                await entersState(connection, VoiceConnectionStatus.Ready, 20e3);
+            } catch (error) {
+                return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.join.error.title`), CommandExecution.i18n.__(`command.${this.name}.join.error.description`));
+            }
 
-            connection.on(VoiceConnectionStatus.Ready, () => {
-                CommandExecution.Guild.data.vc.ready = true;
-                CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.join.success.title`), CommandExecution.i18n.__(`command.${this.name}.join.success.description`));
-            });
-
-            connection.on(VoiceConnectionStatus.Disconnected, () => {
-                if (CommandExecution.Guild.data.vc.ready == false){
-                    CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.join.error.title`), CommandExecution.i18n.__(`command.${this.name}.join.error.description`));
-                }
-                CommandExecution.Guild.data.vc.connection = undefined;
-                CommandExecution.Guild.data.vc.player = undefined;
-                CommandExecution.Guild.data.vc.ready = undefined;
-                CommandExecution.Guild.data.vc.playing = undefined;
-                CommandExecution.Guild.data.vc.NowPlaying = undefined;
-            });
-
-            connection.on(VoiceConnectionStatus.Destroyed, () => {
-                CommandExecution.Guild.data.vc.connection = undefined;
-                CommandExecution.Guild.data.vc.player = undefined;
-                CommandExecution.Guild.data.vc.ready = undefined;
-                CommandExecution.Guild.data.vc.playing = undefined;
-                CommandExecution.Guild.data.vc.NowPlaying = undefined;
-            });
-
-            return;
+            return CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.join.success.title`), CommandExecution.i18n.__(`command.${this.name}.join.success.description`));
         }
 
         if (CommandExecution.options.subCommand == "leave"){
-            if (!CommandExecution.Guild.data.vc.connection)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.notInVC.title`), CommandExecution.i18n.__(`command.${this.name}.error.notInVC.description`));
-            await CommandExecution.Guild.data.vc.connection.destroy();
-            CommandExecution.Guild.data.vc.connection = undefined;
-            CommandExecution.Guild.data.vc.player = undefined;
-            CommandExecution.Guild.data.vc.ready = undefined;
-            CommandExecution.Guild.data.vc.playing = undefined;
-            CommandExecution.Guild.data.vc.NowPlaying = undefined;
+            if (!CommandExecution.Guild.MusicSubscription)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.notInVC.title`), CommandExecution.i18n.__(`command.${this.name}.error.notInVC.description`));
+            await CommandExecution.Guild.MusicSubscription.voiceConnection.destroy();
+            delete CommandExecution.Guild.MusicSubscription;
             return CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.leave.success.title`), CommandExecution.i18n.__(`command.${this.name}.leave.success.description`));
+        }
+
+        if (CommandExecution.options.subCommand == "pause"){
+            if (!CommandExecution.Guild.MusicSubscription)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.notPlaying.title`), CommandExecution.i18n.__(`command.${this.name}.error.notPlaying.description`));
+            await CommandExecution.Guild.MusicSubscription.audioPlayer.pause();
+            return CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.pause.success.title`));
+        }
+
+        if (CommandExecution.options.subCommand == "resume"){
+            if (!CommandExecution.Guild.MusicSubscription)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.notPlaying.title`), CommandExecution.i18n.__(`command.${this.name}.error.notPlaying.description`));
+            await CommandExecution.Guild.MusicSubscription.audioPlayer.unpause();
+            return CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.resume.success.title`));
+        }
+
+        if (CommandExecution.options.subCommand == "clear"){
+            if (!CommandExecution.Guild.MusicSubscription)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.notPlaying.title`), CommandExecution.i18n.__(`command.${this.name}.error.notPlaying.description`));
+            CommandExecution.Guild.MusicSubscription.queue = [];
+            return CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.clear.success.title`));
+        }
+
+        if (CommandExecution.options.subCommand == "skip"){
+            if (!CommandExecution.Guild.MusicSubscription)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.notPlaying.title`), CommandExecution.i18n.__(`command.${this.name}.error.notPlaying.description`));
+            await CommandExecution.Guild.MusicSubscription.audioPlayer.stop();
+            return CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.skip.success.title`));
         }
 
         if (CommandExecution.options.subCommand == "play"){
             if (typeof CommandExecution.options.option1 == "undefined" || CommandExecution.options.option1.replaceAll(' ', '') == "")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noURL.title`), CommandExecution.i18n.__(`command.${this.name}.error.noURL.description`, {}));
-            if (!CommandExecution.Guild.data.vc.connection)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.notInVC.title`), CommandExecution.i18n.__(`command.${this.name}.error.notInVC.description`));
+            if (!CommandExecution.Guild.MusicSubscription){
+                if (!CommandExecution.GuildExecutor.voice.channel)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.notInVC.title`), CommandExecution.i18n.__(`command.${this.name}.error.notInVC.description`));
+                const connection = joinVoiceChannel({
+                    channelId: CommandExecution.GuildExecutor.voice.channel.id,
+                    guildId: CommandExecution.GuildExecutor.voice.channel.guild.id,
+                    adapterCreator: CommandExecution.GuildExecutor.voice.channel.guild.voiceAdapterCreator,
+                });
+    
+                CommandExecution.Guild.MusicSubscription = new MusicSubscription(connection);
+    
+                try {
+                    await entersState(connection, VoiceConnectionStatus.Ready, 20e3);
+                } catch (error) {
+                    return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.join.error.title`), CommandExecution.i18n.__(`command.${this.name}.join.error.description`));
+                }
+            }
 
             const URL = CommandExecution.options.option1;
-            const NowPlaying = undefined;
             if (!URL.startsWith('https://')){
                 if (typeof CommandExecution.options.option2 != undefined)URL += " " + CommandExecution.options.option2;
                 const results = await ytsearch(URL);
                 if (results.videos.length == 0)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.play.noVideoFound.title`), CommandExecution.i18n.__(`command.${this.name}.play.noVideoFound.description`));
-                NowPlaying = results.videos[0];
-                URL = NowPlaying.url;
-            } else {
-                const re = /(https?:\/\/)?(((m|www)\.)?(youtube(-nocookie)?|youtube.googleapis)\.com.*(v\/|v=|vi=|vi\/|e\/|embed\/|user\/.*\/u\/\d+\/)|youtu\.be\/)([_0-9a-z-]+)/i;
-                try {
-                    const id = URL.match(re)[7];
-                    const result = await ytsearch({videoId: id});
-                    NowPlaying = result;
-                } catch (e) {
-                    return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.play.couldNotParseYoutubeURL.title`), CommandExecution.i18n.__(`command.${this.name}.play.couldNotParseYoutubeURL.description`));
-                }
+                URL = results.videos[0].url;
             }
 
-            const stream = ytdl(URL, { filter : 'audioonly' });
+            const that = this;
 
-            const player = createAudioPlayer();
-
-            CommandExecution.Guild.data.vc.player = player;
-
-            const resource = createAudioResource(stream);
-
-            CommandExecution.Guild.data.vc.connection.subscribe(player);
-
-            player.play(resource);
-
-            player.on(AudioPlayerStatus.Buffering, () => {
-                CommandExecution.Guild.data.vc.playing = false;
-            });
-
-            player.on(AudioPlayerStatus.Playing, () => {
-                CommandExecution.Guild.data.vc.playing = true;
-                CommandExecution.Guild.data.vc.NowPlaying = NowPlaying;
-                return CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.play.success.title`), CommandExecution.i18n.__(`command.${this.name}.play.success.description`, {title: NowPlaying.title, duration: NowPlaying.duration.timestamp}));
-            });
-
-            player.on(AudioPlayerStatus.Idle, () => {
-                if (CommandExecution.Guild.data.vc.playing == false){
-                    CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.play.couldNotPlay.title`), CommandExecution.i18n.__(`command.${this.name}.play.couldNotPlay.description`));
-                    CommandExecution.Guild.data.vc.playing = undefined;
-                    CommandExecution.Guild.data.vc.NowPlaying = undefined;
-                    return;
-                }
-                CommandExecution.Guild.data.vc.playing = false;
-            });
-
+            try {
+                // Attempt to create a Track from the user's video URL
+                const track = await Track.from(URL, {
+                    onStart() {
+                        return CommandExecution.sendSuccessEmbed(CommandExecution.i18n.__(`command.${that.name}.play.success.title`), CommandExecution.i18n.__(`command.${that.name}.play.success.description`, {title: track.title, length: track.length, url: track.url}));
+                    },
+                    onFinish() {
+                        return CommandExecution.sendSuccessEmbed(CommandExecution.i18n.__(`command.${that.name}.play.finish.title`), CommandExecution.i18n.__(`command.${that.name}.play.finish.description`, {title: track.title, length: track.length, url: track.url}));
+                    },
+                    onError(error) {
+                        return CommandExecution.sendErrorEmbed(CommandExecution.i18n.__(`command.${that.name}.play.error.title`), CommandExecution.i18n.__(`command.${that.name}.play.error.descriptionWithTrack`, {title: track.title, length: track.length, url: track.url}));
+                    },
+                });
+                // Enqueue the track and reply a success message to the user
+                CommandExecution.Guild.MusicSubscription.enqueue(track);
+                await CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${that.name}.play.queued.title`), CommandExecution.i18n.__(`command.${that.name}.play.queued.description`, {title: track.title, length: track.length, url: track.url}));
+            } catch (error) {
+                console.warn(error);
+                await CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${that.name}.play.error.title`), CommandExecution.i18n.__(`command.${that.name}.play.error.descriptionWithoutTrack`));
+            }
             return;
         }
         
@@ -325,6 +315,34 @@ module.exports = {
             
             slashCommand.addSubcommand(subCommand => {
                 subCommand.setName('leave')
+                    .setDescription(i18n.__(`command.${this.name}.subcommand.${subCommand.name}.description`));
+
+                return subCommand;
+            });
+
+            slashCommand.addSubcommand(subCommand => {
+                subCommand.setName('pause')
+                    .setDescription(i18n.__(`command.${this.name}.subcommand.${subCommand.name}.description`));
+
+                return subCommand;
+            });
+
+            slashCommand.addSubcommand(subCommand => {
+                subCommand.setName('resume')
+                    .setDescription(i18n.__(`command.${this.name}.subcommand.${subCommand.name}.description`));
+
+                return subCommand;
+            });
+
+            slashCommand.addSubcommand(subCommand => {
+                subCommand.setName('skip')
+                    .setDescription(i18n.__(`command.${this.name}.subcommand.${subCommand.name}.description`));
+
+                return subCommand;
+            });
+
+            slashCommand.addSubcommand(subCommand => {
+                subCommand.setName('clear')
                     .setDescription(i18n.__(`command.${this.name}.subcommand.${subCommand.name}.description`));
 
                 return subCommand;

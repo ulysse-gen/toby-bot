@@ -17,6 +17,7 @@ import FileLogger from './FileLogger';
 import MessageManager from './MessageManager';
 import ChannelLogger from './ChannelLogger';
 import { SQLError } from './Errors';
+import { MusicSubscription } from './MusicSubscription';
 
 const MainLog = new FileLogger();
 const LocaleLog = new FileLogger('locale.log');
@@ -40,6 +41,7 @@ export default class Guild {
     ConfigurationManager: SQLConfigurationManager;
     PermissionManager: SQLPermissionManager;
     ModerationManager: ModerationManager;
+    MusicSubscription: MusicSubscription | undefined;
     lastUpdated: any;
     constructor(GuildManager: GuildManager, guild: DiscordGuild) {
         this.TobyBot = GuildManager.TobyBot;
@@ -89,13 +91,6 @@ export default class Guild {
                 trackerMessage: undefined,
                 fetchDone: false
             },
-            vc: {
-                connection: undefined,
-                player: undefined,
-                ready: undefined,
-                playing: undefined,
-                NowPlaying: undefined
-            }
         }
 
         this.loggers = {};

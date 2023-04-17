@@ -380,7 +380,12 @@ export default class TobyBot {
         await this.LifeMetric.end();
         try {
             if (typeof this.SQLLogger != "undefined")await this.SQLLogger.logShutdown(this, reason, exit);
-    
+            for (const guild in this.GuildManager.guilds) {
+                if (this.GuildManager.guilds[guild].MusicSubscription){
+                    this.GuildManager.guilds[guild].MusicSubscription.voiceConnection.destroy();
+                    delete this.GuildManager.guilds[guild].MusicSubscription;
+                }
+            }
             this.SQLPool.end();
             await this.SQLWatcher.EventWatcher.stop();
             await this.client.user.setPresence({status: "invisible"});

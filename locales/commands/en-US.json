@@ -1198,6 +1198,10 @@
 				"couldNotFetchChannel": {
 					"title": "Could not fetch the channel.",
 					"description": "Could not fetch the channel. Please verify the name or the ID."
+				},
+				"notPlaying": {
+					"title": "Not playing.",
+					"description": "I am not playing anything currently."
 				}
 			},
 			"clonePermissions": {
@@ -1260,25 +1264,37 @@
 					}
 				},
 				"leave": {
-					"description": "Make me leave the VC."
+					"description": "Make me leave the VC, also a way to stop the music."
 				},
 				"play": {
 					"description": "Make me play a youtube video.",
 					"url": {
 						"description": "The URL or query to get a video from youtube."
 					}
+				},
+				"pause": {
+					"description": "Pause the music."
+				},
+				"resume": {
+					"description": "Resume the music."
+				},
+				"skip": {
+					"description": "Skip the current music."
+				},
+				"clear": {
+					"description": "Clear the current queue."
 				}
 			},
 			"join": {
 				"success": {
-					"title": "Successfully joined.",
-					"description": "Ill do my best not to quoicouflop."
+					"title": "Channel joined.",
+					"description": "Hi friendos."
 				}
 			},
 			"leave": {
 				"success": {
-					"title": "ok. i left.",
-					"description": "pff."
+					"title": "Channel left.",
+					"description": "See you later."
 				}
 			},
 			"play": {
@@ -1287,15 +1303,48 @@
 				},
 				"success": {
 					"title": "Now playing!",
-					"description": "Currently playing {{{ title }}} ({{{ duration }}})"
+					"description": "Currently playing {{{ title }}} [{{{ length }}}s]"
 				},
 				"couldNotParseYoutubeURL": {
 					"title": "Could not find this video."
+				},
+				"error": {
+					"title": "Could not play.",
+					"descriptionWithTrack": "An error occured trying to play {{{ title }}}.",
+					"descriptionWithoutTrack": "An error occured trying to play the track."
+				},
+				"queued": {
+					"title": "Music queued!",
+					"description": "Successfully queued {{{ title }}} [{{{ length }}}s]."
+				},
+				"finish": {
+					"title": "Music finished.",
+					"description": "{{{ title }}} ended."
 				}
 			},
 			"notDone": {
 				"title": "This subcommand is not done yet.",
 				"description": "Sorry."
+			},
+			"pause": {
+				"success": {
+					"title": "Music paused."
+				}
+			},
+			"resume": {
+				"success": {
+					"title": "Music resumed."
+				}
+			},
+			"skip": {
+				"success": {
+					"title": "Music skipped."
+				}
+			},
+			"clear": {
+				"success": {
+					"title": "Queue cleared."
+				}
 			}
 		}
 	},
