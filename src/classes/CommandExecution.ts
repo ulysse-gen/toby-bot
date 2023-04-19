@@ -148,7 +148,7 @@ export default class CommandExecution {
                         if (["spoofChannel"].includes(modifierName)){
                             let checkPermission = await this.CommandManager.hasPermissionPerContext(this, `commands.spoofChannel`);
                             if (!checkPermission)return {permissionDenied: `commands.spoofChannel`};
-                            this.Channel = await this.Guild.getChannelById(modifierValue);
+                            this.Channel = await this.Guild.getChannelById(modifierValue) as TextChannel;
         
                             this.spoofing = true;
                             this.CommandOptions = this.CommandOptions.filter(function(e) { return e !== argument; });

@@ -59,7 +59,7 @@ export default class TobyBot {
     Console: Console;
     LifeMetric: Metric;
     AutoModeration: AutoModeration;
-    loggers: {commandExecution?:ChannelLogger, DM?:ChannelLogger, updates?:ChannelLogger};
+    loggers: {commandExecution?:ChannelLogger, DM?:ChannelLogger, updates?:ChannelLogger, moderationLogs?:ChannelLogger};
     ready: boolean;
     catchErrorsPreventClose: boolean;
     shuttingDown: boolean;

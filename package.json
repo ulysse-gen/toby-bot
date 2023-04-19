@@ -1,7 +1,7 @@
 {
   "name": "tobybot",
-  "version": "alpha4.3.0",
-  "changelog": "- Added new subcommands to the 'channel' command: (pause, resume, skip, clear)\n- Fixed a bug where the bot would recall that he joined the VC.\n!! Prolly have some bugs left on the 'channel' commands. Please report if you encounter any bugs, unexpected behaviors or missing language entries.",
+  "version": "alpha4.3.1",
+  "changelog": "- Switched some commands and classes to TypeScript.\n- Some fixes here and there",
   "apiVersion": "1.0",
   "description": "Toby Bot Discord Utility Bot",
   "main": "./src/index.ts",

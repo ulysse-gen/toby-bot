@@ -5,7 +5,7 @@
 //Importing NodeJS modules
 import { I18n } from 'i18n';
 import urlExists from 'url-exists';
-import { Permissions, Guild as DiscordGuild } from 'discord.js';
+import { Permissions, Guild as DiscordGuild, GuildMember, GuildChannel, Role } from 'discord.js';
 
 //Importing classes
 import TobyBot from './TobyBot';
@@ -28,7 +28,7 @@ export default class Guild {
     Guild: DiscordGuild;
     name: string;
     locale: string;
-    MessageManager: any;
+    MessageManager: MessageManager;
     i18n: I18n;
     waitingForMessageData: any;
     waitingForInteractionData: any;
@@ -176,12 +176,12 @@ export default class Guild {
         return true;
     }
 
-    async initLogger(loggerName, loggerConfig){
+    async initLogger(loggerName, loggerConfig): Promise<boolean>{
         this.loggers[loggerName] = new ChannelLogger(this, loggerConfig);
         return await this.loggers[loggerName].initialize();
     }
 
-    async getUserFromArg(userString, fallbackUser = undefined) {
+    async getUserFromArg(userString, fallbackUser = undefined): Promise<GuildMember> {
         if (!userString)return fallbackUser;
         let User = await this.Guild.members.fetch({
             force: true
@@ -193,7 +193,7 @@ export default class Guild {
         return User;
     }
 
-    async getChannelFromArg(channelString, fallbackChannel = undefined, channelType = undefined) {
+    async getChannelFromArg(channelString, fallbackChannel = undefined, channelType = undefined): Promise<GuildChannel> {
         if (!channelString)return fallbackChannel;
         let Channel = await this.Guild.channels.fetch().then(channels => channels.find(channel => (channel.name.toLowerCase() === channelString.toLowerCase() && (typeof channelType && undefined || channel.type == channelType))));
         if (channelString.startsWith('<#'))channelString = channelString.replace('<#', '').slice(0, -1);
@@ -203,7 +203,7 @@ export default class Guild {
         return Channel;
     }
 
-    async getRoleFromArg(roleSrting) {
+    async getRoleFromArg(roleSrting): Promise<Role> {
         let role = await this.Guild.roles.fetch().then(roles => roles.find(role => role.name === roleSrting));
         if (roleSrting.startsWith('<@&'))roleSrting = roleSrting.replace('<@&', '').slice(0, -1);
         if (typeof role == "undefined") role = await this.Guild.roles.fetch(roleSrting, {
@@ -214,29 +214,29 @@ export default class Guild {
         return role;
     }
 
-    async getMemberById(userId) {
+    async getMemberById(userId): Promise<GuildMember> {
         return this.Guild.members.fetch(userId).catch(e => undefined);
     }
 
-    async getChannelById(channelId) {
+    async getChannelById(channelId): Promise<GuildChannel> {
         return this.Guild.channels.fetch(channelId, {
             force: true
         }).catch(e => undefined);
     }
 
-    async getRoleById(roleId) {
+    async getRoleById(roleId): Promise<Role> {
         return this.Guild.roles.fetch(roleId, {
             force: true
         }).catch(e => undefined);
     }
 
-    async getMentionnableByArg(mentionnableId) {
+    async getMentionnableByArg(mentionnableId): Promise<GuildMember | Role | undefined> {
         let user = await this.getUserFromArg(mentionnableId);
         let role = await this.getRoleFromArg(mentionnableId);
         return (typeof user != "undefined") ? user : (typeof role != "undefined") ? role : undefined;
     }
 
-    async getMentionnableById(mentionnableId) {
+    async getMentionnableById(mentionnableId): Promise<GuildMember | Role | undefined> {
         let user = await this.getMemberById(mentionnableId);
         let role = await this.getRoleById(mentionnableId);
         return (typeof user != "undefined") ? user : (typeof role != "undefined") ? role : undefined;
@@ -260,7 +260,7 @@ export default class Guild {
         });
     }
 
-    async autoReMute(User) {
+    async autoReMute(User): Promise<boolean> {
         let MuteRole = await this.getRoleById(this.ConfigurationManager.get('moderation.muteRole'));
         if (typeof MuteRole == "undefined" || MuteRole == null) return false;
         return User.roles.add(MuteRole, this.i18n.__("moderation.auditLog.autoRemute")).then(()=>true).catch(()=>false);

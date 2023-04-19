@@ -1,11 +1,14 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { joinVoiceChannel, VoiceConnectionStatus, createAudioPlayer, StreamType, createAudioResource, AudioPlayerStatus, entersState } = require('@discordjs/voice');
-const { MessageEmbed } = require('discord.js');
-const prettyMilliseconds = require("pretty-ms");
-const ytdl = require('ytdl-core');
-const ytsearch = require( 'yt-search' );
-const { MusicSubscription } = require('../classes/MusicSubscription');
-const { Track } = require('../classes/Track');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { joinVoiceChannel, VoiceConnectionStatus, createAudioPlayer, StreamType, createAudioResource, AudioPlayerStatus, entersState, DiscordGatewayAdapterCreator } from '@discordjs/voice';
+import { MessageEmbed } from 'discord.js';
+import prettyMilliseconds from "pretty-ms";
+import ytdl from 'ytdl-core';
+import ytsearch from 'yt-search';
+import { MusicSubscription } from '../classes/MusicSubscription';
+import { Track } from '../classes/Track';
+import CommandExecution from '../classes/CommandExecution';
+import { I18n } from 'i18n';
+import Command from '../classes/Command';
 
 /*
 channel rename <Channel> <NewName>
@@ -25,7 +28,7 @@ module.exports = {
     permission: "command.channeledit",
     category: "administration",
     enabled: true,
-    async execute(CommandExecution) {
+    async execute(CommandExecution: CommandExecution) {
 
         if (CommandExecution.options.subCommand == "rename"){
             if (typeof CommandExecution.options.option1 == "undefined" || CommandExecution.options.option1.replaceAll(' ', '') == "")return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.noChannel.title`), CommandExecution.i18n.__(`command.${this.name}.error.noChannel.description`, {}));
@@ -36,7 +39,7 @@ module.exports = {
 
             if (!channel)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.couldNotFetchChannel.title`), CommandExecution.i18n.__(`command.${this.name}.error.couldNotFetchChannel.description`, {}));
 
-            await channel.setName(name, CommandExecution.i18n.__(`command.${this.name}.rename.reason`, {userTag: CommandExecution.RealUser.tag, userId: CommandExecution.RealUser.id}));
+            await channel.setName(name, CommandExecution.i18n.__(`command.${this.name}.rename.reason`, {userTag: CommandExecution.RealUser.User.tag, userId: CommandExecution.RealUser.id}));
 
             return CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.rename.success.title`), CommandExecution.i18n.__(`command.${this.name}.success.success.description`));
         }
@@ -53,7 +56,7 @@ module.exports = {
 
             if (sourceChannel.id === receiveChannel.id)return CommandExecution.returnErrorEmbed({}, CommandExecution.i18n.__(`command.${this.name}.error.sourceAndReceiveSameChannel.title`), CommandExecution.i18n.__(`command.${this.name}.error.sourceAndReceiveSameChannel.description`, {}));
 
-            await receiveChannel.permissionOverwrites.set(sourceChannel.permissionOverwrites.cache, CommandExecution.i18n.__(`command.${this.name}.clonePermissions.reason`, {userTag: CommandExecution.RealUser.tag, userId: CommandExecution.RealUser.id}));
+            await receiveChannel.permissionOverwrites.set(sourceChannel.permissionOverwrites.cache, CommandExecution.i18n.__(`command.${this.name}.clonePermissions.reason`, {userTag: CommandExecution.RealUser.User.tag, userId: CommandExecution.RealUser.id}));
 
             return CommandExecution.returnSuccessEmbed({}, CommandExecution.i18n.__(`command.${this.name}.clonePermissions.success.title`), CommandExecution.i18n.__(`command.${this.name}.clonePermissions.success.description`));
         }
@@ -85,7 +88,7 @@ module.exports = {
             const connection = joinVoiceChannel({
                 channelId: channel.id,
                 guildId: channel.guild.id,
-                adapterCreator: channel.guild.voiceAdapterCreator,
+                adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator,
             });
 
             CommandExecution.Guild.MusicSubscription = new MusicSubscription(connection);
@@ -137,7 +140,7 @@ module.exports = {
                 const connection = joinVoiceChannel({
                     channelId: CommandExecution.GuildExecutor.voice.channel.id,
                     guildId: CommandExecution.GuildExecutor.voice.channel.guild.id,
-                    adapterCreator: CommandExecution.GuildExecutor.voice.channel.guild.voiceAdapterCreator,
+                    adapterCreator: CommandExecution.GuildExecutor.voice.channel.guild.voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator,
                 });
     
                 CommandExecution.Guild.MusicSubscription = new MusicSubscription(connection);
@@ -149,7 +152,7 @@ module.exports = {
                 }
             }
 
-            const URL = CommandExecution.options.option1;
+            let URL = CommandExecution.options.option1;
             if (!URL.startsWith('https://')){
                 if (typeof CommandExecution.options.option2 != undefined)URL += " " + CommandExecution.options.option2;
                 const results = await ytsearch(URL);
@@ -184,20 +187,20 @@ module.exports = {
         
         return CommandExecution.returnErrorEmbed({ephemeral: null}, CommandExecution.i18n.__(`command.generic.unknownSubCommand.title`), CommandExecution.i18n.__(`command.generic.unknownSubCommand.description`, {command: this.name}));
     },
-    async optionsFromArgs (CommandExecution) {
-        var options = {};
+    async optionsFromArgs (CommandExecution: CommandExecution) {
+        var options: any = {};
         if (CommandExecution.CommandOptions.length == 0)return options;
         options.subCommand = CommandExecution.CommandOptions.shift();
         if (CommandExecution.CommandOptions.length != 0)options.option1 = CommandExecution.CommandOptions.shift();
         if (CommandExecution.CommandOptions.length != 0)options.option2 = CommandExecution.CommandOptions.join(' ');
         return options;
     },
-    async optionsFromSlashOptions (CommandExecution) {
-        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [val.name, val.value]));
+    async optionsFromSlashOptions (CommandExecution: CommandExecution) {
+        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [(val as {name: string, value: string}).name, (val as {name: string, value: any}).value]));
         if (typeof CommandExecution.Trigger.options._subcommand != "undefined" && CommandExecution.Trigger.options._subcommand != null) options.subCommand = CommandExecution.Trigger.options._subcommand;
         return options;
     },
-    makeSlashCommand(i18n) {
+    makeSlashCommand(i18n: I18n) {
         let slashCommand = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(i18n.__(`command.${this.name}.description`));
@@ -362,34 +365,5 @@ module.exports = {
             });
 
         return slashCommand;
-    },
-    async makeHelp(Command) {
-        let returnObject = {embeds: []};
-        let optionTypes = {
-            undefined: 'subcommand',
-            1: 'subcommand',
-            2: 'subcommand_group',
-            3: 'string',
-            4: 'integer',
-            5: 'boolean',
-            6: 'user',
-            7: 'channel',
-            8: 'role',
-            9: 'mentionnable',
-            10: 'number',
-            11: 'attachment',
-        }
-
-        let HelpEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
-        .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
-        .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`));
-
-        let slashCommandOptions = Command.slashCommand.options;
-        slashCommandOptions.forEach(option => {
-            HelpEmbed.addField(`${(option.options.required) ? '**[R]**' : '**[O]'}${option.name}**`, Command.CommandManager.i18n.__(`commands.generic.arg.fieldDescription`, {description: Command.CommandManager.i18n.__(`command.${this.name}.${optionTypes[option.options.type]}.${option.name}.description`), type: Command.CommandManager.i18n.__(`commands.generic.type.${optionTypes[option.options.type]}`)}));
-        })
-
-        returnObject.embeds.push(HelpEmbed) 
-        return returnObject;
     }
 }

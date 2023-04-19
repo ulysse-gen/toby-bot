@@ -1,3 +1,7 @@
+import { I18n } from "i18n";
+import CommandExecution from "./CommandExecution";
+import { GuildMember } from "discord.js";
+
 //Importing NodeJS modules
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const moment = require('moment');
@@ -5,8 +9,35 @@ const crypto = require('crypto');
 const rn = require("random-number");
 
 
-module.exports = class RussianRoulette {
-    constructor(CommandExecution) {
+export default class RussianRoulette {
+    CommandExecution: CommandExecution;
+    i18n: I18n;
+    id: string;
+    players: GuildMember[];
+    alivePlayers: GuildMember[];
+    deadPlayers: GuildMember[];
+    prize: any;
+    winners: number;
+    status: string;
+    startTimer: number;
+    roundTimer: number;
+    roundUserFetch: number;
+    timeElapsed: number;
+    intervals: any[];
+    timeouts: any[];
+    joinButton: any;
+    cancelButton: any;
+    stopButton: any;
+    aliveButton: any;
+    buttonSets: { prestart: any; joining: any; playing: any; canceled: any; };
+    messages: any[];
+    permissions: any;
+    startMessage: any;
+    cleared: any;
+    startingMessage: any;
+    roundMessage: any;
+    roundControl: number;
+    constructor(CommandExecution: CommandExecution) {
         this.CommandExecution = CommandExecution;
         this.i18n = CommandExecution.i18n;
 
@@ -56,9 +87,9 @@ module.exports = class RussianRoulette {
     }
 
     async start() {
-        let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.${this.status}.title`, {timer: this.startTimer/1000}))
+        let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.${this.status}.title`, {timer: (this.startTimer/1000).toString()}))
                                         .setColor(this.CommandExecution.Guild.ConfigurationManager.get('style.colors.main'))
-                                        .setDescription(this.i18n.__(`command.russianroulette.${this.status}.description`, {prize: (typeof this.prize != "undefined") ? `and try to win: **${this.prize.display}**` : ``, playerAmount: this.players.length, playerList: this.players.join(', ')}));
+                                        .setDescription(this.i18n.__(`command.russianroulette.${this.status}.description`, {prize: (typeof this.prize != "undefined") ? `and try to win: **${this.prize.display}**` : ``, playerAmount: this.players.length.toString(), playerList: this.players.join(', ')}));
     
         this.startMessage = await this.CommandExecution.sendRaw({embeds: [embed], components: (typeof this.buttonSets[this.status] != undefined) ? [this.buttonSets[this.status]] : []});
         if (this.startTimer >= 150000)this.startMessage.pin().catch(e=>{});
@@ -81,9 +112,9 @@ module.exports = class RussianRoulette {
     }
 
     async editMainMessage() {
-        let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.${this.status}.title`, {timer: (this.startTimer-this.timeElapsed)/1000}))
+        let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.${this.status}.title`, {timer: ((this.startTimer-this.timeElapsed)/1000).toString()}))
                                         .setColor(this.CommandExecution.Guild.ConfigurationManager.get('style.colors.main'))
-                                        .setDescription(this.i18n.__(`command.russianroulette.${this.status}.description`, {prize: (typeof this.prize != "undefined") ? `and try to win: **${this.prize.display}**` : ``, playerAmount: this.players.length, playerList: this.players.join(', ')}));
+                                        .setDescription(this.i18n.__(`command.russianroulette.${this.status}.description`, {prize: (typeof this.prize != "undefined") ? `and try to win: **${this.prize.display}**` : ``, playerAmount: this.players.length.toString(), playerList: this.players.join(', ')}));
     
 
         this.startMessage.edit({embeds: [embed], components: (typeof this.buttonSets[this.status] != undefined) ? [this.buttonSets[this.status]] : []}).catch(e=>{console.log(e)});
@@ -91,7 +122,7 @@ module.exports = class RussianRoulette {
     }
 
     async alertStartSoon() {
-        let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.startingsoon.title`, {timer: this.startTimer/1000}))
+        let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.startingsoon.title`, {timer: (this.startTimer/1000).toString()}))
                                         .setColor(this.CommandExecution.Guild.ConfigurationManager.get('style.colors.main'));
     
         await this.CommandExecution.sendRaw({embeds: [embed], components: (typeof this.buttonSets[this.status] != undefined) ? [this.buttonSets[this.status]] : []})
@@ -104,7 +135,7 @@ module.exports = class RussianRoulette {
         this.status = "playing";
         let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.starting.title`))
                                         .setColor(this.CommandExecution.Guild.ConfigurationManager.get('style.colors.main'))
-                                        .setDescription(this.i18n.__(`command.russianroulette.starting.description`, {prize: (typeof this.prize != "undefined") ? `and try to win: **${this.prize.display}**` : ``, playerAmount: this.players.length, playerList: this.players.join(', ')}));
+                                        .setDescription(this.i18n.__(`command.russianroulette.starting.description`, {prize: (typeof this.prize != "undefined") ? `and try to win: **${this.prize.display}**` : ``, playerAmount: this.players.length.toString(), playerList: this.players.join(', ')}));
     
         this.startingMessage = await this.CommandExecution.sendRaw({embeds: [embed], components: (typeof this.buttonSets[this.status] != undefined) ? [this.buttonSets[this.status]] : []});
         this.alivePlayers = this.players.map(p => p);
@@ -120,9 +151,9 @@ module.exports = class RussianRoulette {
             if (this.cleared)return true;
             return this.round();
         }else {
-            let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.finished.title${(this.alivePlayers.length != 1) ? '.multiple' : ''}`, {winnersAmount: this.alivePlayers.length, winnersId: `<@${this.alivePlayers.map(p => p.id).join('>, <@')}>`, winnersTag: `<@${this.alivePlayers.map(p => p.user.tag).join(', ')}>`}))
+            let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.finished.title${(this.alivePlayers.length != 1) ? '.multiple' : ''}`, {winnersAmount: this.alivePlayers.length.toString(), winnersId: `<@${this.alivePlayers.map(p => p.id).join('>, <@')}>`, winnersTag: `<@${this.alivePlayers.map(p => p.user.tag).join(', ')}>`}))
                 .setColor(this.CommandExecution.Guild.ConfigurationManager.get('style.colors.main'))
-                .setDescription(this.i18n.__(`command.russianroulette.finished.description${(this.alivePlayers.length != 1) ? '.multiple' : ''}`, {winnersAmount: this.alivePlayers.length, winnersId: `<@${this.alivePlayers.map(p => p.id).join('>, <@')}>`, winnersTag: `<@${this.alivePlayers.map(p => p.user.tag).join(', ')}>`}));
+                .setDescription(this.i18n.__(`command.russianroulette.finished.description${(this.alivePlayers.length != 1) ? '.multiple' : ''}`, {winnersAmount: this.alivePlayers.length.toString(), winnersId: `<@${this.alivePlayers.map(p => p.id).join('>, <@')}>`, winnersTag: `<@${this.alivePlayers.map(p => p.user.tag).join(', ')}>`}));
             await this.roundMessageAction({embeds: [embed]});
             if (this.prize && this.prize.run)for (const player of this.alivePlayers) {
                 this.prize.run(this, player).catch(e=>{});
@@ -139,17 +170,18 @@ module.exports = class RussianRoulette {
             integer: true
         })];
         if (this.roundControl >= this.roundUserFetch) {
-            let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.round.elimination.title`, {alivePlayersAmount: this.alivePlayers.length, playerTag: `${player.user.username}#${player.user.discriminator}`, playerId: player.id}))
+            let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.round.elimination.title`, {alivePlayersAmount: this.alivePlayers.length.toString(), playerTag: `${player.user.username}#${player.user.discriminator}`, playerId: player.id}))
                 .setColor(this.CommandExecution.Guild.ConfigurationManager.get('style.colors.main'))
-                .setDescription(this.i18n.__(`command.russianroulette.round.elimination.description`, {alivePlayersAmount: this.alivePlayers.length, playerTag: `${player.user.username}#${player.user.discriminator}`, playerId: player.id}));
+                .setDescription(this.i18n.__(`command.russianroulette.round.elimination.description`, {alivePlayersAmount: this.alivePlayers.length.toString(), playerTag: `${player.user.username}#${player.user.discriminator}`, playerId: player.id}));
             await this.roundMessageAction({embeds: [embed], components: (typeof this.buttonSets[this.status] != undefined) ? [this.buttonSets[this.status]] : []});
             this.alivePlayers = this.alivePlayers.filter(function(p) { return p.id !== player.id });
+            this.deadPlayers.push(player);
             await sleep(this.roundTimer / this.roundUserFetch);
             return player;
         }
-        let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.round.title`, {alivePlayersAmount: this.alivePlayers.length, playerTag: `${player.user.username}#${player.user.discriminator}`, playerId: player.id}))
+        let embed = new MessageEmbed().setTitle(this.i18n.__(`command.russianroulette.round.title`, {alivePlayersAmount: this.alivePlayers.length.toString(), playerTag: `${player.user.username}#${player.user.discriminator}`, playerId: player.id}))
             .setColor(this.CommandExecution.Guild.ConfigurationManager.get('style.colors.main'))
-            .setDescription(this.i18n.__(`command.russianroulette.round.description`, {alivePlayersAmount: this.alivePlayers.length, playerTag: `${player.user.username}#${player.user.discriminator}`, playerId: player.id}));
+            .setDescription(this.i18n.__(`command.russianroulette.round.description`, {alivePlayersAmount: this.alivePlayers.length.toString(), playerTag: `${player.user.username}#${player.user.discriminator}`, playerId: player.id}));
         await this.roundMessageAction({embeds: [embed], components: (typeof this.buttonSets[this.status] != undefined) ? [this.buttonSets[this.status]] : []});
         await sleep(this.roundTimer / this.roundUserFetch);
         if (this.cleared)return true;

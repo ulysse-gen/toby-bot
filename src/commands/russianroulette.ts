@@ -1,6 +1,8 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
-const RussianRoulette = require('/app/src/classes/RussianRoulette')
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { MessageEmbed } from 'discord.js';
+import CommandExecution from '../classes/CommandExecution';
+import { I18n } from 'i18n';
+import RussianRoulette from '../classes/RussianRoulette';
 
 module.exports = {
     name: "russianroulette",
@@ -15,7 +17,7 @@ module.exports = {
         join: "command.russianroulette.play",
         leave: "command.russianroulette.play",
     },
-    async execute(CommandExecution) {
+    async execute(CommandExecution: CommandExecution) {
         if (typeof CommandExecution.Guild.data.russianroulette.channels[CommandExecution.Channel.id] != "undefined")
             return CommandExecution.returnErrorEmbed({emphemeral: null}, CommandExecution.i18n.__(`command.${this.name}.error.alreadyrunning`));
 
@@ -24,8 +26,8 @@ module.exports = {
         CommandExecution.Guild.data.russianroulette.channels[CommandExecution.Channel.id].start();
         return true;
     },
-    async optionsFromArgs (CommandExecution) {
-        var options = {};
+    async optionsFromArgs (CommandExecution: CommandExecution) {
+        var options: any = {};
         if (CommandExecution.CommandOptions.length == 0)return options;
 
         CommandExecution.CommandOptions.forEach(async individualArgument => {
@@ -55,12 +57,12 @@ module.exports = {
         options.prize = CommandExecution.CommandOptions.pop();
         return options;
     },
-    async optionsFromSlashOptions (CommandExecution) {
-        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [val.name, val.value]));
+    async optionsFromSlashOptions (CommandExecution: CommandExecution) {
+        var options = Object.fromEntries(Object.entries(CommandExecution.CommandOptions).map(([key, val]) => [(val as {name: string, value: string}).name, (val as {name: string, value: any}).value]));
         if (typeof CommandExecution.Trigger.options._subcommand != "undefined" && CommandExecution.Trigger.options._subcommand != null) options.subCommand = CommandExecution.Trigger.options._subcommand;
         return options;
     },
-    makeSlashCommand(i18n) {
+    makeSlashCommand(i18n: I18n) {
         let slashCommand = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(i18n.__(`command.${this.name}.description`));
@@ -85,15 +87,5 @@ module.exports = {
 
 
         return slashCommand;
-    },
-    async makeHelp(Command) {
-        let returnObject = {embeds: []};
-        let tempEmbed = new MessageEmbed().setTitle(Command.CommandManager.i18n.__(`commands.generic.help.title`, {name: Command.name}))
-                                            .setColor(await Command.CommandManager.TobyBot.ConfigurationManager.get('style.colors.main'))
-                                            .setDescription(Command.CommandManager.i18n.__(`command.${this.name}.description`));
-       
-        returnObject.embeds.push(tempEmbed) 
-
-        return returnObject;
     }
 }
