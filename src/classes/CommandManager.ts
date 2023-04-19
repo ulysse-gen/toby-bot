@@ -64,8 +64,10 @@ export default class CommandManager {
             fs.readdir(`./src/commands${_this.commandsFolder}`, function (err, files) { //Read events folder
                 if (err) throw new FatalError(`Could not load commands.`, {cause: err}).logError();
                 files.forEach((file, index, array) => { //For each files in the folder
-                    if (file.endsWith('.js')) { //Only proceed if extension is .js
-                        let cmd = new Command(_this, require(`/app/src/commands${_this.commandsFolder}${file}`));
+                    if (file.endsWith('.js') || file.endsWith('.ts')) { //Only proceed if extension is .js or .ts
+                        let cmd = require(`/app/src/commands${_this.commandsFolder}${file}`);
+                        if (cmd.default)cmd = cmd.default;
+                        cmd = new Command(_this, cmd);
                         if (!_this.checkForExistence(cmd)) {
                             _this.commands.push(cmd);
                             if (typeof cmd.hasSlashCommand == "boolean" && cmd.hasSlashCommand)_this.slashCommands.push(cmd.slashCommand.toJSON());

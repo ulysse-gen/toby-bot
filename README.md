@@ -20,7 +20,7 @@ Toby Bot v4 is on its way, rebuilding from the ground up.
 - Reply function to fun commands (ex: embedfail, hi, slap, kiss, hug)
 - Make translations for fun commands (ex: embedfail, hi, slap, kiss, hug, welcome)
 - WebGUI Notifications
-- Channel tool (rename, clonepermissions, savepermissions, applypermissions, listpermissions, listsavedpermissions, join, leave, play) -- savepermissions, applypermissions, listpermissions, listsavedpermissions to do
+- Channel tool -- savepermissions, applypermissions, listpermissions, listsavedpermissions to do
 
 ### Commands:
 
