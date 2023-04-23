@@ -120,7 +120,7 @@ export default class Guild {
         return apiVersion;
     }
 
-    async initialize() {
+    async initialize(): Promise<void> {
         this.ConfigurationManager = new SQLConfigurationManager('guilds', `\`id\` = '${this.Guild.id}'`, undefined, JSON.stringify(require('/app/configurations/defaults/GuildConfiguration.json')));
         this.PermissionManager = new SQLPermissionManager('guilds', `\`id\` = '${this.Guild.id}'`, undefined, require('/app/configurations/defaults/GuildPermissions.json'));
         this.ModerationManager = new ModerationManager(this);
@@ -130,11 +130,11 @@ export default class Guild {
         await this.initLoggers();
         await this.loadSQLContent();
         this.initialized = true;
-        return true;
+        return;
     }
 
-    async loadSQLContent(checkForUpdate = false) {
-        return new Promise((res, _rej) => {
+    async loadSQLContent(checkForUpdate = false): Promise<void> {
+        return new Promise<void>((res, _rej) => {
             this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.Guild.id}'`, (error, results) => {
                 if (error)throw error;
                 if (results.length != 0){
@@ -144,36 +144,36 @@ export default class Guild {
                     if (checkForUpdate && JSON.stringify(this.ConfigurationManager.configuration) != results[0].configuration)this.ConfigurationManager.load();
                     if (checkForUpdate && JSON.stringify(this.PermissionManager.permissions) != results[0].permissions)this.PermissionManager.load();
                     this.i18n.setLocale(this.locale);
-                    res(true)
+                    res()
                 }
-                res(true);
+                res();
             });
         });
     }
 
-    async createInSQL() {
-        return new Promise((res, _rej) => {
+    async createInSQL(): Promise<void> {
+        return new Promise<void>((res, _rej) => {
             this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.Guild.id}'`, (error, results) => {
-                if (error)throw new SQLError(`Could not fetch the guild from the database.`, {cause: error}).logError();
+                if (error)throw new SQLError(`Could not fetch the guild from the database.`, {cause: error});
                 if (results.length == 0){
                     this.SQLPool.query(`INSERT INTO \`guilds\` (id, name, locale, configuration, permissions) VALUES (?,?,?,?,?)`, [this.Guild.id, this.Guild.name, this.Guild.preferredLocale, JSON.stringify(require('/app/configurations/defaults/GuildConfiguration.json')), JSON.stringify(require('/app/configurations/defaults/GuildPermissions.json'))], async (error, results) => {
-                        if (error)throw new SQLError(`Could not insert the guild in the database.`, {cause: error}).logError();
-                        if (results.affectedRows != 1) throw new SQLError(`Could not insert the guild in the database.`).logError();
-                        res(true);
+                        if (error)throw new SQLError(`Could not insert the guild in the database.`, {cause: error});
+                        if (results.affectedRows != 1) throw new SQLError(`Could not insert the guild in the database.`);
+                        res();
                     });
                 }else {
-                    res(true);
+                    res();
                 }
             });
         });
     }
 
-    async initLoggers(){
+    async initLoggers(): Promise<void>{
         for (const logger in this.ConfigurationManager.get('logging')) {
             this.loggers[logger] = new ChannelLogger(this, this.ConfigurationManager.get(`logging.${logger}`));
             await this.loggers[logger].initialize();
         }
-        return true;
+        return;
     }
 
     async initLogger(loggerName, loggerConfig): Promise<boolean>{

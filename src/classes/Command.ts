@@ -1,7 +1,8 @@
 import CommandManager from "./CommandManager";
 import TobyBot from "./TobyBot";
 
-const { MessageEmbed } = require('discord.js');
+import { MessageEmbed } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
 
 export default class Command {
     TobyBot: TobyBot;
@@ -17,9 +18,8 @@ export default class Command {
     execute: any;
     optionsFromArgs: any;
     optionsFromSlashOptions: any;
-    slashCommand: any;
+    slashCommand: SlashCommandBuilder;
     sendHelp: (channel: any) => Promise<any>;
-    hasSlashCommand: any;
     constructor(CommandManager, command) {
         this.TobyBot = CommandManager.TobyBot;
         this.CommandManager = CommandManager;
@@ -61,16 +61,14 @@ export default class Command {
 
             this.slashCommand.options.forEach(option => {
                 let subOptionDescription = ``;
-                if (option.options)option.options.forEach(subOption => {
-                    subOptionDescription += this.CommandManager.i18n.__(`commandsHelp.subArg.fieldTitle`, {name: subOption.name, required: (subOption.required) ? '[R]' : '[O]', description: this.CommandManager.i18n.__(`commandsHelp.command.${this.name}.${option.name}.${subOption.name}.description`), type: this.CommandManager.i18n.__(`commandsHelp.generic.type.${optionTypes[subOption.type]}`)});
-                    subOptionDescription += this.CommandManager.i18n.__(`commandsHelp.subArg.fieldDescription`, {name: subOption.name, required: (subOption.required) ? '[R]' : '[O]', description: this.CommandManager.i18n.__(`commandsHelp.command.${this.name}.${option.name}.${subOption.name}.description`), type: this.CommandManager.i18n.__(`commandsHelp.generic.type.${optionTypes[subOption.type]}`)});
+                if ((option as any).options)(option as any).options.forEach(subOption => {
+                    subOptionDescription += this.CommandManager.i18n.__(`commandsHelp.subArg.fieldTitle`, {name: subOption.name, required: (subOption.required) ? '[R]' : '[O]', description: this.CommandManager.i18n.__(`commandsHelp.command.${this.name}.${(option as any).name}.${subOption.name}.description`), type: this.CommandManager.i18n.__(`commandsHelp.generic.type.${optionTypes[subOption.type]}`)});
+                    subOptionDescription += this.CommandManager.i18n.__(`commandsHelp.subArg.fieldDescription`, {name: subOption.name, required: (subOption.required) ? '[R]' : '[O]', description: this.CommandManager.i18n.__(`commandsHelp.command.${this.name}.${(option as any).name}.${subOption.name}.description`), type: this.CommandManager.i18n.__(`commandsHelp.generic.type.${optionTypes[subOption.type]}`)});
                 })
-                HelpEmbed.addField(this.CommandManager.i18n.__(`commandsHelp.arg.fieldTitle`, {name: option.name, required: (!option.type) ? '' : (option.required) ? '[R]' : '[O]', description: this.CommandManager.i18n.__(`commandsHelp.command.${this.name}.${option.name}.${optionTypes[option.type]}.description`), type: this.CommandManager.i18n.__(`commandsHelp.generic.type.${optionTypes[option.type]}`)}), this.CommandManager.i18n.__(`commandsHelp.arg.fieldDescription`, {description: this.CommandManager.i18n.__(`commandsHelp.command.${this.name}.${option.name}.${optionTypes[option.type]}.description`), type: this.CommandManager.i18n.__(`commandsHelp.generic.type.${optionTypes[option.type]}`)}) + subOptionDescription)
+                HelpEmbed.addField(this.CommandManager.i18n.__(`commandsHelp.arg.fieldTitle`, {name: (option as any).name, required: (!(option as any).type) ? '' : ((option as any).required) ? '[R]' : '[O]', description: this.CommandManager.i18n.__(`commandsHelp.command.${this.name}.${(option as any).name}.${optionTypes[(option as any).type]}.description`), type: this.CommandManager.i18n.__(`commandsHelp.generic.type.${optionTypes[(option as any).type]}`)}), this.CommandManager.i18n.__(`commandsHelp.arg.fieldDescription`, {description: this.CommandManager.i18n.__(`commandsHelp.command.${this.name}.${(option as any).name}.${optionTypes[(option as any).type]}.description`), type: this.CommandManager.i18n.__(`commandsHelp.generic.type.${optionTypes[(option as any).type]}`)}) + subOptionDescription)
             })
             return channel.send({embeds: [HelpEmbed]})
         };
-
-        this.hasSlashCommand = (typeof this.hasSlashCommand == "boolean") ? this.hasSlashCommand : false;
     }
 
     apiVersion (){

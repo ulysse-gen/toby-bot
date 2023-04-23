@@ -14,7 +14,8 @@ import FileLogger from './FileLogger';
 import TobyBot from './TobyBot';
 import { CommandExecutionError, FatalError } from './Errors';
 import { TobyBotCommandInteraction, TobyBotMessage } from '../interfaces/main';
-import { GuildMember } from 'discord.js';
+import { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v9';
+import { Collection, GuildMember } from 'discord.js';
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -24,8 +25,8 @@ const LocaleLog = new FileLogger('locale.log');
 export default class CommandManager {
     TobyBot: TobyBot;
     commandsFolder: string;
-    commands: Command[];
-    slashCommands: any[];
+    commands: Collection<string, Command>;
+    slashCommands: Collection<string, RESTPostAPIApplicationCommandsJSONBody>;
     i18n: I18n;
     initialized: boolean;
     verbose: boolean;
@@ -34,8 +35,8 @@ export default class CommandManager {
         this.TobyBot = TobyBot;
 
         this.commandsFolder = commandsFolder; //The folder where the commands are (starting from ./src/commands)
-        this.commands = []; //The main commands array
-        this.slashCommands = []; //The main commands array
+        this.commands = new Collection<string, Command>; //The main commands array
+        this.slashCommands = new Collection<string, RESTPostAPIApplicationCommandsJSONBody>; //The main commands array
 
         this.i18n = new I18n({
             locales: ['en-US','fr-FR'],
@@ -67,10 +68,10 @@ export default class CommandManager {
                     if (file.endsWith('.js') || file.endsWith('.ts')) { //Only proceed if extension is .js or .ts
                         let cmd = require(`/app/src/commands${_this.commandsFolder}${file}`);
                         if (cmd.default)cmd = cmd.default;
-                        cmd = new Command(_this, cmd);
+                        const command = new Command(_this, cmd);
                         if (!_this.checkForExistence(cmd)) {
-                            _this.commands.push(cmd);
-                            if (typeof cmd.hasSlashCommand == "boolean" && cmd.hasSlashCommand)_this.slashCommands.push(cmd.slashCommand.toJSON());
+                            _this.commands.set(command.name, command);
+                            if (command.slashCommand)_this.slashCommands.set(command.name, command.slashCommand.toJSON())
                         }
                     }
                     if (index === array.length -1) res();
@@ -112,8 +113,11 @@ export default class CommandManager {
         return true;
     }
 
-    fetch(command: string) {
-        return this.commands.find(indCommand => (!(typeof indCommand.enabled == "boolean" && !indCommand.enabled) && (indCommand.name == command || (typeof indCommand.aliases == "object" && indCommand.aliases.includes(command)))) ? indCommand : undefined);
+    fetch(command: string): Command {
+        return this.commands.find((indCommand) => {
+            if (typeof indCommand.enabled == "boolean" && !indCommand.enabled)return false;
+            if (indCommand.name == command || (indCommand.aliases && Array.isArray(indCommand.aliases) && indCommand.aliases.includes(command)))return true;
+        }) || undefined;
     }
 
     async handle(message: TobyBotMessage) {
@@ -138,12 +142,8 @@ export default class CommandManager {
     }
 
     checkForExistence(command) { //Check if a command exists (command must be a Command object)
-        for (const indCommand of this.commands) {
-            if (indCommand.name == command.name) return true; //Same Name
-            if (indCommand.aliases.includes(command.name)) return true; //Name is already used as an alias on another command
-            if (indCommand.aliases.some(r => command.aliases.indexOf(r) >= 0)) return true; //An alias is already used on another command
-        }
-        return false;
+        const FoundCommand = this.fetch(command);
+        return (FoundCommand instanceof Command) ? true : false;
     }
 
     async hasPermission(CommandExecution: CommandExecution) {

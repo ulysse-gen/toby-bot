@@ -367,6 +367,12 @@
 			"mainEmbed": {
 				"title": "Help",
 				"description": "Please execute `help help` to see how to get more help.\n**Here is the list of the {{{amount}}} commands available:** \n{{{list}}}"
+			},
+			"error": {
+				"commandNotFound": {
+					"title": "Command not found.",
+					"description": "Could not find a command with this query."
+				}
 			}
 		},
 		"lastmessages": {
