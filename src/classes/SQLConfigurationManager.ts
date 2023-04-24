@@ -11,7 +11,7 @@ import crypto from "crypto";
 //Importing classes
 import FileLogger from './FileLogger';
 import ConfigurationManager from './ConfigurationManager';
-import { UnknownError } from './Errors';
+import { SQLError, UnknownError } from './Errors';
 import TobyBot from './TobyBot';
 import Guild from './Guild';
 import TobyBotUser from './TobyBotUser';
@@ -116,7 +116,7 @@ export default class SQLConfigurationManager extends ConfigurationManager {
             if (typeof this.Dependency != "undefined"){
                 await this.Dependency.createInSQL().then(async () => {
                     await this.load(true).then(loaded => {
-                        if (!loaded) throw new UnknownError('Could not load configuration').logError();
+                        if (!loaded) throw new UnknownError('Could not load configuration');
                     });
                 });
             }
@@ -147,7 +147,7 @@ export default class SQLConfigurationManager extends ConfigurationManager {
     async saveBackup(backupName) {
         let entryBackup = await new Promise((res, rej) => {
             this.SQLPool.query(`SELECT backups FROM ${this.SQLTable} WHERE ${this.SQLWhere}`, (error, results) => {
-                if (error) throw error;
+                if (error) throw new SQLError('Could not fetch configuration backup from the database.');
                 if (results.length == 0)return res([]);
                 res(JSON.parse(results[0].backups));
             });
@@ -160,7 +160,7 @@ export default class SQLConfigurationManager extends ConfigurationManager {
         }
         return new Promise((res, _rej) => {
             this.SQLPool.query(`UPDATE \`${this.SQLTable}\` SET \`backups\`=? WHERE ${this.SQLWhere}`, [entryBackup], async function (error, results, _fields) {
-                if (error) throw error;
+                if (error) throw new SQLError('Could not send configuration backup to the database.');
                 res(true);
             });
         });
@@ -175,7 +175,7 @@ export default class SQLConfigurationManager extends ConfigurationManager {
         if (this.verbose) MainLog.log(`Saving configuration. [${this.SQLTable} => ${this.SQLWhere}][${moment().diff(startTimer)}ms]`);
         return new Promise((res, _rej) => {
             this.SQLPool.query(`UPDATE \`${this.SQLTable}\` SET \`${this.SQLcolumn}\`=? WHERE ${this.SQLWhere}`, [JSON.stringify(this.configuration)], async function (error, results, _fields) {
-                if (error) throw error;
+                if (error) throw new SQLError('Could not save configuration to the database.');
                 if (typeof results == "undefined" || results.affectedRows != 1) {
                     if (_this.verbose) MainLog.log(`Could not save configuration. [${_this.SQLTable} => ${_this.SQLWhere}][${moment().diff(startTimer)}ms]`);
                     return res(false);
@@ -198,7 +198,7 @@ export default class SQLConfigurationManager extends ConfigurationManager {
 
         return new Promise(async (res, rej) => {
             this.SQLPool.query(`SELECT * FROM ${this.SQLTable} WHERE ${this.SQLWhere}`, async (error, results) => {
-                if (error) throw error;
+                if (error) throw new SQLError('Could not load configuration from the database.');
                 if (results.length == 0)return res(false);
 
                 try {

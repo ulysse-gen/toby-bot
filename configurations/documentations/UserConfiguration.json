@@ -16,10 +16,17 @@
         },
         "setup-done": {
             "name": "Setup done",
-            "description": "If the server setup is done",
+            "description": "If the user setup is done",
             "type": "Boolean",
             "editable": false,
             "default": false
+        },
+        "setup-state": {
+            "name": "Setup state",
+            "description": "The current step for the user setup",
+            "type": "number",
+            "editable": false,
+            "default": 0
         }
     },
     "locale": {

@@ -310,7 +310,7 @@ export default class CommandExecution {
      * @param color Color of the embed
      */
      async returnEmbed(options = {}, title, description = undefined, fields = [], color = this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.main')){
-        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new TypeError('Title must be a non empty string.').logError();
+        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new TypeError('Title must be a non empty string.');
         var returnOptions = Object.assign({ephemeral: true, slashOnly: false, followUpIfReturned: false}, options) as ReturnOptions;
         if (returnOptions.slashOnly && !this.IsSlashCommand)return true;
         let embed = new MessageEmbed().setTitle(title).setColor(color);
@@ -436,7 +436,7 @@ export default class CommandExecution {
      * @param color Color of the embed
      */
      async sendEmbed(title, description = undefined, fields = [], color = this.Trigger.TobyBot.Guild.ConfigurationManager.get('style.colors.main')){
-        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new TypeError('Title must be a non empty string.').logError();
+        if (typeof title != "string" || title.replaceAll(" ", "") == "") throw new TypeError('Title must be a non empty string.');
         let embed = new MessageEmbed().setTitle(title).setColor(color);
         if (typeof description == "string" && description.replaceAll(' ', '') != "") embed.setDescription(description);
         if (typeof fields == "object" && fields.length > 0)

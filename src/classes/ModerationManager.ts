@@ -263,7 +263,7 @@ export default class ModerationManager {
         let _this = this;
         return new Promise((res, _rej) => {
             _this.Guild.SQLPool.query(`SELECT * FROM \`moderation\` WHERE \`userId\`='${PunishedId}' AND \`type\`='${type}' AND \`guildId\`='${this.Guild.Guild.id}' AND (\`status\`='active' OR \`status\`='indefinite')`, async (error, results) => {
-                if (error) throw new SQLError('Could not fetch user pinishments.', {cause: error}).logError();
+                if (error) throw new SQLError('Could not fetch user pinishments.', {cause: error});
                 if (results.length == 0) res(false);
                 res(true);
             });

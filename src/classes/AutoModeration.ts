@@ -1,9 +1,16 @@
-const axios = require('axios');
+import axios from 'axios';
 
-const AutoModerationRun = require('./AutoModerationRun');
+import AutoModerationRun from './AutoModerationRun';
+import TobyBot from './TobyBot';
+import { Message } from 'discord.js';
 
-module.exports = class AutoModeration {
-    constructor(TobyBot) {
+export default class AutoModeration {
+    TobyBot: TobyBot;
+    scamLinks: string[];
+    scamTerms: string[];
+    scamSlashes: string[];
+    domainNames: string[];
+    constructor(TobyBot: TobyBot) {
         this.TobyBot = TobyBot;
 
         this.scamLinks = [];
@@ -15,11 +22,11 @@ module.exports = class AutoModeration {
         setInterval(() => this.refreshDataSets(), 21600000); //Update DataSets every 6 hours
     }
 
-    async examine(message) {
+    async examine(message: Message) {
         return new AutoModerationRun(this, message).run();
     }
     
-    async hasPermission(AutoModerationRun, permission) {
+    async hasPermission(AutoModerationRun: AutoModerationRun, permission) {
         let globalPermissions = await this.TobyBot.PermissionManager.userHasPermission(permission, AutoModerationRun.User, AutoModerationRun.Channel);
         let guildPermissions = await AutoModerationRun.Guild.PermissionManager.userHasPermission(permission, AutoModerationRun.User, AutoModerationRun.Channel, true);
         return (globalPermissions) ? true : guildPermissions;

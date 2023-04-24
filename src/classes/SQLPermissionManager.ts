@@ -159,7 +159,7 @@ export default class SQLPermissionManager extends SQLConfigurationManager {
     }
 
     async userHasPermission(permission: string, guildUser: GuildMember, channel: TextChannel = undefined, useAdmin = false) {
-        if (typeof guildUser != "object") throw new TypeError('Wrong type.').logError();
+        if (!(guildUser instanceof GuildMember)) throw new TypeError('Wrong type.');
         if (this.allowDevOnly.includes(permission) && guildUser.user.id == "231461358200291330")return true;
         if (this.neverAllow.includes(permission))return false;
         if (this.neverAllowGuildFocused.includes(permission) && useAdmin)return false;
@@ -180,7 +180,7 @@ export default class SQLPermissionManager extends SQLConfigurationManager {
 
     async isPermissionGranted(permissionArray, permission) { //Just a quick function to prevent writing the same code in a loop
         if (!this.initialized) return false;
-        if (typeof permissionArray != "object") throw new TypeError('Wrong type.').logError();
+        if (typeof permissionArray != "object") throw new TypeError('Wrong type.');
         if (Object.keys(permissionArray).length == 0) return false;
         let totalResults = [];
         let permissionModified = permission.split('.');

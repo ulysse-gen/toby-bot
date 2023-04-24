@@ -12,6 +12,7 @@ import ContextMenuCommand from './ContextMenuCommand';
 import FileLogger from './FileLogger';
 import ContextMenuCommandExecution from './ContextMenuCommandExecution';
 import TobyBot from './TobyBot';
+import { FatalError } from './Errors';
 
 //Creating objects
 const MainLog = new FileLogger();
@@ -59,7 +60,7 @@ export default class ContextMenuCommandManager {
 
         if (process.env.TOBYBOT_API_ONLY === "false")await new Promise<void>((res, _rej) => {
             fs.readdir(`./src/contextMenuCommands${_this.commandsFolder}`, function (err, files) { //Read events folder
-                if (err) throw err;
+                if (err) throw new FatalError(`Could not load context commands.`, {cause: err});
                 files.forEach((file, index, array) => { //For each files in the folder
                     if (file.endsWith('.js')) { //Only proceed if extension is .js
                         let cmd = new ContextMenuCommand(_this, require(`/app/src/contextMenuCommands${_this.commandsFolder}${file}`));

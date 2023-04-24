@@ -19,7 +19,7 @@ export default class FileConfigurationManager extends ConfigurationManager {
     constructor(configurationFile, defaultConfiguration = {}) {
         super();
 
-        if (typeof configurationFile != "string" || configurationFile.replaceAll(' ', '') == "") throw new MissingArgumentError(`ConfigurationFile must be a non empty string.`, {argument: 'ConfigurationFile'}).logError();
+        if (typeof configurationFile != "string" || configurationFile.replaceAll(' ', '') == "") throw new MissingArgumentError(`ConfigurationFile must be a non empty string.`, {argument: 'ConfigurationFile'});
 
         this.file = (configurationFile.startsWith('/')) ? configurationFile : `/data/configs/${configurationFile}`;
         this.defaultConfiguration = defaultConfiguration;
@@ -30,7 +30,7 @@ export default class FileConfigurationManager extends ConfigurationManager {
     async initialize(createIfNonExistant = false) {
         var startTimer = moment();
         if (this.verbose)MainLog.log(`Initializing ${this.constructor.name} [${moment().diff(startTimer)}ms]`);
-        if (!fs.existsSync(this.file) && !createIfNonExistant) throw new FileError(`Configuration file not found.`).logError();
+        if (!fs.existsSync(this.file) && !createIfNonExistant) throw new FileError(`Configuration file not found.`);
         await this.createPath(this.file);
         if (!fs.existsSync(this.file)) {
             fs.appendFileSync(this.file, JSON.stringify(this.defaultConfiguration, null, 2));

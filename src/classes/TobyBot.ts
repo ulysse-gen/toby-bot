@@ -11,12 +11,12 @@ import _ from "lodash";
 import { I18n } from 'i18n';
 
 //Importing classes
-import MetricManager = require('./MetricManager');
+import MetricManager from './MetricManager';
 import GuildManager from './GuildManager';
-import ChannelLogger = require('./ChannelLogger');
-import AutoModeration = require('./AutoModeration');
+import ChannelLogger from './ChannelLogger';
+import AutoModeration from './AutoModeration';
 import { EventHandlingError, FileError, SQLError, UnknownError } from './Errors';
-import Metric = require("./Metric");
+import Metric from './Metric';
 import Guild from "./Guild";
 import { CustomClient, PackageInformations } from "../interfaces/main";
 import UserManager from "./UserManager";
@@ -106,11 +106,11 @@ export default class TobyBot {
         this.PackageInformations = PackageInformations;
         this.ConfigurationManager = undefined;
         this.PermissionManager = undefined;
-        this.MetricManager = new MetricManager();
+        this.MetricManager = new MetricManager(this);
         this.PresenceManager = new PresenceManager(this);
         this.Console = new Console(this);
         this.LifeMetric = this.MetricManager.createMetric("LifeMetric"); //Create the main "LifeMetric" that will follow everything that might happen which is code related (e.g. errors)
-        this.AutoModeration = new AutoModeration(this);
+        //this.AutoModeration = new AutoModeration(this);
 
         this.loggers = {};
 
@@ -155,17 +155,17 @@ export default class TobyBot {
         if (!fs.existsSync('/data'))try {
             fs.mkdirSync('/data');
         } catch (e) {
-            throw new FileError(`Missing '/data' folder and its creation failed.`, {cause: e}).logError();
+            throw new FileError(`Missing '/data' folder and its creation failed.`, {cause: e});
         }
         if (!fs.existsSync('/data/logs'))try {
             fs.mkdirSync('/data/logs');
         } catch (e) {
-            throw new FileError(`Missing '/data/logs' folder and its creation failed.`, {cause: e}).logError();
+            throw new FileError(`Missing '/data/logs' folder and its creation failed.`, {cause: e});
         }
         if (!fs.existsSync('/data/configs'))try {
             fs.mkdirSync('/data/configs');
         } catch (e) {
-            throw new FileError(`Missing '/data/configs' folder and its creation failed.`, {cause: e}).logError();
+            throw new FileError(`Missing '/data/configs' folder and its creation failed.`, {cause: e});
         }
         return this;
     }
@@ -229,17 +229,11 @@ export default class TobyBot {
                         event = event.default;
                         if ((typeof event.enabled == "boolean") ? event.enabled : true)if (event.once) {
                             _this.client.once(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
-                                let err = new EventHandlingError(`An error occured trying to handle an event`, {cause: e, event: event.name}).logError();
-                                console.log(err);
-                                return undefined;
+                                throw new EventHandlingError(`An error occured trying to handle an event`, {cause: e, event: event.name}).logError();
                             }));
                         }else {
                             _this.client.on(event.name, (...args)=>event.exec(_this, ...args).catch(e => {
-                                let err = new EventHandlingError(`An error occured trying to handle an event`, {cause: e, event: event.name});
-                                console.log(err);
-                                err.logError();
-                                console.log(err);
-                                return undefined;
+                                throw new EventHandlingError(`An error occured trying to handle an event`, {cause: e, event: event.name}).logError();
                             }));
                         }
                     }   

@@ -1,14 +1,28 @@
-const linkify = require('linkifyjs');
-const url = require('url');
-const AutoModerationViolation = require('./AutoModerationViolation');
-const { MessageEmbed } = require("discord.js");
-const moment = require('moment');
-const removeAccents = require(`remove-accents`);
-const leetSpeakConverter = require("/app/src/utils/leet-converter")
+import linkify from 'linkifyjs';
+import url from 'url';
+import AutoModerationViolation from './AutoModerationViolation';
+import { DMChannel, Message, MessageEmbed, NewsChannel, PartialDMChannel, TextChannel, ThreadChannel, User } from "discord.js";
+import moment from 'moment';
+import removeAccents from `remove-accents`;
+import AutoModeration from './AutoModeration';
+import TobyBot from './TobyBot';
+import { TobyBotMessage } from '../interfaces/main';
+import Guild from './Guild';
+const leetSpeakConverter = require("/app/src/utils/leet-converter");
 
 
-module.exports = class AutoModerationRun {
-    constructor(AutoModeration, message) {
+export default class AutoModerationRun {
+    TobyBot: TobyBot;
+    AutoModeration: AutoModeration;
+    message: TobyBotMessage;
+    User: User;
+    Channel: DMChannel | PartialDMChannel | NewsChannel | TextChannel | ThreadChannel;
+    Guild: Guild;
+    violations: AutoModerationViolation[];
+    startTimer: moment.Moment;
+    linkify: any;
+    violationsProcessed: any;
+    constructor(AutoModeration: AutoModeration, message) {
         this.TobyBot = AutoModeration.TobyBot;
         this.AutoModeration = AutoModeration;
         this.message = message;

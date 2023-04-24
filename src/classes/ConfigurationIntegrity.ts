@@ -1,20 +1,22 @@
 //Importing NodeJS Modules
 
 //Importing classes
-const FileLogger = require('./FileLogger');
+import FileLogger from './FileLogger';
+import TobyBot from './TobyBot';
 
 //Creating objects
 const MainLog = new FileLogger();
 const ErrorLog = new FileLogger('error.log');
 
-module.exports = class API {
-    constructor(TobyBot) {
+export default class ConfigurationIntegrity {
+    TobyBot: TobyBot;
+    constructor(TobyBot: TobyBot) {
         this.TobyBot = TobyBot;
     }
 
     integrityCheck(defaultConfiguration, oldConfiguration){
         let updated = false;
-        let recursiveMerge = this.recursiveMerge(defaultConfiguration, oldConfiguration);
+        let recursiveMerge = this.mergeRecursive(defaultConfiguration, oldConfiguration);
         if (recursiveMerge.updated){
             updated = true;
             oldConfiguration = recursiveMerge.result;

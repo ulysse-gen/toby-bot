@@ -63,7 +63,7 @@ export default class CommandManager {
 
         if (process.env.TOBYBOT_API_ONLY === "false")await new Promise<void>((res, _rej) => {
             fs.readdir(`./src/commands${_this.commandsFolder}`, function (err, files) { //Read events folder
-                if (err) throw new FatalError(`Could not load commands.`, {cause: err}).logError();
+                if (err) throw new FatalError(`Could not load commands.`, {cause: err});
                 files.forEach((file, index, array) => { //For each files in the folder
                     if (file.endsWith('.js') || file.endsWith('.ts')) { //Only proceed if extension is .js or .ts
                         let cmd = require(`/app/src/commands${_this.commandsFolder}${file}`);
@@ -129,7 +129,7 @@ export default class CommandManager {
         let fetchedCommand = await this.fetch(command);
         return new CommandExecution(message, fetchedCommand, commandOptions, this).execute().catch(e=>{
             //CommandExecution.Channel.send('An error occured executing the command. Reach <@231461358200291330> for help.'); //CommandExecution.Channel may not be defined at this point
-            throw new CommandExecutionError(`Could not execute command.`, {cause: e, command: fetchedCommand}).logError();
+            throw new CommandExecutionError(`Could not execute command.`, {cause: e, command: fetchedCommand});
         });
     }
 
@@ -137,7 +137,7 @@ export default class CommandManager {
         let fetchedCommand = await this.fetch(interaction.commandName);
         return new CommandExecution(interaction, fetchedCommand, interaction.options/*._hoistedOptions*/, this, true).execute().catch(e=>{
             //CommandExecution.Channel.send('An error occured executing the command. Reach <@231461358200291330> for help.'); //CommandExecution.Channel may not be defined at this point
-            throw new CommandExecutionError(`Could not execute command.`, {cause: e, command: fetchedCommand}).logError();
+            throw new CommandExecutionError(`Could not execute command.`, {cause: e, command: fetchedCommand});
         });
     }
 

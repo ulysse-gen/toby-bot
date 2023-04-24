@@ -1,4 +1,14 @@
-module.exports = class AutoModerationViolation {
+import AutoModerationRun from "./AutoModerationRun";
+import TobyBot from "./TobyBot";
+
+export default class AutoModerationViolation {
+    TobyBot: TobyBot;
+    AutoModerationRun: AutoModerationRun;
+    checkName: any;
+    TriggerName: any;
+    TriggerValue: any;
+    Weight: number;
+    Punishment: any;
     constructor(AutoModerationRun, CheckName, TriggerName, TriggerValue, Punishment) {
         this.TobyBot = AutoModerationRun.TobyBot;
         this.AutoModerationRun = AutoModerationRun;

@@ -16,7 +16,7 @@ export default class FileLogger extends Logger {
     constructor(logFile = `main.log`) {
         super();
         
-        if (typeof logFile != "string" || logFile.replaceAll(' ', '') == "") throw new MissingArgumentError('LogFile must be a non empty string', {argument: "LogFile"}).logError();
+        if (typeof logFile != "string" || logFile.replaceAll(' ', '') == "") throw new MissingArgumentError('LogFile must be a non empty string', {argument: "LogFile"});
 
         this.file = (logFile.startsWith('/')) ? logFile : `/data/logs/${logFile}`;
 
@@ -34,7 +34,7 @@ export default class FileLogger extends Logger {
                     fs.mkdirSync(currentPath);
                     if (pathParts.length <= 0)res(true);
                 } catch(e) {
-                    throw new FileError(`Could not build path.`, {cause: e}).logError();
+                    throw new FileError(`Could not build path.`, {cause: e});
                 }
             } 
         });

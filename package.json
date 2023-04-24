@@ -1,7 +1,7 @@
 {
   "name": "tobybot",
-  "version": "alpha4.3.2",
-  "changelog": "- Switched CommandManager, GuildManager & UserManager to Collections.\n- Switched help command to TypeScript.\n- Some fixes here and there",
+  "version": "alpha4.3.3",
+  "changelog": "- Switched MetricManager to Collection.\n- Switched some JavaScript to TypeScript.\n Adjusted error handling.",
   "apiVersion": "1.0",
   "description": "Toby Bot Discord Utility Bot",
   "main": "./src/index.ts",

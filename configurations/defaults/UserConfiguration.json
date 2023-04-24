@@ -2,7 +2,8 @@
     "system": {
         "config-version": 0.1,
         "config-type": "user",
-        "setup-done": false
+        "setup-done": false,
+        "setup-state": 0
     },
     "locale": "followGuild"
 }

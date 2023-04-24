@@ -83,11 +83,11 @@ export default class User {
     async createInSQL() {
         return new Promise((res, _rej) => {
             this.UserManager.SQLPool.query(`SELECT * FROM \`users\` WHERE id='${this.User.id}'`, (error, results) => {
-                if (error)throw new SQLError('Could not select user from the database.', {cause: error}).logError();
+                if (error)throw new SQLError('Could not select user from the database.', {cause: error});
                 if (results.length == 0){
                     this.UserManager.SQLPool.query(`INSERT INTO \`users\` (id, configuration) VALUES (?,?)`, [this.User.id, JSON.stringify(require('/app/configurations/defaults/UserConfiguration.json'))], async (error, results) => {
-                        if (error)throw new SQLError('Could not insert user in the database.', {cause: error}).logError();
-                        if (results.affectedRows != 1) throw new SQLError('Could not insert user in the database.').logError();
+                        if (error)throw new SQLError('Could not insert user in the database.', {cause: error});
+                        if (results.affectedRows != 1) throw new SQLError('Could not insert user in the database.');
                         res(true);
                     });
                 }else {

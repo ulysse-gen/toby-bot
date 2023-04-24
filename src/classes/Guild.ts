@@ -136,7 +136,7 @@ export default class Guild {
     async loadSQLContent(checkForUpdate = false): Promise<void> {
         return new Promise<void>((res, _rej) => {
             this.SQLPool.query(`SELECT * FROM \`guilds\` WHERE id='${this.Guild.id}'`, (error, results) => {
-                if (error)throw error;
+                if (error)throw new SQLError('Could not fetch the guild from the database.');
                 if (results.length != 0){
                     this.numId = results[0].numId;
                     this.locale = results[0].locale;

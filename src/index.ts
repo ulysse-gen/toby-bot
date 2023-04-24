@@ -61,7 +61,7 @@ async function errorHandle(type: string, error: Error | unknown) {
 async function shudownHandle(type: string, code: string | number) {
     if (type != "exit"){
         MainLog.log(`Recived an ${type}:`);
-        console.log(code);
+        if (type.toString() != code.toString())console.log(code);
         await GlobalBot.shutdown(type, code.toString());
     }
 }
