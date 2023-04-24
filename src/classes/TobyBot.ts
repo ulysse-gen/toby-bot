@@ -14,7 +14,6 @@ import { I18n } from 'i18n';
 import MetricManager from './MetricManager';
 import GuildManager from './GuildManager';
 import ChannelLogger from './ChannelLogger';
-import AutoModeration from './AutoModeration';
 import { EventHandlingError, FileError, SQLError, UnknownError } from './Errors';
 import Metric from './Metric';
 import Guild from "./Guild";
@@ -58,7 +57,6 @@ export default class TobyBot {
     PresenceManager: PresenceManager;
     Console: Console;
     LifeMetric: Metric;
-    AutoModeration: AutoModeration;
     loggers: {commandExecution?:ChannelLogger, DM?:ChannelLogger, updates?:ChannelLogger, moderationLogs?:ChannelLogger};
     ready: boolean;
     catchErrorsPreventClose: boolean;
@@ -110,7 +108,6 @@ export default class TobyBot {
         this.PresenceManager = new PresenceManager(this);
         this.Console = new Console(this);
         this.LifeMetric = this.MetricManager.createMetric("LifeMetric"); //Create the main "LifeMetric" that will follow everything that might happen which is code related (e.g. errors)
-        //this.AutoModeration = new AutoModeration(this);
 
         this.loggers = {};
 

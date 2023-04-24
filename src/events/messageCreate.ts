@@ -42,11 +42,6 @@ export default {
 
         message.TobyBot.Guild.MessageManager.addMessage(message);
 
-        /** Disabling AutoModeration cuz not any close to be done, and other things are prioritized over this.
-        let autoMod = await TobyBot.AutoModeration.examine(message);
-        console.log(autoMod);
-        **/
-
         let commandExecution = await TobyBot.CommandManager.handle(message).catch(e => {
             throw new CommandHandlingError(`An error occured trying to handle the command.`, {cause: e}).logError();
         });

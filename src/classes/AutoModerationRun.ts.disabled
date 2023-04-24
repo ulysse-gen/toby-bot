@@ -4,7 +4,7 @@ import AutoModerationViolation from './AutoModerationViolation';
 import { DMChannel, Message, MessageEmbed, NewsChannel, PartialDMChannel, TextChannel, ThreadChannel, User } from "discord.js";
 import moment from 'moment';
 import removeAccents from `remove-accents`;
-import AutoModeration from './AutoModeration';
+import AutoModeration from './AutoModeration.ts.disabled';
 import TobyBot from './TobyBot';
 import { TobyBotMessage } from '../interfaces/main';
 import Guild from './Guild';
